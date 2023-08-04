@@ -14,7 +14,7 @@ struct Service_Maps_2_0App: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            VerificationView()
                 .environment(\.managedObjectContext, dataController.container.viewContext)
         }
         .onChange(of: scenePhase) { _ in

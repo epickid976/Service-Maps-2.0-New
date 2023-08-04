@@ -3,4 +3,370 @@
    uuid = "A6DC26D9-FEE9-446E-936C-6E64DEB7EF4B"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D5E14007-F2F7-4246-8E9A-110A2486BF3B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "signUp(name:email:password:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4F5A4804-6115-4BE0-AF03-7A4D2C63FDFA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "signUp(name:email:password:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "818E4762-C8C8-47BE-9846-6EE4CE416343"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
+            landmarkName = "signUp(name:email:password:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "60AB86BF-68A2-4619-A9A6-F03B63525BF4"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "31"
+            endingLineNumber = "31"
+            landmarkName = "signUp(name:email:password:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "60AB86BF-68A2-4619-A9A6-F03B63525BF4 - 204c7d6c7f0dcbf2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.AuthenticationAPI.signUp(name: Swift.String, email: Swift.String, password: Swift.String) async throws -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "128">
+               </Location>
+               <Location
+                  uuid = "60AB86BF-68A2-4619-A9A6-F03B63525BF4 - e7c658609d3f2259"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.signUp(name: Swift.String, email: Swift.String, password: Swift.String) async throws -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "72">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C9673570-982C-470D-BACF-9A2CBBB6FEB6"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "signUp(name:email:password:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "C9673570-982C-470D-BACF-9A2CBBB6FEB6 - e7c658609d3f2217"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.signUp(name: Swift.String, email: Swift.String, password: Swift.String) async throws -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "144">
+               </Location>
+               <Location
+                  uuid = "C9673570-982C-470D-BACF-9A2CBBB6FEB6 - 5a79f8ec71cbd37f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for Service_Maps_2_0.AuthenticationAPI.signUp(name: Swift.String, email: Swift.String, password: Swift.String) async throws -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "C9673570-982C-470D-BACF-9A2CBBB6FEB6 - 992ec7ee3a397e55"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.signUp(name: Swift.String, email: Swift.String, password: Swift.String) async throws -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "52">
+               </Location>
+               <Location
+                  uuid = "C9673570-982C-470D-BACF-9A2CBBB6FEB6 - 31e28716eaba58b4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.signUp(name: Swift.String, email: Swift.String, password: Swift.String) async throws -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "68">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "01389E6F-EFCD-4B8F-9989-1907D9FDDA8B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "signUp(name:email:password:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "43DD0C89-24FB-47E3-82CF-1EDD9569232A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "signUp(name:email:password:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "43DD0C89-24FB-47E3-82CF-1EDD9569232A - 9d1bf0e6d470ef6c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.AuthenticationAPI.logout() async throws -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "38"
+                  endingLineNumber = "38"
+                  offsetFromSymbolStart = "32">
+               </Location>
+               <Location
+                  uuid = "43DD0C89-24FB-47E3-82CF-1EDD9569232A - 7fb91ff4861187eb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.logout() async throws -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "38"
+                  endingLineNumber = "38"
+                  offsetFromSymbolStart = "32">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "94769A44-653E-4EEC-9BAD-0465F8680C92"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
+            landmarkName = "login(email:password:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "94769A44-653E-4EEC-9BAD-0465F8680C92 - 2e3840b86b0790e4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.login(email: Swift.String, password: Swift.String) async throws -&gt; Service_Maps_2_0.LoginResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "388">
+               </Location>
+               <Location
+                  uuid = "94769A44-653E-4EEC-9BAD-0465F8680C92 - c75d436ccb1265f9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for Service_Maps_2_0.AuthenticationAPI.login(email: Swift.String, password: Swift.String) async throws -&gt; Service_Maps_2_0.LoginResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "94769A44-653E-4EEC-9BAD-0465F8680C92 - 66231f7e5118b4e2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.login(email: Swift.String, password: Swift.String) async throws -&gt; Service_Maps_2_0.LoginResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "184">
+               </Location>
+               <Location
+                  uuid = "94769A44-653E-4EEC-9BAD-0465F8680C92 - c228b603b22ddae3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.login(email: Swift.String, password: Swift.String) async throws -&gt; Service_Maps_2_0.LoginResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "56">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A36BF2E9-2746-41D8-8399-7532B7BB4886"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/ApiRequestAsync.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "postRequest(url:body:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "A36BF2E9-2746-41D8-8399-7532B7BB4886 - 1fb5783f68a1dd52"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.UnsafeContinuation&lt;Swift.String, Swift.Error&gt;) -&gt; () in Service_Maps_2_0.ApiRequestAsync.postRequest&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Encodable&gt;(url: Swift.String, body: &#x3c4;_0_0) async throws -&gt; Swift.String"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/ApiRequestAsync.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "276">
+               </Location>
+               <Location
+                  uuid = "A36BF2E9-2746-41D8-8399-7532B7BB4886 - 27d1b96c49aaa736"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Alamofire.DataResponse&lt;Swift.String, Alamofire.AFError&gt;) -&gt; () in closure #1 (Swift.UnsafeContinuation&lt;Swift.String, Swift.Error&gt;) -&gt; () in Service_Maps_2_0.ApiRequestAsync.postRequest&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Encodable&gt;(url: Swift.String, body: &#x3c4;_0_0) async throws -&gt; Swift.String"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/ApiRequestAsync.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "36"
+                  endingLineNumber = "36"
+                  offsetFromSymbolStart = "356">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
