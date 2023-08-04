@@ -9,12 +9,13 @@ import Foundation
 import Alamofire
 
 class AuthenticationAPI {
-    let baseURL = ApiRequestAsync().baseURL + "auth/"
+    let baseURL = "auth/"
 
     
     //MARK: Login
     func login(email: String, password: String) async throws -> LoginResponse {
         do {
+            print(baseURL + "login")
             let response = try await ApiRequestAsync().postRequest(url: baseURL + "login", body: LoginForm(email: email, password: password))
             let decoder = JSONDecoder()
             let jsonData = response.data(using: .utf8)!
@@ -29,6 +30,7 @@ class AuthenticationAPI {
     
     func signUp(name: String, email: String, password: String) async throws {
         do {
+            print(baseURL + "signup")
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "signup", body: SignUpForm(name: name, email: email, password: password, password_confirmation: password))
         } catch {
             throw error.self
@@ -37,7 +39,9 @@ class AuthenticationAPI {
     
     func logout()  async throws{
         do {
+            
             _ = try await ApiRequestAsync().getRequest(url: baseURL + "logout")
+            AuthorizationProvider().authorizationToken = nil
         } catch {
             throw error.self
         }

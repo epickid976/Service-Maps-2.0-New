@@ -15,6 +15,7 @@ class ApiRequestAsync {
     //MARK: FUNCS
     func getRequest(url:String) async throws -> String {
         try await withUnsafeThrowingContinuation { continuation in
+            
             AF.request("\(baseURL)\(url)", method: .get, headers: HTTPHeaders(getHeaders())).validate().responseString { response in
                 if let string = response.value {
                     continuation.resume(returning: string)

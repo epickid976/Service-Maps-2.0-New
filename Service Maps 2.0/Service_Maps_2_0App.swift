@@ -11,11 +11,17 @@ import SwiftUI
 struct Service_Maps_2_0App: App {
     let dataController = DataController.shared
     @Environment(\.scenePhase) var scenePhase
+    @StateObject var authorizationProvider = AuthorizationProvider()
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, dataController.container.viewContext)
+            if authorizationProvider.authorizationToken != nil {
+                HomeTabView()
+                    .environment(\.managedObjectContext, DataController.preview.container.viewContext)
+            } else {
+                WelcomeView()
+                    .environment(\.managedObjectContext, DataController.preview.container.viewContext)
+            }
         }
         .onChange(of: scenePhase) { _ in
             dataController.save()
