@@ -16,7 +16,7 @@ struct DataController {
         for index in 0..<10 {
             let newTerritory = Territory(context: viewContext)
             newTerritory.id = UUID().uuidString
-            newTerritory.address = "1850 W 56 St"
+            newTerritory.address = "1850 W 56 St Hialeah FL 33012 United States"
             newTerritory.congregation = "1260"
             newTerritory.number = Int64(index)
             newTerritory.section = "-"

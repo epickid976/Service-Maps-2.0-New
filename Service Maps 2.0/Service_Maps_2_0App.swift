@@ -14,8 +14,8 @@ struct Service_Maps_2_0App: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, dataController.container.viewContext)
+            HomeTabView()
+           .environment(\.managedObjectContext, DataController.preview.container.viewContext)
         }
         .onChange(of: scenePhase) { _ in
             dataController.save()
