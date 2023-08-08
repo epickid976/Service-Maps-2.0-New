@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import SwiftUI
 
 class SynchronizationManager: ObservableObject {
     
@@ -25,6 +26,9 @@ class SynchronizationManager: ObservableObject {
     private var visits = [Visit]()
     private var tokens = [MyToken]()
     
+    //MORE KEYS
+    @AppStorage("userEmailKey") var userEmail
+    
     init() {
         territories = try! dataController.container.viewContext.fetch(territoriesRequest) as! [Territory]
         houses = try! dataController.container.viewContext.fetch(housesRequest) as! [House]
@@ -33,6 +37,22 @@ class SynchronizationManager: ObservableObject {
         
         //MARK: DEBUG
         //print("These territories are from synchronization manager \(territories)")
+    }
+    
+    private func loadStartupState() -> StartupState {
+        
+    }
+    
+    private func verifyCredentials() async -> StartupState? {
+        if await userNeedLogin() {
+            return StartupState.Login
+        }
+        
+        if await adminNeedLogin() {
+            return StartupState.AdminLogin
+        }
+        
+        return nil
     }
     
     func synchronize() async throws {
@@ -125,6 +145,7 @@ class SynchronizationManager: ObservableObject {
         
     }
     
+    
     private func userNeedLogin() async -> Bool {
         do {
             _ = try await AuthenticationAPI().user()
@@ -136,7 +157,7 @@ class SynchronizationManager: ObservableObject {
                 }
             }
         }
-        return false
+        return authorizationProvider.authorizationToken != nil
     }
     
     private func adminNeedLogin() async -> Bool {
@@ -152,7 +173,7 @@ class SynchronizationManager: ObservableObject {
                 }
             }
         }
-        return !isAdmin()
+        return false
     }
     
     private func getAccessLevel() -> AccessLevel {
