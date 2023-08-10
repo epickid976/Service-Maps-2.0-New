@@ -11,14 +11,16 @@ import UIKit
 
 
 struct HomeTabView: View {
+    
     @State private var selectedTab = 0
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var authorizationProvider: AuthorizationProvider
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 if selectedTab == 0 {
-                    SettingsView()
+                    TerritoryView()
                         .tag(0)
                         .tabItem {
                             Image(systemName: "1.circle")
@@ -76,8 +78,6 @@ struct HomeTabView: View {
                             .imageScale(.large)
                             .scaleEffect(selectedTab == 2 ? 1.2 : 1.0) // Add scale effect
                             .foregroundColor(selectedTab == 2 ? .blue : .gray)
-                        
-                        
                     }
                     .frame(maxWidth: .infinity)
                 }
