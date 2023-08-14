@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 class UserAPI {
-    let baseURL = ApiRequestAsync().baseURL + "users/"
+    let baseURL = "users/"
     
     func loadTerritories() async throws -> AllDataResponse {
         do {
@@ -30,7 +30,7 @@ class UserAPI {
     //MARK: UPDATE
     func updateTerritory(territory: TerritoryModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "territories/update", body: territory)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/update", body: territory)
         } catch {
             throw error.self
         }
@@ -38,7 +38,7 @@ class UserAPI {
     
     func updateHouse(house: HouseModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "houses/update", body: house)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/update", body: house)
         } catch {
             throw error.self
         }
@@ -47,7 +47,7 @@ class UserAPI {
     //MARK: VISIT
     func addVisit(visit: VisitModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "visits/add", body: visit)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/add", body: visit)
         } catch {
             throw error.self
         }
@@ -55,7 +55,7 @@ class UserAPI {
     
     func updateVisit(visit: VisitModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "visits/update", body: visit)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/update", body: visit)
         } catch {
             throw error.self
         }

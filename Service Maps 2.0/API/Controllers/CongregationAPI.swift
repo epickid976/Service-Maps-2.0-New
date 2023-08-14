@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 class CongregationAPI {
-    let baseURL = ApiRequestAsync().baseURL + "congregation/"
+    let baseURL = "congregation/"
     
     func signIn(congregationId: Int64, congregationPass: String) async throws -> CongregationResponse {
         do {

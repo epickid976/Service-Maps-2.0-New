@@ -15,17 +15,23 @@ struct SettingsView: View {
     
     //MARK: API
     let authenticationApi = AuthenticationAPI()
+    let authorizationProvider = AuthorizationProvider.shared
+    
+    @State var errorText = ""
     
     var body: some View {
         NavigationStack {
             VStack {
                 Spacer()
+                Text(errorText)
                 Button {
                     Task {
                         do {
-                            let response: () = try await authenticationApi.logout()
+                            let _: () = try await authenticationApi.logout()
+                            authorizationProvider.isLoggedOut = true
+                            authorizationProvider.authorizationToken = nil
                         } catch {
-                            print(error.asAFError)
+                            errorText = error.asAFError?.localizedDescription ?? ""
                         }
                     }
                 } label: {

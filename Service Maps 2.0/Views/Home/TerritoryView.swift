@@ -31,6 +31,7 @@ struct TerritoryView: View {
                 //.animation(.default, value: territories.)
             }
             .navigationBarTitle("Territories", displayMode: .automatic)
+            .navigationBarBackButtonHidden(true)
             .font(.title)
             .bold()
         }

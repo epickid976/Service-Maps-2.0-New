@@ -14,8 +14,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "36"
-            endingLineNumber = "36"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
             landmarkName = "signUp(name:email:password:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
             landmarkName = "signUp(name:email:password:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
             landmarkName = "signUp(name:email:password:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
             landmarkName = "signUp(name:email:password:)"
             landmarkType = "7">
             <Locations>
@@ -110,8 +110,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
+            startingLineNumber = "31"
+            endingLineNumber = "31"
             landmarkName = "signUp(name:email:password:)"
             landmarkType = "7">
             <Locations>
@@ -188,8 +188,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
             landmarkName = "signUp(name:email:password:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -204,8 +204,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "38"
-            endingLineNumber = "38"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
             landmarkName = "signUp(name:email:password:)"
             landmarkType = "7">
             <Locations>
@@ -252,8 +252,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "19"
-            endingLineNumber = "19"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
             landmarkName = "login(email:password:)"
             landmarkType = "7">
             <Locations>
@@ -323,47 +323,2198 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A36BF2E9-2746-41D8-8399-7532B7BB4886"
+            uuid = "704CE856-CF9B-4610-8822-7C77F3D0CF65"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Service Maps 2.0/API/ApiRequestAsync.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "36"
-            endingLineNumber = "36"
-            landmarkName = "postRequest(url:body:)"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "getHeaders()"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "A36BF2E9-2746-41D8-8399-7532B7BB4886 - 1fb5783f68a1dd52"
+                  uuid = "704CE856-CF9B-4610-8822-7C77F3D0CF65 - 71990c44e1ab6556"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.UnsafeContinuation&lt;Swift.String, Swift.Error&gt;) -&gt; () in Service_Maps_2_0.ApiRequestAsync.postRequest&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Encodable&gt;(url: Swift.String, body: &#x3c4;_0_0) async throws -&gt; Swift.String"
+                  symbolName = "Service_Maps_2_0.ApiRequestAsync.getHeaders() -&gt; Swift.Dictionary&lt;Swift.String, Swift.String&gt;"
                   moduleName = "Service Maps 2.0"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/ApiRequestAsync.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "35"
-                  endingLineNumber = "35"
-                  offsetFromSymbolStart = "276">
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "356">
                </Location>
                <Location
-                  uuid = "A36BF2E9-2746-41D8-8399-7532B7BB4886 - 27d1b96c49aaa736"
+                  uuid = "704CE856-CF9B-4610-8822-7C77F3D0CF65 - 71990c44e1ab6556"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Alamofire.DataResponse&lt;Swift.String, Alamofire.AFError&gt;) -&gt; () in closure #1 (Swift.UnsafeContinuation&lt;Swift.String, Swift.Error&gt;) -&gt; () in Service_Maps_2_0.ApiRequestAsync.postRequest&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Encodable&gt;(url: Swift.String, body: &#x3c4;_0_0) async throws -&gt; Swift.String"
+                  symbolName = "Service_Maps_2_0.ApiRequestAsync.getHeaders() -&gt; Swift.Dictionary&lt;Swift.String, Swift.String&gt;"
                   moduleName = "Service Maps 2.0"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/ApiRequestAsync.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "36"
-                  endingLineNumber = "36"
-                  offsetFromSymbolStart = "356">
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "464">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "AC85824C-72F7-4F59-B129-93F1F9EEA1FE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/ApiRequestAsync.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "getHeaders()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BAE9EE81-7670-418A-AE41-BE6F8B87A722"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
+            landmarkName = "loadStartupState()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6C46DEB4-A80A-46AF-94CF-B0CD263E41BF"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "loadStartupState()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F74587B9-AAB9-4690-A5A4-DC29CA0F6C48"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
+            landmarkName = "loadStartupState()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BAD751A8-0FFF-4241-95C1-452EE4E71157"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/AuthenticationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
+            landmarkName = "getUser()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BAD751A8-0FFF-4241-95C1-452EE4E71157 - 44b6045925eeff1c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AuthenticationManager.getUser() async -&gt; Swift.Result&lt;Service_Maps_2_0.UserResponse, Swift.Error&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/AuthenticationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "344">
+               </Location>
+               <Location
+                  uuid = "BAD751A8-0FFF-4241-95C1-452EE4E71157 - 44b6045925eeff1c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AuthenticationManager.getUser() async -&gt; Swift.Result&lt;Service_Maps_2_0.UserResponse, Swift.Error&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/AuthenticationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "348">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9DEA306B-4628-4EF4-89C9-A021FBB2C00E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/AuthenticationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
+            landmarkName = "getUser()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C0A45DB7-1923-4289-B425-0A731FC51278"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AuthenticationAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "user()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "C0A45DB7-1923-4289-B425-0A731FC51278 - b0b455fa5c3d037"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.user() async throws -&gt; Service_Maps_2_0.UserResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "1232">
+               </Location>
+               <Location
+                  uuid = "C0A45DB7-1923-4289-B425-0A731FC51278 - b0b455fa5c3d037"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.user() async throws -&gt; Service_Maps_2_0.UserResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "1248">
+               </Location>
+               <Location
+                  uuid = "C0A45DB7-1923-4289-B425-0A731FC51278 - 75d917b170b07236"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.user() async throws -&gt; Service_Maps_2_0.UserResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "124">
+               </Location>
+               <Location
+                  uuid = "C0A45DB7-1923-4289-B425-0A731FC51278 - 75d917b170b07236"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.user() async throws -&gt; Service_Maps_2_0.UserResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "140">
+               </Location>
+               <Location
+                  uuid = "C0A45DB7-1923-4289-B425-0A731FC51278 - b0b455fa5c3d037"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.user() async throws -&gt; Service_Maps_2_0.UserResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "1204">
+               </Location>
+               <Location
+                  uuid = "C0A45DB7-1923-4289-B425-0A731FC51278 - b0b455fa5c3d037"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AuthenticationAPI.user() async throws -&gt; Service_Maps_2_0.UserResponse"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/AuthenticationAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "1220">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/StorageManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
+            landmarkName = "userEmail"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - c6c98a1f5a265145"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "property wrapper backing initializer of Service_Maps_2_0.StorageManager.userEmail : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - bce1731f74e6685"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.userEmail.setter : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "32">
+               </Location>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - d01a46114db9daa7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.userEmail.getter : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - 90a54e2e75a6f6a4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.userEmail.modify : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - 7e95f2006858cbe6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.userEmail.modify : Swift.Optional&lt;Swift.String&gt; with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "20">
+               </Location>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - 4baf8b3cf2cd0010"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$userEmail.getter : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - 52ff7e8ca6aac4ee"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$userEmail.setter : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - f7ba01a54db1b2df"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$userEmail.modify : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "64">
+               </Location>
+               <Location
+                  uuid = "80D5914F-8BA0-4D8D-AF3A-AB3267423430 - df152a70361c6c2f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$userEmail.modify : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "24">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2CC08FCB-5296-4A86-AED8-07D80869716A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/StorageManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "userEmail"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/StorageManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "userEmail"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - c6c98a1f5a265145"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "property wrapper backing initializer of Service_Maps_2_0.StorageManager.userEmail : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - bce1731f74e6685"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.userEmail.setter : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "32">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - d01a46114db9daa7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.userEmail.getter : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - 90a54e2e75a6f6a4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.userEmail.modify : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - 7e95f2006858cbe6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.userEmail.modify : Swift.Optional&lt;Swift.String&gt; with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "20">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - 4baf8b3cf2cd0010"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$userEmail.getter : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - 52ff7e8ca6aac4ee"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$userEmail.setter : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - f7ba01a54db1b2df"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$userEmail.modify : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "64">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - df152a70361c6c2f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$userEmail.modify : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "24">
+               </Location>
+               <Location
+                  uuid = "40E79FBF-EF34-4906-84F7-B4A05E136A91 - 9f1aae9d19e5d62d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in Service_Maps_2_0.StorageManager.userEmail.didset : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "36">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0CD974B4-571A-4A4F-8515-CB339C1F91BD"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/StorageManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "userEmail"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "29740499-405E-432E-92E7-7B325CC15037"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "141"
+            endingLineNumber = "141"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4EE4D3AE-CF21-4A2D-9900-EEB9CAACCB6F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "167"
+            endingLineNumber = "167"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "013D429D-8561-42A9-84AC-4AC130F8EFB5"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "101"
+            endingLineNumber = "101"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3A116B52-D1DB-47BA-8EA0-881DFE5DFDA3"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "122"
+            endingLineNumber = "122"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "3A116B52-D1DB-47BA-8EA0-881DFE5DFDA3 - 9954974fd46da8c8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.synchronize() async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "119"
+                  endingLineNumber = "119"
+                  offsetFromSymbolStart = "408">
+               </Location>
+               <Location
+                  uuid = "3A116B52-D1DB-47BA-8EA0-881DFE5DFDA3 - 43a00a746e7a7141"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for Service_Maps_2_0.SynchronizationManager.synchronize() async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "119"
+                  endingLineNumber = "119"
+                  offsetFromSymbolStart = "48">
+               </Location>
+               <Location
+                  uuid = "3A116B52-D1DB-47BA-8EA0-881DFE5DFDA3 - 2717d0277c0ae8ca"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.synchronize() async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "119"
+                  endingLineNumber = "119"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  uuid = "3A116B52-D1DB-47BA-8EA0-881DFE5DFDA3 - f2cd91393267118e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(20) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.synchronize() async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "119"
+                  endingLineNumber = "119"
+                  offsetFromSymbolStart = "60">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "979C65A9-5F0A-4B68-87AD-038EB37D35EE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "139"
+            endingLineNumber = "139"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "90756756-E496-43AB-AE9F-3ABCDD3BBC2A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D3A93BE5-15A3-4D5C-80C5-8E90408A556D"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "143"
+            endingLineNumber = "143"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "06E5E585-7ED0-4808-B634-C2B5B88BE324"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "06E5E585-7ED0-4808-B634-C2B5B88BE324 - 8a4edb54590f9f9a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadOwnedTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.MyTokenModel&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  uuid = "06E5E585-7ED0-4808-B634-C2B5B88BE324 - 8b9477f92bd9bdf3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for Service_Maps_2_0.TokenAPI.loadOwnedTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.MyTokenModel&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "06E5E585-7ED0-4808-B634-C2B5B88BE324 - 63fc343b5628db98"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadOwnedTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.MyTokenModel&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "168">
+               </Location>
+               <Location
+                  uuid = "06E5E585-7ED0-4808-B634-C2B5B88BE324 - 17531f50aab57999"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadOwnedTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.MyTokenModel&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "40">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7E1EA4DB-E895-4383-819D-D66EA66A993E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BD6DB2C6-1E69-4B6F-A158-5E5ED7EDD148"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "20"
+            endingLineNumber = "20"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F97DE0B7-DD2B-4C05-8EA8-6FB6189F8854"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "21"
+            endingLineNumber = "21"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "426EFB56-7D46-4995-8C9F-0F4664441367"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D26BE74C-30D2-4641-B4F8-01BEC504F2F4"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "23"
+            endingLineNumber = "23"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "05B3B20E-D154-41CD-A016-EA9708C1A950"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "24"
+            endingLineNumber = "24"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7AE66A97-978E-44B4-B9D5-B30FF38F0EEA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3E71672E-539D-4EE3-B136-7ADA9993BBF1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "3E71672E-539D-4EE3-B136-7ADA9993BBF1 - 63fc343b5628c541"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadOwnedTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.MyTokenModel&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "27"
+                  endingLineNumber = "27"
+                  offsetFromSymbolStart = "848">
+               </Location>
+               <Location
+                  uuid = "3E71672E-539D-4EE3-B136-7ADA9993BBF1 - 17531f50aab56740"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadOwnedTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.MyTokenModel&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "27"
+                  endingLineNumber = "27"
+                  offsetFromSymbolStart = "108">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4C658AE5-BDD2-4B60-AB9E-2A6F262596C9"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
+            landmarkName = "loadOwnedTokens()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B74B620C-AC7F-4B0C-85A7-5395710AB185"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/LoginViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "121"
+            endingLineNumber = "121"
+            landmarkName = "login(completion:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B74B620C-AC7F-4B0C-85A7-5395710AB185 - d7d010bf4999d6de"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.LoginViewModel.login(completion: (Swift.Result&lt;Swift.Bool, Swift.Error&gt;) -&gt; ()) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/LoginViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "83"
+                  endingLineNumber = "83"
+                  offsetFromSymbolStart = "6660">
+               </Location>
+               <Location
+                  uuid = "B74B620C-AC7F-4B0C-85A7-5395710AB185 - 72db5998cfbe56d2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #5 @Swift.MainActor @Sendable () -&gt; () in Service_Maps_2_0.LoginViewModel.login(completion: (Swift.Result&lt;Swift.Bool, Swift.Error&gt;) -&gt; ()) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/LoginViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "84"
+                  endingLineNumber = "84"
+                  offsetFromSymbolStart = "60">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "97DAFAC9-A327-45A2-A81F-629E8245DD04"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/LoginViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "122"
+            endingLineNumber = "122"
+            landmarkName = "login(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E5EC98CA-441F-45E0-A761-5A30216D034A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/LoginViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
+            landmarkName = "login(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3A4E42F6-A09E-48DD-B420-CB55681EFB2F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/LoginViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "124"
+            endingLineNumber = "124"
+            landmarkName = "login(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F25827C7-77FA-4C85-8A08-7A2017061BFA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/LoginViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "125"
+            endingLineNumber = "125"
+            landmarkName = "login(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3F353A0D-5A66-4A6D-A9C4-878DCD78981C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "187"
+            endingLineNumber = "187"
+            landmarkName = "userNeedLogin()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "44ECE09E-3DA0-411D-9A8E-E58E86C4298B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "189"
+            endingLineNumber = "189"
+            landmarkName = "userNeedLogin()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D5BD572D-BB8C-4EB9-9B8F-2CB4DA21B915"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EB401943-515A-4E15-8271-FA79C36ABF8C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Subviews/LoadingView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "26D03B90-4896-4559-A894-FF926B879C17"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Subviews/LoadingView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "094B0577-E5D4-427C-ACF3-C448E5795D0D"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "startupProcess(synchronizing:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "094B0577-E5D4-427C-ACF3-C448E5795D0D - 226514c5b4b75091"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor @Sendable () -&gt; () in closure #2 @Sendable () async -&gt; () in Service_Maps_2_0.SynchronizationManager.startupProcess(synchronizing: Swift.Bool) -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "54"
+                  endingLineNumber = "54"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  uuid = "094B0577-E5D4-427C-ACF3-C448E5795D0D - 226514c5b4b75091"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor @Sendable () -&gt; () in closure #2 @Sendable () async -&gt; () in Service_Maps_2_0.SynchronizationManager.startupProcess(synchronizing: Swift.Bool) -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "54"
+                  endingLineNumber = "54"
+                  offsetFromSymbolStart = "52">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "706A452D-9DC3-4C6F-BA57-7CF6F36174FE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "startupProcess(synchronizing:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "706A452D-9DC3-4C6F-BA57-7CF6F36174FE - f37dd5a8e30ffa5e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 @Swift.MainActor @Sendable () -&gt; () in closure #2 @Sendable () async -&gt; () in Service_Maps_2_0.SynchronizationManager.startupProcess(synchronizing: Swift.Bool) -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  uuid = "706A452D-9DC3-4C6F-BA57-7CF6F36174FE - f37dd5a8e30ffa5e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 @Swift.MainActor @Sendable () -&gt; () in closure #2 @Sendable () async -&gt; () in Service_Maps_2_0.SynchronizationManager.startupProcess(synchronizing: Swift.Bool) -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "56">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "AEF89731-6B11-48DF-BB0E-49641F6ED199"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Views/Authentication/SignupView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "115"
+            endingLineNumber = "115"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5DDA3B9F-0894-4C98-81E3-B1B02B4F6883"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
+            landmarkName = "loadStartupState()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CA20481B-AE0E-4243-B6C8-2EAF0E0DE826"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "loadStartupState()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E8C98CA8-37D2-4A8C-8911-FC917FA3480F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Views/Authentication/VerificationView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "100"
+            endingLineNumber = "100"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "E8C98CA8-37D2-4A8C-8911-FC917FA3480F - d9d0fc19e92a7a06"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.padding(SwiftUI.Edge.Set, Swift.Optional&lt;CoreGraphics.CGFloat&gt;) -&gt; some&gt;&gt;.0 in Service_Maps_2_0.VerificationView.body.getter : some"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Views/Authentication/VerificationView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "96"
+                  endingLineNumber = "96"
+                  offsetFromSymbolStart = "812">
+               </Location>
+               <Location
+                  uuid = "E8C98CA8-37D2-4A8C-8911-FC917FA3480F - bcda5a40ef210688"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 () -&gt; SwiftUI.Alert in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.padding(SwiftUI.Edge.Set, Swift.Optional&lt;CoreGraphics.CGFloat&gt;) -&gt; some&gt;&gt;.0 in Service_Maps_2_0.VerificationView.body.getter : some"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Views/Authentication/VerificationView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "97"
+                  endingLineNumber = "97"
+                  offsetFromSymbolStart = "476">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "46E40B57-3190-471A-A65E-D0B14A2ABA9D"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Views/Authentication/VerificationView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "101"
+            endingLineNumber = "101"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A7299448-1A3C-49BB-804B-A36D83784509"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "VerificationViewModel"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "A7299448-1A3C-49BB-804B-A36D83784509 - afbe75d0b66ff0f8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "property wrapper backing initializer of Service_Maps_2_0.VerificationViewModel.storageManager : Service_Maps_2_0.StorageManager"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/VerificationViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "A7299448-1A3C-49BB-804B-A36D83784509 - b96a9187abf534cc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.VerificationViewModel.storageManager.getter : Service_Maps_2_0.StorageManager"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/VerificationViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "16">
+               </Location>
+               <Location
+                  uuid = "A7299448-1A3C-49BB-804B-A36D83784509 - 9b92b0df68c19197"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.VerificationViewModel.$storageManager.getter : SwiftUI.ObservedObject&lt;Service_Maps_2_0.StorageManager&gt;.Wrapper"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/VerificationViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "25"
+                  endingLineNumber = "25"
+                  offsetFromSymbolStart = "0">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/StorageManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "passTemp"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - d31c4ce458e4f24e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "property wrapper backing initializer of Service_Maps_2_0.StorageManager.passTemp : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - aa6a0fc42ac83562"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.passTemp.getter : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "28">
+               </Location>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - 17a70946e05fcbcc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.passTemp.setter : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - fe2b426b25b017dd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.passTemp.modify : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - 8b5ed86deeb47fc0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.passTemp.modify : Swift.Optional&lt;Swift.String&gt; with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "20">
+               </Location>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - 1daf3cc9269a2f9d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$passTemp.getter : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - 88e3119b6ef525df"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$passTemp.setter : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - 1eaee764d4def0cc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$passTemp.modify : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "64">
+               </Location>
+               <Location
+                  uuid = "DD40BC28-0AFC-4328-9D46-05458DE18FBF - d70ad87469d23f29"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$passTemp.modify : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "24">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "69AFD707-E88B-428E-A1F1-A9D2274D6A3E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/StorageManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "passTemp"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/StorageManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
+            landmarkName = "congregationName"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - d31c4ce458e4f24e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "property wrapper backing initializer of Service_Maps_2_0.StorageManager.passTemp : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - aa6a0fc42ac83562"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.passTemp.getter : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "28">
+               </Location>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - 17a70946e05fcbcc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.passTemp.setter : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - fe2b426b25b017dd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.passTemp.modify : Swift.Optional&lt;Swift.String&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - 8b5ed86deeb47fc0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.passTemp.modify : Swift.Optional&lt;Swift.String&gt; with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "20">
+               </Location>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - 1daf3cc9269a2f9d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$passTemp.getter : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/StorageManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - 88e3119b6ef525df"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$passTemp.setter : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - 1eaee764d4def0cc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$passTemp.modify : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "64">
+               </Location>
+               <Location
+                  uuid = "A5A7C1B3-2130-43AA-9612-8B1B8B44C819 - d70ad87469d23f29"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.StorageManager.$passTemp.modify : Combine.Published&lt;Swift.Optional&lt;Swift.String&gt;&gt;.Publisher with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/%3Ccompiler-generated%3E"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "24">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DD1A2453-4436-49D2-A9C7-DB3CCA0E2DE1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/StorageManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "77"
+            endingLineNumber = "77"
+            landmarkName = "shared"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4CDE2CFF-6439-4249-91DB-CE3B8593F76C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/AuthenticationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "23"
+            endingLineNumber = "23"
+            landmarkName = "signUp(signUpForm:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B4C9CD98-3931-4E0E-852A-0AD4BA0BB938"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/AuthenticationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "24"
+            endingLineNumber = "24"
+            landmarkName = "signUp(signUpForm:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A78D21AE-CC82-4CF9-99AF-D813BA5E3B3F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/AuthenticationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
+            landmarkName = "signUp(signUpForm:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "82A6A150-C068-4E45-A751-DE1C99C358BA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "82A6A150-C068-4E45-A751-DE1C99C358BA - 3ca8eb3fedcf74a6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.VerificationViewModel.checkVerification(completion: (Swift.Result&lt;Swift.Bool, Swift.Error&gt;) -&gt; ()) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/VerificationViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "60">
+               </Location>
+               <Location
+                  uuid = "82A6A150-C068-4E45-A751-DE1C99C358BA - c8d9144f92ba97ef"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for Service_Maps_2_0.VerificationViewModel.checkVerification(completion: (Swift.Result&lt;Swift.Bool, Swift.Error&gt;) -&gt; ()) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/VerificationViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "82A6A150-C068-4E45-A751-DE1C99C358BA - 41f3dd6e734bb7a8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.VerificationViewModel.checkVerification(completion: (Swift.Result&lt;Swift.Bool, Swift.Error&gt;) -&gt; ()) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/VerificationViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "160">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DC910116-F130-4F12-8F39-8E07606FF00B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "30C8B1E2-7823-48D8-BA1A-5F0FC6314E57"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DCEBBCA6-FD61-4B8D-A0BE-A8F1A68F2BFA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "611EA0B3-0C3A-4E27-B74E-9A0681EDFA61"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4A165F01-4D53-40E4-9D99-7FD4B1F132E4"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "13C5E92D-A170-46FB-87B6-8A6EE177A3F8"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "27D287F6-D944-42FB-9059-222724C94E1A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "11BAD3DE-A150-4252-A72E-FAB95CF9CAD6"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "4F3AFBBC-4077-48FD-8760-A49C5D77955B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/VerificationViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "58"
+            endingLineNumber = "58"
+            landmarkName = "checkVerification(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "54FA1A34-AAF6-40E6-A5EF-B8E660FCB868"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/ViewModels/SignupViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "100"
+            endingLineNumber = "100"
+            landmarkName = "validate()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "54FA1A34-AAF6-40E6-A5EF-B8E660FCB868 - 34ec0b22d2897670"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.SignupViewModel.validate() -&gt; Swift.Bool"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/SignupViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "105"
+                  endingLineNumber = "105"
+                  offsetFromSymbolStart = "2084">
+               </Location>
+               <Location
+                  uuid = "54FA1A34-AAF6-40E6-A5EF-B8E660FCB868 - fc70d037d8dca6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 @Swift.MainActor @Sendable () -&gt; () in closure #1 @Sendable () async -&gt; () in Service_Maps_2_0.SignupViewModel.signUp(completion: (Swift.Result&lt;Swift.Bool, Swift.Error&gt;) -&gt; ()) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/SignupViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "100"
+                  endingLineNumber = "100"
+                  offsetFromSymbolStart = "156">
+               </Location>
+               <Location
+                  uuid = "54FA1A34-AAF6-40E6-A5EF-B8E660FCB868 - 34ec0b22d28976d5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.SignupViewModel.validate() -&gt; Swift.Bool"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/SignupViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "100"
+                  endingLineNumber = "100"
+                  offsetFromSymbolStart = "2044">
+               </Location>
+               <Location
+                  uuid = "54FA1A34-AAF6-40E6-A5EF-B8E660FCB868 - 34ec0b22d28976d5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.SignupViewModel.validate() -&gt; Swift.Bool"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/ViewModels/SignupViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "100"
+                  endingLineNumber = "100"
+                  offsetFromSymbolStart = "2084">
                </Location>
             </Locations>
          </BreakpointContent>

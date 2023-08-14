@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 class TokenAPI {
-    let baseURL = ApiRequestAsync().baseURL + "tokens/"
+    let baseURL = "tokens/"
     
     //MARK: LOADING
     func loadOwnedTokens() async throws -> [MyTokenModel] {
@@ -67,7 +67,7 @@ class TokenAPI {
     //MARK: DELETE
     func createToken(name: String, moderator: Bool, territories: String, congregation: Int64, expire: Int64?) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "new", body: NewTokenForm(name: name, moderator: moderator, territories: territories, congregation: congregation, expire: expire))
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "new", body: NewTokenForm(name: name, moderator: moderator, territories: territories, congregation: congregation, expire: expire))
         } catch {
             throw error.self
         }
@@ -75,7 +75,7 @@ class TokenAPI {
     
     func deleteToken(token: String) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "delete", body: DeleteTokenForm(token: token))
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "delete", body: DeleteTokenForm(token: token))
         } catch {
             throw error.self
         }

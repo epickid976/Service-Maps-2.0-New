@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 class AdminAPI {
-    let baseURL = ApiRequestAsync().baseURL + "admin/"
+    let baseURL = "admin/"
     
     //MARK: GET
     func allData() async throws -> AllDataResponse {
@@ -79,7 +79,7 @@ class AdminAPI {
     //MARK: TERRITORY
     func addTerritory(territory: TerritoryModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "territories/add", body: territory)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/add", body: territory)
         } catch {
             throw error.self
         }
@@ -87,7 +87,7 @@ class AdminAPI {
     
     func updateTerritory(territory: TerritoryModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "territories/update", body: territory)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/update", body: territory)
         } catch {
             throw error.self
         }
@@ -95,7 +95,7 @@ class AdminAPI {
     
     func deleteTerritory(territory: TerritoryModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "territories/delete", body: territory)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/delete", body: territory)
         } catch {
             throw error.self
         }
@@ -104,7 +104,7 @@ class AdminAPI {
     //MARK: House
     func addHouse(house: HouseModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "houses/add", body: house)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/add", body: house)
         } catch {
             throw error.self
         }
@@ -112,7 +112,7 @@ class AdminAPI {
     
     func updateHouse(house: HouseModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "houses/update", body: house)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/update", body: house)
         } catch {
             throw error.self
         }
@@ -120,7 +120,7 @@ class AdminAPI {
     
     func deleteHouse(house: HouseModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "houses/delete", body: house)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/delete", body: house)
         } catch {
             throw error.self
         }
@@ -129,7 +129,7 @@ class AdminAPI {
     //MARK: Visit
     func addVisit(visit: VisitModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "visits/add", body: visit)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/add", body: visit)
         } catch {
             throw error.self
         }
@@ -137,7 +137,7 @@ class AdminAPI {
     
     func updateVisit(visit: VisitModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "visits/update", body: visit)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/update", body: visit)
         } catch {
             throw error.self
         }
@@ -145,7 +145,7 @@ class AdminAPI {
     
     func deleteVisit(visit: VisitModel) async throws {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "visits/delete", body: visit)
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/delete", body: visit)
         } catch {
             throw error.self
         }

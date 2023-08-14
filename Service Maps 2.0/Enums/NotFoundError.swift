@@ -7,3 +7,13 @@
 
 import Foundation
 
+enum NotFoundError: Error {
+    case NotFound
+    
+    var localizedDescription: String {
+        switch self {
+        case .NotFound:
+            return "Not Found"
+        }
+    }
+}

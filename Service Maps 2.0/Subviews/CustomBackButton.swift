@@ -8,24 +8,29 @@
 import Foundation
 import SwiftUI
 
-struct CustomButton: View {
+
+struct CustomBackButton: View {
     @Environment(\.colorScheme) var colorScheme
-    
-    var title: String
     var action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .padding()
-                .font(.title)
-                .background(colorScheme == .dark ? Color.white : Color.black)
-                .foregroundColor(colorScheme == .dark ? Color.black : Color.white)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(Color.gray, lineWidth: 2)
-                )
+            HStack {
+                Image(systemName: "chevron.backward")
+                    .fontWeight(.heavy)
+                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                Text("Back")
+                    .fontWeight(.heavy)
+                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.clear)
+            .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
+            .overlay(
+                Capsule()
+                    .stroke(Color.gray, lineWidth: 2)
+            )
         }
     }
 }

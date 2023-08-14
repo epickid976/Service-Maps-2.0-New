@@ -11,8 +11,12 @@ import NavigationTransitions
 import ActivityIndicatorView
 
 struct AdminLoginView: View {
+    var onDone: () -> Void
+    
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
+    
+    @StateObject var synchronizationManager = SynchronizationManager.shared
     
     @State private var showAlert = false {
         didSet {
@@ -27,6 +31,7 @@ struct AdminLoginView: View {
     
     @State var loading = false
     @State var alwaysLoading = true
+    
     
     //MARK: API
     let congregationApi = CongregationAPI()
@@ -43,6 +48,9 @@ struct AdminLoginView: View {
     
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
+    
+    @State var loginErrorText = ""
+    @State var loginError = false
     
     var body: some View {
         
@@ -77,11 +85,7 @@ struct AdminLoginView: View {
                     .hSpacing(.leading)
                     .padding(.leading)
                     .keyboardType(.emailAddress)
-                TextField("ID", text: $username, onEditingChanged: { isEditing in
-                    if !isEditing {
-                        validateUsername()
-                    }
-                })
+                TextField("ID", text: $username)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)
@@ -113,93 +117,80 @@ struct AdminLoginView: View {
                     })
                 
                 HStack {
-                    if !loading {
-                        Button {
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Image(systemName: "chevron.backward")
-                                //.frame(maxWidth: .infinity)
-                                    .fontWeight(.heavy)
-                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
-                                Text("Back")
-                                //.frame(maxWidth: .infinity)
-                                    .fontWeight(.heavy)
-                                    .foregroundStyle(colorScheme == .dark ? .white : .black)
-                            }
-                            .frame(maxWidth: .infinity)
+                    if synchronizationManager.startupState != .AdminLogin {
+                        if !loading {
+                            CustomBackButton() { dismiss() }
                         }
-                        .buttonStyle(.borderedProminent)
-                        .buttonBorderShape(.capsule)
-                        .controlSize(.large)
-                        .tint(colorScheme == .dark ? .black : .white)
-                        .overlay(
-                            Capsule()
-                                .stroke(Color.gray, lineWidth: 2)
-                        )
-                        //.padding([.top])
                     }
                     
                     Button {
-                        Task {
-                            do {
-                                withAnimation {
-                                    loading = true
-                                }
-                                
-                                let response = try await congregationApi.signIn(congregationId: Int64(username) ?? 0, congregationPass: password)
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        let validation = validate()
+                        if validation {
+                            Task {
+                                do {
                                     withAnimation {
-                                        loading = false
-                                        AuthorizationProvider().congregationId = Int64(username)
-                                        AuthorizationProvider().congregationPass = password
-                                        
+                                        loading = true
                                     }
-                                }
-                            } catch {
-                                if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                                    alertTitle = "No Internet Connection"
-                                    alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
+                                    
+                                    _ = try await congregationApi.signIn(congregationId: Int64(username) ?? 0, congregationPass: password)
+                                    
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                         withAnimation {
-                                            //apiError = "Error Signing up"
                                             loading = false
-                                            showAlert = true
+                                            AuthorizationProvider.shared.congregationId = Int64(username)
+                                            AuthorizationProvider.shared.congregationPass = password
+                                            
                                         }
                                     }
-                                } else if error.asAFError?.responseCode == 401 {
-                                    alertTitle = "Wrong Credentials"
-                                    alertMessage = "The credentials you typed don't seem to be correct.\n Please try again."
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                        withAnimation {
-                                            //apiError = "Error Signing up"
-                                            loading = false
-                                            showAlert = true
+                                } catch {
+                                    if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
+                                        alertTitle = "No Internet Connection"
+                                        alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                            withAnimation {
+                                                //apiError = "Error Signing up"
+                                                loading = false
+                                                showAlert = true
+                                            }
                                         }
-                                    }
-                                } else if error.asAFError?.responseCode == 404 {
-                                    alertTitle = "Wrong Congregation"
-                                    alertMessage = "The congregation you're trying to access does not exist. \n Please try again."
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                        withAnimation {
-                                            //apiError = "Error Signing up"
-                                            loading = false
-                                            showAlert = true
+                                    } else if error.asAFError?.responseCode == 401 {
+                                        alertTitle = "Wrong Credentials"
+                                        alertMessage = "The credentials you typed don't seem to be correct.\n Please try again."
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                            withAnimation {
+                                                //apiError = "Error Signing up"
+                                                loading = false
+                                                showAlert = true
+                                            }
                                         }
-                                    }
-                                } else {
-                                    alertTitle = "Error"
-                                    alertMessage = "Error logging in. \nPlease try again."
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                        withAnimation {
-                                            //apiError = "Error Signing up"
-                                            loading = false
-                                            showAlert = true
+                                    } else if error.asAFError?.responseCode == 404 {
+                                        alertTitle = "Wrong Congregation"
+                                        alertMessage = "The congregation you're trying to access does not exist. \n Please try again."
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                            withAnimation {
+                                                //apiError = "Error Signing up"
+                                                loading = false
+                                                showAlert = true
+                                            }
+                                        }
+                                    } else {
+                                        alertTitle = "Error"
+                                        alertMessage = "Error logging in. \nPlease try again."
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                            withAnimation {
+                                                //apiError = "Error Signing up"
+                                                loading = false
+                                                showAlert = true
+                                            }
                                         }
                                     }
                                 }
                             }
+                        } else {
+                            withAnimation {
+                                loginError = true
+                            }
+                            withAnimation { loading = false }
                         }
                     } label: {
                         if loading {
@@ -220,7 +211,9 @@ struct AdminLoginView: View {
                 
             }
             .padding()
+           
         }
+        .navigationBarBackButtonHidden(true)
         .simultaneousGesture(
             // Hide the keyboard on scroll
             DragGesture().onChanged { _ in
@@ -232,10 +225,9 @@ struct AdminLoginView: View {
                 )
             }
         )
+        //.animation(.spring(duration: 1.0), value: synchronizationManager.startupState)
         .navigationViewStyle(StackNavigationViewStyle())
-        .navigationTransition(
-            .slide.combined(with: .fade(.in))
-        )
+        .navigationTransition(.slide.combined(with: .fade(.in)))
         .toolbar{
             ToolbarItemGroup(placement: .keyboard){
                 Spacer()
@@ -252,15 +244,33 @@ struct AdminLoginView: View {
         }
     }
     
-    func validateUsername() {
-        if username.contains(" ") {
-            usernameError = "ID cannot contain spaces"
-        } else {
-            usernameError = ""
+    func validate() -> Bool {
+        
+        if self.username.isEmpty || self.password.isEmpty  {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.loginErrorText = "Fields cannot be empty"
+                    self.loginError = true
+                }
+            }
+            return false
         }
+        
+        if self.username.contains(" ") {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.loginErrorText = "ID cannot contain spaces."
+                    self.loginError = true
+                }
+            }
+            return false
+        }
+        return true
     }
 }
 
 #Preview {
-    AdminLoginView()
+    AdminLoginView() {
+        
+    }
 }

@@ -14,7 +14,6 @@ struct HomeTabView: View {
     
     @State private var selectedTab = 0
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var authorizationProvider: AuthorizationProvider
     
     var body: some View {
         NavigationStack {

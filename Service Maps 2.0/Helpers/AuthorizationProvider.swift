@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 class AuthorizationProvider: ObservableObject {
-    
     let defaults = UserDefaults.standard
     
     init() {
@@ -45,6 +44,16 @@ class AuthorizationProvider: ObservableObject {
         didSet {
             defaults.set(congregationPass, forKey: congregationPassKey)
         }
+    }
+    
+    @Published var isLoggedOut = false
+    
+    class var shared: AuthorizationProvider {
+        struct Static {
+            static let instance = AuthorizationProvider()
+        }
+        
+        return Static.instance
     }
 }
 

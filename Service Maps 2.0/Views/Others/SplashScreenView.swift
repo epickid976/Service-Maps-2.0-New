@@ -6,10 +6,26 @@
 //
 
 import SwiftUI
+import NavigationTransitions
 
 struct SplashScreenView: View {
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            VStack {
+                Image("mapImage")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 250, height: 250)
+                Text("Service Maps")
+                    .font(.largeTitle)
+                    .fontWeight(.black)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .navigationTransition(
+            .fade(.in)
+        )
     }
 }
 

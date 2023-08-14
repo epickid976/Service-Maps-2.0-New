@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+enum StartupState {
+    case Unknown, Welcome, Login, AdminLogin, Validate, Loading, Empty, Ready
+}

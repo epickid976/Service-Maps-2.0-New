@@ -9,10 +9,17 @@ import SwiftUI
 import NavigationTransitions
 
 struct WelcomeView: View {
+    var onDone: () -> Void
+    
+    init(onDone: @escaping () -> Void) {
+        self.onDone = onDone
+    }
+    
     @Environment(\.colorScheme) var colorScheme
     
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
+    @StateObject var synchronizationManager = SynchronizationManager.shared
     var body: some View {
         NavigationStack {
             LazyVStack {
@@ -42,7 +49,7 @@ struct WelcomeView: View {
                             .fontWeight(.heavy)
                             .foregroundColor(colorScheme == .dark ? .white : .black)
                             .padding()
-                            
+                        
                     }
                     .frame(maxWidth: .infinity) // Apply the frame to the wrapping view
                     .background(
@@ -56,16 +63,16 @@ struct WelcomeView: View {
                 .tint(colorScheme == .dark ? .black : .white)
                 //.padding([.bottom])
                 
-                NavigationLink(destination: LoginView()) {
+                NavigationLink(destination: LoginView(onDone: onDone)) {
                     Text("Login")
                         .frame(maxWidth: .infinity)
                         .fontWeight(.heavy)
-                        
+                    
                 }
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
-               
+                
                 
                 
             }
@@ -80,5 +87,7 @@ struct WelcomeView: View {
 }
 
 #Preview {
-    WelcomeView()
+    WelcomeView() {
+        
+    }
 }

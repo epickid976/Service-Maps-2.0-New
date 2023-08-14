@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 class PasswordResetAPI {
-    let baseURL = ApiRequestAsync().baseURL + "password/"
+    let baseURL = "password/"
     
     func requestReset(email: String) async throws {
         do {

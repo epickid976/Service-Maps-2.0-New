@@ -15,13 +15,17 @@ class ApiRequestAsync {
     //MARK: FUNCS
     func getRequest(url:String) async throws -> String {
         try await withUnsafeThrowingContinuation { continuation in
-            
-            AF.request("\(baseURL)\(url)", method: .get, headers: HTTPHeaders(getHeaders())).validate().responseString { response in
+            print(" Making GET: " + baseURL + url)
+            AF.request("\(baseURL)\(url)", method: .get, headers: getHeaders()).responseString { response in
                 if let string = response.value {
+                    print("Get Success: " + self.baseURL + url)
                     continuation.resume(returning: string)
                     return
                 }
                 if let err = response.error {
+                    print("Error: " + self.baseURL + url)
+                    print(err.asAFError?.responseCode)
+                    print(err.asAFError?.failureReason)
                     continuation.resume(throwing: err)
                     return
                 }
@@ -33,35 +37,57 @@ class ApiRequestAsync {
     
     func postRequest<T: Encodable>(url:String, body: T) async throws -> String {
         try await withUnsafeThrowingContinuation { continuation in
-            AF.request("\(baseURL)\(url)", method: .post, parameters: body, encoder: JSONParameterEncoder.default, headers: HTTPHeaders(getHeaders())).validate().responseString { response in
+            print(" Making POST: " + baseURL + url)
+            AF.request("\(baseURL)\(url)", method: .post, parameters: body, encoder: JSONParameterEncoder.default, headers: getHeaders()).validate().responseString { response in
                 if let string = response.value {
+                    print("POST Success: " + self.baseURL + url)
                     continuation.resume(returning: string)
                     return
                 }
                 if let err = response.error {
+                    print("Error Post: " + self.baseURL + url)
+                    print(err.asAFError?.responseCode)
+                    print(err.asAFError?.failureReason)
                     continuation.resume(throwing: err)
                     return
                 }
                 
                 fatalError("POST Request Failed")
+                
             }
+            //print(request.acceptableStatusCodes.debugDescription)
         }
     }
     
     //MARK: Interceptor
-    private func getHeaders() -> [String:String] {
-        let authorizationProvider = AuthorizationProvider()
+    private func getHeaders() -> HTTPHeaders {
+        
+        var headers = HTTPHeaders()
+
+        let authorizationProvider = AuthorizationProvider.shared
+        
+        headers.add(name: "Content-Type", value: "application/json")
+        headers.add(name: "X-Requested-With", value: "XMLHttpRequest")
         
         var dictionary = ["Content-Type" : "application/json", "X-Requested-With": "XMLHttpRequest"]
         
-        if let authorizationToken = authorizationProvider.authorizationToken { dictionary.updateValue("Authorization", forKey: "Bearer + \(authorizationToken)") }
+        if let authorizationToken = authorizationProvider.authorizationToken {
+            headers.add(name: "Authorization", value: "Bearer  \(authorizationToken)")
+            }
         
-        if let token = authorizationProvider.token { dictionary.updateValue("token", forKey: token) }
+        if let token = authorizationProvider.token {
+            headers.add(name: "token", value: token)
+        }
         
-        if let congregationId = authorizationProvider.congregationId { dictionary.updateValue("congregationId", forKey: String(congregationId)) }
+        if let congregationId = authorizationProvider.congregationId {
+            headers.add(name: "congregationId", value: String(congregationId))
+        }
         
-        if let congregationPass = authorizationProvider.congregationPass { dictionary.updateValue("congregationPass", forKey: congregationPass) }
+        if let congregationPass = authorizationProvider.congregationPass {
+            headers.add(name: "congregationPass", value: congregationPass)
+        }
         
-        return dictionary
+        
+        return headers
     }
 }
