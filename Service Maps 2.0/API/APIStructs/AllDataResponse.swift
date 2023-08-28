@@ -10,6 +10,7 @@ import CoreData
 
 struct AllDataResponse: Codable {
     var territories: [TerritoryModel]
+    var addresses: [TerritoryAddressModel]
     var houses: [HouseModel]
     var visits: [VisitModel]
 }

@@ -54,6 +54,25 @@ class StructToModel {
         return entities
     }
     
+    func convertTerritoryAddressStructsToEntities(structs: [TerritoryAddressModel]) -> [TerritoryAddress] {
+        var entities: [TerritoryAddress] = []
+
+        for myStruct in structs {
+            let entity = TerritoryAddress(context: dataController.container.viewContext)
+            entity.id = myStruct.id
+            entity.territory = myStruct.territory
+            entity.address = myStruct.address
+            
+            entity.floors = Int16(myStruct.floors ?? 0)
+            
+            // Set other properties as needed
+
+            entities.append(entity)
+        }
+
+        return entities
+    }
+    
     //MARK: Converting TERRITORYMODEL to TERRITORY
     func convertTerritoryStructsToEntities(structs: [TerritoryModel]) -> [Territory] {
         var entities: [Territory] = []
@@ -61,15 +80,11 @@ class StructToModel {
         for myStruct in structs {
             let entity = Territory(context: dataController.container.viewContext)
             entity.id = myStruct.id
-            entity.address = myStruct.address
+            entity.territoryDescription = myStruct.description
             entity.congregation = myStruct.congregation
-            if let floors = myStruct.floors {
-                entity.floors = Int64(floors)
-            }
             
             entity.image = myStruct.image
-            entity.number = myStruct.number
-            entity.section = myStruct.section
+            entity.number = Int32(myStruct.number)
             
             // Set other properties as needed
 
@@ -87,8 +102,7 @@ class StructToModel {
             let entity = House(context: dataController.container.viewContext)
             entity.id = myStruct.id
             entity.number = myStruct.number
-            entity.territory = myStruct.territory
-            
+            entity.territoryAddress = myStruct.territory_address
             if let floor = myStruct.floor {
                 entity.floor = Int16(floor)!
             }

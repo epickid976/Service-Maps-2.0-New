@@ -8,6 +8,9 @@
 import Foundation
 
 struct TokenTerritoryModel: Codable {
+    var id: Int64
     var token: String
     var territory: String
+    var created_at: String
+    var updated_at: String
 }

@@ -14,7 +14,7 @@ struct SettingsView: View {
     @State var alwaysLoading = true
     
     //MARK: API
-    let authenticationApi = AuthenticationAPI()
+    let authenticationManager = AuthenticationManager()
     let authorizationProvider = AuthorizationProvider.shared
     
     @State var errorText = ""
@@ -26,13 +26,17 @@ struct SettingsView: View {
                 Text(errorText)
                 Button {
                     Task {
-                        do {
-                            let _: () = try await authenticationApi.logout()
-                            authorizationProvider.isLoggedOut = true
-                            authorizationProvider.authorizationToken = nil
-                        } catch {
-                            errorText = error.asAFError?.localizedDescription ?? ""
-                        }
+                           let result = await authenticationManager.logout()
+                                switch result {
+                                case .success(_):
+                                    authorizationProvider.isLoggedOut = true
+                                    authorizationProvider.authorizationToken = nil
+                                    SynchronizationManager.shared.startupProcess(synchronizing: false)
+                                case .failure(let error):
+                                    print("logout failed")
+                                    errorText = error.asAFError?.localizedDescription ?? ""
+                                }
+                            
                     }
                 } label: {
                     if loading {

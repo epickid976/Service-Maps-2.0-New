@@ -11,8 +11,8 @@ struct TerritoryModel: Codable {
     var id: String
     var congregation: String
     var number: Int64
-    var address: String
+    var description: String
     var image: String?
-    var floors: Int?
-    var section: String
+    var created_at: String
+    var updated_at: String
 }

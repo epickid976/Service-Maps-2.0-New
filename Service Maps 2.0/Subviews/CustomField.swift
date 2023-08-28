@@ -12,12 +12,15 @@ struct CustomField: View {
     @Binding var text: String
     var isFocused: FocusState<Bool>.Binding // Use FocusState for focus state
     var textfield: Bool
+    var keyboardType: UIKeyboardType?
+    var textAlignment: TextAlignment?
+    var textfieldAxis: Axis?
     
     let placeholder: String
     
     var body: some View {
         if textfield {
-            TextField(placeholder, text: $text)
+            TextField(placeholder, text: $text, axis: textfieldAxis ?? .horizontal)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)
@@ -29,6 +32,9 @@ struct CustomField: View {
                     // Handle tap action
                     isFocused.wrappedValue = true // Use the isFocused binding property of FocusState
                 })
+                .keyboardType(keyboardType ?? .default)
+                .multilineTextAlignment(textAlignment ?? .leading)
+                .frame(minHeight: 40)
         } else {
             SecureField(placeholder, text: $text)
                 .padding()
@@ -42,6 +48,9 @@ struct CustomField: View {
                     // Handle tap action
                     isFocused.wrappedValue = true // Use the isFocused binding property of FocusState
                 })
+                .keyboardType(keyboardType ?? .default)
+                .multilineTextAlignment(textAlignment ?? .leading)
+                .frame(minHeight: 40)
         }
             
     }

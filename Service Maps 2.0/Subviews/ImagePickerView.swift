@@ -14,7 +14,22 @@ struct ImagePickerView: View {
     var systemImage: String
     var tint: Color
     var onImageChange: (UIImage) -> ()
-    @State private var photoItem: PhotosPickerItem?
+    //View Properties
+    @State var photoItem: PhotosPickerItem?
+    @State var showImagePicker: Bool = false
+    //Preview Image
+    @State var previewImage: UIImage?
+    //Loading
+    @State var isLoading: Bool = false
+    
+    init(title: String, subTitle: String, systemImage: String, tint: Color, onImageChange: @escaping (UIImage) -> Void, previewImage: UIImage? = nil) {
+        self.title = title
+        self.subTitle = subTitle
+        self.systemImage = systemImage
+        self.tint = tint
+        self.onImageChange = onImageChange
+        self.previewImage = previewImage
+    }
     
     var body: some View {
         GeometryReader {
@@ -31,26 +46,122 @@ struct ImagePickerView: View {
                     .font(.caption)
                     .foregroundStyle (.gray)
             }
+            .opacity(previewImage == nil ? 1: 0)
             .frame(width: size.width, height: size.height)
+            .overlay {
+                if let previewImage {
+                    Image(uiImage: previewImage)
+                        .resizable()
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .aspectRatio(contentMode: .fit)
+                        .padding(15)
+                        
+                }
+            }
+            //Displaying Loading UI
+            .overlay {
+                if isLoading {
+                    ProgressView()
+                        .padding(10)
+                        .background(.ultraThinMaterial, in: .rect(cornerRadius: 5))
+                }
+            }
+            //Animation
+            .animation(.snappy, value: isLoading)
+            .animation(.snappy, value: previewImage)
+            .contentShape(.rect)
+            //Implementing Drop Action and Retreving Dropped Image
+            .dropDestination (for: Data.self, action: { items, location in
+                if let firstItem = items.first, let droppedImage = UIImage(data: firstItem) {
+                    //Sending the Image using the callback
+                    generateImageThumbnail(droppedImage, size)
+                    onImageChange(droppedImage)
+                    return true
+                }
+                return false
+            }, isTargeted: { _ in
+                
+            })
+            .onTapGesture {
+                showImagePicker.toggle()
+            }
+            //Implementation of Manual Image Picker
+            .photosPicker(isPresented: $showImagePicker, selection: $photoItem)
+            
+            //Processing Selected Image
+            .optionalViewModifier { contentView in
+                if #available(iOS 17, *) {
+                    contentView
+                        .onChange(of: photoItem) { oldValue, newValue in
+                            if let newValue {
+                                extractImage(newValue, size)
+                            }
+                        }
+                } else {
+                    contentView
+                        .onChange(of: photoItem) { newValue in
+                            if let newValue {
+                                extractImage(newValue, size)
+                            }
+                        }
+                }
+            }
+            .background {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 15, style: .continuous)
+                        .fill(.blue.opacity(0.08).gradient)
+                    RoundedRectangle (cornerRadius: 15, style: .continuous)
+                        .stroke(.blue, style: .init(lineWidth: 1, dash: [12]))
+                }
+            }
+        }
+    }
+    
+    //Extracting image from PhotoItem
+    func extractImage(_ photoItem: PhotosPickerItem, _ viewSize: CGSize) {
+        Task.detached {
+            guard let imageData = try? await photoItem.loadTransferable(type: Data.self) else { return }
+            
+            // UI Must be Updated on Main Thread
+            await MainActor.run {
+                if let selectedImage = UIImage (data: imageData) {
+                    // Creating Preview
+                    generateImageThumbnail(selectedImage, viewSize)
+                    // Send Orignal Image to Callback
+                    onImageChange(selectedImage)
+                }
+                // Clearing PhotoItem
+                self.photoItem = nil
+            }
+        }
+    }
+    
+    //Creating image thumbnail
+    func generateImageThumbnail(_ image: UIImage, _ size: CGSize) {
+        Task.detached {
+            let thumbnailImage = await image.byPreparingThumbnail(ofSize: size)
+            // UI Must be Updated on Main Thread
+            await MainActor.run {
+                previewImage = thumbnailImage
+            }
         }
     }
 }
 
+extension View {
+    @ViewBuilder
+    func optionalViewModifier<Content: View>(@ViewBuilder content: @escaping (Self) -> Content) -> some View {
+        content (self)
+    }
+}
 
 #Preview {
     VStack {
-        ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "testTerritoryImage", tint: .blue) { image in
+        ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue) { image in
             
         }
     }
-    .frame(maxWidth: 300, maxHeight: 250)
+    .frame(minWidth: 300, minHeight: 250)
     .padding(.top, 20)
-    .background {
-        ZStack {
-            RoundedRectangle(cornerRadius: 15, style: .continuous)
-                .fill(.blue.opacity(0.08).gradient)
-            RoundedRectangle (cornerRadius: 15, style: .continuous)
-                .stroke(.blue, style: .init(lineWidth: 1, dash: [12]))
-        }
-    }
+    
 }

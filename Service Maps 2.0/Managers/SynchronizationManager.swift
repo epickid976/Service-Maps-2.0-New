@@ -10,38 +10,23 @@ import CoreData
 import Combine
 
 class SynchronizationManager: ObservableObject {
-    
-    @Published private var authorizationProvider = AuthorizationProvider.shared
     @Published private var dataController = DataController.shared
     @Published private var dataStore = StorageManager.shared
+    @Published private var authorizationLevelManager = AuthorizationLevelManager()
+    
     private var authenticationManager = AuthenticationManager()
-    
-    
-    //MARK: Fetch Requests
-    let territoriesRequest = NSFetchRequest<NSManagedObject>(entityName: "Territory")
-    let housesRequest = NSFetchRequest<NSManagedObject>(entityName: "House")
-    let visitsRequest = NSFetchRequest<NSManagedObject>(entityName: "Visit")
-    let tokensRequest = NSFetchRequest<NSManagedObject>(entityName: "MyToken")
-    
     //MARK: Arrays
     private var territories = [Territory]()
     private var houses = [House]()
     private var visits = [Visit]()
     private var tokens = [MyToken]()
+    private var territoryAddresses = [TerritoryAddress]()
+    private var tokenTerritories = [TokenTerritory]()
     
     @Published var startupState: StartupState = .Unknown
     
-    init() {
-        territories = try! dataController.container.viewContext.fetch(territoriesRequest) as! [Territory]
-        houses = try! dataController.container.viewContext.fetch(housesRequest) as! [House]
-        visits = try! dataController.container.viewContext.fetch(visitsRequest) as! [Visit]
-        tokens = try! dataController.container.viewContext.fetch(tokensRequest) as! [MyToken]
-        
-        //MARK: DEBUG
-        //print("These territories are from synchronization manager \(territories)")
-    }
-    
     func startupProcess(synchronizing: Bool) {
+        allData()
         Task {
             if synchronizing {
                 await synchronize()
@@ -70,7 +55,7 @@ class SynchronizationManager: ObservableObject {
             return StartupState.Welcome
         }
         
-        if authorizationProvider.authorizationToken == nil {
+        if !authorizationLevelManager.userHasLogged() {
             return StartupState.Validate
         }
         
@@ -78,18 +63,23 @@ class SynchronizationManager: ObservableObject {
             if !dataStore.synchronized {
                 return StartupState.Loading
             }
-            return StartupState.Empty
+            
+            if authorizationLevelManager.existsAdminCredentials() {
+                return .Ready
+            } else {
+                return StartupState.Empty
+            }
         }
         
         return .Ready
     }
     
     private func verifyCredentials() async -> StartupState? {
-        if await userNeedLogin() {
+        if await authorizationLevelManager.userNeedLogin() {
             return StartupState.Login
         }
         
-        if await adminNeedLogin() {
+        if await authorizationLevelManager.adminNeedLogin() {
             return StartupState.AdminLogin
         }
         
@@ -103,13 +93,15 @@ class SynchronizationManager: ObservableObject {
         //Server Data
         var tokensApi = [MyTokenModel]()
         var territoriesApi = [TerritoryModel]()
+        var territoriesAddressesApi = [TerritoryAddressModel]()
         var housesApi = [HouseModel]()
         var visitsApi = [VisitModel]()
-        let tokenTerritoriesApi = [TokenTerritoryModel]()
+        var tokenTerritoriesApi = [TokenTerritoryModel]()
         
         //Database Data
         var tokensDb = [MyToken]()
         var territoriesDb = [Territory]()
+        var territoriesAddressesDb = [TerritoryAddress]()
         var housesDb = [House]()
         var visitsDb = [Visit]()
         var tokenTerritoriesDb = [TokenTerritory]()
@@ -124,16 +116,23 @@ class SynchronizationManager: ObservableObject {
             let userTokens = try await tokenApi.loadUserTokens()
             tokensApi.append(contentsOf: userTokens)
             
-            if getAccessLevel() == AccessLevel.Admin {
+            if authorizationLevelManager.existsAdminCredentials() {
                 let response = try await AdminAPI().allData()
                 territoriesApi = response.territories
                 housesApi = response.houses
                 visitsApi = response.visits
+                territoriesAddressesApi = response.addresses
             } else {
                 let response = try await UserAPI().loadTerritories()
                 territoriesApi = response.territories
                 housesApi = response.houses
                 visitsApi = response.visits
+                territoriesAddressesApi = response.addresses
+            }
+            
+            for token in tokensApi {
+                let response = try await tokenApi.getTerritoriesOfToken(token: token.id)
+                tokenTerritoriesApi.append(contentsOf: response)
             }
             
         } catch {
@@ -143,10 +142,14 @@ class SynchronizationManager: ObservableObject {
             return
         }
         
+        
+        
         tokensDb.append(contentsOf: tokens)
         territoriesDb.append(contentsOf: territories)
         housesDb.append(contentsOf: houses)
         visitsDb.append(contentsOf: visits)
+        tokenTerritoriesDb.append(contentsOf: tokenTerritories)
+        territoriesAddressesDb.append(contentsOf: territoryAddresses)
         
         
         
@@ -175,58 +178,11 @@ class SynchronizationManager: ObservableObject {
         await comparingAndSynchronizeTerritories(apiList: StructToModel().convertTerritoryStructsToEntities(structs: territoriesApi), dbList: territoriesDb)
         await comparingAndSynchronizeHouses(apiList: StructToModel().convertHouseStructsToEntities(structs: housesApi), dbList: housesDb)
         await comparingAndSynchronizeVisits(apiList: StructToModel().convertVisitStructsToEntities(structs: visitsApi), dbList: visitsDb)
+        await comparingAndSynchronizeTerritoryAddresses(apiList: StructToModel().convertTerritoryAddressStructsToEntities(structs: territoriesAddressesApi), dbList: territoriesAddressesDb)
         
         
         self.dataStore.synchronized = true
         
-    }
-    
-    
-    private func userNeedLogin() async -> Bool {
-        do {
-            _ = try await AuthenticationAPI().user()
-        } catch {
-            if let error = error.asAFError {
-                if error.responseCode == 401 {
-                    authorizationProvider.authorizationToken = nil
-                    return true
-                }
-            }
-        }
-        return authorizationProvider.authorizationToken == nil
-    }
-    
-    private func adminNeedLogin() async -> Bool {
-        if isAdmin() {
-            do {
-                _ = try await CongregationAPI().signIn(congregationId: authorizationProvider.congregationId!, congregationPass: authorizationProvider.congregationPass!)
-            } catch {
-                if let error = error.asAFError {
-                    if error.responseCode == 401 {
-                        authorizationProvider.authorizationToken = nil
-                        return true
-                    }
-                }
-            }
-        }
-        return false
-    }
-    
-    private func getAccessLevel() -> AccessLevel {
-        if authorizationProvider.congregationId != nil && authorizationProvider.congregationPass != nil {
-            return AccessLevel.Admin
-        } else {
-            for token in tokens {
-                if token.moderator {
-                    return AccessLevel.Moderator
-                }
-            }
-            if !tokens.isEmpty {
-                return AccessLevel.User
-            } else {
-                return AccessLevel.None
-            }
-        }
     }
     
     func comparingAndSynchronizeTokens(apiList: [MyToken], dbList: [MyToken]) async {
@@ -283,11 +239,9 @@ class SynchronizationManager: ObservableObject {
                 if territoryApi != territoryDb {
                     // If it has differences, update in the database
                     
-                    territoryDb.address = territoryApi.address
+                    territoryDb.territoryDescription = territoryApi.territoryDescription
                     territoryDb.congregation = territoryApi.congregation
                     territoryDb.image = territoryApi.image
-                    territoryDb.section = territoryApi.section
-                    territoryDb.floors = territoryApi.floors
                     territoryDb.number = territoryApi.number
                     
                     //Save
@@ -324,9 +278,8 @@ class SynchronizationManager: ObservableObject {
             if let houseDb = houseDb {
                 if houseApi != houseDb {
                     houseDb.number = houseApi.number
-                    houseDb.territory = houseApi.territory
+                    houseDb.territoryAddress = houseApi.territoryAddress
                     houseDb.floor = houseApi.floor
-                    
                     //Save
                     dataController.save()
                 }
@@ -412,8 +365,40 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    private func isAdmin() -> Bool {
-        return authorizationProvider.congregationId != nil && authorizationProvider.congregationPass != nil
+    private func comparingAndSynchronizeTerritoryAddresses(apiList: [TerritoryAddress], dbList: [TerritoryAddress]) async{
+        let territoryAddressesApi = apiList
+        var territoryAddressesDb = dbList
+        
+        for territoryAddressApi in territoryAddressesApi {
+            let territoryAddressDb = territoryAddressesDb.first {
+                $0.territory == territoryAddressApi.territory && $0.address == territoryAddressApi.address
+            }
+            
+            if let territoryAddressDb = territoryAddressDb {
+                if let index = territoryAddressesDb.firstIndex(of: territoryAddressDb) {
+                    territoryAddressesDb.remove(at: index)
+                }
+            } else {
+                // If it does not exist, create it
+                dataController.container.viewContext.insert(territoryAddressApi)
+                
+                //Save
+                dataController.save()
+            }
+        }
+        
+        for tokenTerritoryDb in territoryAddressesDb {
+            dataController.container.viewContext.delete(tokenTerritoryDb)
+        }
+    }
+    
+    func allData() {
+        territories = dataController.getTerritories()
+        houses = dataController.getHouses()
+        visits = dataController.getVisits()
+        tokens = dataController.getMyTokens()
+        territoryAddresses = dataController.getTerritoryAddresses()
+        tokenTerritories = dataController.getTokenTerritories()
     }
     
     class var shared: SynchronizationManager {

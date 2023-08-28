@@ -8,12 +8,14 @@
 import SwiftUI
 import CoreData
 import UIKit
+import NavigationTransitions
 
 
 struct HomeTabView: View {
     
     @State private var selectedTab = 0
     @Environment(\.colorScheme) var colorScheme
+    @StateObject var synchronizationManager = SynchronizationManager.shared
     
     var body: some View {
         NavigationStack {
@@ -85,6 +87,10 @@ struct HomeTabView: View {
             }
             .navigationBarBackButtonHidden(true)
         }
+        .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
+        .navigationTransition(
+            .slide.combined(with: .fade(.in))
+        )
     }
 }
 

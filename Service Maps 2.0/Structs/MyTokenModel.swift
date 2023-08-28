@@ -15,4 +15,6 @@ struct MyTokenModel: Codable {
     var moderator: Bool
     var expire: Int64?
     var user: String?
+    var created_at: String
+    var updated_at: String
 }

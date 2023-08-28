@@ -8,5 +8,5 @@
 import Foundation
 
 enum AccessLevel {
-    case None, User, Moderator, Admin
+    case User, Moderator, Admin
 }

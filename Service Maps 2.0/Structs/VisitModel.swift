@@ -14,4 +14,6 @@ struct VisitModel: Codable {
     var symbol: String
     var notes: String
     var user: String
+    var created_at: String
+    var updated_at: String
 }

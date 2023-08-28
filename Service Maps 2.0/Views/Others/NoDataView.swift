@@ -71,7 +71,7 @@ struct NoDataView: View {
             }
             .padding()
             .fullScreenCover(isPresented: $goToAdminLogin) {
-                AdminLoginView() { }
+                AdminLoginView() { synchronizationManager.startupProcess(synchronizing: true)}
             }
         }
         .navigationTransition(

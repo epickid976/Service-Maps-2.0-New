@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+enum ChangeAction: Codable {
+    case Add, Update, Delete
+}

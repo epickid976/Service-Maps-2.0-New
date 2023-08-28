@@ -15,13 +15,6 @@ struct Service_Maps_2_0App: App {
     @Environment(\.scenePhase) var scenePhase
     @StateObject var synchronizationManager = SynchronizationManager.shared
     
-//        init() {
-//    
-//            if(StorageManager.shared.synchronized){
-//                synchronizationManager.startupProcess()
-//            }
-//        }
-    
     var body: some Scene {
         WindowGroup {
             let synchronizationManagerStartupState = synchronizationManager.startupState
@@ -56,13 +49,14 @@ struct Service_Maps_2_0App: App {
                     NoDataView()
                 }
             }
-            .animation(.easeInOut(duration: 0.25), value: synchronizationManagerStartupState)
+            .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
             .navigationTransition(
                 .slide.combined(with: .fade(.in))
             )
             
             
         }
+        
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 synchronizationManager.startupProcess(synchronizing: true)

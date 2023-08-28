@@ -139,7 +139,7 @@ struct AdminLoginView: View {
                                             loading = false
                                             AuthorizationProvider.shared.congregationId = Int64(username)
                                             AuthorizationProvider.shared.congregationPass = password
-                                            
+                                            onDone()
                                         }
                                     }
                                 } catch {

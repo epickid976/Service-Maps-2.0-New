@@ -9,7 +9,9 @@ import Foundation
 
 struct HouseModel: Codable {
     var id: String
-    var territory: String
+    var territory_address: String
     var number: String
     var floor: String?
+    var created_at: String
+    var updated_at: String
 }

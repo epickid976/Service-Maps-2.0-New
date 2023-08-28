@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22203.2" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22213.2" systemVersion="22F82" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Congregation" representedClassName="Congregation" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -9,7 +9,7 @@
         <attribute name="floor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="number" attributeType="String"/>
-        <attribute name="territory" attributeType="String"/>
+        <attribute name="territoryAddress" attributeType="String"/>
     </entity>
     <entity name="MyToken" representedClassName="MyToken" syncable="YES" codeGenerationType="class">
         <attribute name="congregation" optional="YES" attributeType="String"/>
@@ -21,13 +21,17 @@
         <attribute name="user" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Territory" representedClassName="Territory" syncable="YES" codeGenerationType="class">
-        <attribute name="address" attributeType="String"/>
         <attribute name="congregation" attributeType="String"/>
-        <attribute name="floors" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="image" optional="YES" attributeType="String"/>
-        <attribute name="number" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="section" attributeType="String"/>
+        <attribute name="number" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="territoryDescription" attributeType="String"/>
+    </entity>
+    <entity name="TerritoryAddress" representedClassName="TerritoryAddress" syncable="YES" codeGenerationType="class">
+        <attribute name="address" attributeType="String"/>
+        <attribute name="floors" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="territory" attributeType="String"/>
     </entity>
     <entity name="TokenTerritory" representedClassName="TokenTerritory" syncable="YES" codeGenerationType="class">
         <attribute name="territory" optional="YES" attributeType="String"/>

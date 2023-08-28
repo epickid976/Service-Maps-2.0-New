@@ -6,3 +6,13 @@
 //
 
 import Foundation
+
+enum Symbols: String, CaseIterable, Identifiable {
+    var id: Self { self }
+    
+    case NC = "NC"
+    case NT = "NT"
+    case O = "O"
+    case H = "H"
+    case M = "M"
+}

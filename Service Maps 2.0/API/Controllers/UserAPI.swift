@@ -36,6 +36,14 @@ class UserAPI {
         }
     }
     
+    func updateTerritoryAddress(territoryAddress: TerritoryAddressModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/address/update", body: territoryAddress)
+        } catch {
+            throw error.self
+        }
+    }
+    
     func updateHouse(house: HouseModel) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/update", body: house)

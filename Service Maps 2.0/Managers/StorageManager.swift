@@ -21,6 +21,7 @@ class StorageManager: ObservableObject {
     private var congregationnameKey = "congregationnameKey"
     private var passTempKey = "passTempKey"
     private var synchronizedKey = "synchronizedKey"
+    private var pendingChangesKey = "pendingChangesKey"
     
     //MARK: Published Variables
     @Published var userEmail: String? = nil {
@@ -66,12 +67,33 @@ class StorageManager: ObservableObject {
         }
     }
     
+    @Published var pendingChanges = [PendingChange]() {
+        didSet {
+            DispatchQueue.main.async {
+                self.defaults.set(self.pendingChanges, forKey: self.pendingChangesKey)
+                self.objectWillChange.send()
+            }
+        }
+    }
+    
     private func readValuesFromUserDefaults() {
         self.userEmail = defaults.string(forKey: userEmailKey)
         self.userName = defaults.string(forKey: userNameKey)
         self.congregationName = defaults.string(forKey: congregationnameKey)
         self.passTemp = defaults.string(forKey: passTempKey)
         self.synchronized = defaults.bool(forKey: synchronizedKey)
+        if let data = defaults.data(forKey: pendingChangesKey) {
+            do {
+                // Create JSON Decoder
+                let decoder = JSONDecoder()
+
+                // Decode Note
+                let pendingChanges = try decoder.decode([PendingChange].self, from: data)
+
+            } catch {
+                print("Unable to Decode Note (\(error))")
+            }
+        }
     }
     
     class var shared: StorageManager {

@@ -12,6 +12,7 @@ import ActivityIndicatorView
 struct CustomButton: View {
     var loading: Bool
     var title: String
+    var color: Color?
     var action: () -> Void
     
 
@@ -29,6 +30,7 @@ struct CustomButton: View {
         }
         .buttonStyle(.borderedProminent)
         .buttonBorderShape(.capsule)
+        .tint(color ?? .accentColor)
         .controlSize(.large)
     }
 }

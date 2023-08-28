@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct PendingChange: Codable {
+    var id: UUID
+    var changeType: ChangeType
+    var changeAction: ChangeAction
+    var modelId: String
+}

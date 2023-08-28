@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+struct TerritoryAddressModel: Codable {
+    var id: String
+    var territory: String
+    var address: String
+    var floors: Int?
+    var created_at: String
+    var updated_at: String
+}

@@ -24,8 +24,8 @@ class ApiRequestAsync {
                 }
                 if let err = response.error {
                     print("Error: " + self.baseURL + url)
-                    print(err.asAFError?.responseCode)
-                    print(err.asAFError?.failureReason)
+                    print(err.asAFError?.responseCode ?? "")
+                    print(err.asAFError?.failureReason ?? "")
                     continuation.resume(throwing: err)
                     return
                 }
@@ -46,8 +46,8 @@ class ApiRequestAsync {
                 }
                 if let err = response.error {
                     print("Error Post: " + self.baseURL + url)
-                    print(err.asAFError?.responseCode)
-                    print(err.asAFError?.failureReason)
+                    print(err.asAFError?.responseCode ?? "")
+                    print(err.asAFError?.failureReason ?? "")
                     continuation.resume(throwing: err)
                     return
                 }
@@ -69,7 +69,7 @@ class ApiRequestAsync {
         headers.add(name: "Content-Type", value: "application/json")
         headers.add(name: "X-Requested-With", value: "XMLHttpRequest")
         
-        var dictionary = ["Content-Type" : "application/json", "X-Requested-With": "XMLHttpRequest"]
+        
         
         if let authorizationToken = authorizationProvider.authorizationToken {
             headers.add(name: "Authorization", value: "Bearer  \(authorizationToken)")

@@ -159,7 +159,6 @@ struct SignupView: View {
                         hideKeyboard()
                     }
                 }
-                
             }
         }
     }

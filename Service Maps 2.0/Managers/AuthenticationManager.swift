@@ -66,6 +66,10 @@ class AuthenticationManager: ObservableObject {
     func logout() async -> Result<Bool, Error> {
         do {
             _ = try await authenticationApi.logout()
+            dataStore.userEmail = nil
+            dataStore.passTemp = nil
+            dataStore.userName = nil
+            dataStore.congregationName = nil
             
             return Result.success(true)
         } catch {

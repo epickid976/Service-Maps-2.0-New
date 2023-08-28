@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+enum ChangeType: Codable {
+    case Territory, TerritoryAddress, House, Visit
+}

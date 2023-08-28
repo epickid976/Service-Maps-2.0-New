@@ -9,12 +9,14 @@ import CoreData
 
 struct CellView: View {
     var territory: Territory
+    @Binding var isAscending: Bool
     
     @FetchRequest(
         entity: House.entity(),
         sortDescriptors: [
             NSSortDescriptor(keyPath: \House.number, ascending: true)
-        ]
+        ],
+        animation: .default
     )
     private var fetchedHouses: FetchedResults<House>
     
@@ -24,8 +26,9 @@ struct CellView: View {
         NSPredicate(format: "territory == %@", argumentArray: [territory.number])
     }
     
-    init(territory: Territory) {
+    init(territory: Territory, isAscending: Binding<Bool>) {
         self.territory = territory
+        self._isAscending = isAscending
     }
     
     var body: some View {
@@ -35,7 +38,7 @@ struct CellView: View {
                     .font(.title2)
                     .fontWeight(.heavy)
                     .foregroundColor(.primary)
-                Text(territory.address ?? "")
+                Text(territory.territoryDescription ?? "")
                     .font(.headline)
                     .lineLimit(5)
                     .foregroundColor(.primary)
@@ -54,6 +57,8 @@ struct CellView: View {
                 .frame(width: 180, height: .infinity)
                 .cornerRadius(10)
         }
+        .animation(.spring(duration: 0.3), value: isAscending)
+        .id(territory.id)
         .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 15)
@@ -61,7 +66,7 @@ struct CellView: View {
                 .foregroundColor(Color(UIColor.systemGray3))
         )
         .shadow(color: Color(UIColor.systemGray4), radius: 10, x: 0, y: 2)
-        .cornerRadius(15)
+        .cornerRadius(16)
         .foregroundColor(.white)
         .onAppear {
             fetchHouses()
