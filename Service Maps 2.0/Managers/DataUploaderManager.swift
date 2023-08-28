@@ -74,13 +74,13 @@ class DataUploaderManager: ObservableObject {
             }
         }
         
-            do {
-                try await adminApi.addTerritoryAddress(territoryAddress: TerritoryAddressModel(id: territoryAddress.id!, territory: territoryAddress.territory!, address: territoryAddress.address!, created_at: "", updated_at: ""))
-                return Result.success(true)
-            } catch {
-                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .TerritoryAddress, changeAction: .Add, modelId: territoryAddress.id!))
-                return Result.failure(error)
-            }
+        do {
+            try await adminApi.addTerritoryAddress(territoryAddress: TerritoryAddressModel(id: territoryAddress.id!, territory: territoryAddress.territory!, address: territoryAddress.address!, created_at: "", updated_at: ""))
+            return Result.success(true)
+        } catch {
+            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .TerritoryAddress, changeAction: .Add, modelId: territoryAddress.id!))
+            return Result.failure(error)
+        }
     }
     
     func addHouse(house: House) async -> Result<Bool, Error> {
@@ -94,13 +94,13 @@ class DataUploaderManager: ObservableObject {
             }
         }
         
-            do {
-                try await adminApi.addHouse(house: HouseModel(id: house.id!, territory_address: house.territoryAddress!, number: house.number!, created_at: "", updated_at: ""))
-                return Result.success(true)
-            } catch {
-                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .House, changeAction: .Add, modelId: house.id!))
-                return Result.failure(error)
-            }
+        do {
+            try await adminApi.addHouse(house: HouseModel(id: house.id!, territory_address: house.territoryAddress!, number: house.number!, created_at: "", updated_at: ""))
+            return Result.success(true)
+        } catch {
+            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .House, changeAction: .Add, modelId: house.id!))
+            return Result.failure(error)
+        }
     }
     
     func addVisit(visit: Visit) async -> Result<Bool, Error> {
@@ -114,13 +114,13 @@ class DataUploaderManager: ObservableObject {
             }
         }
         
-            do {
-                try await adminApi.addVisit(visit: VisitModel(id: visit.id!, house: visit.house!, date: visit.date, symbol: visit.symbol!, notes: visit.notes!, user: visit.user!, created_at: "", updated_at: ""))
-                return Result.success(true)
-            } catch {
-                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Visit, changeAction: .Add, modelId: visit.id!))
-                return Result.failure(error)
-            }
+        do {
+            try await adminApi.addVisit(visit: VisitModel(id: visit.id!, house: visit.house!, date: visit.date, symbol: visit.symbol!, notes: visit.notes!, user: visit.user!, created_at: "", updated_at: ""))
+            return Result.success(true)
+        } catch {
+            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Visit, changeAction: .Add, modelId: visit.id!))
+            return Result.failure(error)
+        }
     }
     
     func updateTerritory(territory: Territory) async -> Result<Bool, Error> {
@@ -303,28 +303,72 @@ class DataUploaderManager: ObservableObject {
         }
     }
     
+    
+    
+    func createToken(newTokenForm: NewTokenForm, territories: [Territory]) async -> Result<MyToken, Error> {
+        do {
+            let token = try await tokenApi.createToken(name: newTokenForm.name, moderator: newTokenForm.moderator, territories: newTokenForm.territories, congregation: newTokenForm.congregation, expire: newTokenForm.expire)
+            
+            var tokenTerritories = [TokenTerritory]()
+            
+            let newToken = MyToken(context: dataController.container.viewContext)
+            newToken.id = token.id
+            newToken.moderator = token.moderator
+            newToken.congregation = token.congregation
+            if let expire = token.expire {
+                newToken.expires = expire
+            }
+            newToken.name = token.name
+            newToken.owner = token.owner
+            newToken.user = token.user
+            
+            try dataController.container.viewContext.save()
+            
+            for territory in territories {
+                let newTokenTerritory = TokenTerritory()
+                newTokenTerritory.token = newToken.id
+                newTokenTerritory.territory = territory.id
+                tokenTerritories.append(newTokenTerritory)
+            }
+            
+            tokenTerritories.forEach { tokenTerritory in
+                dataController.container.viewContext.insert(tokenTerritory)
+            }
+            
+            return Result.success(newToken)
+            
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
     func deleteToken(myToken: MyToken) async -> Result<Bool, Error> {
         do {
             try await tokenApi.deleteToken(token: myToken.id!)
             
+            tokens.forEach { token in
+                tokenTerritories.forEach { tokenTerritory in
+                    if token.id == tokenTerritory.token {
+                        dataController.container.viewContext.delete(tokenTerritory)
+                    }
+                    dataController.container.viewContext.delete(token)
+                }
+            }
+            
+            return Result.success(true)
+            
         } catch {
-            
-        }
-    }
-    
-    func createToken(newTokenForm: NewTokenForm, territories: [Territory]) async -> Result<MyToken, Error> {
-        do {
-            try await tokenApi.createToken(name: newTokenForm.name, moderator: newTokenForm.moderator, territories: newTokenForm.territories, congregation: newTokenForm.congregation, expire: newTokenForm.expire)
-            var tokenTerritories = [TokenTerritory]()
-            
-        } catch {
-            
+            return Result.failure(error)
         }
     }
     
     func addPendingChange(pendingChange: PendingChange) async {
         dataStore.pendingChanges.append(pendingChange)
         //Schedule background task
+    }
+    
+    func getAllPendingChanges() async -> [PendingChange] {
+        return dataStore.pendingChanges
     }
     
     func allData() {

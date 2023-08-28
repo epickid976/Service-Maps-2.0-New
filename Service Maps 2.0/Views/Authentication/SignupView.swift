@@ -98,8 +98,13 @@ struct SignupView: View {
                 Spacer()
                 HStack {
                     if !loading {
-                        CustomBackButton() { dismiss() }
-                        //.padding([.top])
+                        CustomBackButton() {
+                            dismiss()
+                            viewModel.name = ""
+                            viewModel.username = ""
+                            viewModel.password = ""
+                            viewModel.passwordConfirmation = ""
+                        }
                     }
                     
                     CustomButton(loading: loading, title: "Sign up") {

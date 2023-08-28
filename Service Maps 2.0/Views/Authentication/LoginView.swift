@@ -106,7 +106,11 @@ struct LoginView: View {
                     HStack {
                         if synchronizationManager.startupState != .Login {
                             if !loading {
-                                CustomBackButton() { dismiss() }
+                                CustomBackButton() { 
+                                    dismiss()
+                                    viewModel.username = ""
+                                    viewModel.password = ""
+                                }
                             }
                         }
                         CustomButton(loading: loading, title: "Login") {
@@ -124,7 +128,6 @@ struct LoginView: View {
                                                 withAnimation { loading = false }
                                             case .failure(_):
                                                 withAnimation { loading = false }
-                                                dismiss()
                                             }
                                         }
                                     }

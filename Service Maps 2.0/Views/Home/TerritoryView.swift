@@ -43,7 +43,6 @@ struct TerritoryView: View {
                                     backgroundColor: .red
                                 ) {
                                     
-                                    
                                 }
                                 .font(.title.weight(.semibold))
                                 .foregroundColor(.white)

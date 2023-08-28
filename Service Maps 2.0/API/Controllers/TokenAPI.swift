@@ -65,9 +65,17 @@ class TokenAPI {
     }
     
     //MARK: DELETE
-    func createToken(name: String, moderator: Bool, territories: String, congregation: Int64, expire: Int64?) async throws {
+    func createToken(name: String, moderator: Bool, territories: String, congregation: Int64, expire: Int64?) async throws -> MyTokenModel {
         do {
-            _ = try await ApiRequestAsync().postRequest(url: baseURL + "new", body: NewTokenForm(name: name, moderator: moderator, territories: territories, congregation: congregation, expire: expire))
+            let response = try await ApiRequestAsync().postRequest(url: baseURL + "new", body: NewTokenForm(name: name, moderator: moderator, territories: territories, congregation: congregation, expire: expire))
+            
+            let decoder = JSONDecoder()
+            
+            let jsonData = response.data(using: .utf8)!
+            
+            let reply = try decoder.decode(MyTokenModel.self, from: jsonData)
+            
+            return reply
         } catch {
             throw error.self
         }
