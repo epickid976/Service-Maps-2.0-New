@@ -23,7 +23,7 @@ struct CellView: View {
     @State private var houses: [House] = []
     
     private var territoryPredicate: NSPredicate {
-        NSPredicate(format: "territory == %@", argumentArray: [territory.number])
+        NSPredicate(format: "territoryAddress == %@", argumentArray: [territory.number])
     }
     
     init(territory: Territory, isAscending: Binding<Bool>) {
@@ -43,6 +43,7 @@ struct CellView: View {
                     .lineLimit(5)
                     .foregroundColor(.primary)
                     .fontWeight(.bold)
+                    .multilineTextAlignment(.leading)
                 Text("Doors: \(houses.count)")
                     .font(.body)
                     .lineLimit(2)
