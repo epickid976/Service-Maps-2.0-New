@@ -6,3 +6,26 @@
 //
 
 import Foundation
+
+struct TerritoryData: Hashable {
+    let territory: Territory
+    let addresses: [TerritoryAddress]
+    let housesQuantity: Int
+    let accessLevel: AccessLevel
+ 
+    func hash(into hasher: inout Hasher) {
+            hasher.combine(territory)
+            hasher.combine(addresses)
+            hasher.combine(housesQuantity)
+            hasher.combine(accessLevel)
+        }
+        
+        static func ==(lhs: TerritoryData, rhs: TerritoryData) -> Bool {
+            return lhs.territory == rhs.territory &&
+                   lhs.addresses == rhs.addresses &&
+                   lhs.housesQuantity == rhs.housesQuantity &&
+                   lhs.accessLevel == rhs.accessLevel
+        }
+    
+    
+}

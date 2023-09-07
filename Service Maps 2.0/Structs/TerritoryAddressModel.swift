@@ -15,3 +15,7 @@ struct TerritoryAddressModel: Codable {
     var created_at: String
     var updated_at: String
 }
+
+func convertTerritoryToTerritoryAddressModel(model: TerritoryAddress) -> TerritoryAddressModel {
+    return TerritoryAddressModel(id: model.id ?? "", territory: model.territory ?? "", address: model.address ?? "", created_at: "", updated_at: "")
+}

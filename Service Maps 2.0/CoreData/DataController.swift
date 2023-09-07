@@ -10,22 +10,54 @@ import CoreData
 struct DataController {
     static let shared = DataController()
     
+
     static var preview: DataController = {
         let result = DataController(inMemory: true)
         let viewContext = result.container.viewContext
         for index in 0..<10 {
             let newTerritory = Territory(context: viewContext)
             newTerritory.id = UUID().uuidString
-            newTerritory.territoryDescription = "1850 W 56 St Hialeah FL 33012 United States"
+            newTerritory.territoryDescription = "1850 W 56 St Hialeah FL 33012 United States (The Middle Building)"
             newTerritory.congregation = "1260"
             newTerritory.number = Int32(index)
             
+            let newTerritoryAddress = TerritoryAddress(context: viewContext) 
+            newTerritoryAddress.territory = newTerritory.id
+            newTerritoryAddress.id = UUID().uuidString 
+            newTerritoryAddress.address = "1850 W 56 St Hialeah FL 33012 United States"
+            
+//            let otherTerritoryAddress = TerritoryAddress(context: viewContext) 
+//            otherTerritoryAddress.territory = newTerritory.id
+//            otherTerritoryAddress.id = UUID().uuidString
+//            otherTerritoryAddress.address = "1890 W 56 St Hialeah FL 33012 United States"
+            
+//            let newTerritoryAddress = TerritoryAddress(context: viewContext)
+//            newTerritoryAddress.territory = newTerritory.id
+//            newTerritoryAddress.id = UUID().uuidString
+//            newTerritoryAddress.address = "1850 W 56 St Hialeah FL 33012 United States"
+//            
+//            let otherTerritoryAddress = TerritoryAddress(context: viewContext)
+//            newTerritoryAddress.territory = newTerritory.id
+//            newTerritoryAddress.id = UUID().uuidString
+//            newTerritoryAddress.address = "1890 W 56 St Hialeah FL 33012 United States"
+                
             let newHouse = House(context: viewContext)
             newHouse.id = UUID().uuidString
-            newHouse.number = "101"
+            newHouse.number = "10\(index)"
+            newHouse.territoryAddress = "1850 W 56 St Hialeah FL 33012 United States"
+            
+            let otherHouses = House(context: viewContext)
+            otherHouses.id = UUID().uuidString
+            otherHouses.number = "10\(index)"
+            otherHouses.territoryAddress = "1890 W 56 St Hialeah FL 33012 United States"
             
             let newVisit = Visit(context: viewContext)
             newVisit.id = UUID().uuidString
+//            newVisit.date = Int64(Date().timeIntervalSince1970)
+//            newVisit.house = newHouse.id
+//            newVisit.notes = "Test Note"
+//            newVisit.symbol = "NC"
+//            newVisit.user = ""
         }
         do {
             try viewContext.save()
@@ -71,6 +103,7 @@ struct DataController {
             do {
                 try context.save()
             } catch {
+                print("ERROR Saving CONTEXT")
                 // Show some error here
             }
         }
@@ -78,42 +111,42 @@ struct DataController {
     
     func getTerritories() -> [Territory] {
         let territoriesRequest = NSFetchRequest<NSManagedObject>(entityName: "Territory")
-        var territories = try! DataController.shared.container.viewContext.fetch(territoriesRequest) as! [Territory]
+        let territories = try! DataController.shared.container.viewContext.fetch(territoriesRequest) as! [Territory]
         
         return territories
     }
     
     func getHouses() -> [House] {
         let housesRequest = NSFetchRequest<NSManagedObject>(entityName: "House")
-        var houses = try! DataController.shared.container.viewContext.fetch(housesRequest) as! [House]
+        let houses = try! DataController.shared.container.viewContext.fetch(housesRequest) as! [House]
         
         return houses
     }
     
     func getVisits() -> [Visit] {
         let visitsRequest = NSFetchRequest<NSManagedObject>(entityName: "Visit")
-        var visits = try! DataController.shared.container.viewContext.fetch(visitsRequest) as! [Visit]
+        let visits = try! DataController.shared.container.viewContext.fetch(visitsRequest) as! [Visit]
         
         return visits
     }
     
     func getMyTokens() -> [MyToken] {
         let tokensRequest = NSFetchRequest<NSManagedObject>(entityName: "MyToken")
-        var tokens = try! DataController.shared.container.viewContext.fetch(tokensRequest) as! [MyToken]
+        let tokens = try! DataController.shared.container.viewContext.fetch(tokensRequest) as! [MyToken]
         
         return tokens
     }
     
     func getTerritoryAddresses() -> [TerritoryAddress] {
         let territoryAddressRequest = NSFetchRequest<NSManagedObject>(entityName: "TerritoryAddress")
-        var territoryAddresses = try! DataController.shared.container.viewContext.fetch(territoryAddressRequest) as! [TerritoryAddress]
+        let territoryAddresses = try! DataController.shared.container.viewContext.fetch(territoryAddressRequest) as! [TerritoryAddress]
         
         return territoryAddresses
     }
     
     func getTokenTerritories() -> [TokenTerritory] {
         let tokenTerritoryRequest = NSFetchRequest<NSManagedObject>(entityName: "TokenTerritory")
-        var tokenTerritory = try! DataController.shared.container.viewContext.fetch(tokenTerritoryRequest) as! [TokenTerritory]
+        let tokenTerritory = try! DataController.shared.container.viewContext.fetch(tokenTerritoryRequest) as! [TokenTerritory]
         
         return tokenTerritory
     }

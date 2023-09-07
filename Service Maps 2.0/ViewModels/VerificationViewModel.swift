@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class VerificationViewModel: ObservableObject {
     @Published var showAlert = false {
         didSet {

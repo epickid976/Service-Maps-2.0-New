@@ -7,13 +7,23 @@
 
 import SwiftUI
 import NavigationTransitions
+import BackgroundTasks
 
 @main
 struct Service_Maps_2_0App: App {
     let dataController = DataController.shared
+    //let cdPublisher = CDPublisher.shared
     
     @Environment(\.scenePhase) var scenePhase
     @StateObject var synchronizationManager = SynchronizationManager.shared
+    
+    init() {
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "￼com.serviceMaps.uploadPendingTasks", using: nil) { task in
+            ReuploaderWorker.shared.handleReupload(task: task as! BGProcessingTask)
+        }
+        
+        
+    }
     
     var body: some Scene {
         WindowGroup {
@@ -44,7 +54,7 @@ struct Service_Maps_2_0App: App {
                     LoadingView()
                 case .Ready:
                     HomeTabView()
-                        .environment(\.managedObjectContext, DataController.preview.container.viewContext)
+                        .environment(\.managedObjectContext, DataController.shared.container.viewContext)
                 case .Empty:
                     NoDataView()
                 }

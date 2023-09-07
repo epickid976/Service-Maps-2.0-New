@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class AddVisitViewModel: ObservableObject {
     
     @Published var notes = ""

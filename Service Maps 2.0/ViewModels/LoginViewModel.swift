@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class LoginViewModel: ObservableObject {
     var authenticationManager = AuthenticationManager()
     

@@ -365,11 +365,13 @@ class DataUploaderManager: ObservableObject {
     func addPendingChange(pendingChange: PendingChange) async {
         dataStore.pendingChanges.append(pendingChange)
         //Schedule background task
+        ReuploaderWorker.shared.scheduleReupload(minutes: 15.0)
     }
     
     func getAllPendingChanges() async -> [PendingChange] {
         return dataStore.pendingChanges
     }
+    
     
     func allData() {
         territories = dataController.getTerritories()

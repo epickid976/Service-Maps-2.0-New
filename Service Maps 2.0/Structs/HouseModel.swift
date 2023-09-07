@@ -15,3 +15,7 @@ struct HouseModel: Codable {
     var created_at: String
     var updated_at: String
 }
+
+func convertHouseToHouseModel(model: House) -> HouseModel {
+    return HouseModel(id: model.id ?? "", territory_address: model.territoryAddress ?? "", number: model.number ?? "", created_at: "", updated_at: "")
+}

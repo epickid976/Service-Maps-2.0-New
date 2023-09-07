@@ -10,122 +10,97 @@ import CoreData
 import NavigationTransitions
 import SwipeActions
 
+
 struct TerritoryView: View {
     
-    @StateObject var viewModel: TerritoryViewModel
-    
-    init() {
-        let initialViewModel = TerritoryViewModel()
-        _viewModel = StateObject(wrappedValue: initialViewModel)
-    }
+    @ObservedObject var viewModel = TerritoryViewModel()
     
     @Environment(\.managedObjectContext) private var viewContext
-    
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Territory.number, ascending: true)],
-        animation: .default)
-    private var territories: FetchedResults<Territory>
-    
+ 
     @StateObject var synchronizationManager = SynchronizationManager.shared
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading) {
-                    SwipeViewGroup {
-                        ForEach(territories, id: \.id) { territory in
-                            SwipeView {
-                                CellView(territory: territory, isAscending: $viewModel.isAscending)
-                                    .padding(.bottom, 2)
-                            } trailingActions: { context in
-                                SwipeAction(
-                                    systemImage: "trash",
-                                    backgroundColor: .red
-                                ) {
-                                    
+                    
+                        if !viewModel.territoryData.moderatorData.isEmpty {
+                            Text("Moderator Territories")
+                                .font(.title2)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
+                                .hSpacing(.leading).padding(.leading)
+                            SwipeViewGroup {
+                                ForEach(viewModel.territoryData.moderatorData, id: \.self) { territoryData in
+                                    viewModel.territoryCell(territoryData: territoryData)
                                 }
-                                .font(.title.weight(.semibold))
-                                .foregroundColor(.white)
-                                
-                                SwipeAction(
-                                    systemImage: "pencil",
-                                    backgroundColor: Color.teal
-                                ) {
-                                    context.state.wrappedValue = .closed
-                                    viewModel.currentTerritory = territory
-                                    viewModel.presentSheet = true
-                                }
-                                .allowSwipeToTrigger()
-                                .font(.title.weight(.semibold))
-                                .foregroundColor(.white)
+                                .animation(.default, value: viewModel.territoryData.moderatorData)
                             }
-                            .swipeActionCornerRadius(16)
-                            .swipeSpacing(5)
-                            .swipeOffsetCloseAnimation(stiffness: 160, damping: 70)
-                            .swipeOffsetExpandAnimation(stiffness: 160, damping: 70)
-                            .swipeOffsetTriggerAnimation(stiffness: 160, damping: 70)
-                            .swipeMinimumDistance(20)
                         }
-                    }
+                        
+                        if !viewModel.territoryData.userData.isEmpty {
+                            if !viewModel.territoryData.moderatorData.isEmpty {
+                                Text("Other Territories")
+                                    .font(.title2)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
+                                    .hSpacing(.leading).padding(.leading)
+                            }
+                            SwipeViewGroup {
+                                ForEach(viewModel.territoryData.userData, id: \.self) { territoryData in
+                                    viewModel.territoryCell(territoryData: territoryData)
+                                }
+                                .animation(.default, value: viewModel.territoryData.userData)
+                            }
+                        }
+                        
+                        if viewModel.territoryData.moderatorData.isEmpty && viewModel.territoryData.userData.isEmpty {
+                            //TODO SET LOTTIE ANIMATION NO DATA
+                        }
+                        
+                    
+                }
+                
+                .navigationDestination(isPresented: $viewModel.presentSheet) {
+                    AddTerritoryView(territory: viewModel.currentTerritory)
                 }
                 .padding()
-                
-            }
-            .sheet(isPresented: $viewModel.presentSheet) {
-                AddTerritoryView(territory: viewModel.currentTerritory)
-                            .presentationDetents([.large])
-                            .presentationDragIndicator(.visible)
-                            .optionalViewModifier { contentView in
-                                if #available(iOS 16.4, *) {
-                                    contentView
-                                    .presentationCornerRadius(25)
-                                } else {
-                                    // Fallback on earlier versions
-                                }
-                            }
-                
-            
-                    }
-            .toolbar{
-                ToolbarItemGroup(placement: .keyboard){
-                    Spacer()
-                    Button {
-                        DispatchQueue.main.async {
-                            hideKeyboard()
-                        }
-                    } label: {
-                        Text("Done")
-                            .tint(.primary)
-                            .fontWeight(.bold)
-                            .font(.body)
-                    }
-                }
+//                .onAppear {
+//                    Task {
+//                        viewModel.cdPublisher.getTerritories()
+//                    }
+//                }
             }
             .navigationBarTitle("Territories", displayMode: .automatic)
             .navigationBarBackButtonHidden(true)
-            .font(.title)
-            .bold()
-            .navigationBarItems(trailing: Button(action: {
-                // Toggle the sorting order when the button is tapped
-                //withAnimation(.spring(duration: 1.0)) {
-                    viewModel.isAscending.toggle()
-                //}
-            }) {
-                Image(systemName: viewModel.isAscending ? "arrow.up" : "arrow.down").animation(.spring)
-            })
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    HStack {
+                        Button(action: { viewModel.isAscending.toggle() }) {
+                            Image(systemName: viewModel.isAscending ? "arrow.up" : "arrow.down").animation(.spring)
+                        }
+                        if viewModel.isAdmin {
+                            Button(action: { viewModel.presentSheet = true }) {
+                                Image(systemName: "plus" )
+                            }
+                        }
+                    }
+                }
+            }
+            
+            
         }
         .navigationTransition(
-            .slide.combined(with: .fade(.in))
+            viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in))
         )
-        .onChange(of: viewModel.isAscending) { newValue in
-            DispatchQueue.main.async {
-                territories.nsSortDescriptors = viewModel.sortDescriptors
-            }
-        }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
+    
+    
 }
 
 #Preview {
     TerritoryView()
         .environment(\.managedObjectContext, DataController.preview.container.viewContext)
 }
+
