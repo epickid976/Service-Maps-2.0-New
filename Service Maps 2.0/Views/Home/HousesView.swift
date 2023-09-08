@@ -15,6 +15,9 @@ struct HousesView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: HousesViewModel
     
+    @State var showFab = true
+    @State var scrollOffset: CGFloat = 0.00
+    
     init(territory: Territory) {
         self.territory = territory
         let initialViewModel = HousesViewModel(territory: territory)
@@ -34,7 +37,7 @@ struct HousesView: View {
                     viewModel.largeHeader(progress: viewModel.progress)
                 }
             } content: {
-                VStack {
+                LazyVStack {
                     VStack {
                         if viewModel.progress < 0.7 {
                             ZStack {
@@ -44,6 +47,7 @@ struct HousesView: View {
                                         .padding(.vertical)
                                 }
                             }
+                            .cornerRadius(16, corners: [.bottomLeft, .bottomRight])
                         }
                     }.animation(.default, value: viewModel.progress)
                     LazyVStack {
@@ -89,13 +93,34 @@ struct HousesView: View {
                     .padding(.horizontal)
                     .animation(.default, value: viewModel.houses)
                 }
+                .padding(.bottom)
+                .background(GeometryReader {
+                                return Color.clear.preference(key: ViewOffsetKey.self,
+                                                       value: -$0.frame(in: .named("scroll")).origin.y)
+                            })
+                            .onPreferenceChange(ViewOffsetKey.self) { offset in
+                                withAnimation {
+                                    if offset > 25 {
+                                        print(scrollOffset)
+                                        showFab = offset < scrollOffset
+                                    } else  {
+                                        print(scrollOffset)
+                                        showFab = true
+                                    }
+                                }
+                                scrollOffset = offset
+                            }
                 
             }
             .height(min: 180, max: 350.0)
-            .allowsHeaderGrowth()
             .allowsHeaderCollapse()
-            .collapseProgress($viewModel.progress)
-            
+            .headerProminence(.increased)
+            .coordinateSpace(name: "scroll")
+                    .overlay(
+                        showFab && viewModel.isAdmin ?
+                        viewModel.createFab()
+                            : nil
+                        , alignment: Alignment.bottomTrailing)
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()

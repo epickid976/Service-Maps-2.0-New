@@ -94,6 +94,7 @@
 		82916C192A994298005133DE /* AddVisitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82916C182A994298005133DE /* AddVisitView.swift */; };
 		82916C1B2A994387005133DE /* AddVisitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82916C1A2A994387005133DE /* AddVisitViewModel.swift */; };
 		82916C1D2A9944B3005133DE /* Symbols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82916C1C2A9944B3005133DE /* Symbols.swift */; };
+		82A967B72AAABE890043946F /* RoundedCornerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A967B62AAABE890043946F /* RoundedCornerExtension.swift */; };
 		82BC0F1B2A9BEFCB00B255BF /* TerritoryAddressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1A2A9BEFCB00B255BF /* TerritoryAddressModel.swift */; };
 		82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1C2A9BF53900B255BF /* DataUploaderManager.swift */; };
 		82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1E2A9BF55B00B255BF /* AuthorizationLevelManager.swift */; };
@@ -187,6 +188,7 @@
 		82916C182A994298005133DE /* AddVisitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddVisitView.swift; sourceTree = "<group>"; };
 		82916C1A2A994387005133DE /* AddVisitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddVisitViewModel.swift; sourceTree = "<group>"; };
 		82916C1C2A9944B3005133DE /* Symbols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbols.swift; sourceTree = "<group>"; };
+		82A967B62AAABE890043946F /* RoundedCornerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedCornerExtension.swift; sourceTree = "<group>"; };
 		82BC0F1A2A9BEFCB00B255BF /* TerritoryAddressModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryAddressModel.swift; sourceTree = "<group>"; };
 		82BC0F1C2A9BF53900B255BF /* DataUploaderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploaderManager.swift; sourceTree = "<group>"; };
 		82BC0F1E2A9BF55B00B255BF /* AuthorizationLevelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationLevelManager.swift; sourceTree = "<group>"; };
@@ -259,6 +261,7 @@
 				823FD4C82A7B52560036A1DD /* UIDeviceExtension.swift */,
 				827EF1A32AA7C2F0006C4631 /* DateFormat.swift */,
 				827EF1A92AA8D0CD006C4631 /* NavigationAnimation.swift */,
+				82A967B62AAABE890043946F /* RoundedCornerExtension.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -381,9 +384,9 @@
 			children = (
 				826B766F2A729FDE000A4BAA /* HomeTabView.swift */,
 				823FD4D42A7D6F2D0036A1DD /* TerritoryView.swift */,
+				82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */,
 				82EC3E922A9CFF68000E2926 /* HousesView.swift */,
 				827EF1A12AA7B7E3006C4631 /* VisitsView.swift */,
-				82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */,
 				823FD4D92A8165230036A1DD /* AccessView.swift */,
 				823FD4DB2A8165300036A1DD /* SettingsView.swift */,
 			);
@@ -632,6 +635,7 @@
 				820933DE2A78425F00AF3FF1 /* CongregationAPI.swift in Sources */,
 				821C12682A77F6180050D106 /* LoginResponse.swift in Sources */,
 				821C125F2A77EE810050D106 /* API_Requests.swift in Sources */,
+				82A967B72AAABE890043946F /* RoundedCornerExtension.swift in Sources */,
 				8242136B2A82C5C800626DD5 /* StorageManager.swift in Sources */,
 				820933EB2A7852FD00AF3FF1 /* VisitModel.swift in Sources */,
 				82BC0F272A9CD94500B255BF /* AddHouseView.swift in Sources */,

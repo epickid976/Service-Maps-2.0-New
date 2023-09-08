@@ -86,9 +86,14 @@ class HousesViewModel: NSObject, ObservableObject {
     
     var smallHeader: some View {
         HStack(spacing: 12.0) {
-            Text("#\(territory.number)")
-                .font(.largeTitle)
-                .bold()
+            HStack {
+                Image(systemName: "numbersign").imageScale(.large).fontWeight(.heavy)
+                    .foregroundColor(.primary).font(.title2)
+                Text("\(territory.number)")
+                    .font(.largeTitle)
+                    .bold()
+                    .fontWeight(.heavy)
+            }
             
             Divider()
                 .frame(maxHeight: 60)
@@ -110,13 +115,37 @@ class HousesViewModel: NSObject, ObservableObject {
             }
             Text(territory.territoryDescription ?? "")
                 .font(.body)
-                .fontWeight(.bold)
+                .fontWeight(.heavy)
         }
         .frame(maxHeight: 60)
         .animation(.spring, value: progress)
         .padding(.horizontal)
         .hSpacing(.center)
     }
+    
+    func createFab() -> some View {
+            return Button(action: {
+                self.presentSheet.toggle()
+                let newHouse = House(context: DataController.shared.container.viewContext)
+                newHouse.id = UUID().uuidString
+                newHouse.number = "10\(1)"
+                newHouse.territoryAddress = "1850 W 56 St Hialeah FL 33012 United States"
+                DataController.shared.save()
+            }, label: {
+                Image(systemName: "plus")
+                    .font(.title)
+                    .foregroundColor(.white)
+                    .frame(width: 40, height: 40, alignment: .center)
+            })
+            .padding(8)
+            .background(Color.blue)
+            .cornerRadius(100)
+            .padding(8)
+            .shadow(radius: 3,
+                    x: 3,
+                    y: 3)
+            .transition(.scale)
+        }
     
     func deleteHouse(house: House) {
         DataController.shared.container.viewContext.delete(house)

@@ -25,104 +25,166 @@ struct HouseCell: View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    VStack {
                         ZStack {
-                            Color(UIColor.secondarySystemBackground).edgesIgnoringSafeArea(.all)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        //.stroke(style: StrokeStyle(lineWidth: 5))
-                                        .fill(
-                                            Color.teal.gradient
-                                        )
-                                        
-                                }
+                            RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.gradient)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    //.stroke(style: StrokeStyle(lineWidth: 5))
+                                    .fill(
+                                        Material.thin
+                                    )
+                                    .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
+                                )
                             
                             HStack {
-                                Image(systemName: "numbersign")
+                                Image(systemName: "numbersign").imageScale(.large).fontWeight(.heavy)
+                                    .foregroundColor(.primary)
                                 Text("\(house.number ?? "")")
                                     .font(.title)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
+                                
                                 //.padding(1)
-                                    .padding(10)
+                            }
+                            .padding()
+                        }
+                        .hSpacing(.center)
+                        .vSpacing(.leading)
+                        .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
+                    
+                    if house.floor != 0 {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.gradient)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    //.stroke(style: StrokeStyle(lineWidth: 5))
+                                    .fill(
+                                        Material.thin
+                                    )
+                                    .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
+                                )
+                                
+                            HStack {
+                                Image(systemName: "building").imageScale(.large)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
+                                Text("\(house.floor)")
+                                    .font(.title)
+                                    .lineLimit(2)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.heavy)
+                            }
+                            .padding()
+                            
+                        }
+                        .vSpacing(.leading)
+                        .hSpacing(.center)
+                        .frame(maxWidth: UIScreen.screenWidth * 0.3)
+                    }
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.gray.gradient)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                //.stroke(style: StrokeStyle(lineWidth: 5))
+                                .fill(
+                                    Material.thin
+                                )
+                                .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
+                            )
+                        
+                        HStack {
+                            if let lastVisit {
+                                Image(systemName: "tablecells.badge.ellipsis").imageScale(.large)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
+                                Text("\(lastVisit.symbol ?? "")")
+                                    .font(.title)
+                                    .lineLimit(2)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.heavy)
+                            } else {
+                                Image(systemName: "tablecells.badge.ellipsis").imageScale(.large)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
+                                Text("N/A")
+                                    .font(.title)
+                                    .lineLimit(2)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.heavy)
                             }
                         }
+                        .padding()
                         
                     }
+                    .hSpacing(.center)
                     .vSpacing(.leading)
-                    .frame(maxWidth: UIScreen.screenWidth * 0.3)
-                    .padding(.trailing)
-                    
-                    
-                    VStack {
-                        if house.floor != 0 {
-                            Text("Floor: \(house.floor)")
-                                .font(.body)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                        }
-                        
-                        if let lastVisit {
-                            Text("Last Visit: \(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(lastVisit.date))))")
-                                .font(.body)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                            Text("Last Symbol: \(lastVisit.symbol ?? "")")
-                                .font(.body)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                            
-                        } else {
-                            Text("Last Visit: N/A")
-                                .font(.body)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                            Text("Last Symbol: N/A")
-                                .font(.body)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                        }
-                        //lastVisit.date
-                    }
-                    .hSpacing(.leading)
-                     .frame(maxWidth: UIScreen.screenWidth * 0.7)
+                    .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
                 }
                 
                 VStack {
-                    if let lastVisit {
-                        HStack {
-                            Text("Last Note: \(lastVisit.notes ?? "")")
-                                .font(.body)
+                    HStack {
+                        if let lastVisit {
+                            Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
+                            Text("\(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(lastVisit.date))))")
+                                .font(.title3)
                                 .lineLimit(2)
                                 .foregroundColor(.primary)
                                 .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)
-                        }
-                        .padding(.top)
-                    } else {
-                        HStack {
-                            Text("Last Note: N/A")
-                                .font(.body)
+                        } else {
+                            Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
+                            Text("N/A")
+                                .font(.title3)
                                 .lineLimit(2)
                                 .foregroundColor(.primary)
                                 .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)
                         }
-                        .padding(.top)
                     }
+                    .padding([.top, .horizontal])
+                    
+                    HStack {
+                        if let lastVisit {
+                            HStack {
+                                Image(systemName: "note.text").imageScale(.large)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
+                                Text("\(lastVisit.notes ?? "")")
+                                    .font(.title3)
+                                    .lineLimit(2)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.bold)
+                                    .multilineTextAlignment(.leading)
+                                    .hSpacing(.leading)
+                            }
+                        } else {
+                            HStack {
+                                Image(systemName: "note.text").imageScale(.large)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
+                                Text("N/A")
+                                    .font(.title3)
+                                    .lineLimit(2)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.bold)
+                                    .multilineTextAlignment(.leading)
+                                    .hSpacing(.leading)
+                            }
+                            
+                        }
+                    }
+                    .padding([.bottom, .horizontal])
+                    .padding(.top, 5)
                 }
+                
                 
             }
             .frame(maxWidth: .infinity)
@@ -140,9 +202,6 @@ struct HouseCell: View {
         .shadow(color: Color(UIColor.systemGray4), radius: 10, x: 0, y: 2)
         .cornerRadius(16)
         .foregroundColor(.white)
-        .onAppear {
-            //visits.nsPredicate = NSPredicate(format: "territoryAddress == %@", argumentArray: [house.number ?? 0])
-        }
     }
 }
 
