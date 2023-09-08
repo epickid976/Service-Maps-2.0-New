@@ -37,13 +37,15 @@ struct HouseCell: View {
                                         
                                 }
                             
-                            
-                            Text("\(house.number ?? "")")
-                                .font(.title)
-                                .fontWeight(.heavy)
-                                .foregroundColor(.primary)
+                            HStack {
+                                Image(systemName: "numbersign")
+                                Text("\(house.number ?? "")")
+                                    .font(.title)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
                                 //.padding(1)
-                                .padding(10)
+                                    .padding(10)
+                            }
                         }
                         
                     }

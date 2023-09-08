@@ -13,23 +13,19 @@ import Combine
 
 @MainActor
 class TerritoryViewModel: ObservableObject {
+    private var authorizationLevelManager = AuthorizationLevelManager()
+    private var territories: FetchedResultList<Territory>
+    private var territoryAddresses: FetchedResultList<TerritoryAddress>
+    private var houses: FetchedResultList<House>
     
-    @Published var cdPublisher = CDPublisher.shared
-    
-    @Published var territories = CDPublisher.shared.territories
-    @Published var territoryData: (moderatorData: [TerritoryData], userData: [TerritoryData]) = CDPublisher.shared.territoryData
-    
-    var cancellable: AnyCancellable?
-
-        init() {
-            cancellable = cdPublisher.objectWillChange
-                .sink { _ in
-                    self.objectWillChange.send()
-                }
-        }
+    @Published var territoryData: (moderatorData: [TerritoryData], userData: [TerritoryData]) = ([],[])
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    @Published var isAscending = true // Boolean state variable to track the sorting order
+    @Published var isAscending = true {
+        didSet {
+        
+        }
+    }// Boolean state variable to track the sorting order
     @Published var currentTerritory: Territory?
     @Published var presentSheet = false
     
@@ -37,6 +33,8 @@ class TerritoryViewModel: ObservableObject {
         // Compute the sort descriptors based on the current sorting order
         return [NSSortDescriptor(keyPath: \Territory.number, ascending: isAscending)]
     }
+    
+    
     
     func deleteTerritory(territory: Territory) {
         DataController.shared.container.viewContext.delete(territory)
@@ -62,19 +60,6 @@ class TerritoryViewModel: ObservableObject {
                 ) {
                     
                     self.deleteTerritory(territory: territoryData.territory)
-                    
-                    if let index = self.territoryData.moderatorData.firstIndex(where: { $0 == territoryData}) {
-                        self.territoryData.moderatorData.remove(at: index )
-                    } else {
-                        print("ERROR INDEX")
-                    }
-                    
-                    if let index = self.territoryData.userData.firstIndex(where: { $0 == territoryData }) {
-                        self.territoryData.userData.remove(at: index)
-                    } else {
-                        print("ERROR INDEX")
-                    }
-                    
                     
                 }
                 .font(.title.weight(.semibold))
@@ -114,6 +99,117 @@ class TerritoryViewModel: ObservableObject {
         }
     }
     
+    func createFab() -> some View {
+            return Button(action: {
+                self.presentSheet.toggle()
+            }, label: {
+                Image(systemName: "plus")
+                    .font(.title)
+                    .foregroundColor(.white)
+                    .frame(width: 40, height: 40, alignment: .center)
+            })
+            .padding(8)
+            .background(Color.blue)
+            .cornerRadius(100)
+            .padding(8)
+            .shadow(radius: 3,
+                    x: 3,
+                    y: 3)
+            .transition(.scale)
+        }
+    
+    init(context: NSManagedObjectContext = DataController.shared.container.viewContext) {
+        territories = FetchedResultList(context: context, sortDescriptors: [
+            NSSortDescriptor(keyPath: \Territory.number, ascending: true)
+          ])
+        
+        territoryAddresses = FetchedResultList(context: context, sortDescriptors: [
+            NSSortDescriptor(keyPath: \TerritoryAddress.id, ascending: true)
+          ])
+        
+        houses = FetchedResultList(context: context, sortDescriptors: [
+            NSSortDescriptor(keyPath: \House.id, ascending: true)
+          ])
+        
+        territories.willChange = { [weak self] in self?.objectWillChange.send() }
+        territoryAddresses.willChange = { [weak self] in self?.objectWillChange.send() }
+        houses.willChange = { [weak self] in self?.objectWillChange.send() }
+        
+        territories.didChange = {
+            Task {
+                await self.getTerritories()
+            }
+        }
+        
+        territoryAddresses.didChange = {
+            Task {
+                await self.getTerritories()
+            }
+        }
+        
+        houses.didChange = {
+            Task {
+                await self.getTerritories()
+            }
+        }
+        
+        Task {
+            await self.getTerritories()
+        }
+    }
 }
 
+extension TerritoryViewModel {
+    
+    
+    var territoriesList: [Territory] {
+        territories.items
+    }
+    
+    
+    var territoryAddressesList: [TerritoryAddress] {
+        territoryAddresses.items
+    }
+    
+    var housesList: [House] {
+        houses.items
+    }
+}
 
+extension TerritoryViewModel {
+    func getTerritories() async  {
+        //-> (moderatorData: [TerritoryData], userData: [TerritoryData])
+        let territories = self.territoriesList
+        let addresses = self.territoryAddressesList
+        let houses = self.housesList
+        
+        var data = [TerritoryData]()
+        
+        for territory in territories {
+            let currentAddresses = addresses.filter { $0.territory == territory.id }
+            var currentHouses = [House]()
+            for address in currentAddresses {
+                currentHouses += houses.filter { $0.territoryAddress == address.id }
+            }
+            
+            var accessLevel: AccessLevel?
+            accessLevel = await authorizationLevelManager.getAccessLevel(model: territory)
+            
+            data.append(
+                TerritoryData(
+                    territory: territory,
+                    addresses: currentAddresses,
+                    housesQuantity: currentHouses.count,
+                    accessLevel: accessLevel ?? .User
+                )
+            )
+        }
+        
+        let moderatorData = data.filter { $0.accessLevel == .Moderator }.sorted { $0.territory.number < $1.territory.number }
+        let userData = data.filter { $0.accessLevel != .Moderator }.sorted { $0.territory.number < $1.territory.number }
+        
+        territoryData = (moderatorData, userData)
+        
+        //return (moderatorData, userData)
+    }
+}

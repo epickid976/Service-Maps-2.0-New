@@ -9,175 +9,72 @@ import Combine
 import CoreData
 import Foundation
 
-//@MainActor
-class CDPublisher: NSObject, ObservableObject, NSFetchedResultsControllerDelegate {
+@MainActor final class FetchedResultList<Result: NSManagedObject> {
+  private let fetchedResultsController: NSFetchedResultsController<Result>
+  private let observer: FetchedResultsObserver<Result>
     
-    private var authorizationLevelManager = AuthorizationLevelManager()
-
-    @Published var territories = [Territory]()
-    private let territoriesFetchedResultsController: NSFetchedResultsController<Territory> 
+  init(context: NSManagedObjectContext, filter: NSPredicate? = nil, sortDescriptors: [NSSortDescriptor]) {
+    let request = NSFetchRequest<Result>(entityName: Result.entity().name ?? "<not set>")
+    request.predicate = filter
+    request.sortDescriptors = sortDescriptors.isEmpty ? nil : sortDescriptors
+    fetchedResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+    observer = FetchedResultsObserver(controller: fetchedResultsController)
+    observer.willChange = { [unowned self] in self.willChange?() }
+    observer.didChange = { [unowned self] in self.didChange?() }
+    refresh()
+  }
     
-    @Published var territoryAddresses = [TerritoryAddress]()
-    private let territoryAddressesFetchedResultsController: NSFetchedResultsController<TerritoryAddress>
-    
-    @Published var houses = [House]()
-    private let housesFetchedResultsController: NSFetchedResultsController<House>
-    
-    @Published var visits = [Visit]()
-    private let visitsFetchedResultsController: NSFetchedResultsController<Visit>
-    
-    @Published var territoryData: (moderatorData: [TerritoryData], userData: [TerritoryData]) = ([], [])
-    
-    
-    private override init() {
-        territoriesFetchedResultsController = NSFetchedResultsController(fetchRequest: Territory.allTerritories, managedObjectContext: DataController.shared.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
-        territoryAddressesFetchedResultsController = NSFetchedResultsController(fetchRequest: TerritoryAddress.allAddresses, managedObjectContext: DataController.shared.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
-        housesFetchedResultsController = NSFetchedResultsController(fetchRequest: House.allHouses, managedObjectContext: DataController.shared.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
-        visitsFetchedResultsController = NSFetchedResultsController(fetchRequest: Visit.allVisits, managedObjectContext: DataController.shared.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
-        super.init()
-        territoriesFetchedResultsController.delegate = self
-        territoryAddressesFetchedResultsController.delegate = self
-        housesFetchedResultsController.delegate = self
-        visitsFetchedResultsController.delegate = self
-        
-        do {
-            try territoryAddressesFetchedResultsController.performFetch ()
-            guard let territoryAddresses = territoryAddressesFetchedResultsController.fetchedObjects else { return }
-            self.territoryAddresses = territoryAddresses
-        } catch {
-            print (error)
-        }
-        
-        do {
-            try housesFetchedResultsController.performFetch ()
-            guard let houses = housesFetchedResultsController.fetchedObjects else { return }
-            self.houses = houses
-        } catch {
-            print (error)
-        }
-        
-        do {
-            try visitsFetchedResultsController.performFetch ()
-            guard let visits = visitsFetchedResultsController.fetchedObjects else { return }
-            self.visits = visits
-        } catch {
-            print (error)
-        }
-        
-        do {
-            try territoriesFetchedResultsController.performFetch ()
-            guard let territories = territoriesFetchedResultsController.fetchedObjects else { return }
-            self.territories = territories
-        } catch {
-            print (error)
-        }
-       
-        
-        setupAsyncDataWithCompletion { territoryData in
-            DispatchQueue.main.async {
-                self.territoryData = territoryData
-            }
-        }
-        
-        
+  private func refresh() {
+    do {
+      try fetchedResultsController.performFetch()
     }
-
-    func setupAsyncDataWithCompletion(completion: @escaping ((moderatorData: [TerritoryData], userData: [TerritoryData])) -> Void) {
-        Task {
-            let territoryData = self.getTerritories
-            await completion(territoryData())
-        }
+    catch {
+      print("Failed to load results")
     }
+  }
     
-    func getTerritories() async -> (moderatorData: [TerritoryData], userData: [TerritoryData]) {
-        let territories = self.territories
-        let addresses = self.territoryAddresses
-        let houses = self.houses
-        
-        var data = [TerritoryData]()
-        
-        for territory in territories {
-            let currentAddresses = addresses.filter { $0.territory == territory.id }
-            var currentHouses = [House]()
-            for address in currentAddresses {
-                currentHouses += houses.filter { $0.territoryAddress == address.id }
-            }
-            
-            var accessLevel: AccessLevel?
-            accessLevel = await authorizationLevelManager.getAccessLevel(model: territory)
-            
-            data.append(
-                TerritoryData(
-                    territory: territory,
-                    addresses: currentAddresses,
-                    housesQuantity: currentHouses.count,
-                    accessLevel: accessLevel ?? .User
-                )
-            )
-        }
-        
-        let moderatorData = data.filter { $0.accessLevel == .Moderator }.sorted { $0.territory.number < $1.territory.number }
-        let userData = data.filter { $0.accessLevel != .Moderator }.sorted { $0.territory.number < $1.territory.number }
-        
-        return (moderatorData, userData)
-    }
+  var items: [Result] {
+    fetchedResultsController.fetchedObjects ?? []
+  }
     
-    private func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) async {
-        print("Hello")
-        if controller === territoriesFetchedResultsController {
-            if let territories = controller.fetchedObjects as? [Territory] {
-                self.territories = territories
-            }
-        } else if controller === territoryAddressesFetchedResultsController {
-            if let territoryAddresses = controller.fetchedObjects as? [TerritoryAddress] {
-                self.territoryAddresses = territoryAddresses
-            }
-        } else if controller === housesFetchedResultsController {
-            if let houses = controller.fetchedObjects as? [House] {
-                self.houses = houses
-            }
-        } else if controller === visitsFetchedResultsController {
-            if let visits = controller.fetchedObjects as? [Visit] {
-                self.visits = visits
-            }
-        }
-        
-        setupAsyncDataWithCompletion { territoryData in
-            DispatchQueue.main.async {
-                self.territoryData = territoryData
-            }
-        }
+  var predicate: NSPredicate? {
+    get {
+      fetchedResultsController.fetchRequest.predicate
     }
+    set {
+      fetchedResultsController.fetchRequest.predicate = newValue
+      refresh()
+    }
+  }
     
-    class var shared: CDPublisher {
-        struct Static {
-            static let instance = CDPublisher()
-        }
-        
-        return Static.instance
+  var sortDescriptors: [NSSortDescriptor] {
+    get {
+      fetchedResultsController.fetchRequest.sortDescriptors ?? []
     }
+    set {
+      fetchedResultsController.fetchRequest.sortDescriptors = newValue.isEmpty ? nil : newValue
+      refresh()
+    }
+  }
+    
+  var willChange: (() -> Void)?
+  var didChange: (() -> Void)?
 }
 
-//extension CDPublisher: NSFetchedResultsControllerDelegate {
-//    private func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) async {
-//        if let territories = controller.fetchedObjects as? [Territory] {
-//            self.territories = territories
-//        }
-//        
-//        if let territoryAddresses = controller.fetchedObjects as? [TerritoryAddress] {
-//            self.territoryAddresses = territoryAddresses
-//        }
-//        
-//        if let houses = controller.fetchedObjects as? [House] {
-//            self.houses = houses
-//        }
-//        
-//        if let visits = controller.fetchedObjects as? [Visit] {
-//            self.visits = visits
-//        }
-//        
-//        self.territoryData = await getTerritories()
-//    }
-//}
-
-
+private final class FetchedResultsObserver<Result: NSManagedObject>: NSObject, NSFetchedResultsControllerDelegate {
+  var willChange: () -> Void = {}
+  var didChange: () -> Void = {}
+        
+  init(controller: NSFetchedResultsController<Result>) {
+    super.init()
+    controller.delegate = self
+  }
+        
+  func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+    willChange()
+  }
+        
+  func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+    didChange()
+  }
+}

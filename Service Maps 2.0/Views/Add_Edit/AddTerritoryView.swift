@@ -15,14 +15,11 @@ struct AddTerritoryView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel = AddTerritoryViewModel()
     
-    @State var title = "Add"
+    @State var title = ""
+    
     init(territory: Territory?) {
-        if let territory {
-            title = "Edit"
-            self.viewModel.description = territory.territoryDescription ?? ""
-            self.viewModel.number = Int(territory.number)
-            self.viewModel.previewImage = "testTerritoryImage"
-            
+        if let territory = territory {
+            self.territory = territory
         }
     }
     
@@ -74,7 +71,7 @@ struct AddTerritoryView: View {
                         // .frame(alignment: .center)
                             .hSpacing(.leading)
                         .padding(.leading)
-                        CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Description")
+                    CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Description")
                             .animation(.spring, value: viewModel.description)
                             .padding(.bottom)
                     
@@ -126,11 +123,27 @@ struct AddTerritoryView: View {
             )
             
         }.ignoresSafeArea(.keyboard)
-        
+            .onAppear {
+                if territory != nil {
+                    withAnimation {
+                        title = "Edit"
+                        
+                    }
+                    self.viewModel.description = territory!.territoryDescription ?? ""
+                    self.viewModel.number = Int(territory!.number)
+                    self.viewModel.previewImage = "testTerritoryImage"
+                } else {
+                    withAnimation {
+                        title = "Add"
+                    }
+                }
+                
+                
+            }
         
     }
 }
 
 #Preview {
-    AddTerritoryView(territory: nil)
+    AddTerritoryView(territory: DataController.preview.getTerritories().first!)
 }

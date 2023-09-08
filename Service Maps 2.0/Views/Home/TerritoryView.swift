@@ -13,11 +13,14 @@ import SwipeActions
 
 struct TerritoryView: View {
     
-    @ObservedObject var viewModel = TerritoryViewModel()
+    @StateObject var viewModel = TerritoryViewModel()
     
     @Environment(\.managedObjectContext) private var viewContext
  
     @StateObject var synchronizationManager = SynchronizationManager.shared
+    
+    @State var showFab = true
+    @State var scrollOffset: CGFloat = 0.00
     
     var body: some View {
         NavigationStack {
@@ -57,20 +60,38 @@ struct TerritoryView: View {
                         if viewModel.territoryData.moderatorData.isEmpty && viewModel.territoryData.userData.isEmpty {
                             //TODO SET LOTTIE ANIMATION NO DATA
                         }
-                        
-                    
                 }
-                
+                .background(GeometryReader {
+                                return Color.clear.preference(key: ViewOffsetKey.self,
+                                                       value: -$0.frame(in: .named("scroll")).origin.y)
+                            })
+                            .onPreferenceChange(ViewOffsetKey.self) { offset in
+                                withAnimation {
+                                    if offset > 50 {
+                                        print(scrollOffset)
+                                        showFab = offset < scrollOffset
+                                    } else  {
+                                        print(scrollOffset)
+                                        showFab = true
+                                    }
+                                }
+                                scrollOffset = offset
+                            }
                 .navigationDestination(isPresented: $viewModel.presentSheet) {
-                    AddTerritoryView(territory: viewModel.currentTerritory)
+                    AddTerritoryView(territory: viewModel.currentTerritory).task {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            viewModel.currentTerritory = nil
+                        }
+                    }
                 }
                 .padding()
-//                .onAppear {
-//                    Task {
-//                        viewModel.cdPublisher.getTerritories()
-//                    }
-//                }
             }
+            .coordinateSpace(name: "scroll")
+                    .overlay(
+                        showFab && viewModel.isAdmin ?
+                        viewModel.createFab()
+                            : nil
+                        , alignment: Alignment.bottomTrailing)
             .navigationBarTitle("Territories", displayMode: .automatic)
             .navigationBarBackButtonHidden(true)
             .toolbar {
@@ -79,24 +100,23 @@ struct TerritoryView: View {
                         Button(action: { viewModel.isAscending.toggle() }) {
                             Image(systemName: viewModel.isAscending ? "arrow.up" : "arrow.down").animation(.spring)
                         }
-                        if viewModel.isAdmin {
-                            Button(action: { viewModel.presentSheet = true }) {
-                                Image(systemName: "plus" )
-                            }
-                        }
                     }
                 }
             }
-            
-            
         }
-        .navigationTransition(
-            viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in))
-        )
+        .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
         .navigationViewStyle(StackNavigationViewStyle())
     }
     
     
+}
+
+struct ViewOffsetKey: PreferenceKey {
+    typealias Value = CGFloat
+    static var defaultValue = CGFloat.zero
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value += nextValue()
+    }
 }
 
 #Preview {

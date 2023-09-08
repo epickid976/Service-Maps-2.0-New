@@ -42,6 +42,7 @@
 		821C12742A780F4C0050D106 /* RequestResetForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12732A780F4C0050D106 /* RequestResetForm.swift */; };
 		821C12762A78111C0050D106 /* ResetPasswordForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12752A78111C0050D106 /* ResetPasswordForm.swift */; };
 		821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12772A7811CD0050D106 /* AdminAPI.swift */; };
+		821F090F2AA965FE00D6B6E6 /* GRDBQuery in Frameworks */ = {isa = PBXBuildFile; productRef = 821F090E2AA965FE00D6B6E6 /* GRDBQuery */; };
 		822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0732AA6B61C0008FA61 /* Lottie */; };
 		822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0762AA6B6230008FA61 /* Alamofire */; };
 		822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0792AA6B62B0008FA61 /* ScalingHeaderScrollView */; };
@@ -208,6 +209,7 @@
 			files = (
 				822FA0972AA6B6650008FA61 /* SwipeActions in Frameworks */,
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
+				821F090F2AA965FE00D6B6E6 /* GRDBQuery in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A32AA6B7C00008FA61 /* PopupView in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
@@ -515,6 +517,7 @@
 				822FA0962AA6B6650008FA61 /* SwipeActions */,
 				822FA09F2AA6B7800008FA61 /* NavigationTransitions */,
 				822FA0A22AA6B7C00008FA61 /* PopupView */,
+				821F090E2AA965FE00D6B6E6 /* GRDBQuery */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -553,6 +556,7 @@
 				822FA0952AA6B6650008FA61 /* XCRemoteSwiftPackageReference "SwipeActions" */,
 				822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
 				822FA0A12AA6B7C00008FA61 /* XCRemoteSwiftPackageReference "PopupView" */,
+				821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -873,6 +877,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDBQuery";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.7.0;
+			};
+		};
 		822FA0722AA6B61C0008FA61 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -940,6 +952,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		821F090E2AA965FE00D6B6E6 /* GRDBQuery */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */;
+			productName = GRDBQuery;
+		};
 		822FA0732AA6B61C0008FA61 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 822FA0722AA6B61C0008FA61 /* XCRemoteSwiftPackageReference "lottie-ios" */;
