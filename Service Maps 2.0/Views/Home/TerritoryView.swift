@@ -9,6 +9,8 @@ import SwiftUI
 import CoreData
 import NavigationTransitions
 import SwipeActions
+import Combine
+import UIKit
 
 
 struct TerritoryView: View {
@@ -22,11 +24,12 @@ struct TerritoryView: View {
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
     
+    
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVStack(alignment: .leading) {
-                    
+                    LazyVStack {
+                        
                         if !viewModel.territoryData.moderatorData.isEmpty {
                             Text("Moderator Territories")
                                 .font(.title2)
@@ -60,54 +63,52 @@ struct TerritoryView: View {
                         if viewModel.territoryData.moderatorData.isEmpty && viewModel.territoryData.userData.isEmpty {
                             //TODO SET LOTTIE ANIMATION NO DATA
                         }
-                }
-                .background(GeometryReader {
-                                return Color.clear.preference(key: ViewOffsetKey.self,
-                                                       value: -$0.frame(in: .named("scroll")).origin.y)
-                            })
-                            .onPreferenceChange(ViewOffsetKey.self) { offset in
-                                withAnimation {
-                                    if offset > 50 {
-                                        print(scrollOffset)
-                                        showFab = offset < scrollOffset
-                                    } else  {
-                                        print(scrollOffset)
-                                        showFab = true
-                                    }
-                                }
-                                scrollOffset = offset
-                            }
-                .navigationDestination(isPresented: $viewModel.presentSheet) {
-                    AddTerritoryView(territory: viewModel.currentTerritory).task {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                            viewModel.currentTerritory = nil
-                        }
                     }
+                    .background(GeometryReader {
+                        return Color.clear.preference(key: ViewOffsetKey.self,
+                                                      value: -$0.frame(in: .named("scroll")).origin.y)
+                    })
+                
+                    
+                
+                .navigationDestination(isPresented: $viewModel.presentSheet) {
+                    AddTerritoryView(territory: viewModel.currentTerritory)
                 }
                 .padding()
-            }
-            .coordinateSpace(name: "scroll")
+            }.coordinateSpace(name: "scroll")
                     .overlay(
                         showFab && viewModel.isAdmin ?
                         viewModel.createFab()
-                            : nil
+                        : nil
                         , alignment: Alignment.bottomTrailing)
-            .navigationBarTitle("Territories", displayMode: .automatic)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    HStack {
-                        Button(action: { viewModel.isAscending.toggle() }) {
-                            Image(systemName: viewModel.isAscending ? "arrow.up" : "arrow.down").animation(.spring)
+                    .onPreferenceChange(ViewOffsetKey.self) { offset in
+                        withAnimation {
+                            if offset > 50 {
+                                showFab = offset < scrollOffset
+                            } else  {
+                                showFab = true
+                            }
+                        }
+                        scrollOffset = offset
+                    }
+                .scrollIndicators(.hidden)
+                .navigationBarTitle("Territories", displayMode: .automatic)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItemGroup(placement: .topBarTrailing) {
+                        HStack {
+                            Button(action: { viewModel.isAscending.toggle() }) {
+                                Image(systemName: viewModel.isAscending ? "arrow.up" : "arrow.down").animation(.spring)
+                            }
                         }
                     }
                 }
-            }
+        
+            
         }
         .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
         .navigationViewStyle(StackNavigationViewStyle())
     }
-    
     
 }
 

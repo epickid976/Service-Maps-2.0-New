@@ -88,7 +88,7 @@ class StorageManager: ObservableObject {
                 let decoder = JSONDecoder()
 
                 // Decode Note
-                let pendingChanges = try decoder.decode([PendingChange].self, from: data)
+                _ = try decoder.decode([PendingChange].self, from: data)
 
             } catch {
                 print("Unable to Decode Note (\(error))")

@@ -41,11 +41,11 @@ class ReuploaderWorker {
     private func doWork() async -> Bool {
         
         for pendingChange in await dataUploaderManager.getAllPendingChanges() {
-            var adminApi = AdminAPI()
-            var userAPi = UserAPI()
-            var isAdmin = authorizationLevelManager.existsAdminCredentials()
+            let adminApi = AdminAPI()
+            let userAPi = UserAPI()
+            let isAdmin = authorizationLevelManager.existsAdminCredentials()
             
-            var done = switch pendingChange.changeType {
+            let done = switch pendingChange.changeType {
             case .Territory:
                 await tryAction(pendingChange: pendingChange, items: DataController.shared.getTerritories()) { model in
                     model.id ?? ""

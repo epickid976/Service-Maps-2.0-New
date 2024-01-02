@@ -21,7 +21,7 @@ struct CircleButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         Circle()
             .optionalViewModifier { content in
-                if progress > 0.7 {
+                if progress > 0.01 {
                     content
                         .fill(Color.clear)
                 } else {

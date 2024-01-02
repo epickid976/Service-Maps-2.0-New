@@ -44,7 +44,7 @@ class DataUploaderManager: ObservableObject {
         
         if(image == nil) {
             do {
-                try await adminApi.addTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: Int64(territory.number), description: territory.description, created_at: "", updated_at: ""))
+                try await adminApi.addTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: String(territory.number), description: territory.description, created_at: "", updated_at: ""))
                 return Result.success(true)
             } catch {
                 await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Add, modelId: territory.id!))
@@ -53,7 +53,7 @@ class DataUploaderManager: ObservableObject {
         } else {
             //Add IMAGE Function here
             do {
-                try await adminApi.addTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: Int64(territory.number), description: territory.description, created_at: "", updated_at: ""))
+                try await adminApi.addTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: String(territory.number), description: territory.description, created_at: "", updated_at: ""))
                 return Result.success(true)
             } catch {
                 await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Add, modelId: territory.id!))
@@ -138,7 +138,7 @@ class DataUploaderManager: ObservableObject {
         
         if authorizationLevelManager.existsAdminCredentials() {
             do {
-                try await adminApi.updateTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: Int64(territory.number), description: territory.description, created_at: "", updated_at: ""))
+                try await adminApi.updateTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: String(territory.number), description: territory.description, created_at: "", updated_at: ""))
                 return Result.success(true)
             } catch {
                 await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Update, modelId: territory.id!))
@@ -147,7 +147,7 @@ class DataUploaderManager: ObservableObject {
         } else {
             await authorizationLevelManager.setAuthorizationTokenFor(model: territory)
             do {
-                try await userApi.updateTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: Int64(territory.number), description: territory.description, created_at: "", updated_at: ""))
+                try await userApi.updateTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: String(territory.number), description: territory.description, created_at: "", updated_at: ""))
                 return Result.success(true)
             } catch {
                 await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Update, modelId: territory.id!))
@@ -258,7 +258,7 @@ class DataUploaderManager: ObservableObject {
     func deleteTerritory(territory: Territory) async -> Result<Bool, Error> {
         allData()
         do {
-            try await adminApi.deleteTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: Int64(territory.number), description: territory.description, created_at: "", updated_at: ""))
+            try await adminApi.deleteTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: String(territory.number), description: territory.description, created_at: "", updated_at: ""))
             dataController.container.viewContext.delete(territory)
             return Result.success(true)
         } catch {

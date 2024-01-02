@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
-import ScalingHeaderScrollView
+import NukeUI
 import SwipeActions
+import ScalingHeaderScrollView
 
 struct HousesView: View {
     var territory: Territory
@@ -24,40 +25,21 @@ struct HousesView: View {
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Visit.date, ascending: false)],
-        animation: .default)
-    private var visits: FetchedResults<Visit>
-    
     var body: some View {
         ZStack {
-            ScalingHeaderScrollView() {
+            ScalingHeaderScrollView {
                 ZStack {
                     Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
                     viewModel.largeHeader(progress: viewModel.progress)
+                    
+                    
                 }
             } content: {
-                LazyVStack {
-                    VStack {
-                        if viewModel.progress < 0.7 {
-                            ZStack {
-                                Color(UIColor.secondarySystemBackground).edgesIgnoringSafeArea(.horizontal)
-                                VStack {
-                                    viewModel.smallHeader
-                                        .padding(.vertical)
-                                }
-                            }
-                            .cornerRadius(16, corners: [.bottomLeft, .bottomRight])
-                        }
-                    }.animation(.default, value: viewModel.progress)
                     LazyVStack {
-                        ForEach(viewModel.houses) { house in
+                        ForEach(viewModel.housesList) { house in
                             SwipeView {
-                                let filteredVisits = visits.filter { $0.house == house.id }
-                                let latestVisit = filteredVisits.max {$0.date > $1.date }
-                                
                                 NavigationLink(destination: VisitsView(house: house)) {
-                                    HouseCell(house: house, lastVisit: latestVisit)
+                                    HouseCell(house: house, lastVisit: nil)
                                         .padding(.bottom, 2)
                                 }
                             } trailingActions: { context in
@@ -91,9 +73,9 @@ struct HousesView: View {
                         }
                     }
                     .padding(.horizontal)
-                    .animation(.default, value: viewModel.houses)
-                }
-                .padding(.bottom)
+                    .padding(.top)
+                    .padding(.bottom)
+                    .animation(.default, value: viewModel.housesList)
                 .background(GeometryReader {
                                 return Color.clear.preference(key: ViewOffsetKey.self,
                                                        value: -$0.frame(in: .named("scroll")).origin.y)
@@ -113,12 +95,16 @@ struct HousesView: View {
                 
             }
             .height(min: 180, max: 350.0)
-            .allowsHeaderCollapse()
-            .headerProminence(.increased)
+            //.allowsHeaderCollapse()
+            .allowsHeaderGrowth()
+            //.headerIsClipped()
+            //.scrollOffset($scrollOffset)
+            .collapseProgress($viewModel.progress)
+            .scrollIndicators(.hidden)
             .coordinateSpace(name: "scroll")
                     .overlay(
                         showFab && viewModel.isAdmin ?
-                        viewModel.createFab()
+                        viewModel.createFab().padding(.bottom).padding(.trailing, 5)
                             : nil
                         , alignment: Alignment.bottomTrailing)
         }
@@ -136,6 +122,8 @@ struct HousesView: View {
             .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
             )
     }
+    
+    
 }
 
 #Preview {

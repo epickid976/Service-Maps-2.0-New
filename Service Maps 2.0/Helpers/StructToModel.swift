@@ -10,13 +10,14 @@ import Foundation
 class StructToModel {
     
     private var dataController = DataController.shared
+    private var privateContext = DataController.shared.container.viewContext
     
     //MARK: Converting MYTOKENMODEL to MYTOKEN
     func convertTokenStructsToEntities(structs: [MyTokenModel]) -> [MyToken] {
         var entities: [MyToken] = []
 
         for myStruct in structs {
-            let entity = MyToken(context: dataController.container.viewContext)
+            let entity = MyToken(context: privateContext)
             entity.id = myStruct.id
             entity.name = myStruct.name
             entity.congregation = myStruct.congregation
@@ -43,7 +44,7 @@ class StructToModel {
         var entities: [TokenTerritory] = []
 
         for myStruct in structs {
-            let entity = TokenTerritory(context: dataController.container.viewContext)
+            let entity = TokenTerritory(context: privateContext)
             entity.token = myStruct.token
             entity.territory = myStruct.territory
             // Set other properties as needed
@@ -58,7 +59,7 @@ class StructToModel {
         var entities: [TerritoryAddress] = []
 
         for myStruct in structs {
-            let entity = TerritoryAddress(context: dataController.container.viewContext)
+            let entity = TerritoryAddress(context: privateContext)
             entity.id = myStruct.id
             entity.territory = myStruct.territory
             entity.address = myStruct.address
@@ -78,13 +79,13 @@ class StructToModel {
         var entities: [Territory] = []
 
         for myStruct in structs {
-            let entity = Territory(context: dataController.container.viewContext)
+            let entity = Territory(context: privateContext)
             entity.id = myStruct.id
             entity.territoryDescription = myStruct.description
             entity.congregation = myStruct.congregation
             
             entity.image = myStruct.image
-            entity.number = Int32(myStruct.number)
+            entity.number = Int32(myStruct.number) ?? 0
             
             // Set other properties as needed
 
@@ -99,7 +100,7 @@ class StructToModel {
         var entities: [House] = []
 
         for myStruct in structs {
-            let entity = House(context: dataController.container.viewContext)
+            let entity = House(context: privateContext)
             entity.id = myStruct.id
             entity.number = myStruct.number
             entity.territoryAddress = myStruct.territory_address
@@ -119,7 +120,7 @@ class StructToModel {
         var entities: [Visit] = []
 
         for myStruct in structs {
-            let entity = Visit(context: dataController.container.viewContext)
+            let entity = Visit(context: privateContext)
             entity.id = myStruct.id
             entity.date = myStruct.date
             entity.house = myStruct.house

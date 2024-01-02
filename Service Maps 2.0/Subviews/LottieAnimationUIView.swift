@@ -65,6 +65,7 @@ struct LottieAnimationUIView: UIViewRepresentable {
                 shouldRestartAnimation = false
             }
         }
+        
     }
     
     func restartAnimation() {

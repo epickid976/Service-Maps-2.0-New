@@ -12,30 +12,20 @@ struct HouseCell: View {
     var house: House
     var lastVisit: Visit? = nil
     
-    @FetchRequest(
-        entity: Visit.entity(),
-        sortDescriptors: [
-            NSSortDescriptor(keyPath: \Visit.date, ascending: false)
-        ],
-        animation: .default
-    )
-    private var visits: FetchedResults<Visit>
-    
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.gray.gradient)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    //.stroke(style: StrokeStyle(lineWidth: 5))
-                                    .fill(
-                                        Material.thin
-                                    )
-                                    .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
-                                )
+                                .fill(Color.gray.gradient)
+                                .foregroundStyle(Material.thin)
+                                
+                            
+//                            RoundedRectangle(cornerRadius: 16)
+//                                    .fill(
+//                                        Material.thin
+//                                    )
                             
                             HStack {
                                 Image(systemName: "numbersign").imageScale(.large).fontWeight(.heavy)
@@ -47,117 +37,78 @@ struct HouseCell: View {
                                 
                                 //.padding(1)
                             }
-                            .padding()
-                        }
-                        .hSpacing(.center)
-                        .vSpacing(.leading)
-                        .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
-                    
-                    if house.floor != 0 {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.gray.gradient)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    //.stroke(style: StrokeStyle(lineWidth: 5))
-                                    .fill(
-                                        Material.thin
-                                    )
-                                    .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
-                                )
-                                
-                            HStack {
-                                Image(systemName: "building").imageScale(.large)
-                                    .fontWeight(.heavy)
-                                    .foregroundColor(.primary)
-                                Text("\(house.floor)")
-                                    .font(.title)
-                                    .lineLimit(2)
-                                    .foregroundColor(.primary)
-                                    .fontWeight(.heavy)
-                            }
-                            .padding()
+                            .padding(10)
                             
                         }
-                        .vSpacing(.leading)
                         .hSpacing(.center)
-                        .frame(maxWidth: UIScreen.screenWidth * 0.3)
-                    }
+                        //.vSpacing(.leading)
+                        .frame(maxWidth: UIScreen.screenWidth * 0.4, maxHeight: 200)
                     
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.gray.gradient)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                //.stroke(style: StrokeStyle(lineWidth: 5))
-                                .fill(
-                                    Material.thin
-                                )
-                                .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
-                            )
-                        
+                    VStack {
                         HStack {
                             if let lastVisit {
                                 Image(systemName: "tablecells.badge.ellipsis").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("\(lastVisit.symbol ?? "")")
-                                    .font(.title)
+                                Text("Symbol: \(lastVisit.symbol ?? "")")
+                                    .font(.title3)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
                                     .fontWeight(.heavy)
+                                    .hSpacing(.leading)
                             } else {
                                 Image(systemName: "tablecells.badge.ellipsis").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("N/A")
-                                    .font(.title)
+                                Text("Symbol: N/A")
+                                    .font(.title3)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
                                     .fontWeight(.heavy)
+                                    .hSpacing(.leading)
                             }
                         }
-                        .padding()
+                        //.padding()
                         
+                        HStack {
+                            if let lastVisit {
+                                Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
+                                Text("Date: \(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(lastVisit.date))))")
+                                    .font(.title3)
+                                    .lineLimit(2)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.heavy)
+                                    .hSpacing(.leading)
+                            } else {
+                                Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.primary)
+                                Text("Date: N/A")
+                                    .font(.title3)
+                                    .lineLimit(2)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.heavy)
+                                    .hSpacing(.leading)
+                            }
+                        }
+                        //.padding()
+                       
                     }
-                    .hSpacing(.center)
-                    .vSpacing(.leading)
-                    .frame(maxWidth: house.floor != 0 ? UIScreen.screenWidth * 0.30 : UIScreen.screenWidth * 0.5)
+                    //.vSpacing(.leading)
+                    .hSpacing(.leading)
+                    //.frame(maxWidth: UIScreen.screenWidth * 0.6)
                 }
                 
                 VStack {
                     HStack {
                         if let lastVisit {
-                            Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
-                                .fontWeight(.heavy)
-                                .foregroundColor(.primary)
-                            Text("\(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(lastVisit.date))))")
-                                .font(.title3)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                        } else {
-                            Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
-                                .fontWeight(.heavy)
-                                .foregroundColor(.primary)
-                            Text("N/A")
-                                .font(.title3)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                        }
-                    }
-                    .padding([.top, .horizontal])
-                    
-                    HStack {
-                        if let lastVisit {
                             HStack {
                                 Image(systemName: "note.text").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("\(lastVisit.notes ?? "")")
+                                Text("Note: \(lastVisit.notes ?? "")")
                                     .font(.title3)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
@@ -170,7 +121,7 @@ struct HouseCell: View {
                                 Image(systemName: "note.text").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("N/A")
+                                Text("Note: N/A")
                                     .font(.title3)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
@@ -178,10 +129,9 @@ struct HouseCell: View {
                                     .multilineTextAlignment(.leading)
                                     .hSpacing(.leading)
                             }
-                            
                         }
                     }
-                    .padding([.bottom, .horizontal])
+                    .padding([.bottom, .horizontal], 3)
                     .padding(.top, 5)
                 }
                 
@@ -190,7 +140,6 @@ struct HouseCell: View {
             .frame(maxWidth: .infinity)
             
         }
-        .id(house.id)
         .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 15)

@@ -23,11 +23,17 @@ class TerritoryViewModel: ObservableObject {
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     @Published var isAscending = true {
         didSet {
-        
+            
         }
     }// Boolean state variable to track the sorting order
     @Published var currentTerritory: Territory?
-    @Published var presentSheet = false
+    @Published var presentSheet = false {
+        didSet {
+            if presentSheet == false {
+                currentTerritory = nil
+            }
+        }
+    }
     
     var sortDescriptors: [NSSortDescriptor] {
         // Compute the sort descriptors based on the current sorting order
@@ -46,6 +52,7 @@ class TerritoryViewModel: ObservableObject {
         }
     }
     
+    @ViewBuilder
     func territoryCell(territoryData: TerritoryData) -> some View {
         SwipeView {
             NavigationLink(destination: self.chooseDestination(territoryAddresses: territoryData.addresses, territory: territoryData.territory)) {
@@ -99,7 +106,8 @@ class TerritoryViewModel: ObservableObject {
         }
     }
     
-    func createFab() -> some View {
+    //@ViewBuilder
+     func createFab() -> some View {
             return Button(action: {
                 self.presentSheet.toggle()
             }, label: {
@@ -109,7 +117,7 @@ class TerritoryViewModel: ObservableObject {
                     .frame(width: 40, height: 40, alignment: .center)
             })
             .padding(8)
-            .background(Color.blue)
+            .background(Color.blue.gradient)
             .cornerRadius(100)
             .padding(8)
             .shadow(radius: 3,
@@ -153,7 +161,7 @@ class TerritoryViewModel: ObservableObject {
             }
         }
         
-        Task {
+        Task.detached {
             await self.getTerritories()
         }
     }
@@ -166,7 +174,6 @@ extension TerritoryViewModel {
         territories.items
     }
     
-    
     var territoryAddressesList: [TerritoryAddress] {
         territoryAddresses.items
     }
@@ -177,14 +184,13 @@ extension TerritoryViewModel {
 }
 
 extension TerritoryViewModel {
-    func getTerritories() async  {
-        //-> (moderatorData: [TerritoryData], userData: [TerritoryData])
+    func getTerritories() async {
         let territories = self.territoriesList
         let addresses = self.territoryAddressesList
         let houses = self.housesList
-        
-        var data = [TerritoryData]()
-        
+
+        var data = [String: TerritoryData]() // Use a dictionary to store the TerritoryData objects
+
         for territory in territories {
             let currentAddresses = addresses.filter { $0.territory == territory.id }
             var currentHouses = [House]()
@@ -195,21 +201,20 @@ extension TerritoryViewModel {
             var accessLevel: AccessLevel?
             accessLevel = await authorizationLevelManager.getAccessLevel(model: territory)
             
-            data.append(
-                TerritoryData(
-                    territory: territory,
-                    addresses: currentAddresses,
-                    housesQuantity: currentHouses.count,
-                    accessLevel: accessLevel ?? .User
-                )
+            let territoryData = TerritoryData(
+                territory: territory,
+                addresses: currentAddresses,
+                housesQuantity: currentHouses.count,
+                accessLevel: accessLevel ?? .User
             )
+            
+            data[territory.id ?? ""] = territoryData // Store the TerritoryData object in the dictionary using territory.id as the key
         }
-        
-        let moderatorData = data.filter { $0.accessLevel == .Moderator }.sorted { $0.territory.number < $1.territory.number }
-        let userData = data.filter { $0.accessLevel != .Moderator }.sorted { $0.territory.number < $1.territory.number }
-        
+
+        let moderatorData = data.values.filter { $0.accessLevel == .Moderator }.sorted { $0.territory.number < $1.territory.number }
+        let userData = data.values.filter { $0.accessLevel != .Moderator }.sorted { $0.territory.number < $1.territory.number }
+
         territoryData = (moderatorData, userData)
         
-        //return (moderatorData, userData)
     }
 }

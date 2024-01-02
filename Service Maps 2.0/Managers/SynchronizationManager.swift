@@ -9,10 +9,14 @@ import Foundation
 import CoreData
 import Combine
 
+
 class SynchronizationManager: ObservableObject {
-    @Published private var dataController = DataController.shared
+    //@Published private var dataController = DataController.shared
     @Published private var dataStore = StorageManager.shared
     @Published private var authorizationLevelManager = AuthorizationLevelManager()
+    
+    
+    var viewContext = DataController.shared.container.viewContext
     
     private var authenticationManager = AuthenticationManager()
     //MARK: Arrays
@@ -87,7 +91,7 @@ class SynchronizationManager: ObservableObject {
     }
     
     func synchronize() async {
-        
+        allData()
         dataStore.synchronized = false
         
         //Server Data
@@ -143,6 +147,12 @@ class SynchronizationManager: ObservableObject {
         }
         
         
+        tokensDb.removeAll()
+        territoriesDb.removeAll()
+        housesDb.removeAll()
+        visitsDb.removeAll()
+        territoriesAddressesDb.removeAll()
+        tokenTerritoriesDb.removeAll()
         
         tokensDb.append(contentsOf: tokens)
         territoriesDb.append(contentsOf: territories)
@@ -150,8 +160,6 @@ class SynchronizationManager: ObservableObject {
         visitsDb.append(contentsOf: visits)
         tokenTerritoriesDb.append(contentsOf: tokenTerritories)
         territoriesAddressesDb.append(contentsOf: territoryAddresses)
-        
-        
         
         do {
             try tokensDb.forEach { token in
@@ -161,7 +169,7 @@ class SynchronizationManager: ObservableObject {
                 let fetchRequest = NSFetchRequest<TokenTerritory>(entityName: "TokenTerritory")
                 fetchRequest.predicate = predicate
                 
-                let territoryTokensFiltered = try dataController.container.viewContext.fetch(fetchRequest)
+                let territoryTokensFiltered = try viewContext.fetch(fetchRequest)
                 
                 
                 tokenTerritoriesDb.append(contentsOf: territoryTokensFiltered)
@@ -171,7 +179,6 @@ class SynchronizationManager: ObservableObject {
             return
         }
         
-        
         //Comparing and Updating, adding or deleting data in database by server data
         await comparingAndSynchronizeTokens(apiList: StructToModel().convertTokenStructsToEntities(structs: tokensApi), dbList: tokensDb)
         await comparingAndSynchronizeTokenTerritories(apiList: StructToModel().convertTokenTerritoriesStructsToEntities(structs: tokenTerritoriesApi), dbList: tokenTerritoriesDb)
@@ -179,7 +186,6 @@ class SynchronizationManager: ObservableObject {
         await comparingAndSynchronizeHouses(apiList: StructToModel().convertHouseStructsToEntities(structs: housesApi), dbList: housesDb)
         await comparingAndSynchronizeVisits(apiList: StructToModel().convertVisitStructsToEntities(structs: visitsApi), dbList: visitsDb)
         await comparingAndSynchronizeTerritoryAddresses(apiList: StructToModel().convertTerritoryAddressStructsToEntities(structs: territoriesAddressesApi), dbList: territoriesAddressesDb)
-        
         
         self.dataStore.synchronized = true
         
@@ -206,7 +212,11 @@ class SynchronizationManager: ObservableObject {
                     myTokenDb.moderator = myTokenApi.moderator
                     
                     //Save
-                    dataController.save()
+                    do {
+                        try viewContext.save()
+                    } catch {
+                        print("Error saving")
+                    }
                 }
                 // Remove Token from the database to discard what does exist on the server
                 // and leave only what should be deleted
@@ -215,16 +225,20 @@ class SynchronizationManager: ObservableObject {
                 }
             } else {
                 // If it does not exist, create it
-                dataController.container.viewContext.insert(myTokenApi)
+                viewContext.insert(myTokenApi)
                 
                 //Save
-                dataController.save()
+                do {
+                    try viewContext.save()
+                } catch {
+                    print("Error saving")
+                }
             }
         }
         
         // Finally, remove all tokens that don't exist on the server
         for token in tokensDb {
-            dataController.container.viewContext.delete(token)
+            viewContext.delete(token)
         }
     }
     
@@ -232,39 +246,28 @@ class SynchronizationManager: ObservableObject {
         let territoriesApi = apiList
         var territoriesDb = dbList
         
+        // Step 1: Remove territories that exist in the database but not in the API response
+        let apiTerritoryIds = Set(territoriesApi.map { $0.id })
+        territoriesDb.removeAll { !apiTerritoryIds.contains($0.id) }
+        
+        // Step 2: Update or create territories based on the API response
         for territoryApi in territoriesApi {
-            // Find Territory according to id
-            if let territoryDb = territoriesDb.first(where: { $0.id == territoryApi.id }) {
-                // If Territory does exist in the database
-                if territoryApi != territoryDb {
-                    // If it has differences, update in the database
-                    
-                    territoryDb.territoryDescription = territoryApi.territoryDescription
-                    territoryDb.congregation = territoryApi.congregation
-                    territoryDb.image = territoryApi.image
-                    territoryDb.number = territoryApi.number
-                    
-                    //Save
-                    dataController.save()
-                }
-                
-                // Remove Territory from the database to discard what exists on the server
-                // and leave only what should be deleted
-                if let index = territoriesDb.firstIndex(of: territoryDb) {
-                    territoriesDb.remove(at: index)
-                }
+            if let index = territoriesDb.firstIndex(where: { $0.id == territoryApi.id }) {
+                // If Territory exists in the database, update it
+                territoriesDb[index] = territoryApi
             } else {
-                // If it does not exist, create it
-                dataController.container.viewContext.insert(territoryApi)
-                
-                //Save
-                dataController.save()
+                // If Territory does not exist in the database, create it
+                territoriesDb.append(territoryApi)
             }
         }
         
-        // Finally, remove all territories that don't exist on the server
-        for territory in territoriesDb {
-            dataController.container.viewContext.delete(territory)
+        // Step 3: Save the changes to the database
+        await MainActor.run {
+            do {
+                try viewContext.save()
+            } catch {
+                print("Error saving")
+            }
         }
     }
     
@@ -281,7 +284,11 @@ class SynchronizationManager: ObservableObject {
                     houseDb.territoryAddress = houseApi.territoryAddress
                     houseDb.floor = houseApi.floor
                     //Save
-                    dataController.save()
+                    do {
+                        try viewContext.save()
+                    } catch {
+                        print("Error saving")
+                    }
                 }
                 
                 if let index = housesDb.firstIndex(of: houseDb) {
@@ -289,15 +296,19 @@ class SynchronizationManager: ObservableObject {
                 }
             } else {
                 // If it does not exist, create it
-                dataController.container.viewContext.insert(houseApi)
+                viewContext.insert(houseApi)
                 
                 //Save
-                dataController.save()
+                do {
+                    try viewContext.save()
+                } catch {
+                    print("Error saving")
+                }
             }
         }
         
         for houseDb in housesDb {
-            dataController.container.viewContext.delete(houseDb)
+            viewContext.delete(houseDb)
         }
     }
     
@@ -318,7 +329,11 @@ class SynchronizationManager: ObservableObject {
                     visitDb.user = visitApi.user
                     
                     //Save
-                    dataController.save()
+                    do {
+                        try viewContext.save()
+                    } catch {
+                        print("Error saving")
+                    }
                 }
                 
                 if let index = visitsDb.firstIndex(of: visitDb) {
@@ -326,15 +341,19 @@ class SynchronizationManager: ObservableObject {
                 }
             } else {
                 // If it does not exist, create it
-                dataController.container.viewContext.insert(visitApi)
+                viewContext.insert(visitApi)
                 
                 //Save
-                dataController.save()
+                do {
+                    try viewContext.save()
+                } catch {
+                    print("Error saving")
+                }
             }
         }
         
         for visitDb in visitsDb {
-            dataController.container.viewContext.delete(visitDb)
+            viewContext.delete(visitDb)
         }
     }
     
@@ -353,15 +372,19 @@ class SynchronizationManager: ObservableObject {
                 }
             } else {
                 // If it does not exist, create it
-                dataController.container.viewContext.insert(tokenTerritoryApi)
+                viewContext.insert(tokenTerritoryApi)
                 
                 //Save
-                dataController.save()
+                do {
+                    try viewContext.save()
+                } catch {
+                    print("Error saving")
+                }
             }
         }
         
         for tokenTerritoryDb in tokenTerritoriesDb {
-            dataController.container.viewContext.delete(tokenTerritoryDb)
+            viewContext.delete(tokenTerritoryDb)
         }
     }
     
@@ -380,25 +403,29 @@ class SynchronizationManager: ObservableObject {
                 }
             } else {
                 // If it does not exist, create it
-                dataController.container.viewContext.insert(territoryAddressApi)
+                viewContext.insert(territoryAddressApi)
                 
                 //Save
-                dataController.save()
+                do {
+                    try viewContext.save()
+                } catch {
+                    print("Error saving")
+                }
             }
         }
         
         for tokenTerritoryDb in territoryAddressesDb {
-            dataController.container.viewContext.delete(tokenTerritoryDb)
+            viewContext.delete(tokenTerritoryDb)
         }
     }
     
     func allData() {
-        territories = dataController.getTerritories()
-        houses = dataController.getHouses()
-        visits = dataController.getVisits()
-        tokens = dataController.getMyTokens()
-        territoryAddresses = dataController.getTerritoryAddresses()
-        tokenTerritories = dataController.getTokenTerritories()
+        territories = DataController.shared.getTerritories()
+        houses = DataController.shared.getHouses()
+        visits = DataController.shared.getVisits()
+        tokens = DataController.shared.getMyTokens()
+        territoryAddresses = DataController.shared.getTerritoryAddresses()
+        tokenTerritories = DataController.shared.getTokenTerritories() 
     }
     
     class var shared: SynchronizationManager {

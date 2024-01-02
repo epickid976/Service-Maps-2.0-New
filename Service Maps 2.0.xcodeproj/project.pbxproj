@@ -105,6 +105,7 @@
 		82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */; };
 		82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526042A9290EE00B42916 /* AddTerritoryView.swift */; };
 		82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */; };
+		82DAEEDE2AAF597100465DA5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DAEEDD2AAF597100465DA5 /* HomeView.swift */; };
 		82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBEA992A880B9E002048DC /* ResetPassword.swift */; };
 		82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EC3E922A9CFF68000E2926 /* HousesView.swift */; };
 		82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F288862A86C21100930849 /* VerificationViewModel.swift */; };
@@ -199,6 +200,7 @@
 		82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryAddressView.swift; sourceTree = "<group>"; };
 		82D526042A9290EE00B42916 /* AddTerritoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryView.swift; sourceTree = "<group>"; };
 		82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryViewModel.swift; sourceTree = "<group>"; };
+		82DAEEDD2AAF597100465DA5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		82DBEA992A880B9E002048DC /* ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPassword.swift; sourceTree = "<group>"; };
 		82EC3E922A9CFF68000E2926 /* HousesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesView.swift; sourceTree = "<group>"; };
 		82F288862A86C21100930849 /* VerificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationViewModel.swift; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 		823FD4D82A81632B0036A1DD /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				82DAEEDC2AAF596100465DA5 /* New Group */,
 				826B766F2A729FDE000A4BAA /* HomeTabView.swift */,
 				823FD4D42A7D6F2D0036A1DD /* TerritoryView.swift */,
 				82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */,
@@ -482,6 +485,14 @@
 				82BC0F262A9CD94500B255BF /* AddHouseView.swift */,
 			);
 			path = Add_Edit;
+			sourceTree = "<group>";
+		};
+		82DAEEDC2AAF596100465DA5 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+				82DAEEDD2AAF597100465DA5 /* HomeView.swift */,
+			);
+			path = "New Group";
 			sourceTree = "<group>";
 		};
 		82DBEA982A8809DB002048DC /* Reset */ = {
@@ -592,6 +603,7 @@
 				8209340D2A7ADB3700AF3FF1 /* SignupView.swift in Sources */,
 				824213662A82BF0200626DD5 /* StartupState.swift in Sources */,
 				82916C1D2A9944B3005133DE /* Symbols.swift in Sources */,
+				82DAEEDE2AAF597100465DA5 /* HomeView.swift in Sources */,
 				824213692A82C4CB00626DD5 /* AuthenticationManager.swift in Sources */,
 				82916C1B2A994387005133DE /* AddVisitViewModel.swift in Sources */,
 				828800202AA68BAA00725826 /* CDPublisher.swift in Sources */,

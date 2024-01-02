@@ -18,17 +18,17 @@ struct ImagePickerView: View {
     @State var photoItem: PhotosPickerItem?
     @State var showImagePicker: Bool = false
     //Preview Image
-    @State var previewImage: UIImage?
+    @Binding var previewImage: UIImage?
     //Loading
     @State var isLoading: Bool = false
     
-    init(title: String, subTitle: String, systemImage: String, tint: Color, onImageChange: @escaping (UIImage) -> Void, previewImage: UIImage? = nil) {
+    init(title: String, subTitle: String, systemImage: String, tint: Color, previewImage: Binding<UIImage?>, onImageChange: @escaping (UIImage) -> Void) {
         self.title = title
         self.subTitle = subTitle
         self.systemImage = systemImage
         self.tint = tint
         self.onImageChange = onImageChange
-        self.previewImage = previewImage
+        _previewImage = previewImage
     }
     
     var body: some View {
@@ -155,13 +155,13 @@ extension View {
     }
 }
 
-#Preview {
-    VStack {
-        ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue) { image in
-            
-        }
-    }
-    .frame(minWidth: 300, minHeight: 250)
-    .padding(.top, 20)
-    
-}
+//#Preview {
+//    VStack {
+//        ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue) { image in
+//            
+//        }
+//    }
+//    .frame(minWidth: 300, minHeight: 250)
+//    .padding(.top, 20)
+//    
+//}

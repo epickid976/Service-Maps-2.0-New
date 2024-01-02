@@ -80,9 +80,32 @@ struct AddTerritoryView: View {
                             .fontWeight(.semibold)
                             .hSpacing(.center)
                         VStack {
-                            ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue, previewImage: UIImage(named: viewModel.previewImage ?? "")) { image in
-                                
+                            ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue, previewImage: $viewModel.previewImage) { image in
+                                viewModel.imageToSend = image
                             }
+                            .optionalViewModifier { content in
+                                    content
+                                        .overlay(
+                                            Button {
+                                                DispatchQueue.main.async {
+                                                    viewModel.imageToSend = nil
+                                                    viewModel.previewImage = nil
+                                                    content.previewImage = nil
+                                                }
+                                            } label: {
+                                                if viewModel.imageToSend != nil {
+                                                    Image(systemName: "xmark")
+                                                        .foregroundColor(.red)
+                                                        .padding(8)
+                                                        .background(Color.white)
+                                                        .clipShape(Circle())
+                                                }
+                                            }
+                                            .offset(x: 10, y: -10),
+                                            alignment: .topTrailing
+                                            )
+                            }
+                            
                         }
                         .frame(minWidth: 250, maxWidth: 300, minHeight: 10, maxHeight: 300)
                         
@@ -131,7 +154,7 @@ struct AddTerritoryView: View {
                     }
                     self.viewModel.description = territory!.territoryDescription ?? ""
                     self.viewModel.number = Int(territory!.number)
-                    self.viewModel.previewImage = "testTerritoryImage"
+                    self.viewModel.previewImage = UIImage(named: "testTerritoryImage")
                 } else {
                     withAnimation {
                         title = "Add"

@@ -71,7 +71,7 @@ struct Service_Maps_2_0App: App {
             if newPhase == .active {
                 synchronizationManager.startupProcess(synchronizing: true)
             }
-            dataController.save()
+            //dataController.save()
         }
     }
 }

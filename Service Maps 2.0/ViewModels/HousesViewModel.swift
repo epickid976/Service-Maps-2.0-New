@@ -9,27 +9,24 @@ import Foundation
 import SwiftUI
 import CoreData
 import NukeUI
+import Combine
 
 @MainActor
-class HousesViewModel: NSObject, ObservableObject {
+class HousesViewModel: ObservableObject {
     
-    @Published var houses = [House]()
-    private let fetchedResultsController: NSFetchedResultsController<House>
     
-     init(territory: Territory) {
+    private var houses: FetchedResultList<House>
+    
+    
+     init(territory: Territory, context: NSManagedObjectContext = DataController.shared.container.viewContext) {
         self.territory = territory
         
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: House.all, managedObjectContext: DataController.shared.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
-        super.init()
-        fetchedResultsController.delegate = self
-        
-        do {
-            try fetchedResultsController.performFetch ()
-            guard let houses = fetchedResultsController.fetchedObjects else { return }
-            self.houses = houses
-        } catch {
-            print (error)
-        }
+         houses = FetchedResultList(context: context, sortDescriptors: [
+            NSSortDescriptor(keyPath: \House.id, ascending: true)
+           ])
+         
+         houses.willChange = { [weak self] in self?.objectWillChange.send() }
+         
     }
     
     @Published var backAnimation = false
@@ -40,14 +37,9 @@ class HousesViewModel: NSObject, ObservableObject {
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     @Published var isAscending = true {
         didSet {
-            fetchedResultsController.fetchRequest.sortDescriptors = sortDescriptors
-            do {
-                try fetchedResultsController.performFetch ()
-                guard let houses = fetchedResultsController.fetchedObjects else { return }
-                self.houses = houses
-            } catch {
-                print (error)
-            }
+            houses.sortDescriptors = [
+                NSSortDescriptor(keyPath: \House.id, ascending: isAscending)
+              ]
         }
     } // Boolean state variable to track the sorting order
     @Published var currentHouse: House?
@@ -58,32 +50,46 @@ class HousesViewModel: NSObject, ObservableObject {
         return [NSSortDescriptor(keyPath: \House.number, ascending: isAscending)]
     }
     
+    @ViewBuilder
     func largeHeader(progress: CGFloat) -> some View  {
         VStack {
-            if progress < 0.70 {
-                LazyImage(url: URL(string: "https://assetsnffrgf-a.akamaihd.net/assets/m/502016177/univ/art/502016177_univ_lsr_xl.jpg")) { state in
-                    if let image = state.image {
-                        image.resizable().aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: UIScreen.screenWidth * 0.5, maxHeight: 350)
-                        image.opacity(1 - progress)
-                        
-                    } else if state.error != nil {
-                        Color.red
-                    } else {
-                        ProgressView().progressViewStyle(.circular)
+            ZStack {
+                    VStack {
+                        LazyImage(url: URL(string: "https://assetsnffrgf-a.akamaihd.net/assets/m/502016177/univ/art/502016177_univ_lsr_xl.jpg")) { state in
+                            if let image = state.image {
+                                image.resizable().aspectRatio(contentMode: .fill).frame(width: UIScreen.screenWidth, height: 350)
+                                
+                                //image.opacity(1 - progress)
+                                
+                            } else if state.error != nil {
+                                Color.red
+                            } else {
+                                ProgressView().progressViewStyle(.circular)
+                            }
+                        }
+                        .vSpacing(.bottom)
+                        .cornerRadius(10)
                     }
-                }
-                .cornerRadius(10)
-                .clipped()
-            } else {
-                smallHeader
-                    .vSpacing(.bottom)
-                    .padding(.bottom, 9)
+                    .frame(width: UIScreen.screenSize.width, height: 350, alignment: .center)
+                    VStack {
+                        smallHeader
+                           
+                            .padding(.vertical)
+                        .cornerRadius(16, corners: [.bottomLeft, .bottomRight])
+                        
+                    }.frame(height: 85)
+                        .background(
+                            Material.ultraThickMaterial
+                        )
+                        .vSpacing(.bottom)
             }
+            .frame(width: UIScreen.screenWidth, height: 350)
         }
-        .animation(.spring, value: progress)
+        
+        .animation(.default, value: progress)
     }
     
+    @ViewBuilder
     var smallHeader: some View {
         HStack(spacing: 12.0) {
             HStack {
@@ -96,12 +102,12 @@ class HousesViewModel: NSObject, ObservableObject {
             }
             
             Divider()
-                .frame(maxHeight: 60)
+                .frame(maxHeight: 75)
                 .padding(.horizontal, -5)
-            if !(progress < 0.7) {
+            if !(progress < 0.98) {
                 LazyImage(url: URL(string: "https://assetsnffrgf-a.akamaihd.net/assets/m/502016177/univ/art/502016177_univ_lsr_xl.jpg")) { state in
                     if let image = state.image {
-                        image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 60, maxHeight: 60)
+                        image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 75, maxHeight: 60)
                     } else if state.error != nil {
                         Color.red
                     } else {
@@ -110,21 +116,20 @@ class HousesViewModel: NSObject, ObservableObject {
                 }
                 .cornerRadius(10)
                 .padding(.horizontal, 2)
-                
-                    
             }
             Text(territory.territoryDescription ?? "")
                 .font(.body)
                 .fontWeight(.heavy)
         }
-        .frame(maxHeight: 60)
-        .animation(.spring, value: progress)
+        .frame(maxHeight: 75)
+        .animation(.easeInOut(duration: 0.25), value: progress)
         .padding(.horizontal)
         .hSpacing(.center)
     }
     
+    @ViewBuilder
     func createFab() -> some View {
-            return Button(action: {
+            Button(action: {
                 self.presentSheet.toggle()
                 let newHouse = House(context: DataController.shared.container.viewContext)
                 newHouse.id = UUID().uuidString
@@ -152,13 +157,12 @@ class HousesViewModel: NSObject, ObservableObject {
     }
 }
 
-extension HousesViewModel: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        guard let houses = controller.fetchedObjects as? [House] else { return }
-        
-        self.houses = houses
+extension HousesViewModel {
+    var housesList: [House] {
+        houses.items
     }
 }
+
 
 extension House {
     static var all: NSFetchRequest<House> {

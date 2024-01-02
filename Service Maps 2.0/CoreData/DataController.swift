@@ -9,6 +9,7 @@ import CoreData
 
 struct DataController {
     static let shared = DataController()
+    static var privateViewContext = DataController.shared.container.newBackgroundContext()
     
 
     static var preview: DataController = {
@@ -74,6 +75,7 @@ struct DataController {
     
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "Service_Maps")
+
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
@@ -110,43 +112,49 @@ struct DataController {
     }
     
     func getTerritories() -> [Territory] {
+        let viewContext = DataController.shared.container.newBackgroundContext()
         let territoriesRequest = NSFetchRequest<NSManagedObject>(entityName: "Territory")
-        let territories = try! DataController.shared.container.viewContext.fetch(territoriesRequest) as! [Territory]
+        let territories = try! viewContext.fetch(territoriesRequest) as! [Territory]
         
         return territories
     }
     
     func getHouses() -> [House] {
+        let viewContext = DataController.shared.container.viewContext
         let housesRequest = NSFetchRequest<NSManagedObject>(entityName: "House")
-        let houses = try! DataController.shared.container.viewContext.fetch(housesRequest) as! [House]
+        let houses = try! viewContext.fetch(housesRequest) as! [House]
         
         return houses
     }
     
     func getVisits() -> [Visit] {
+        let viewContext = DataController.shared.container.viewContext
         let visitsRequest = NSFetchRequest<NSManagedObject>(entityName: "Visit")
-        let visits = try! DataController.shared.container.viewContext.fetch(visitsRequest) as! [Visit]
+        let visits = try! viewContext.fetch(visitsRequest) as! [Visit]
         
         return visits
     }
     
     func getMyTokens() -> [MyToken] {
+        let viewContext = DataController.shared.container.viewContext
         let tokensRequest = NSFetchRequest<NSManagedObject>(entityName: "MyToken")
-        let tokens = try! DataController.shared.container.viewContext.fetch(tokensRequest) as! [MyToken]
+        let tokens = try! viewContext.fetch(tokensRequest) as! [MyToken]
         
         return tokens
     }
     
     func getTerritoryAddresses() -> [TerritoryAddress] {
+        let viewContext = DataController.shared.container.viewContext
         let territoryAddressRequest = NSFetchRequest<NSManagedObject>(entityName: "TerritoryAddress")
-        let territoryAddresses = try! DataController.shared.container.viewContext.fetch(territoryAddressRequest) as! [TerritoryAddress]
+        let territoryAddresses = try! viewContext.fetch(territoryAddressRequest) as! [TerritoryAddress]
         
         return territoryAddresses
     }
     
     func getTokenTerritories() -> [TokenTerritory] {
+        let viewContext = DataController.shared.container.viewContext
         let tokenTerritoryRequest = NSFetchRequest<NSManagedObject>(entityName: "TokenTerritory")
-        let tokenTerritory = try! DataController.shared.container.viewContext.fetch(tokenTerritoryRequest) as! [TokenTerritory]
+        let tokenTerritory = try! viewContext.fetch(tokenTerritoryRequest) as! [TokenTerritory]
         
         return tokenTerritory
     }

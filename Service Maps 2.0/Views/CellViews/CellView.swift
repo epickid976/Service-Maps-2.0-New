@@ -31,7 +31,7 @@ struct CellView: View {
                     .foregroundColor(.secondary)
                     .fontWeight(.bold)
             }
-            .frame(maxWidth: UIScreen.screenWidth * 0.60)
+            .frame(maxWidth: UIScreen.screenWidth * 0.60, alignment: .leading)
             
             
             LazyImage(url: URL(string: "https://assetsnffrgf-a.akamaihd.net/assets/m/502016177/univ/art/502016177_univ_lsr_xl.jpg")) { state in
@@ -41,15 +41,17 @@ struct CellView: View {
                     Color.red
                 } else {
                     ProgressView().progressViewStyle(.circular)
+                        .frame(width: UIScreen.screenWidth * 0.40)
                 }
             }
             .cornerRadius(10)
+            .frame(alignment: .trailing)
             
             //Image("testTerritoryImage")
             
             
         }
-        .id(territory.id)
+        //.id(territory.id)
         .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 15)

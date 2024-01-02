@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Alamofire/Alamofire.git",
       "state" : {
-        "revision" : "b2fa556e4e48cbf06cf8c63def138c98f4b811fa",
-        "version" : "5.8.0"
+        "revision" : "3dc6a42c7727c49bf26508e29b0a0b35f9c7e1ad",
+        "version" : "5.8.1"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/groue/GRDBQuery",
       "state" : {
-        "revision" : "be64298b4f9d70510226fa7e698aef84f41cec02",
-        "version" : "0.7.0"
+        "revision" : "42fef11503d221229ec39201c08316b6930755b2",
+        "version" : "0.8.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/airbnb/lottie-ios.git",
       "state" : {
-        "revision" : "d6feea26a370019b4d3a85f5984cb95a2734776f",
-        "version" : "4.2.0"
+        "revision" : "3f1202f254ad5d71f6c5b518ed2d6b9e2abe6969",
+        "version" : "4.3.4"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kean/Nuke",
       "state" : {
-        "revision" : "3f666f120b63ea7de57d42e9a7c9b47f8e7a290b",
-        "version" : "12.1.6"
+        "revision" : "1694798e876113d44f6ec6ead965d7286695981d",
+        "version" : "12.2.0"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/exyte/PopupView.git",
       "state" : {
-        "revision" : "da417a13f0042bdad8e24c042433cfc7e82761d1",
-        "version" : "2.6.2"
+        "revision" : "4e64eb67d4510c96f82efd9e34b8fa5b9b397791",
+        "version" : "2.8.3"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/exyte/ScalingHeaderScrollView",
       "state" : {
-        "revision" : "6afd9b32821b42c9dacb351c8ad8ca49f723ef1d",
-        "version" : "1.0.1"
+        "revision" : "a3d0454aeebaf70362806599d8287db21724e349",
+        "version" : "1.1.0"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/siteline/swiftui-introspect",
       "state" : {
-        "revision" : "121c146fe591b1320238d054ae35c81ffa45f45a",
-        "version" : "0.12.0"
+        "revision" : "9e1cc02a65b22e09a8251261cccbccce02731fc5",
+        "version" : "1.1.1"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/davdroman/swiftui-navigation-transitions",
       "state" : {
-        "revision" : "8412ff50b86bd08296d0ebf7d8f474d79ddb037b",
-        "version" : "0.11.0"
+        "revision" : "a6a3c70ad5d771bd1e927fb55897231cd9592024",
+        "version" : "0.13.3"
       }
     },
     {
