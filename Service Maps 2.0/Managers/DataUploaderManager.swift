@@ -32,34 +32,44 @@ class DataUploaderManager: ObservableObject {
     
     func addTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Bool, Error> {
         allData()
-        dataController.container.viewContext.insert(territory)
-        if dataController.container.viewContext.hasChanges {
-            do {
-                try dataController.container.viewContext.save()
-                
-            } catch {
-                return Result.failure(error)
-            }
-        }
+        
+        var result: Result<Bool, Error>?
         
         if(image == nil) {
             do {
                 try await adminApi.addTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: String(territory.number), description: territory.description, created_at: "", updated_at: ""))
-                return Result.success(true)
+                result = Result.success(true)
             } catch {
                 await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Add, modelId: territory.id!))
-                return Result.failure(error)
+                result = Result.failure(error)
             }
         } else {
             //Add IMAGE Function here
             do {
                 try await adminApi.addTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: String(territory.number), description: territory.description, created_at: "", updated_at: ""))
-                return Result.success(true)
+                result = Result.success(true)
             } catch {
                 await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Add, modelId: territory.id!))
-                return Result.failure(error)
+                result = Result.failure(error)
             }
         }
+        
+        switch result {
+        case .success(true):
+            dataController.container.viewContext.insert(territory)
+            if dataController.container.viewContext.hasChanges {
+                do {
+                    try dataController.container.viewContext.save()
+                    
+                } catch {
+                    return Result.failure(error)
+                }
+            }
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD TERRITORY)")
+        }
+        
+        return result ?? Result.failure(NotFoundError.NotFound)
     }
     
     func addTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Bool, Error> {

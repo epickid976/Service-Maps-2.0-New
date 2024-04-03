@@ -70,6 +70,7 @@ class AuthenticationManager: ObservableObject {
             dataStore.passTemp = nil
             dataStore.userName = nil
             dataStore.congregationName = nil
+           authorizationProvider.authorizationToken = nil
             
             return Result.success(true)
         } catch {
@@ -124,5 +125,27 @@ class AuthenticationManager: ObservableObject {
         } catch {
             return Result.failure(error)
         }
+    }
+    
+    func activateEmail(token: String) async -> Result<Bool, Error> {
+        return await authenticationApi.activateEmail(token: token)
+    }
+    
+    func deleteAccount() async -> Result<Bool, Error> {
+        var result = await authenticationApi.deleteAccount()
+        
+        switch result {
+        case .success(true):
+            dataStore.clear()
+            authorizationProvider.clear()
+        default:
+            print("delete account entered default")
+        }
+        
+        return result
+    }
+    
+    func exitAdministrator() {
+        AuthorizationLevelManager().exitAdministrator()
     }
 }

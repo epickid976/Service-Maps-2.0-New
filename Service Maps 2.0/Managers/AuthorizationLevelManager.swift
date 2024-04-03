@@ -13,12 +13,18 @@ class AuthorizationLevelManager: ObservableObject {
     
     
     @Published private var authorizationProvider = AuthorizationProvider.shared
+    private var dataStore = StorageManager.shared
     
     func userHasLogged() -> Bool {
         return authorizationProvider.authorizationToken != nil
     }
     
     func userNeedLogin() async -> Bool {
+        
+        if !userHasLogged() {
+            return true
+        }
+        
         do {
             _ = try await AuthenticationAPI().user()
         } catch {
@@ -29,7 +35,7 @@ class AuthorizationLevelManager: ObservableObject {
                 }
             }
         }
-        return !userHasLogged()
+        return false
     }
     
     func getAccessLevel<T>(model: T) async -> AccessLevel? {
@@ -96,6 +102,16 @@ class AuthorizationLevelManager: ObservableObject {
         return authorizationProvider.congregationId != nil && authorizationProvider.congregationPass != nil
     }
     
+    func existsModeratorAccess() -> Bool {
+        for token in dataController.getMyTokens() {
+            if token.moderator {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
     func findToken(territory: Territory) async -> MyToken? {
         var tokens = [MyToken]()
         let tokensDb = dataController.getMyTokens()
@@ -146,5 +162,11 @@ class AuthorizationLevelManager: ObservableObject {
         }
         
         return nil
+    }
+    
+    func exitAdministrator() {
+        authorizationProvider.congregationId = nil
+        authorizationProvider.congregationPass = nil
+        dataStore.congregationName = nil
     }
 }

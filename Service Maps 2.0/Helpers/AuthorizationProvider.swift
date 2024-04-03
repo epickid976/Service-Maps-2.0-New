@@ -48,6 +48,13 @@ class AuthorizationProvider: ObservableObject {
     
     @Published var isLoggedOut = false
     
+    func clear() {
+        authorizationToken = nil
+        token = nil
+        congregationId = nil
+        congregationPass = nil
+    }
+    
     class var shared: AuthorizationProvider {
         struct Static {
             static let instance = AuthorizationProvider()

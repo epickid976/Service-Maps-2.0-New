@@ -96,6 +96,14 @@ class StorageManager: ObservableObject {
         }
     }
     
+    func clear() {
+        userEmail = nil
+        userName = nil
+        congregationName = nil
+        passTemp = nil
+        synchronized = false
+    }
+    
     class var shared: StorageManager {
         struct Static {
             static let instance = StorageManager()

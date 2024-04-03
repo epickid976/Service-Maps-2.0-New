@@ -39,7 +39,7 @@ class AuthenticationAPI {
         do {
             
             _ = try await ApiRequestAsync().getRequest(url: baseURL + "logout")
-            //AuthorizationProvider().authorizationToken = nil
+            
         } catch {
             throw error.self
         }
@@ -72,4 +72,23 @@ class AuthenticationAPI {
         
     }
     
+    func activateEmail(token: String) async -> Result<Bool, Error> {
+        do {
+            _ = try await ApiRequestAsync().getRequest(url: baseURL + "signup/activate/\(token)")
+            
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    func deleteAccount() async -> Result<Bool, Error> {
+        do {
+            _ = try await ApiRequestAsync().getRequest(url: baseURL + "delete")
+            
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
 }

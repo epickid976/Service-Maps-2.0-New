@@ -23,11 +23,13 @@ struct TerritoryView: View {
     
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
+    @State private var isScrollingDown = false
     
     
     var body: some View {
         NavigationStack {
             ScrollView {
+                ZStack {
                     LazyVStack {
                         
                         if !viewModel.territoryData.moderatorData.isEmpty {
@@ -68,13 +70,11 @@ struct TerritoryView: View {
                         return Color.clear.preference(key: ViewOffsetKey.self,
                                                       value: -$0.frame(in: .named("scroll")).origin.y)
                     })
-                
-                    
-                
-                .navigationDestination(isPresented: $viewModel.presentSheet) {
-                    AddTerritoryView(territory: viewModel.currentTerritory)
+                    .navigationDestination(isPresented: $viewModel.presentSheet) {
+                        AddTerritoryView(territory: viewModel.currentTerritory)
+                    }
+                    .padding()
                 }
-                .padding()
             }.coordinateSpace(name: "scroll")
                     .overlay(
                         showFab && viewModel.isAdmin ?
@@ -83,13 +83,12 @@ struct TerritoryView: View {
                         , alignment: Alignment.bottomTrailing)
                     .onPreferenceChange(ViewOffsetKey.self) { offset in
                         withAnimation {
-                            if offset > 50 {
-                                showFab = offset < scrollOffset
-                            } else  {
-                                showFab = true
-                            }
+                            showFab = offset <= 50 || (offset < scrollOffset && !isScrollingDown)
                         }
                         scrollOffset = offset
+
+                        // Track scroll direction accurately:
+                        isScrollingDown = offset > scrollOffset && scrollOffset > 0
                     }
                 .scrollIndicators(.hidden)
                 .navigationBarTitle("Territories", displayMode: .automatic)
