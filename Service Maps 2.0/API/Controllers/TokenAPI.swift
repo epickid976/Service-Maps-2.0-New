@@ -60,6 +60,7 @@ class TokenAPI {
             
             return reply
         } catch {
+            print(error.self)
             throw error.self
         }
     }
