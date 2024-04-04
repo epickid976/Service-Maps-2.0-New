@@ -10,7 +10,7 @@ import Foundation
 struct TerritoryModel: Codable {
     var id: String
     var congregation: String
-    var number: String
+    var number: Int32
     var description: String
     var image: String?
     var created_at: String
@@ -19,5 +19,5 @@ struct TerritoryModel: Codable {
 
 
 func convertTerritoryToTerritoryModel(model: Territory) -> TerritoryModel {
-    return TerritoryModel(id: model.id ?? "", congregation: model.congregation ?? "", number: String(model.number), description: model.description, created_at: "", updated_at: "")
+    return TerritoryModel(id: model.id ?? "", congregation: model.congregation ?? "", number: model.number, description: model.description, created_at: "", updated_at: "")
 }

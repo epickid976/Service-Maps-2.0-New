@@ -25,6 +25,9 @@ struct TerritoryView: View {
     @State var scrollOffset: CGFloat = 0.00
     @State private var isScrollingDown = false
     
+    init() {
+
+    }
     
     var body: some View {
         NavigationStack {
@@ -66,38 +69,23 @@ struct TerritoryView: View {
                             //TODO SET LOTTIE ANIMATION NO DATA
                         }
                     }
-                    .background(GeometryReader {
-                        return Color.clear.preference(key: ViewOffsetKey.self,
-                                                      value: -$0.frame(in: .named("scroll")).origin.y)
-                    })
                     .navigationDestination(isPresented: $viewModel.presentSheet) {
                         AddTerritoryView(territory: viewModel.currentTerritory)
                     }
                     .padding()
                 }
-            }.coordinateSpace(name: "scroll")
-                    .overlay(
-                        showFab && viewModel.isAdmin ?
-                        viewModel.createFab()
-                        : nil
-                        , alignment: Alignment.bottomTrailing)
-                    .onPreferenceChange(ViewOffsetKey.self) { offset in
-                        withAnimation {
-                            showFab = offset <= 50 || (offset < scrollOffset && !isScrollingDown)
-                        }
-                        scrollOffset = offset
-
-                        // Track scroll direction accurately:
-                        isScrollingDown = offset > scrollOffset && scrollOffset > 0
-                    }
+            }
                 .scrollIndicators(.hidden)
                 .navigationBarTitle("Territories", displayMode: .automatic)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         HStack {
-                            Button(action: { viewModel.isAscending.toggle() }) {
-                                Image(systemName: viewModel.isAscending ? "arrow.up" : "arrow.down").animation(.spring)
+//                            Button(action: { viewModel.isAscending.toggle() }) {
+//                                Image(systemName: viewModel.isAscending ? "arrow.up" : "arrow.down").animation(.spring)
+//                            }
+                            Button(action: { viewModel.presentSheet.toggle() }) {
+                                Image(systemName: "plus").animation(.spring)
                             }
                         }
                     }
@@ -109,14 +97,6 @@ struct TerritoryView: View {
         .navigationViewStyle(StackNavigationViewStyle())
     }
     
-}
-
-struct ViewOffsetKey: PreferenceKey {
-    typealias Value = CGFloat
-    static var defaultValue = CGFloat.zero
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value += nextValue()
-    }
 }
 
 #Preview {

@@ -43,7 +43,13 @@ class HousesViewModel: ObservableObject {
         }
     } // Boolean state variable to track the sorting order
     @Published var currentHouse: House?
-    @Published var presentSheet = false
+    @Published var presentSheet = false {
+        didSet {
+            if presentSheet == false {
+                currentHouse = nil
+            }
+        }
+    }
     
     var sortDescriptors: [NSSortDescriptor] {
         // Compute the sort descriptors based on the current sorting order

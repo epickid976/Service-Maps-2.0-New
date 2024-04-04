@@ -59,6 +59,7 @@ class AuthenticationManager: ObservableObject {
             return Result.success(userResponse)
             
         } catch {
+            print(error.self)
             return Result.failure(error)
         }
     }

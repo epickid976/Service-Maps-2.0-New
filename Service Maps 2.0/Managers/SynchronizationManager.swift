@@ -195,6 +195,7 @@ class SynchronizationManager: ObservableObject {
         await comparingAndSynchronizeVisits(apiList: StructToModel().convertVisitStructsToEntities(structs: visitsApi), dbList: visitsDb)
         await comparingAndSynchronizeTerritoryAddresses(apiList: StructToModel().convertTerritoryAddressStructsToEntities(structs: territoriesAddressesApi), dbList: territoriesAddressesDb)
         
+        startupProcess(synchronizing: false)
         self.dataStore.synchronized = true
         
     }

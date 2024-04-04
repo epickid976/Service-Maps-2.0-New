@@ -13,6 +13,8 @@ import Combine
 
 @MainActor
 class TerritoryViewModel: ObservableObject {
+    @StateObject var synchronizationManager = SynchronizationManager.shared
+    
     private var authorizationLevelManager = AuthorizationLevelManager()
     private var territories: FetchedResultList<Territory>
     private var territoryAddresses: FetchedResultList<TerritoryAddress>
@@ -89,9 +91,9 @@ class TerritoryViewModel: ObservableObject {
         }
         .swipeActionCornerRadius(16)
         .swipeSpacing(5)
-        .swipeOffsetCloseAnimation(stiffness: 160, damping: 70)
-        .swipeOffsetExpandAnimation(stiffness: 160, damping: 70)
-        .swipeOffsetTriggerAnimation(stiffness: 160, damping: 70)
+        .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
+        .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
+        .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
         .swipeMinimumDistance(territoryData.accessLevel != .User ? 50:1000)
     }
     

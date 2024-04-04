@@ -12,7 +12,7 @@ struct UserResponse: Codable {
     var name: String
     var email: String
     var email_verified_at: String
-    var active: String
+    var active: Int
     var created_at: String
     var updated_at: String
     var deleted_at: String?

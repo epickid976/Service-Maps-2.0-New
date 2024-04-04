@@ -71,12 +71,6 @@ struct HomeView: View {
             }
             
         }
-        .coordinateSpace(name: "scroll")
-        .overlay(
-            showFab && viewModel.isAdmin ?
-            viewModel.createFab().padding(.bottom).padding(.trailing, 5)
-            : nil
-            , alignment: Alignment.bottomTrailing)
     }
     
     @ViewBuilder
@@ -154,22 +148,6 @@ struct HomeView: View {
             .animation(.default, value: viewModel.housesList)
         }
         .padding(.bottom)
-        .background(GeometryReader {
-            return Color.clear.preference(key: ViewOffsetKey.self,
-                                          value: -$0.frame(in: .named("scroll")).origin.y)
-        })
-        .onPreferenceChange(ViewOffsetKey.self) { offset in
-            withAnimation {
-                if offset > 50 {
-                    print(scrollOffset)
-                    showFab = offset < scrollOffset
-                } else  {
-                    print(scrollOffset)
-                    showFab = true
-                }
-            }
-            scrollOffset = offset
-        }
     }
 }
 

@@ -152,12 +152,19 @@ struct DataController {
     }
     
     func getTokenTerritories() -> [TokenTerritory] {
-        let viewContext = DataController.shared.container.viewContext
-        let tokenTerritoryRequest = NSFetchRequest<NSManagedObject>(entityName: "TokenTerritory")
-        let tokenTerritory = try! viewContext.fetch(tokenTerritoryRequest) as! [TokenTerritory]
-        
+      let viewContext = DataController.shared.container.viewContext
+      let tokenTerritoryRequest = NSFetchRequest<NSManagedObject>(entityName: "TokenTerritory")
+      
+      do {
+        let tokenTerritory = try viewContext.fetch(tokenTerritoryRequest) as! [TokenTerritory]
         return tokenTerritory
+      } catch {
+        // Handle the error appropriately, like printing error message or logging the issue
+        print("Error fetching TokenTerritory entities: \(error)")
+        return []  // Return an empty array in case of error
+      }
     }
+
     
     
     

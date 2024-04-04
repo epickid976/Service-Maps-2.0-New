@@ -121,8 +121,8 @@ struct LoginView: View {
                                         await viewModel.login() { result in
                                             switch result {
                                             case .success(_):
+                                                onDone()
                                                 DispatchQueue.main.async {
-                                                    onDone()
                                                     dismiss()
                                                 }
                                                 withAnimation { loading = false }

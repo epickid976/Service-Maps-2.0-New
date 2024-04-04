@@ -128,7 +128,8 @@ class LoginViewModel: ObservableObject {
                     completion(Result.failure(error))
                 }
             }
-        }    }
+        }
+    }
 }
 
 

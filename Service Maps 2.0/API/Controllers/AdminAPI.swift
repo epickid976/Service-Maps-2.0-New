@@ -25,6 +25,7 @@ class AdminAPI {
             
             return allDataResponse
         } catch {
+            print(error.self)
             throw error.self
         }
     }
