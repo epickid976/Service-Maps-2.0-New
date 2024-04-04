@@ -7,6 +7,7 @@
 
 import Foundation
 import Alamofire
+import SwiftUI
 
 class AdminAPI {
     let baseURL = "admin/"
@@ -39,13 +40,16 @@ class AdminAPI {
     
     //PENDING UPLOAD PHOTOS ADDTERRITORYFUNC
     
-//    func addTerritory(territory: TerritoryModel, image: UIImage) async -> Result<Bool, Error> {
-//        do {
-//            var body =
-//        } catch {
-//            
-//        }
-//    }
+    func addTerritory(territory: TerritoryModel, image: UIImage) async throws {
+        do {
+            let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
+            
+            _ = try await ApiRequestAsync().uploadWithImage(url: baseURL + "territories/add", withFile: image, parameters: parameters)
+        } catch {
+            throw error.self
+        }
+        
+    }
     
     func updateTerritory(territory: TerritoryModel) async throws {
         do {
@@ -55,6 +59,16 @@ class AdminAPI {
         }
     }
     
+    func updateTerritory(territory: TerritoryModel, image: UIImage) async throws {
+        do {
+            let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
+            
+            _ = try await ApiRequestAsync().uploadWithImage(url: baseURL + "territories/update", withFile: image, parameters: parameters)
+        } catch {
+            throw error.self
+        }
+        
+    }
     //PENDING UPLOAD PHOTOS UPDATETERRITORYFUNC
     
     func deleteTerritory(territory: TerritoryModel) async throws {

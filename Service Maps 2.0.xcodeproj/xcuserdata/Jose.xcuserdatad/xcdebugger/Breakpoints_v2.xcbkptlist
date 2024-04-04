@@ -330,8 +330,8 @@
             filePath = "Service Maps 2.0/API/ApiRequestAsync.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "74"
-            endingLineNumber = "74"
+            startingLineNumber = "107"
+            endingLineNumber = "107"
             landmarkName = "getHeaders()"
             landmarkType = "7">
             <Locations>
@@ -378,41 +378,9 @@
             filePath = "Service Maps 2.0/API/ApiRequestAsync.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
             landmarkName = "getHeaders()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "BAE9EE81-7670-418A-AE41-BE6F8B87A722"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "68"
-            endingLineNumber = "68"
-            landmarkName = "loadStartupState()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "6C46DEB4-A80A-46AF-94CF-B0CD263E41BF"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "74"
-            endingLineNumber = "74"
-            landmarkName = "loadStartupState()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -426,8 +394,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
+            startingLineNumber = "86"
+            endingLineNumber = "86"
             landmarkName = "loadStartupState()"
             landmarkType = "7">
          </BreakpointContent>
@@ -967,8 +935,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "144"
-            endingLineNumber = "144"
+            startingLineNumber = "152"
+            endingLineNumber = "152"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -983,8 +951,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "178"
-            endingLineNumber = "178"
+            startingLineNumber = "186"
+            endingLineNumber = "186"
             landmarkName = "synchronize()"
             landmarkType = "7">
             <Locations>
@@ -1046,8 +1014,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "95"
-            endingLineNumber = "95"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1062,8 +1030,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "118"
-            endingLineNumber = "118"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
             landmarkName = "synchronize()"
             landmarkType = "7">
             <Locations>
@@ -1140,8 +1108,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "142"
-            endingLineNumber = "142"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1156,8 +1124,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "146"
-            endingLineNumber = "146"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1538,8 +1506,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "190"
-            endingLineNumber = "190"
+            startingLineNumber = "198"
+            endingLineNumber = "198"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1586,9 +1554,9 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "43"
-            endingLineNumber = "43"
-            landmarkName = "startupProcess(synchronizing:)"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "startupProcess(synchronizing:clearSynchronizing:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -1634,9 +1602,9 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
-            landmarkName = "startupProcess(synchronizing:)"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
+            landmarkName = "startupProcess(synchronizing:clearSynchronizing:)"
             landmarkType = "7">
             <Locations>
                <Location
@@ -1698,8 +1666,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "59"
-            endingLineNumber = "59"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
             landmarkName = "loadStartupState()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1714,8 +1682,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "63"
-            endingLineNumber = "63"
+            startingLineNumber = "69"
+            endingLineNumber = "69"
             landmarkName = "loadStartupState()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3422,8 +3390,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "96"
-            endingLineNumber = "96"
+            startingLineNumber = "104"
+            endingLineNumber = "104"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3438,8 +3406,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "143"
-            endingLineNumber = "143"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
             landmarkName = "synchronize()"
             landmarkType = "7">
             <Locations>
@@ -3546,8 +3514,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "124"
-            endingLineNumber = "124"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
             landmarkName = "synchronize()"
             landmarkType = "7">
             <Locations>
@@ -3624,8 +3592,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "125"
-            endingLineNumber = "125"
+            startingLineNumber = "133"
+            endingLineNumber = "133"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3640,8 +3608,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
+            startingLineNumber = "134"
+            endingLineNumber = "134"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3656,8 +3624,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "128"
-            endingLineNumber = "128"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3672,8 +3640,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "135"
+            endingLineNumber = "135"
             landmarkName = "synchronize()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3688,8 +3656,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AdminAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "17"
-            endingLineNumber = "17"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
             landmarkName = "allData()"
             landmarkType = "7">
             <Locations>
@@ -3766,8 +3734,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AdminAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "23"
-            endingLineNumber = "23"
+            startingLineNumber = "24"
+            endingLineNumber = "24"
             landmarkName = "allData()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3782,8 +3750,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AdminAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "18"
-            endingLineNumber = "18"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
             landmarkName = "allData()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3798,8 +3766,8 @@
             filePath = "Service Maps 2.0/API/Controllers/AdminAPI.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "21"
-            endingLineNumber = "21"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
             landmarkName = "allData()"
             landmarkType = "7">
          </BreakpointContent>
@@ -3814,8 +3782,8 @@
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "183"
-            endingLineNumber = "183"
+            startingLineNumber = "191"
+            endingLineNumber = "191"
             landmarkName = "synchronize()"
             landmarkType = "7">
             <Locations>

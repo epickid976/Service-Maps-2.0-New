@@ -88,4 +88,22 @@ class TokenAPI {
             throw error.self
         }
     }
+    
+    func unregister(token: String) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "unregister", body: DeleteTokenForm(token: token))
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func register(token: String) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "register", body: DeleteTokenForm(token: token))
+        } catch {
+            throw error.self
+        }
+    }
+    
+    
 }

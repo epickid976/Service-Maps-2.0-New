@@ -29,8 +29,14 @@ class SynchronizationManager: ObservableObject {
     
     @Published var startupState: StartupState = .Unknown
     
-    func startupProcess(synchronizing: Bool) {
+    private var loaded = false
+    
+    func startupProcess(synchronizing: Bool, clearSynchronizing: Bool = false) {
         allData()
+        if clearSynchronizing {
+            loaded = false
+            dataStore.synchronized = false
+        }
         Task {
             if synchronizing {
                 await synchronize()
@@ -64,15 +70,17 @@ class SynchronizationManager: ObservableObject {
         }
         
         if territories.isEmpty {
-            if !dataStore.synchronized {
-                return StartupState.Loading
+            if dataStore.synchronized || loaded {
+                if authorizationLevelManager.existsAdminCredentials() {
+                    return .Ready
+                } else {
+                    return .Empty
+                }
             }
             
-            if authorizationLevelManager.existsAdminCredentials() {
-                return .Ready
-            } else {
-                return StartupState.Empty
-            }
+            loaded = true
+            return .Loading
+            
         }
         
         return .Ready
@@ -425,7 +433,7 @@ class SynchronizationManager: ObservableObject {
         visits = DataController.shared.getVisits()
         tokens = DataController.shared.getMyTokens()
         territoryAddresses = DataController.shared.getTerritoryAddresses()
-        tokenTerritories = DataController.shared.getTokenTerritories() 
+        tokenTerritories = DataController.shared.getTokenTerritories()
     }
     
     class var shared: SynchronizationManager {

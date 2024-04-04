@@ -7,6 +7,7 @@
 
 import Foundation
 import Alamofire
+import SwiftUI
 
 class UserAPI {
     let baseURL = "users/"
@@ -35,6 +36,18 @@ class UserAPI {
             throw error.self
         }
     }
+    
+    
+    func updateTerritory(territory: TerritoryModel, image: UIImage) async throws {
+        do {
+            let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
+            
+            _ = try await ApiRequestAsync().uploadWithImage(url: baseURL + "territories/update", withFile: image, parameters: parameters)
+        } catch {
+            throw error.self
+        }
+    }
+    
     
     func updateTerritoryAddress(territoryAddress: TerritoryAddressModel) async throws {
         do {

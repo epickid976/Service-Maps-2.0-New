@@ -7,6 +7,7 @@
 
 import Foundation
 import Alamofire
+import SwiftUI
 
 class ApiRequestAsync {
     
@@ -58,6 +59,38 @@ class ApiRequestAsync {
             //print(request.acceptableStatusCodes.debugDescription)
         }
     }
+    
+    func uploadWithImage(url: String, withFile image: UIImage, parameters: [String: Any] = [:]) async throws -> String {
+      try await withUnsafeThrowingContinuation { continuation in
+        print("Uploading file to: " + baseURL + url)
+        
+        AF.upload(multipartFormData: { multipartFormData in
+            multipartFormData.append(image.jpegData(compressionQuality: 0.8)!, withName: "file", fileName: "image", mimeType: "image/jpeg")
+          // Add any additional parameters here
+          for (key, value) in parameters {
+            multipartFormData.append("\(value)".data(using: .utf8)!, withName: key)
+          }
+        }, to: baseURL + url, usingThreshold: UInt64.max, method: .post)
+          .validate()
+          .responseString { response in
+            if let string = response.value {
+                print("Upload Success: " + self.baseURL + url)
+              continuation.resume(returning: string)
+              return
+            }
+            if let err = response.error {
+                print("Error Uploading: " + self.baseURL + url)
+              print(err.asAFError?.responseCode ?? "")
+              print(err.asAFError?.failureReason ?? "")
+              continuation.resume(throwing: err)
+              return
+            }
+            
+            fatalError("Upload Request Failed")
+        }
+      }
+    }
+
     
     //MARK: Interceptor
     private func getHeaders() -> HTTPHeaders {
