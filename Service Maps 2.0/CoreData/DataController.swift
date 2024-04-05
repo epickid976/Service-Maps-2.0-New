@@ -16,17 +16,17 @@ struct DataController {
         let result = DataController(inMemory: true)
         let viewContext = result.container.viewContext
         for index in 0..<10 {
-            let newTerritory = Territory(context: viewContext)
-            newTerritory.id = UUID().uuidString
-            newTerritory.territoryDescription = "1850 W 56 St Hialeah FL 33012 United States (The Middle Building)"
-            newTerritory.congregation = "1260"
-            newTerritory.number = Int32(index)
-            
-            let newTerritoryAddress = TerritoryAddress(context: viewContext) 
-            newTerritoryAddress.territory = newTerritory.id
-            newTerritoryAddress.id = UUID().uuidString 
-            newTerritoryAddress.address = "1850 W 56 St Hialeah FL 33012 United States"
-            
+//            let newTerritory = Territory(context: viewContext)
+//            newTerritory.id = UUID().uuidString
+//            newTerritory.territoryDescription = "1850 W 56 St Hialeah FL 33012 United States (The Middle Building)"
+//            newTerritory.congregation = "1260"
+//            newTerritory.number = Int32(index)
+//            
+//            let newTerritoryAddress = TerritoryAddress(context: viewContext) 
+//            newTerritoryAddress.territory = newTerritory.id
+//            newTerritoryAddress.id = UUID().uuidString 
+//            newTerritoryAddress.address = "1850 W 56 St Hialeah FL 33012 United States"
+//            
 //            let otherTerritoryAddress = TerritoryAddress(context: viewContext) 
 //            otherTerritoryAddress.territory = newTerritory.id
 //            otherTerritoryAddress.id = UUID().uuidString
@@ -42,18 +42,18 @@ struct DataController {
 //            newTerritoryAddress.id = UUID().uuidString
 //            newTerritoryAddress.address = "1890 W 56 St Hialeah FL 33012 United States"
                 
-            let newHouse = House(context: viewContext)
-            newHouse.id = UUID().uuidString
-            newHouse.number = "10\(index)"
-            newHouse.territoryAddress = "1850 W 56 St Hialeah FL 33012 United States"
-            
-            let otherHouses = House(context: viewContext)
-            otherHouses.id = UUID().uuidString
-            otherHouses.number = "10\(index)"
-            otherHouses.territoryAddress = "1890 W 56 St Hialeah FL 33012 United States"
-            
-            let newVisit = Visit(context: viewContext)
-            newVisit.id = UUID().uuidString
+//            let newHouse = House(context: viewContext)
+//            newHouse.id = UUID().uuidString
+//            newHouse.number = "10\(index)"
+//            newHouse.territoryAddress = "1850 W 56 St Hialeah FL 33012 United States"
+//            
+//            let otherHouses = House(context: viewContext)
+//            otherHouses.id = UUID().uuidString
+//            otherHouses.number = "10\(index)"
+//            otherHouses.territoryAddress = "1890 W 56 St Hialeah FL 33012 United States"
+//            
+//            let newVisit = Visit(context: viewContext)
+//            newVisit.id = UUID().uuidString
 //            newVisit.date = Int64(Date().timeIntervalSince1970)
 //            newVisit.house = newHouse.id
 //            newVisit.notes = "Test Note"
@@ -61,6 +61,7 @@ struct DataController {
 //            newVisit.user = ""
         }
         do {
+            //DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
             try viewContext.save()
         } catch {
             // Replace this implementation with code to handle the error appropriately.
@@ -103,6 +104,7 @@ struct DataController {
         
         if context.hasChanges {
             do {
+                //DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                 try context.save()
             } catch {
                 print("ERROR Saving CONTEXT")

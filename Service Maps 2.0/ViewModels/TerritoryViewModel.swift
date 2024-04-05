@@ -46,7 +46,8 @@ class TerritoryViewModel: ObservableObject {
     
     func deleteTerritory(territory: Territory) {
         DataController.shared.container.viewContext.delete(territory)
-        
+        DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+            // you need that line
         do {
             try DataController.shared.container.viewContext.save()
         } catch {

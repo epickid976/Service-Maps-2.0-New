@@ -8,6 +8,7 @@
 import Foundation
 import BackgroundTasks
 import SwiftUI
+import CoreData
 
 class DataUploaderManager: ObservableObject {
     
@@ -59,6 +60,7 @@ class DataUploaderManager: ObservableObject {
             dataController.container.viewContext.insert(territory)
             if dataController.container.viewContext.hasChanges {
                 do {
+                    DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                     try dataController.container.viewContext.save()
                     
                 } catch {
@@ -90,6 +92,7 @@ class DataUploaderManager: ObservableObject {
             dataController.container.viewContext.insert(territoryAddress)
             if dataController.container.viewContext.hasChanges {
                 do {
+                    DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                     try dataController.container.viewContext.save()
                     
                 } catch {
@@ -121,6 +124,7 @@ class DataUploaderManager: ObservableObject {
             dataController.container.viewContext.insert(house)
             if dataController.container.viewContext.hasChanges {
                 do {
+                    DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                     try dataController.container.viewContext.save()
                 } catch {
                     return Result.failure(error)
@@ -150,6 +154,7 @@ class DataUploaderManager: ObservableObject {
             dataController.container.viewContext.insert(visit)
             if dataController.container.viewContext.hasChanges {
                 do {
+                    DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                     try dataController.container.viewContext.save()
                 } catch {
                     return Result.failure(error)
@@ -215,6 +220,7 @@ class DataUploaderManager: ObservableObject {
             territoryToUpdate?.congregation = territory.description
             territoryToUpdate?.image = territory.image
             do {
+                DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                 try dataController.container.viewContext.save()
             } catch {
                 return Result.failure(error)
@@ -257,6 +263,7 @@ class DataUploaderManager: ObservableObject {
             territoryAddressToUpdate?.address = territoryAddress.address
             territoryAddressToUpdate?.floors = territoryAddress.floors
             do {
+                DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                 try dataController.container.viewContext.save()
             } catch {
                 return Result.failure(error)
@@ -299,6 +306,7 @@ class DataUploaderManager: ObservableObject {
             houseToUpdate?.floor = house.floor
             houseToUpdate?.number = house.number
             do {
+                DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                 try dataController.container.viewContext.save()
             } catch {
                 return Result.failure(error)
@@ -345,6 +353,7 @@ class DataUploaderManager: ObservableObject {
             visitsToUpdate?.user = visit.user
             
             do {
+                DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
                 try dataController.container.viewContext.save()
             } catch {
                 return Result.failure(error)
@@ -422,7 +431,7 @@ class DataUploaderManager: ObservableObject {
             newToken.name = token.name
             newToken.owner = token.owner
             newToken.user = token.user
-            
+            DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
             try dataController.container.viewContext.save()
             
             for territory in territories {

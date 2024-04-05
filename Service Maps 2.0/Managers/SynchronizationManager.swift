@@ -11,7 +11,7 @@ import Combine
 
 
 class SynchronizationManager: ObservableObject {
-    //@Published private var dataController = DataController.shared
+    @Published private var dataController = DataController.shared
     @Published private var dataStore = StorageManager.shared
     @Published private var authorizationLevelManager = AuthorizationLevelManager()
     
@@ -128,6 +128,7 @@ class SynchronizationManager: ObservableObject {
             let userTokens = try await tokenApi.loadUserTokens()
             tokensApi.append(contentsOf: userTokens)
             
+            
             if authorizationLevelManager.existsAdminCredentials() {
                 let response = try await AdminAPI().allData()
                 territoriesApi = response.territories
@@ -222,9 +223,11 @@ class SynchronizationManager: ObservableObject {
                     
                     //Save
                     do {
+                        
                         try viewContext.save()
                     } catch {
-                        print("Error saving")
+                        print(error.self)
+                        print("Error saving Tokens Comparison 1")
                     }
                 }
                 // Remove Token from the database to discard what does exist on the server
@@ -238,9 +241,11 @@ class SynchronizationManager: ObservableObject {
                 
                 //Save
                 do {
+                    
                     try viewContext.save()
                 } catch {
-                    print("Error saving")
+                    print(error.self)
+                    print("Error saving Comparison 2")
                 }
             }
         }
@@ -273,9 +278,11 @@ class SynchronizationManager: ObservableObject {
         // Step 3: Save the changes to the database
         await MainActor.run {
             do {
+                
                 try viewContext.save()
             } catch {
-                print("Error saving")
+                print(error.self)
+                print("Error saving  Territories")
             }
         }
     }
@@ -294,9 +301,11 @@ class SynchronizationManager: ObservableObject {
                     houseDb.floor = houseApi.floor
                     //Save
                     do {
+                        
                         try viewContext.save()
                     } catch {
-                        print("Error saving")
+                        print(error.self)
+                        print("Error saving Houses 1")
                     }
                 }
                 
@@ -309,9 +318,11 @@ class SynchronizationManager: ObservableObject {
                 
                 //Save
                 do {
+                    
                     try viewContext.save()
                 } catch {
-                    print("Error saving")
+                    print(error.self)
+                    print("Error saving Houses 2")
                 }
             }
         }
@@ -339,9 +350,11 @@ class SynchronizationManager: ObservableObject {
                     
                     //Save
                     do {
+                        
                         try viewContext.save()
                     } catch {
-                        print("Error saving")
+                        print(error.self)
+                        print("Error saving Visits 1")
                     }
                 }
                 
@@ -354,9 +367,11 @@ class SynchronizationManager: ObservableObject {
                 
                 //Save
                 do {
+                    
                     try viewContext.save()
                 } catch {
-                    print("Error saving")
+                    print(error.self)
+                    print("Error saving Visits 2")
                 }
             }
         }
@@ -385,9 +400,11 @@ class SynchronizationManager: ObservableObject {
                 
                 //Save
                 do {
+                    
                     try viewContext.save()
                 } catch {
-                    print("Error saving")
+                    print(error.self)
+                    print("Error saving Token territories")
                 }
             }
         }
@@ -416,9 +433,11 @@ class SynchronizationManager: ObservableObject {
                 
                 //Save
                 do {
+                    
                     try viewContext.save()
                 } catch {
-                    print("Error saving")
+                    print(error.self)
+                    print("Error saving Addresses")
                 }
             }
         }

@@ -133,31 +133,6 @@ class HousesViewModel: ObservableObject {
         .hSpacing(.center)
     }
     
-    @ViewBuilder
-    func createFab() -> some View {
-            Button(action: {
-                self.presentSheet.toggle()
-                let newHouse = House(context: DataController.shared.container.viewContext)
-                newHouse.id = UUID().uuidString
-                newHouse.number = "10\(1)"
-                newHouse.territoryAddress = "1850 W 56 St Hialeah FL 33012 United States"
-                DataController.shared.save()
-            }, label: {
-                Image(systemName: "plus")
-                    .font(.title)
-                    .foregroundColor(.white)
-                    .frame(width: 40, height: 40, alignment: .center)
-            })
-            .padding(8)
-            .background(Color.blue)
-            .cornerRadius(100)
-            .padding(8)
-            .shadow(radius: 3,
-                    x: 3,
-                    y: 3)
-            .transition(.scale)
-        }
-    
     func deleteHouse(house: House) {
         DataController.shared.container.viewContext.delete(house)
     }
@@ -166,14 +141,5 @@ class HousesViewModel: ObservableObject {
 extension HousesViewModel {
     var housesList: [House] {
         houses.items
-    }
-}
-
-
-extension House {
-    static var all: NSFetchRequest<House> {
-        let request = House.fetchRequest ()
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \House.number, ascending: true)]
-        return request
     }
 }

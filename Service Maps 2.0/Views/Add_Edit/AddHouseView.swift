@@ -25,9 +25,6 @@ struct AddHouseView: View {
     }
     
     @FocusState private var numberFocus: Bool
-    
-
-    
     var body: some View {
         ZStack {
             NavigationStack {
@@ -117,13 +114,11 @@ struct AddHouseView: View {
                         title = "Add"
                     }
                 }
-                
-                
             }
         
     }
 }
 
-#Preview {
-    AddHouseView(house: nil)
-}
+//#Preview {
+//    AddHouseView(house: nil)
+//}

@@ -86,28 +86,37 @@ struct HousesView: View {
             //.scrollOffset($scrollOffset)
             .collapseProgress($viewModel.progress)
             .scrollIndicators(.hidden)
+            .navigationDestination(isPresented: $viewModel.presentSheet) {
+//                AddHouseView(house: viewModel.currentHouse)
+                EmptyView()
+            }
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()
         .navigationBarTitle("Houses", displayMode: .inline)
-        .navigationBarItems(leading: Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                dismiss()
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarLeading) {
+                HStack {
+                    Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            dismiss()
+                        }
+                    })
+                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                }
             }
-        })
-            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
-                            , trailing:
-                                HStack {
-            Button("", action: { viewModel.optionsAnimation.toggle();  print("Info") })
-                .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-            Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; DispatchQueue.main.async { viewModel.presentSheet.toggle() }})
-                .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                HStack {
+//                    Button(action: { viewModel.presentSheet.toggle() }) {
+//                        Image(systemName: "plus").animation(.spring)
+//                    }
+                    Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                        .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                }
+            }
         }
-        )
         .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-        .navigationDestination(isPresented: $viewModel.presentSheet) {
-            AddHouseView(house: viewModel.currentHouse)
-        }
+        
     }
     
     

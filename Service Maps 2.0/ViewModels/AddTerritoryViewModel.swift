@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import CoreData
 
 @MainActor
 class AddTerritoryViewModel: ObservableObject {
@@ -49,6 +50,7 @@ class AddTerritoryViewModel: ObservableObject {
     
         
         do {
+            DataController.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
             try DataController.shared.container.viewContext.save()
         } catch {
             print("ERROR Saving CONTEXT")
