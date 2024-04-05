@@ -301,7 +301,6 @@ class SynchronizationManager: ObservableObject {
                     houseDb.floor = houseApi.floor
                     //Save
                     do {
-                        
                         try viewContext.save()
                     } catch {
                         print(error.self)
@@ -400,7 +399,6 @@ class SynchronizationManager: ObservableObject {
                 
                 //Save
                 do {
-                    
                     try viewContext.save()
                 } catch {
                     print(error.self)
@@ -446,6 +444,39 @@ class SynchronizationManager: ObservableObject {
             viewContext.delete(tokenTerritoryDb)
         }
     }
+    
+    func comparingAndSynchronizeModels<T: Equatable>(
+        apiList: [T],
+        dbList: [T],
+        getID: (T) -> String,
+        add: @escaping (T) -> Void,
+        update: @escaping (T) -> Void,
+        delete: @escaping (T) -> Void
+    ) throws {
+        let modelsApi = apiList
+        var modelsDb = dbList
+
+        for modelApi in modelsApi {
+            guard let modelDbIndex = modelsDb.firstIndex(where: { getID($0) == getID(modelApi) }) else {
+                // Model not found in database, create it
+                add(modelApi)
+                continue
+            }
+
+            let modelDb = modelsDb.remove(at: modelDbIndex)
+
+            if modelApi != modelDb {
+                // Model on server has differences, update it
+                update(modelApi)
+            }
+        }
+
+        // Delete models that no longer exist on the server
+        for modelDb in modelsDb {
+            delete(modelDb)
+        }
+    }
+
     
     func allData() {
         territories = DataController.shared.getTerritories()

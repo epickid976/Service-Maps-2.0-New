@@ -7,63 +7,62 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "2BA212BD-F9D8-4A61-A59A-07D8AD7BDC69"
-            shouldBeEnabled = "Yes"
+            uuid = "6259B651-463E-4537-A7CB-E910322AA5EF"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "388"
-            endingLineNumber = "388"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3A3AD7E6-B6FD-498D-9C82-226ED3C6E9E4"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "389"
-            endingLineNumber = "389"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
+            startingLineNumber = "159"
+            endingLineNumber = "159"
+            landmarkName = "synchronize()"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "3A3AD7E6-B6FD-498D-9C82-226ED3C6E9E4 - 66b44e9391b35712"
+                  uuid = "6259B651-463E-4537-A7CB-E910322AA5EF - ab915ed4cd486ede"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  symbolName = "(7) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.synchronize() async -&gt; ()"
                   moduleName = "Service Maps 2.0"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "389"
-                  endingLineNumber = "389"
-                  offsetFromSymbolStart = "552">
+                  startingLineNumber = "159"
+                  endingLineNumber = "159"
+                  offsetFromSymbolStart = "1224">
                </Location>
                <Location
-                  uuid = "3A3AD7E6-B6FD-498D-9C82-226ED3C6E9E4 - 5f070a843f2f93f9"
+                  uuid = "6259B651-463E-4537-A7CB-E910322AA5EF - f0539bac76d6aed8"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Service_Maps_2_0.TokenTerritory) -&gt; Swift.Bool in Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  symbolName = "(9) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.synchronize() async -&gt; ()"
                   moduleName = "Service Maps 2.0"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "390"
-                  endingLineNumber = "390"
-                  offsetFromSymbolStart = "52">
+                  startingLineNumber = "159"
+                  endingLineNumber = "159"
+                  offsetFromSymbolStart = "1224">
+               </Location>
+               <Location
+                  uuid = "6259B651-463E-4537-A7CB-E910322AA5EF - 9c9b6904041766"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(11) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.synchronize() async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "159"
+                  endingLineNumber = "159"
+                  offsetFromSymbolStart = "1140">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -71,99 +70,20 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A29C5D0E-1558-4E56-975A-B100CFE16C03"
+            uuid = "84EE948E-E77B-4F24-A07F-F9C1A68081EC"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "390"
-            endingLineNumber = "390"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "7310A25E-9AA1-4DEB-AE8A-9EE54968C4C3"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "391"
-            endingLineNumber = "391"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3982BEE4-FEA8-4DBB-BFDB-1EE2E6E8E253"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "392"
-            endingLineNumber = "392"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "5F7BA8AC-5C6A-4690-B547-1BF4A60730CF"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "393"
-            endingLineNumber = "393"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2347CDB2-AFD4-4655-86DF-888EDFB81827"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "394"
-            endingLineNumber = "394"
+            startingLineNumber = "387"
+            endingLineNumber = "387"
             landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "2347CDB2-AFD4-4655-86DF-888EDFB81827 - a9b53a28b52afdf4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
-                  moduleName = "Service Maps 2.0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "394"
-                  endingLineNumber = "394"
-                  offsetFromSymbolStart = "24">
-               </Location>
-               <Location
-                  uuid = "2347CDB2-AFD4-4655-86DF-888EDFB81827 - 66b44e9391b357bf"
+                  uuid = "84EE948E-E77B-4F24-A07F-F9C1A68081EC - 66b44e9391b35775"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -173,12 +93,12 @@
                   urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "394"
-                  endingLineNumber = "394"
-                  offsetFromSymbolStart = "56">
+                  startingLineNumber = "388"
+                  endingLineNumber = "388"
+                  offsetFromSymbolStart = "280">
                </Location>
                <Location
-                  uuid = "2347CDB2-AFD4-4655-86DF-888EDFB81827 - 66b44e9391b357bf"
+                  uuid = "84EE948E-E77B-4F24-A07F-F9C1A68081EC - 66b44e9391b35754"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -188,9 +108,9 @@
                   urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "394"
-                  endingLineNumber = "394"
-                  offsetFromSymbolStart = "760">
+                  startingLineNumber = "387"
+                  endingLineNumber = "387"
+                  offsetFromSymbolStart = "280">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -198,55 +118,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "5CA31896-AC69-4C16-B348-494354AB277A"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "395"
-            endingLineNumber = "395"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DBEE4FD4-9E7D-41E2-94BA-C70105D67E50"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "396"
-            endingLineNumber = "396"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A62F5EB9-2CD6-486B-A0E7-CA146FE18BB6"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "397"
-            endingLineNumber = "397"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D011181C-5F91-4A00-8E88-979BAA36A41B"
+            uuid = "5154759C-C06E-4055-949A-2876A9622574"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -257,12 +129,44 @@
             endingLineNumber = "398"
             landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5154759C-C06E-4055-949A-2876A9622574 - 66b44e9391b356d8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "399"
+                  endingLineNumber = "399"
+                  offsetFromSymbolStart = "1016">
+               </Location>
+               <Location
+                  uuid = "5154759C-C06E-4055-949A-2876A9622574 - 66b44e9391b3563b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "398"
+                  endingLineNumber = "398"
+                  offsetFromSymbolStart = "1016">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "E5EF82D2-C15D-4650-B93E-BD2061BD0FB7"
+            uuid = "3497D243-8B38-4657-95CC-E46A997B33F3"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -273,44 +177,44 @@
             endingLineNumber = "399"
             landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "3497D243-8B38-4657-95CC-E46A997B33F3 - 66b44e9391b356d8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "399"
+                  endingLineNumber = "399"
+                  offsetFromSymbolStart = "1016">
+               </Location>
+               <Location
+                  uuid = "3497D243-8B38-4657-95CC-E46A997B33F3 - 66b44e9391b356a7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "1068">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D52157C8-E8C7-4D71-8454-C2E9023126D2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "400"
-            endingLineNumber = "400"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2016D4E6-0978-4A19-A156-BC93D8CB6C0B"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "401"
-            endingLineNumber = "401"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "46EE790B-5F30-45F3-89B4-1B7F7BB5D26E"
+            uuid = "8B99FB88-A543-4E01-A8EA-34E7D9ECBB96"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -321,214 +225,164 @@
             endingLineNumber = "402"
             landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "8B99FB88-A543-4E01-A8EA-34E7D9ECBB96 - 66b44e9391b35544"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "403"
+                  endingLineNumber = "403"
+                  offsetFromSymbolStart = "1068">
+               </Location>
+               <Location
+                  uuid = "8B99FB88-A543-4E01-A8EA-34E7D9ECBB96 - 66b44e9391b356a7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "1068">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "9CE8C36B-CB31-4976-A8FF-1BCCF6F36D32"
+            uuid = "EAB5B0A8-5CF7-4057-94AB-F8DFC6A132F3"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "403"
-            endingLineNumber = "403"
+            startingLineNumber = "392"
+            endingLineNumber = "392"
             landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "EAB5B0A8-5CF7-4057-94AB-F8DFC6A132F3 - 66b44e9391b3579e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "393"
+                  endingLineNumber = "393"
+                  offsetFromSymbolStart = "652">
+               </Location>
+               <Location
+                  uuid = "EAB5B0A8-5CF7-4057-94AB-F8DFC6A132F3 - 66b44e9391b357f1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "392"
+                  endingLineNumber = "392"
+                  offsetFromSymbolStart = "652">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "56AF1A39-3479-46BE-A956-8A44DA33E19F"
+            uuid = "162FDC63-E841-436C-9004-9E1B845E9971"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "404"
-            endingLineNumber = "404"
+            startingLineNumber = "393"
+            endingLineNumber = "393"
             landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "ADB6F76A-A8AA-45D4-857F-C8028968F6AC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "405"
-            endingLineNumber = "405"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "027EA04E-507D-4B87-8786-BC9631B80F39"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "406"
-            endingLineNumber = "406"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DCBAC0A7-6675-4E80-AEF2-6DD316013B71"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "407"
-            endingLineNumber = "407"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "8D886CA0-04A0-47D3-9126-F0E574296933"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "408"
-            endingLineNumber = "408"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "77F4C0B7-5EF1-4ABE-93D5-36DE11600782"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "409"
-            endingLineNumber = "409"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "41565A35-0366-44DC-9820-8C31CBEFD58A"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "410"
-            endingLineNumber = "410"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DD23ABA7-A4C1-4D12-B449-AFCD5722A141"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "411"
-            endingLineNumber = "411"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E3CBBF2B-277D-4B53-B04C-26205CB5F24E"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "412"
-            endingLineNumber = "412"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "94F90CE6-4692-4C9E-BCE0-CFC9C8379714"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "413"
-            endingLineNumber = "413"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "545A0CFC-6BB0-4824-9509-272386899928"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "414"
-            endingLineNumber = "414"
-            landmarkName = "comparingAndSynchronizeTokenTerritories(apiList:dbList:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "985D121E-F34D-4B20-B7F5-42381D401CF4"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "373"
-            endingLineNumber = "373"
-            landmarkName = "comparingAndSynchronizeVisits(apiList:dbList:)"
-            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "162FDC63-E841-436C-9004-9E1B845E9971 - 66b44e9391b3579e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "393"
+                  endingLineNumber = "393"
+                  offsetFromSymbolStart = "652">
+               </Location>
+               <Location
+                  uuid = "162FDC63-E841-436C-9004-9E1B845E9971 - a9b53a28b52afdd5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "393"
+                  endingLineNumber = "393"
+                  offsetFromSymbolStart = "24">
+               </Location>
+               <Location
+                  uuid = "162FDC63-E841-436C-9004-9E1B845E9971 - 66b44e9391b3579e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "393"
+                  endingLineNumber = "393"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  uuid = "162FDC63-E841-436C-9004-9E1B845E9971 - 66b44e9391b3579e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for Service_Maps_2_0.SynchronizationManager.comparingAndSynchronizeTokenTerritories(apiList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;, dbList: Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;) async -&gt; ()"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service%20Maps%202.0/Service%20Maps%202.0/Managers/SynchronizationManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "393"
+                  endingLineNumber = "393"
+                  offsetFromSymbolStart = "760">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
