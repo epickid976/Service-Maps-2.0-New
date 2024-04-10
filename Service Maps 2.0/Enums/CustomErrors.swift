@@ -7,8 +7,9 @@
 
 import Foundation
 
-enum NotFoundError: Error {
+enum CustomErrors: Error {
     case NotFound
+    case
     
     var localizedDescription: String {
         switch self {
