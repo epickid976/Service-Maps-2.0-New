@@ -193,6 +193,195 @@ class DataBaseManager: ObservableObject {
         }
     }
     
+    func updateHouse(house: HouseModel) -> Result<Bool, Error> {
+        var houses = getHouses()
+        
+        let entity = houses.first(where: { $0.id == house.id})
+        if let entity = entity {
+            entity.id = house.id
+            entity.territoryAddress = house.territory_address
+            entity.number = house.number
+            if let floorString = house.floor, let floor = Int16(floorString) {
+              entity.floor = floor
+            }
+            
+            switch commit() {
+            case .success(let success):
+                refreshHouses()
+                return Result.success(success)
+            case .failure(let error):
+                return Result.failure(error)
+            }
+        } else {
+            return Result.failure(CustomErrors.NotFound)
+        }
+    }
+    
+    func updateVisit(visit: VisitModel) -> Result<Bool, Error> {
+        var visits = getVisits()
+        
+        let entity = visits.first(where: { $0.id == visit.id})
+        if let entity = entity {
+            entity.id = visit.id
+            entity.house = visit.house
+            entity.date = visit.date // Assuming date is a unix timestamp
+            entity.symbol = visit.symbol
+            entity.notes = visit.notes
+            entity.user = visit.user
+            
+            switch commit() {
+            case .success(let success):
+                refreshVisits()
+                return Result.success(success)
+            case .failure(let error):
+                return Result.failure(error)
+            }
+        } else {
+            return Result.failure(CustomErrors.NotFound)
+        }
+    }
+    
+    func updateToken(token: MyTokenModel) -> Result<Bool, Error> {
+        var tokens = getMyTokens()
+        
+        let entity = tokens.first(where: { $0.id == token.id})
+        if let entity = entity {
+            entity.id = token.id
+            entity.name = token.name
+            entity.owner = token.owner
+            entity.congregation = token.congregation
+            entity.moderator = token.moderator
+            entity.expires = token.expire ?? 0
+            entity.user = token.user
+            
+            switch commit() {
+            case .success(let success):
+                refreshTokens()
+                return Result.success(success)
+            case .failure(let error):
+                return Result.failure(error)
+            }
+        } else {
+            return Result.failure(CustomErrors.NotFound)
+        }
+    }
+    
+    func updateTokenTerritory(tokenTerritory: TokenTerritoryModel) -> Result<Bool, Error> {
+        var tokenTerritories = getTokenTerritories()
+        
+        let entity = tokenTerritories.first(where: { ($0.token == tokenTerritory.token) && ($0.territory == tokenTerritory.territory)})
+        if let entity = entity {
+            entity.token = tokenTerritory.token
+            entity.territory = tokenTerritory.territory
+            
+            switch commit() {
+            case .success(let success):
+                refreshTokenTerritories()
+                return Result.success(success)
+            case .failure(let error):
+                return Result.failure(error)
+            }
+        } else {
+            return Result.failure(CustomErrors.NotFound)
+        }
+    }
+    
+    func deleteTerritory(territory: TerritoryModel) -> Result<Bool, Error> {
+        var territories = getTerritories()
+        
+        guard let entity = territories.first(where: { $0.id == territory.id}) else { return Result.failure(CustomErrors.NotFound) }
+        
+        DataBaseManager.shared.container.viewContext.delete(entity)
+        
+        switch commit() {
+        case .success(let success):
+            refreshTerritories()
+            return Result.success(success)
+        case .failure(let error):
+            return Result.failure(error)
+        }
+    }
+    
+    func deleteAddress(address: TerritoryAddressModel) -> Result<Bool, Error> {
+        var addresses = getTerritoryAddresses()
+        
+        guard let entity = addresses.first(where: { $0.id == address.id}) else { return Result.failure(CustomErrors.NotFound) }
+        
+        DataBaseManager.shared.container.viewContext.delete(entity)
+        
+        switch commit() {
+        case .success(let success):
+            refreshAddresses()
+            return Result.success(success)
+        case .failure(let error):
+            return Result.failure(error)
+        }
+    }
+    
+    func deleteHouse(house: HouseModel) -> Result<Bool, Error> {
+        var houses = getHouses()
+        
+        guard let entity = houses.first(where: { $0.id == house.id}) else { return Result.failure(CustomErrors.NotFound) }
+        
+        DataBaseManager.shared.container.viewContext.delete(entity)
+        
+        switch commit() {
+        case .success(let success):
+            refreshHouses()
+            return Result.success(success)
+        case .failure(let error):
+            return Result.failure(error)
+        }
+    }
+    
+    func deleteVisit(visit: VisitModel) -> Result<Bool, Error> {
+        var visits = getVisits()
+        
+        guard let entity = visits.first(where: { $0.id == visit.id}) else { return Result.failure(CustomErrors.NotFound) }
+        
+        DataBaseManager.shared.container.viewContext.delete(entity)
+        
+        switch commit() {
+        case .success(let success):
+            refreshVisits()
+            return Result.success(success)
+        case .failure(let error):
+            return Result.failure(error)
+        }
+    }
+    
+    func deleteTokens(token: MyTokenModel) -> Result<Bool, Error> {
+        var tokens = getMyTokens()
+        
+        guard let entity = tokens.first(where: { $0.id == token.id}) else { return Result.failure(CustomErrors.NotFound) }
+        
+        DataBaseManager.shared.container.viewContext.delete(entity)
+        
+        switch commit() {
+        case .success(let success):
+            refreshTokens()
+            return Result.success(success)
+        case .failure(let error):
+            return Result.failure(error)
+        }
+    }
+    
+    func deleteTokenTerritory(tokenTerritory: TokenTerritoryModel) -> Result<Bool, Error> {
+        var tokenTerritories = getTokenTerritories()
+        
+        guard let entity = tokenTerritories.first(where: { ($0.token == tokenTerritory.token) && ($0.territory == tokenTerritory.territory)}) else { return Result.failure(CustomErrors.NotFound) }
+        
+        DataBaseManager.shared.container.viewContext.delete(entity)
+        
+        switch commit() {
+        case .success(let success):
+            refreshTokenTerritories()
+            return Result.success(success)
+        case .failure(let error):
+            return Result.failure(error)
+        }
+    }
+    
     func getTerritories() -> [Territory] {
         let viewContext = DataController.shared.container.newBackgroundContext()
         let territoriesRequest = NSFetchRequest<NSManagedObject>(entityName: "Territory")
