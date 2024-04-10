@@ -22,7 +22,7 @@ class HousesViewModel: ObservableObject {
         self.territory = territory
         
          houses = FetchedResultList(context: context, sortDescriptors: [
-            NSSortDescriptor(keyPath: \House.id, ascending: true)
+            NSSortDescriptor(keyPath: \House.number, ascending: true)
            ])
          
          houses.willChange = { [weak self] in self?.objectWillChange.send() }
@@ -61,7 +61,7 @@ class HousesViewModel: ObservableObject {
         VStack {
             ZStack {
                     VStack {
-                        LazyImage(url: URL(string: "https://assetsnffrgf-a.akamaihd.net/assets/m/502016177/univ/art/502016177_univ_lsr_xl.jpg")) { state in
+                        LazyImage(url: URL(string: territory.image ?? "https://www.google.com/url?sa=i&url=https%3A%2F%2Flottiefiles.com%2Fanimations%2Fno-data-bt8EDsKmcr&psig=AOvVaw2p2xZlutsRFWRoLRsg6LJ2&ust=1712619221457000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCPjeiPihsYUDFQAAAAAdAAAAABAE")) { state in
                             if let image = state.image {
                                 image.resizable().aspectRatio(contentMode: .fill).frame(width: UIScreen.screenWidth, height: 350)
                                 
@@ -111,10 +111,11 @@ class HousesViewModel: ObservableObject {
                 .frame(maxHeight: 75)
                 .padding(.horizontal, -5)
             if !(progress < 0.98) {
-                LazyImage(url: URL(string: "https://assetsnffrgf-a.akamaihd.net/assets/m/502016177/univ/art/502016177_univ_lsr_xl.jpg")) { state in
+                LazyImage(url: URL(string: territory.image ?? "https://www.google.com/url?sa=i&url=https%3A%2F%2Flottiefiles.com%2Fanimations%2Fno-data-bt8EDsKmcr&psig=AOvVaw2p2xZlutsRFWRoLRsg6LJ2&ust=1712619221457000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCPjeiPihsYUDFQAAAAAdAAAAABAE")) { state in
                     if let image = state.image {
                         image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 75, maxHeight: 60)
                     } else if state.error != nil {
+                       // print(state.error)
                         Color.red
                     } else {
                         ProgressView().progressViewStyle(.circular)

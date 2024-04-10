@@ -30,7 +30,6 @@ struct TerritoryView: View {
     }
     
     var body: some View {
-        NavigationStack {
             ScrollView {
                 ZStack {
                     LazyVStack {
@@ -84,15 +83,11 @@ struct TerritoryView: View {
 //                            Button(action: { viewModel.isAscending.toggle() }) {
 //                                Image(systemName: viewModel.isAscending ? "arrow.up" : "arrow.down").animation(.spring)
 //                            }
-                            Button(action: { viewModel.presentSheet.toggle() }) {
-                                Image(systemName: "plus").animation(.spring)
-                            }
+                            Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                                .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                         }
                     }
                 }
-        
-            
-        }
         .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
         .navigationViewStyle(StackNavigationViewStyle())
     }

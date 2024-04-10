@@ -9,12 +9,14 @@ import Foundation
 
 enum CustomErrors: Error {
     case NotFound
-    case
+    case NothingToSave
     
     var localizedDescription: String {
         switch self {
         case .NotFound:
             return "Not Found"
+        case .NothingToSave:
+            return "No changes to save"
         }
     }
 }

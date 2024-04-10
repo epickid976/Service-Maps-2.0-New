@@ -388,6 +388,9 @@ class SynchronizationManager: ObservableObject {
             let tokenTerritoryDb = tokenTerritoriesDb.first {
                 $0.token == tokenTerritoryApi.token && $0.territory == tokenTerritoryApi.territory
             }
+            print("PRINTING TokenTerritoriesApi FOUND \(tokenTerritoriesApi)" )
+            print("PRINTING TokenTerritoriesDb FOUND \(tokenTerritoriesDb)" )
+            print("PRINTING TOKENTERRITORYDB FOUND \(tokenTerritoryDb)" )
             
             if let tokenTerritoryDb = tokenTerritoryDb {
                 if let index = tokenTerritoriesDb.firstIndex(of: tokenTerritoryDb) {

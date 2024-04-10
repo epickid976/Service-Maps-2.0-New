@@ -71,7 +71,7 @@ class DataUploaderManager: ObservableObject {
             print("Si no se pudo no se pudo (DatauploaderManager ADD TERRITORY)")
         }
         
-        return result ?? Result.failure(NotFoundError.NotFound)
+        return result ?? Result.failure(CustomErrors.NotFound)
     }
     
     func addTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Bool, Error> {
@@ -103,7 +103,7 @@ class DataUploaderManager: ObservableObject {
             print("Si no se pudo no se pudo (DatauploaderManager ADD TERRITORYADDRESS)")
         }
         
-        return result ?? Result.failure(NotFoundError.NotFound)
+        return result ?? Result.failure(CustomErrors.NotFound)
     }
     
     func addHouse(house: House) async -> Result<Bool, Error> {
@@ -134,7 +134,7 @@ class DataUploaderManager: ObservableObject {
             print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
         }
         
-        return result ?? Result.failure(NotFoundError.NotFound)
+        return result ?? Result.failure(CustomErrors.NotFound)
     }
     
     func addVisit(visit: Visit) async -> Result<Bool, Error> {
@@ -164,7 +164,7 @@ class DataUploaderManager: ObservableObject {
             print("Si no se pudo no se pudo (DatauploaderManager ADD VISIT)")
         }
         
-        return result ?? Result.failure(NotFoundError.NotFound)
+        return result ?? Result.failure(CustomErrors.NotFound)
     }
     
     func updateTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Bool, Error> {
@@ -229,7 +229,7 @@ class DataUploaderManager: ObservableObject {
             print("Si no se pudo no se pudo (DatauploaderManager UPDATETERRITORY)")
         }
         
-        return result ?? Result.failure(NotFoundError.NotFound)
+        return result ?? Result.failure(CustomErrors.NotFound)
     }
     
     func updateTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Bool, Error> {
@@ -272,7 +272,7 @@ class DataUploaderManager: ObservableObject {
             print("Si no se pudo no se pudo (DatauploaderManager UPDATETERRITORYADDRESS)")
         }
         
-        return result ?? Result.failure(NotFoundError.NotFound)
+        return result ?? Result.failure(CustomErrors.NotFound)
     }
     
     func updateHouse(house: House) async -> Result<Bool, Error> {
@@ -315,7 +315,7 @@ class DataUploaderManager: ObservableObject {
             print("Si no se pudo no se pudo (DatauploaderManager UPDATEHOUSE)")
         }
         
-        return result ?? Result.failure(NotFoundError.NotFound)
+        return result ?? Result.failure(CustomErrors.NotFound)
     }
     
     func updateVisit(visit: Visit) async -> Result<Bool, Error> {
@@ -362,7 +362,7 @@ class DataUploaderManager: ObservableObject {
             print("Si no se pudo no se pudo (DatauploaderManager UPDATEVISIT)")
         }
         
-        return result ?? Result.failure(NotFoundError.NotFound)
+        return result ?? Result.failure(CustomErrors.NotFound)
     }
     
     func deleteTerritory(territory: Territory) async -> Result<Bool, Error> {

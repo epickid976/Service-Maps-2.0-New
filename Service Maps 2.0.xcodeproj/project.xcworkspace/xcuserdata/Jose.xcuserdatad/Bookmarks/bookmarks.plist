@@ -10,11 +10,11 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingLineNumber</key>
-					<string>145</string>
+					<string>146</string>
 					<key>StartingLineNumber</key>
-					<string>145</string>
+					<string>146</string>
 					<key>Timestamp</key>
-					<string>733947876.237272</string>
+					<string>734225787.042905</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -49,11 +49,11 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingLineNumber</key>
-					<string>145</string>
+					<string>146</string>
 					<key>StartingLineNumber</key>
-					<string>145</string>
+					<string>146</string>
 					<key>Timestamp</key>
-					<string>733947876.2377501</string>
+					<string>734225787.042712</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -105,11 +105,11 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingLineNumber</key>
-					<string>145</string>
+					<string>146</string>
 					<key>StartingLineNumber</key>
-					<string>145</string>
+					<string>146</string>
 					<key>Timestamp</key>
-					<string>733947876.237869</string>
+					<string>734225787.042123</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -132,6 +132,25 @@
 </string>
 				<key>trailing</key>
 				<string></string>
+			</dict>
+			<key>type</key>
+			<string>bookmark</string>
+		</dict>
+		<dict>
+			<key>destination</key>
+			<dict>
+				<key>rebasable-url</key>
+				<dict>
+					<key>base</key>
+					<string>workspace</string>
+					<key>payload</key>
+					<dict>
+						<key>relative-path</key>
+						<string>Service Maps 2.0/CoreData/DataBaseManager.swift</string>
+					</dict>
+				</dict>
+				<key>type</key>
+				<string>DVTDocumentLocation</string>
 			</dict>
 			<key>type</key>
 			<string>bookmark</string>

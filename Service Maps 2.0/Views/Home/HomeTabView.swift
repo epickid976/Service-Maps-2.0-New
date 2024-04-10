@@ -44,7 +44,6 @@ struct HomeTabView: View {
                 }
                 
                 Spacer()
-                
                 HStack(alignment: .center) {
                     Button(action: {
                         withAnimation(.spring) {

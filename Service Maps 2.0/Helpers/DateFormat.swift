@@ -11,14 +11,16 @@ func formattedDate(date: Date) -> String {
     let formatter1 = DateFormatter()
     
     if  Calendar.current.isDateInToday(date) {
-        return "Today"
+        formatter1.dateFormat = "HH:mm"
+        return "Today \(formatter1.string(from: date))"
     } else if Calendar.current.isDateInYesterday(date){
-        return "Yesterday"
+        formatter1.dateFormat = "HH:mm"
+        return "Yesterday \(formatter1.string(from: date))"
     } else if Calendar.current.isDateInThisWeek(date) {
-        formatter1.dateFormat = "EEEE"
+        formatter1.dateFormat = "EEEE HH:mm"
         return  formatter1.string(from: date)
     } else {
-        formatter1.dateFormat = "EE MM-dd-yyyy"
+        formatter1.dateFormat = "MM-dd-yyyy HH:mm"
         return  formatter1.string(from: date)
     }
 }

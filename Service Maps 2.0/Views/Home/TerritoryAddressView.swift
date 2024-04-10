@@ -61,7 +61,7 @@ struct TerritoryAddressView: View {
             }
         }
         .navigationTransition(.zoom.combined(with: .fade(.in)))
-            .navigationViewStyle(StackNavigationViewStyle())
+            //.navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

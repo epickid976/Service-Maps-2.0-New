@@ -34,11 +34,11 @@ struct CellView: View {
             .frame(maxWidth: UIScreen.screenWidth * 0.60, alignment: .leading)
             
             
-            LazyImage(url: URL(string: "https://assetsnffrgf-a.akamaihd.net/assets/m/502016177/univ/art/502016177_univ_lsr_xl.jpg")) { state in
+            LazyImage(url: URL(string: territory.image ?? "https://www.google.com/url?sa=i&url=https%3A%2F%2Flottiefiles.com%2Fanimations%2Fno-data-bt8EDsKmcr&psig=AOvVaw2p2xZlutsRFWRoLRsg6LJ2&ust=1712619221457000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCPjeiPihsYUDFQAAAAAdAAAAABAE")) { state in
                 if let image = state.image {
                     image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: UIScreen.screenWidth * 0.40)
                 } else if state.error != nil {
-                    Color.red
+                    Color.clear
                 } else {
                     ProgressView().progressViewStyle(.circular)
                         .frame(width: UIScreen.screenWidth * 0.40)

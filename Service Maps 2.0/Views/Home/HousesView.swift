@@ -43,6 +43,7 @@ struct HousesView: View {
                                 HouseCell(house: house, lastVisit: nil)
                                     .padding(.bottom, 2)
                             }
+                            
                         } trailingActions: { context in
                             SwipeAction(
                                 systemImage: "trash",
@@ -87,8 +88,7 @@ struct HousesView: View {
             .collapseProgress($viewModel.progress)
             .scrollIndicators(.hidden)
             .navigationDestination(isPresented: $viewModel.presentSheet) {
-//                AddHouseView(house: viewModel.currentHouse)
-                EmptyView()
+                AddHouseView(house: viewModel.currentHouse)
             }
         }
         .ignoresSafeArea()

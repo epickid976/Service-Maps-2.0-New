@@ -84,7 +84,7 @@ class AuthenticationManager: ObservableObject {
         if let userEmail = dataStore.userEmail {
             return await authenticationApi.resendEmailValidation(email: userEmail)
         } else {
-            return Result.failure(NotFoundError.NotFound)
+            return Result.failure(CustomErrors.NotFound)
         }
     }
     

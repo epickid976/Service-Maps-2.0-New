@@ -68,7 +68,7 @@
 		824213662A82BF0200626DD5 /* StartupState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213652A82BF0200626DD5 /* StartupState.swift */; };
 		824213692A82C4CB00626DD5 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213682A82C4CB00626DD5 /* AuthenticationManager.swift */; };
 		8242136B2A82C5C800626DD5 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242136A2A82C5C800626DD5 /* StorageManager.swift */; };
-		8242136D2A82CF4000626DD5 /* NotFoundError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242136C2A82CF4000626DD5 /* NotFoundError.swift */; };
+		8242136D2A82CF4000626DD5 /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242136C2A82CF4000626DD5 /* CustomErrors.swift */; };
 		824213702A82DAEA00626DD5 /* NoDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242136F2A82DAEA00626DD5 /* NoDataView.swift */; };
 		824213722A82DB7300626DD5 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213712A82DB7300626DD5 /* SplashScreenView.swift */; };
 		824213752A82E7D000626DD5 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213742A82E7D000626DD5 /* LoginViewModel.swift */; };
@@ -76,6 +76,11 @@
 		824213792A83335B00626DD5 /* CustomBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213782A83335B00626DD5 /* CustomBackButton.swift */; };
 		8242137B2A83357600626DD5 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242137A2A83357600626DD5 /* CustomButton.swift */; };
 		8242137D2A84810300626DD5 /* SignupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242137C2A84810300626DD5 /* SignupViewModel.swift */; };
+		824E5CEE2BC37962001DE348 /* VisitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CED2BC37962001DE348 /* VisitsViewModel.swift */; };
+		824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CEF2BC43012001DE348 /* VisitCell.swift */; };
+		824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */; };
+		824E5CF42BC57F73001DE348 /* TokenCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF32BC57F73001DE348 /* TokenCell.swift */; };
+		824E5CF62BC5ABF4001DE348 /* DataBaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF52BC5ABF4001DE348 /* DataBaseManager.swift */; };
 		8250B1A92A8A826800A7B70E /* TerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */; };
 		826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */; };
 		826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766F2A729FDE000A4BAA /* HomeTabView.swift */; };
@@ -162,7 +167,7 @@
 		824213652A82BF0200626DD5 /* StartupState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupState.swift; sourceTree = "<group>"; };
 		824213682A82C4CB00626DD5 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		8242136A2A82C5C800626DD5 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
-		8242136C2A82CF4000626DD5 /* NotFoundError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotFoundError.swift; sourceTree = "<group>"; };
+		8242136C2A82CF4000626DD5 /* CustomErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomErrors.swift; sourceTree = "<group>"; };
 		8242136F2A82DAEA00626DD5 /* NoDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDataView.swift; sourceTree = "<group>"; };
 		824213712A82DB7300626DD5 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		824213742A82E7D000626DD5 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -170,6 +175,11 @@
 		824213782A83335B00626DD5 /* CustomBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBackButton.swift; sourceTree = "<group>"; };
 		8242137A2A83357600626DD5 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 		8242137C2A84810300626DD5 /* SignupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupViewModel.swift; sourceTree = "<group>"; };
+		824E5CED2BC37962001DE348 /* VisitsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitsViewModel.swift; sourceTree = "<group>"; };
+		824E5CEF2BC43012001DE348 /* VisitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitCell.swift; sourceTree = "<group>"; };
+		824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessViewModel.swift; sourceTree = "<group>"; };
+		824E5CF32BC57F73001DE348 /* TokenCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenCell.swift; sourceTree = "<group>"; };
+		824E5CF52BC5ABF4001DE348 /* DataBaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseManager.swift; sourceTree = "<group>"; };
 		8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryViewModel.swift; sourceTree = "<group>"; };
 		826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Service Maps 2.0.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service_Maps_2_0App.swift; sourceTree = "<group>"; };
@@ -275,7 +285,7 @@
 			children = (
 				820933FD2A795FDD00AF3FF1 /* AccessLevel.swift */,
 				824213652A82BF0200626DD5 /* StartupState.swift */,
-				8242136C2A82CF4000626DD5 /* NotFoundError.swift */,
+				8242136C2A82CF4000626DD5 /* CustomErrors.swift */,
 				82916C1C2A9944B3005133DE /* Symbols.swift */,
 				82BC0F202A9C249300B255BF /* ChangeAction.swift */,
 				82BC0F222A9C24AC00B255BF /* ChangeType.swift */,
@@ -316,6 +326,7 @@
 				826B76762A729FE1000A4BAA /* DataController.swift */,
 				826B76802A729FF6000A4BAA /* Service_Maps.xcdatamodeld */,
 				827EF1A52AA8C628006C4631 /* ModelExtensions.swift */,
+				824E5CF52BC5ABF4001DE348 /* DataBaseManager.swift */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -367,6 +378,8 @@
 			children = (
 				823FD4D62A7E78DA0036A1DD /* CellView.swift */,
 				822FA0A92AA77C8F0008FA61 /* HouseCell.swift */,
+				824E5CEF2BC43012001DE348 /* VisitCell.swift */,
+				824E5CF32BC57F73001DE348 /* TokenCell.swift */,
 			);
 			path = CellViews;
 			sourceTree = "<group>";
@@ -432,6 +445,8 @@
 				82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */,
 				82916C1A2A994387005133DE /* AddVisitViewModel.swift */,
 				822FA0A42AA7798A0008FA61 /* HousesViewModel.swift */,
+				824E5CED2BC37962001DE348 /* VisitsViewModel.swift */,
+				824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -623,6 +638,7 @@
 				82916C172A990955005133DE /* ImagePickerView.swift in Sources */,
 				822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */,
 				82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */,
+				824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */,
 				821C12642A77F0BD0050D106 /* LoginForm.swift in Sources */,
 				8209340B2A7AD1A800AF3FF1 /* UIScreen Extension.swift in Sources */,
 				820933F12A785D7F00AF3FF1 /* MyTokenModel.swift in Sources */,
@@ -634,6 +650,7 @@
 				82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */,
 				820934002A7993E200AF3FF1 /* StructToModel.swift in Sources */,
 				820933E22A78444800AF3FF1 /* CongregationResponse.swift in Sources */,
+				824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */,
 				827EF1A22AA7B7E3006C4631 /* VisitsView.swift in Sources */,
 				820934182A7AF35800AF3FF1 /* ViewExtension.swift in Sources */,
 				821C12722A780EE40050D106 /* PasswordResetAPI.swift in Sources */,
@@ -645,6 +662,7 @@
 				821C126C2A78081D0050D106 /* SignUpForm.swift in Sources */,
 				823FD4DA2A8165230036A1DD /* AccessView.swift in Sources */,
 				82BC0F212A9C249300B255BF /* ChangeAction.swift in Sources */,
+				824E5CEE2BC37962001DE348 /* VisitsViewModel.swift in Sources */,
 				820934052A7ABB6D00AF3FF1 /* LottieAnimationUIView.swift in Sources */,
 				824213792A83335B00626DD5 /* CustomBackButton.swift in Sources */,
 				820933DE2A78425F00AF3FF1 /* CongregationAPI.swift in Sources */,
@@ -654,6 +672,7 @@
 				82A399C52BBEFAD200ECA5E6 /* AddHouseViewModel.swift in Sources */,
 				8242136B2A82C5C800626DD5 /* StorageManager.swift in Sources */,
 				820933EB2A7852FD00AF3FF1 /* VisitModel.swift in Sources */,
+				824E5CF62BC5ABF4001DE348 /* DataBaseManager.swift in Sources */,
 				82BC0F272A9CD94500B255BF /* AddHouseView.swift in Sources */,
 				824213722A82DB7300626DD5 /* SplashScreenView.swift in Sources */,
 				82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */,
@@ -661,6 +680,7 @@
 				823FD4DC2A8165300036A1DD /* SettingsView.swift in Sources */,
 				823FD4D72A7E78DA0036A1DD /* CellView.swift in Sources */,
 				821C12762A78111C0050D106 /* ResetPasswordForm.swift in Sources */,
+				824E5CF42BC57F73001DE348 /* TokenCell.swift in Sources */,
 				824213702A82DAEA00626DD5 /* NoDataView.swift in Sources */,
 				82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */,
 				826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */,
@@ -680,7 +700,7 @@
 				820933FE2A795FDD00AF3FF1 /* AccessLevel.swift in Sources */,
 				821C12742A780F4C0050D106 /* RequestResetForm.swift in Sources */,
 				827EF1A62AA8C628006C4631 /* ModelExtensions.swift in Sources */,
-				8242136D2A82CF4000626DD5 /* NotFoundError.swift in Sources */,
+				8242136D2A82CF4000626DD5 /* CustomErrors.swift in Sources */,
 				820933F52A78608C00AF3FF1 /* NewTokenForm.swift in Sources */,
 				823FD4D02A7BF07B0036A1DD /* LoadingView.swift in Sources */,
 				820933E02A78427E00AF3FF1 /* CongregationSignInForm.swift in Sources */,

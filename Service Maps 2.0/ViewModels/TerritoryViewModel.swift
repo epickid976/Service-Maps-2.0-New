@@ -37,6 +37,9 @@ class TerritoryViewModel: ObservableObject {
         }
     }
     
+    @Published var progress: CGFloat = 0.0
+    @Published var optionsAnimation = false
+    
     var sortDescriptors: [NSSortDescriptor] {
         // Compute the sort descriptors based on the current sorting order
         return [NSSortDescriptor(keyPath: \Territory.number, ascending: isAscending)]

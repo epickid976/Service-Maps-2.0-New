@@ -20,13 +20,7 @@ struct HouseCell: View {
                             RoundedRectangle(cornerRadius: 16)
                                 .fill(Color.gray.gradient)
                                 .foregroundStyle(Material.thin)
-                                
-                            
-//                            RoundedRectangle(cornerRadius: 16)
-//                                    .fill(
-//                                        Material.thin
-//                                    )
-                            
+
                             HStack {
                                 Image(systemName: "numbersign").imageScale(.large).fontWeight(.heavy)
                                     .foregroundColor(.primary)
