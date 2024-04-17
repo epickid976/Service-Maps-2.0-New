@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct VisitCell: View {
-    var visit: Visit
+    var visit: VisitModel
     
     var body: some View {
         HStack(spacing: 10) {

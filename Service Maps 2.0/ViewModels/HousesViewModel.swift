@@ -14,46 +14,32 @@ import Combine
 @MainActor
 class HousesViewModel: ObservableObject {
     
-    
-    private var houses: FetchedResultList<House>
-    
-    
-     init(territory: Territory, context: NSManagedObjectContext = DataController.shared.container.viewContext) {
-        self.territory = territory
-        
-         houses = FetchedResultList(context: context, sortDescriptors: [
-            NSSortDescriptor(keyPath: \House.number, ascending: true)
-           ])
+    //@ObservedObject var databaseManager = RealmManager.shared
+    @Published var houses = [HouseModel]() {
+        didSet {
+            houses.sort(by: { $0.number < $1.number})
+        }
+    }
+
+     init(territory: TerritoryModel) {
+         self.territory = territory
          
-         houses.willChange = { [weak self] in self?.objectWillChange.send() }
-         
+         //houses = databaseManager.housesFlow
     }
     
     @Published var backAnimation = false
     @Published var optionsAnimation = false
     @Published var progress: CGFloat = 0.0
-    @Published var territory: Territory
+    @Published var territory: TerritoryModel
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    @Published var isAscending = true {
-        didSet {
-            houses.sortDescriptors = [
-                NSSortDescriptor(keyPath: \House.id, ascending: isAscending)
-              ]
-        }
-    } // Boolean state variable to track the sorting order
-    @Published var currentHouse: House?
+    @Published var currentHouse: HouseModel?
     @Published var presentSheet = false {
         didSet {
             if presentSheet == false {
                 currentHouse = nil
             }
         }
-    }
-    
-    var sortDescriptors: [NSSortDescriptor] {
-        // Compute the sort descriptors based on the current sorting order
-        return [NSSortDescriptor(keyPath: \House.number, ascending: isAscending)]
     }
     
     @ViewBuilder
@@ -124,7 +110,7 @@ class HousesViewModel: ObservableObject {
                 .cornerRadius(10)
                 .padding(.horizontal, 2)
             }
-            Text(territory.territoryDescription ?? "")
+            Text(territory.description )
                 .font(.body)
                 .fontWeight(.heavy)
         }
@@ -134,13 +120,7 @@ class HousesViewModel: ObservableObject {
         .hSpacing(.center)
     }
     
-    func deleteHouse(house: House) {
-        DataController.shared.container.viewContext.delete(house)
-    }
-}
-
-extension HousesViewModel {
-    var housesList: [House] {
-        houses.items
+    func deleteHouse(house: HouseModel) {
+        
     }
 }

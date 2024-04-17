@@ -1,6 +1,6 @@
 //
 //  Service_Maps_2_0App.swift
-//  Service Maps 2.0
+//  Service Maps 2.0   
 //
 //  Created by Jose Blanco on 7/27/23.
 //
@@ -11,7 +11,7 @@ import BackgroundTasks
 
 @main
 struct Service_Maps_2_0App: App {
-    let dataController = DataController.shared
+    //let databaseManager = RealmManager.shared
     //let cdPublisher = CDPublisher.shared
     
     @Environment(\.scenePhase) var scenePhase
@@ -19,9 +19,9 @@ struct Service_Maps_2_0App: App {
     
     
     init() {
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "￼com.serviceMaps.uploadPendingTasks", using: nil) { task in
-            ReuploaderWorker.shared.handleReupload(task: task as! BGProcessingTask)
-        }
+//        BGTaskScheduler.shared.register(forTaskWithIdentifier: "￼com.serviceMaps.uploadPendingTasks", using: nil) { task in
+//            ReuploaderWorker.shared.handleReupload(task: task as! BGProcessingTask)
+//        }
         
         
     }
@@ -55,7 +55,6 @@ struct Service_Maps_2_0App: App {
                     LoadingView()
                 case .Ready:
                     HomeTabView()
-                        .environment(\.managedObjectContext, DataController.shared.container.viewContext)
                 case .Empty:
                     NoDataView()
                 }

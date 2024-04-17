@@ -8,31 +8,21 @@
 import Foundation
 import CoreData
 import Combine
-
+import RealmSwift
 
 class SynchronizationManager: ObservableObject {
-    @Published private var dataController = DataController.shared
+    @Published private var realmManager = RealmManager.shared
     @Published private var dataStore = StorageManager.shared
     @Published private var authorizationLevelManager = AuthorizationLevelManager()
     
-    
-    var viewContext = DataController.shared.container.viewContext
-    
     private var authenticationManager = AuthenticationManager()
-    //MARK: Arrays
-    private var territories = [Territory]()
-    private var houses = [House]()
-    private var visits = [Visit]()
-    private var tokens = [MyToken]()
-    private var territoryAddresses = [TerritoryAddress]()
-    private var tokenTerritories = [TokenTerritory]()
     
     @Published var startupState: StartupState = .Unknown
     
     private var loaded = false
     
     func startupProcess(synchronizing: Bool, clearSynchronizing: Bool = false) {
-        allData()
+        //allData()
         if clearSynchronizing {
             loaded = false
             dataStore.synchronized = false
@@ -60,6 +50,8 @@ class SynchronizationManager: ObservableObject {
     }
     
     private func loadStartupState() -> StartupState {
+        let realmDatabase = try! Realm()
+        let territoryEntities = realmDatabase.objects(TerritoryObject.self)
         
         if dataStore.userEmail == nil {
             return StartupState.Welcome
@@ -69,7 +61,7 @@ class SynchronizationManager: ObservableObject {
             return StartupState.Validate
         }
         
-        if territories.isEmpty {
+        if territoryEntities.isEmpty {
             if dataStore.synchronized || loaded {
                 if authorizationLevelManager.existsAdminCredentials() {
                     return .Ready
@@ -98,10 +90,21 @@ class SynchronizationManager: ObservableObject {
         return nil
     }
     
+    @MainActor
     func synchronize() async {
-        allData()
+        //databaseManager.refreshAll()
         dataStore.synchronized = false
-        
+        guard let realmDatabase = try? await Realm() else {
+            print("REALM FAILED")
+            return
+        }
+    
+        let territoryEntities = realmDatabase.objects(TerritoryObject.self)
+        let addressesEntities = realmDatabase.objects(TerritoryAddressObject.self)
+        let housesEntities = realmDatabase.objects(HouseObject.self)
+        let visitsEntities = realmDatabase.objects(VisitObject.self)
+        let tokensEntities = realmDatabase.objects(TokenObject.self)
+        let tokenTerritoryEntities = realmDatabase.objects(TokenTerritoryObject.self)
         //Server Data
         var tokensApi = [MyTokenModel]()
         var territoriesApi = [TerritoryModel]()
@@ -111,12 +114,12 @@ class SynchronizationManager: ObservableObject {
         var tokenTerritoriesApi = [TokenTerritoryModel]()
         
         //Database Data
-        var tokensDb = [MyToken]()
-        var territoriesDb = [Territory]()
-        var territoriesAddressesDb = [TerritoryAddress]()
-        var housesDb = [House]()
-        var visitsDb = [Visit]()
-        var tokenTerritoriesDb = [TokenTerritory]()
+        var tokensDb = [TokenObject]()
+        var territoriesDb = [TerritoryObject]()
+        var territoriesAddressesDb = [TerritoryAddressObject]()
+        var housesDb = [HouseObject]()
+        var visitsDb = [VisitObject]()
+        var tokenTerritoriesDb = [TokenTerritoryObject]()
         
         //MARK: Fetching data from server
         let tokenApi = TokenAPI()
@@ -155,340 +158,382 @@ class SynchronizationManager: ObservableObject {
             return
         }
         
+        tokensDb =  Array(tokensEntities)
+        territoriesDb =  Array(territoryEntities)
+        housesDb =  Array(housesEntities)
+        visitsDb =  Array(visitsEntities)
+        territoriesAddressesDb =  Array(addressesEntities)
         
-        tokensDb.removeAll()
-        territoriesDb.removeAll()
-        housesDb.removeAll()
-        visitsDb.removeAll()
-        territoriesAddressesDb.removeAll()
-        tokenTerritoriesDb.removeAll()
+        //tokenTerritoriesDb.append(contentsOf: databaseManager.tokenTerritoriesFlow)
         
-        tokensDb.append(contentsOf: tokens)
-        territoriesDb.append(contentsOf: territories)
-        housesDb.append(contentsOf: houses)
-        visitsDb.append(contentsOf: visits)
-        tokenTerritoriesDb.append(contentsOf: tokenTerritories)
-        territoriesAddressesDb.append(contentsOf: territoryAddresses)
         
-        do {
-            try tokensDb.forEach { token in
-                // Create a predicate to filter the TokenTerritory entities based on the token value
-                let predicate = NSPredicate(format: "token == %@", token)
-                
-                let fetchRequest = NSFetchRequest<TokenTerritory>(entityName: "TokenTerritory")
-                fetchRequest.predicate = predicate
-                
-                let territoryTokensFiltered = try viewContext.fetch(fetchRequest)
-                
-                
-                tokenTerritoriesDb.append(contentsOf: territoryTokensFiltered)
+        for tokenTerritory in Array(tokenTerritoryEntities){
+            for token in tokensDb {
+                if tokenTerritory.token == token.id {
+                    tokenTerritoriesDb.append(tokenTerritory)
+                }
             }
-        } catch {
-            self.dataStore.synchronized = true
-            return
         }
         
         //Comparing and Updating, adding or deleting data in database by server data
-        await comparingAndSynchronizeTokens(apiList: StructToModel().convertTokenStructsToEntities(structs: tokensApi), dbList: tokensDb)
-        await comparingAndSynchronizeTokenTerritories(apiList: StructToModel().convertTokenTerritoriesStructsToEntities(structs: tokenTerritoriesApi), dbList: tokenTerritoriesDb)
-        await comparingAndSynchronizeTerritories(apiList: StructToModel().convertTerritoryStructsToEntities(structs: territoriesApi), dbList: territoriesDb)
-        await comparingAndSynchronizeHouses(apiList: StructToModel().convertHouseStructsToEntities(structs: housesApi), dbList: housesDb)
-        await comparingAndSynchronizeVisits(apiList: StructToModel().convertVisitStructsToEntities(structs: visitsApi), dbList: visitsDb)
-        await comparingAndSynchronizeTerritoryAddresses(apiList: StructToModel().convertTerritoryAddressStructsToEntities(structs: territoriesAddressesApi), dbList: territoriesAddressesDb)
+        await comparingAndSynchronizeTokens(apiList: tokensApi, dbList: tokensDb)
+        await comparingAndSynchronizeTokenTerritories(apiList: tokenTerritoriesApi, dbList: tokenTerritoriesDb)
+        await comparingAndSynchronizeTerritories(apiList: territoriesApi, dbList: territoriesDb)
+        await comparingAndSynchronizeTerritoryAddresses(apiList: territoriesAddressesApi, dbList: territoriesAddressesDb)
+        await comparingAndSynchronizeHouses(apiList: housesApi, dbList: housesDb)
+        await comparingAndSynchronizeVisits(apiList: visitsApi, dbList: visitsDb)
+        
+        
         
         startupProcess(synchronizing: false)
-        self.dataStore.synchronized = true
-        
+        DispatchQueue.main.async {
+            self.dataStore.synchronized = true
+        }
     }
     
-    func comparingAndSynchronizeTokens(apiList: [MyToken], dbList: [MyToken]) async {
+    @MainActor
+    func comparingAndSynchronizeTokens(apiList: [MyTokenModel], dbList: [TokenObject]) async {
         let tokensApi = apiList
         var tokensDb = dbList
         
         for myTokenApi in tokensApi {
             // Find Token according to id
-            if let myTokenDb = tokensDb.first(where: { $0.id == myTokenApi.id }) {
-                // If Token does exist in the database
-                if myTokenDb != myTokenApi {
-                    // Check if the Token on the server has differences with the one in the database
-                    // If it has differences, update it in the database
-                    
-                    //Update Object
-                    myTokenDb.congregation = myTokenApi.congregation
-                    myTokenDb.name = myTokenApi.name
-                    myTokenDb.owner = myTokenApi.owner
-                    myTokenDb.user = myTokenApi.user
-                    myTokenDb.expires = myTokenApi.expires
-                    myTokenDb.moderator = myTokenApi.moderator
-                    
-                    //Save
-                    do {
-                        
-                        try viewContext.save()
-                    } catch {
-                        print(error.self)
-                        print("Error saving Tokens Comparison 1")
+            let myTokenDb = tokensDb.first { $0.id == myTokenApi.id }
+            
+            if myTokenDb != nil {
+                if (myTokenDb! == myTokenApi) == false {
+        
+                    //Save the changes
+                    switch  realmManager.updateToken(token: myTokenApi) {
+                    case .success(let success):
+                        //Remove from Db so it is not deleted from database after
+                        if let index = tokensDb.firstIndex(of: myTokenDb!) {
+                            tokensDb.remove(at: index)
+                        }
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
                     }
                 }
-                // Remove Token from the database to discard what does exist on the server
-                // and leave only what should be deleted
-                if let index = tokensDb.firstIndex(where: { $0.id == myTokenDb.id }) {
+                if let index = tokensDb.firstIndex(of: myTokenDb!) {
                     tokensDb.remove(at: index)
                 }
             } else {
-                // If it does not exist, create it
-                viewContext.insert(myTokenApi)
-                
-                //Save
-                do {
-                    
-                    try viewContext.save()
-                } catch {
-                    print(error.self)
-                    print("Error saving Comparison 2")
+                // If it does not exist (if it is Nil), create it
+                switch  realmManager.addModel(TokenObject().createTokenObject(from: myTokenApi)) {
+                case .success(let success):
+                    print("Success Adding Token \(success)")
+                    return
+                case .failure(let error):
+                    print("There was an error adding Token \(error)")
+                    return
                 }
             }
         }
         
         // Finally, remove all tokens that don't exist on the server
         for token in tokensDb {
-            viewContext.delete(token)
+            switch  realmManager.deleteToken(token: token) {
+            case .success(let success):
+                print("Success Deleting Token \(success)")
+            case .failure(let error):
+                print("There was an error deleting Token \(error)")
+            }
         }
     }
     
-    private func comparingAndSynchronizeTerritories(apiList: [Territory], dbList: [Territory]) async {
+    @MainActor
+    private func comparingAndSynchronizeTerritories(apiList: [TerritoryModel], dbList: [TerritoryObject]) async {
         let territoriesApi = apiList
         var territoriesDb = dbList
         
-        // Step 1: Remove territories that exist in the database but not in the API response
-        let apiTerritoryIds = Set(territoriesApi.map { $0.id })
-        territoriesDb.removeAll { !apiTerritoryIds.contains($0.id) }
-        
-        // Step 2: Update or create territories based on the API response
         for territoryApi in territoriesApi {
-            if let index = territoriesDb.firstIndex(where: { $0.id == territoryApi.id }) {
-                // If Territory exists in the database, update it
-                territoriesDb[index] = territoryApi
+            //Find territory according to id
+            let territoryDb = territoriesDb.first { $0.id == territoryApi.id }
+            
+            //Check if territoryDb is Nil/ if it was found
+            if territoryDb != nil {
+                if (territoryDb! == territoryApi) == false {
+                    //If not the same, UPDATE it
+                   
+                    //Save the changes
+                    switch  realmManager.updateTerritory(territory: territoryApi){
+                    case .success(let success):
+                        //Remove from Db so it is not deleted from database after
+                        if let index = territoriesDb.firstIndex(of: territoryDb!) {
+                            territoriesDb.remove(at: index)
+                        }
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
+                    }
+                    
+                    if let index = territoriesDb.firstIndex(of: territoryDb!) {
+                        territoriesDb.remove(at: index)
+                    }
+                }
             } else {
-                // If Territory does not exist in the database, create it
-                territoriesDb.append(territoryApi)
+                // If it does not exist (if it is Nil), create it
+                switch  realmManager.addModel(TerritoryObject().createTerritoryObject(from: territoryApi)) {
+                case .success(let success):
+                    print("Success Adding Territory \(success)")
+                    
+                case .failure(let error):
+                    print("There was an error adding Territory \(error)")
+                    
+                }
             }
+            
         }
         
-        // Step 3: Save the changes to the database
-        await MainActor.run {
-            do {
-                
-                try viewContext.save()
-            } catch {
-                print(error.self)
-                print("Error saving  Territories")
+        // Finally, remove all Territories that don't exist on the server
+        for territory in territoriesDb {
+            switch  realmManager.deleteTerritory(territory: territory) {
+            case .success(let success):
+                print("Success Deleting Territory \(success)")
+            case .failure(let error):
+                print("There was an error deleting Territory \(error)")
             }
         }
     }
-    
-    private func comparingAndSynchronizeHouses(apiList: [House], dbList: [House]) async {
+
+    @MainActor
+    private func comparingAndSynchronizeHouses(apiList: [HouseModel], dbList: [HouseObject]) async {
         let housesApi = apiList
         var housesDb = dbList
         
         for houseApi in housesApi {
             let houseDb = housesDb.first { $0.id == houseApi.id }
             
-            if let houseDb = houseDb {
-                if houseApi != houseDb {
-                    houseDb.number = houseApi.number
-                    houseDb.territoryAddress = houseApi.territoryAddress
-                    houseDb.floor = houseApi.floor
+            if houseDb != nil {
+                if (houseDb! == houseApi) == false {
                     //Save
-                    do {
-                        try viewContext.save()
-                    } catch {
-                        print(error.self)
-                        print("Error saving Houses 1")
+                    switch  realmManager.updateHouse(house: houseApi) {
+                    case .success(let success):
+                        if let index = housesDb.firstIndex(of: houseDb!) {
+                            housesDb.remove(at: index)
+                        }
+                        print(success)
+                    case .failure(let error):
+                        print("I Don't know what to do if couldn't update \(error)")
                     }
                 }
                 
-                if let index = housesDb.firstIndex(of: houseDb) {
+                if let index = housesDb.firstIndex(of: houseDb!) {
                     housesDb.remove(at: index)
                 }
             } else {
                 // If it does not exist, create it
-                viewContext.insert(houseApi)
-                
-                //Save
-                do {
-                    
-                    try viewContext.save()
-                } catch {
-                    print(error.self)
-                    print("Error saving Houses 2")
+                switch  realmManager.addModel(HouseObject().createHouseObject(from: houseApi)) {
+                case .success(let success):
+                    print("Success Adding House \(success)")
+                case .failure(let error):
+                    print("There was an error adding house \(error)")
                 }
             }
         }
         
         for houseDb in housesDb {
-            viewContext.delete(houseDb)
+            switch  realmManager.deleteHouse(house: houseDb) {
+            case .success(let success):
+                print("Success Deleting House \(success)")
+            case .failure(let error):
+                print("There was an error deleting house \(error)")
+            }
         }
     }
     
-    private func comparingAndSynchronizeVisits(apiList: [Visit], dbList: [Visit]) async{
+    @MainActor
+    private func comparingAndSynchronizeVisits(apiList: [VisitModel], dbList: [VisitObject]) async{
         let visitsApi = apiList
         var visitsDb = dbList
         
         for visitApi in visitsApi {
             let visitDb = visitsDb.first { $0.id == visitApi.id }
             
-            if let visitDb = visitDb {
-                if visitApi != visitDb {
-                    
-                    visitDb.date = visitApi.date
-                    visitDb.house = visitApi.house
-                    visitDb.notes = visitApi.notes
-                    visitDb.symbol = visitApi.symbol
-                    visitDb.user = visitApi.user
-                    
-                    //Save
-                    do {
-                        
-                        try viewContext.save()
-                    } catch {
-                        print(error.self)
-                        print("Error saving Visits 1")
+            if visitDb != nil {
+                if (visitDb! == visitApi) == false {
+                    switch  realmManager.updateVisit(visit: visitApi){
+                    case .success(let success):
+                        //Remove from Db so it is not deleted from database after
+                        if let index = visitsDb.firstIndex(of: visitDb!) {
+                            visitsDb.remove(at: index)
+                        }
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
                     }
                 }
                 
-                if let index = visitsDb.firstIndex(of: visitDb) {
+                if let index = visitsDb.firstIndex(of: visitDb!) {
                     visitsDb.remove(at: index)
                 }
             } else {
-                // If it does not exist, create it
-                viewContext.insert(visitApi)
-                
-                //Save
-                do {
-                    
-                    try viewContext.save()
-                } catch {
-                    print(error.self)
-                    print("Error saving Visits 2")
+                switch  realmManager.addModel(VisitObject().createVisitObject(from: visitApi)) {
+                case .success(let success):
+                    print("Success Adding Visit \(success)")
+                    return
+                case .failure(let error):
+                    print("There was an error adding Visit \(error)")
+                    return
                 }
             }
         }
         
         for visitDb in visitsDb {
-            viewContext.delete(visitDb)
+            switch  realmManager.deleteVisit(visit: visitDb) {
+            case .success(let success):
+                print("Success Deleting Visit \(success)")
+            case .failure(let error):
+                print("There was an error deleting Visit \(error)")
+            }
         }
     }
     
-    private func comparingAndSynchronizeTokenTerritories(apiList: [TokenTerritory], dbList: [TokenTerritory]) async{
+    @MainActor
+    private func comparingAndSynchronizeTokenTerritories(apiList: [TokenTerritoryModel], dbList: [TokenTerritoryObject]) async{
         let tokenTerritoriesApi = apiList
         var tokenTerritoriesDb = dbList
         
         for tokenTerritoryApi in tokenTerritoriesApi {
-            let tokenTerritoryDb = tokenTerritoriesDb.first {
-                $0.token == tokenTerritoryApi.token && $0.territory == tokenTerritoryApi.territory
-            }
-            print("PRINTING TokenTerritoriesApi FOUND \(tokenTerritoriesApi)" )
-            print("PRINTING TokenTerritoriesDb FOUND \(tokenTerritoriesDb)" )
-            print("PRINTING TOKENTERRITORYDB FOUND \(tokenTerritoryDb)" )
+            let tokenTerritoryDb = tokenTerritoriesDb.first { $0.token == tokenTerritoryApi.token && $0.territory == tokenTerritoryApi.territory }
             
-            if let tokenTerritoryDb = tokenTerritoryDb {
-                if let index = tokenTerritoriesDb.firstIndex(of: tokenTerritoryDb) {
+            if tokenTerritoryDb != nil {
+                if (tokenTerritoryDb! == tokenTerritoryApi) == false {
+                    //Save the changes
+                    switch  realmManager.updateTokenTerritory(tokenTerritory: tokenTerritoryApi){
+                    case .success(let success):
+                        //Remove from Db so it is not deleted from database after
+                        if let index = tokenTerritoriesDb.firstIndex(of: tokenTerritoryDb!) {
+                            tokenTerritoriesDb.remove(at: index)
+                        }
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
+                    }
+                }
+                
+                if let index = tokenTerritoriesDb.firstIndex(of: tokenTerritoryDb!) {
                     tokenTerritoriesDb.remove(at: index)
                 }
             } else {
-                // If it does not exist, create it
-                viewContext.insert(tokenTerritoryApi)
-                
-                //Save
-                do {
-                    try viewContext.save()
-                } catch {
-                    print(error.self)
-                    print("Error saving Token territories")
+                switch  realmManager.addModel(TokenTerritoryObject().createTokenTerritoryObject(from: tokenTerritoryApi)) {
+                case .success(let success):
+                    print("Success Adding TokenTerritory \(success)")
+                    return
+                case .failure(let error):
+                    print("There was an error adding TokenTerritory \(error)")
+                    return
                 }
             }
+            
         }
         
-        for tokenTerritoryDb in tokenTerritoriesDb {
-            viewContext.delete(tokenTerritoryDb)
+        for tokenTerritory in tokenTerritoriesDb {
+            switch  realmManager.deleteTokenTerritory(tokenTerritory: tokenTerritory) {
+            case .success(let success):
+                print("Success Deleting TokenTerritory \(success)")
+            case .failure(let error):
+                print("There was an error deleting TokenTerritory \(error)")
+            }
         }
     }
     
-    private func comparingAndSynchronizeTerritoryAddresses(apiList: [TerritoryAddress], dbList: [TerritoryAddress]) async{
+    @MainActor
+    private func comparingAndSynchronizeTerritoryAddresses(apiList: [TerritoryAddressModel], dbList: [TerritoryAddressObject]) async{
         let territoryAddressesApi = apiList
         var territoryAddressesDb = dbList
         
         for territoryAddressApi in territoryAddressesApi {
-            let territoryAddressDb = territoryAddressesDb.first {
-                $0.territory == territoryAddressApi.territory && $0.address == territoryAddressApi.address
-            }
+            let territoryAddressDb = territoryAddressesDb.first { $0.id == territoryAddressApi.id }
             
-            if let territoryAddressDb = territoryAddressDb {
-                if let index = territoryAddressesDb.firstIndex(of: territoryAddressDb) {
+            if territoryAddressDb != nil {
+                if (territoryAddressDb! == territoryAddressApi) == false {
+                    //Save the changes
+                    switch  realmManager.updateAddress(address: territoryAddressApi){
+                    case .success(let success):
+                        //Remove from Db so it is not deleted from database after
+                        if let index = territoryAddressesDb.firstIndex(of: territoryAddressDb!) {
+                            territoryAddressesDb.remove(at: index)
+                        }
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
+                    }
+                }
+                
+                if let index = territoryAddressesDb.firstIndex(of: territoryAddressDb!) {
                     territoryAddressesDb.remove(at: index)
                 }
             } else {
-                // If it does not exist, create it
-                viewContext.insert(territoryAddressApi)
-                
-                //Save
-                do {
-                    
-                    try viewContext.save()
-                } catch {
-                    print(error.self)
-                    print("Error saving Addresses")
+                switch  realmManager.addModel(TerritoryAddressObject().createTerritoryAddressObject(from: territoryAddressApi)) {
+                case .success(let success):
+                    print("Success Adding Address \(success)")
+                    return
+                case .failure(let error):
+                    print("There was an error adding Address \(error)")
+                    return
                 }
             }
         }
         
-        for tokenTerritoryDb in territoryAddressesDb {
-            viewContext.delete(tokenTerritoryDb)
+        
+        for territoryAddress in territoryAddressesDb {
+            switch  realmManager.deleteAddress(address: territoryAddress) {
+            case .success(let success):
+                print("Success Deleting TerritoryAddress \(success)")
+            case .failure(let error):
+                print("There was an error deleting TerritoryAddress \(error)")
+            }
         }
     }
     
-    func comparingAndSynchronizeModels<T: Equatable>(
-        apiList: [T],
-        dbList: [T],
-        getID: (T) -> String,
-        add: @escaping (T) -> Void,
-        update: @escaping (T) -> Void,
-        delete: @escaping (T) -> Void
-    ) throws {
-        let modelsApi = apiList
-        var modelsDb = dbList
-
-        for modelApi in modelsApi {
-            guard let modelDbIndex = modelsDb.firstIndex(where: { getID($0) == getID(modelApi) }) else {
-                // Model not found in database, create it
-                add(modelApi)
-                continue
-            }
-
-            let modelDb = modelsDb.remove(at: modelDbIndex)
-
-            if modelApi != modelDb {
-                // Model on server has differences, update it
-                update(modelApi)
-            }
-        }
-
-        // Delete models that no longer exist on the server
-        for modelDb in modelsDb {
-            delete(modelDb)
-        }
-    }
-
+//    func comparingAndSynchronizeModels<T: Equatable>(
+//        apiList: [T],
+//        dbList: [T],
+//        getID: (T) -> String,
+//        add: @escaping (T) -> Void,
+//        update: @escaping (T) -> Void,
+//        delete: @escaping (T) -> Void
+//    ) throws {
+//        let modelsApi = apiList
+//        var modelsDb = dbList
+//        
+//        for modelApi in modelsApi {
+//            guard let modelDbIndex = modelsDb.firstIndex(where: { getID($0) == getID(modelApi) }) else {
+//                // Model not found in database, create it
+//                add(modelApi)
+//                continue
+//            }
+//            
+//            let modelDb = modelsDb.remove(at: modelDbIndex)
+//            
+//            if modelApi != modelDb {
+//                // Model on server has differences, update it
+//                update(modelApi)
+//            }
+//        }
+//        
+//        // Delete models that no longer exist on the server
+//        for modelDb in modelsDb {
+//            delete(modelDb)
+//        }
+//    }
     
-    func allData() {
-        territories = DataController.shared.getTerritories()
-        houses = DataController.shared.getHouses()
-        visits = DataController.shared.getVisits()
-        tokens = DataController.shared.getMyTokens()
-        territoryAddresses = DataController.shared.getTerritoryAddresses()
-        tokenTerritories = DataController.shared.getTokenTerritories()
-    }
+    
+//    func allData() {
+//        territories = DatabaseManager.shared.getTerritories()
+//        houses = DatabaseManager.shared.getHouses()
+//        visits = DatabaseManager.shared.getVisits()
+//        tokens = DatabaseManager.shared.getMyTokens()
+//        territoryAddresses = DatabaseManager.shared.getTerritoryAddresses()
+//        tokenTerritories = DatabaseManager.shared.getTokenTerritories()
+//    }
     
     class var shared: SynchronizationManager {
         struct Static {

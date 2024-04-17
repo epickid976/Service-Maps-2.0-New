@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TerritoryModel: Codable {
+struct TerritoryModel: Codable, Equatable, Hashable, Identifiable {
     var id: String
     var congregation: String
     var number: Int32
@@ -15,7 +15,24 @@ struct TerritoryModel: Codable {
     var image: String?
     var created_at: String
     var updated_at: String
+    
+    static func == (lhs: TerritoryModel, rhs: TerritoryModel) -> Bool {
+        return lhs.id == rhs.id &&
+        lhs.congregation == rhs.congregation &&
+        lhs.number == rhs.number &&
+        lhs.description == rhs.description &&
+        lhs.image == rhs.image
+    }
+    
+    func hash(into hasher: inout Hasher) {
+       hasher.combine(id)
+       hasher.combine(congregation)
+       hasher.combine(number)
+       hasher.combine(description)
+       hasher.combine(image ?? "") // Combine an empty string for optional image
+     }
 }
+
 
 
 func convertTerritoryToTerritoryModel(model: Territory) -> TerritoryModel {

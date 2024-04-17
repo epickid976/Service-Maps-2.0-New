@@ -10,18 +10,18 @@ import SwipeActions
 import NavigationTransitions
 
 struct AccessView: View {
-    @StateObject var viewModel = AccessViewModel()
+    @ObservedObject var viewModel = AccessViewModel()
     
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
-    
+    @ObservedObject var databaseManager = RealmManager.shared
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 ZStack {
                     LazyVStack {
-                        ForEach(viewModel.tokensList) { token in
+                        ForEach(databaseManager.tokensFlow) { token in
                             SwipeView {
                                 TokenCell(token: token)
                                         .padding(.bottom, 2)

@@ -7,10 +7,21 @@
 
 import Foundation
 
-struct TokenTerritoryModel: Codable {
+struct TokenTerritoryModel: Codable, Equatable, Hashable, Identifiable {
     var id: String
     var token: String
     var territory: String
     var created_at: String
     var updated_at: String
+    
+    static func == (lhs: TokenTerritoryModel, rhs: TokenTerritoryModel) -> Bool {
+        return lhs.token == rhs.token &&
+        lhs.territory == rhs.territory
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(token)
+        hasher.combine(territory)
+      }
 }
+

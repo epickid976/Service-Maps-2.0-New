@@ -9,8 +9,8 @@ import SwiftUI
 import NukeUI
 
 struct HouseCell: View {
-    var house: House
-    var lastVisit: Visit? = nil
+    var house: HouseModel
+    var lastVisit: VisitModel? = nil
     
     var body: some View {
         HStack(spacing: 10) {
@@ -146,8 +146,4 @@ struct HouseCell: View {
         .cornerRadius(16)
         .foregroundColor(.white)
     }
-}
-
-#Preview {
-    HousesView(territory: DataController.preview.getTerritories().first!)
 }

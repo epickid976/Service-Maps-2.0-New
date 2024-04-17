@@ -11,14 +11,14 @@ import PhotosUI
 import NavigationTransitions
 
 struct AddHouseView: View {
-    var house: House?
+    var house: HouseModel?
     
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel = AddHouseViewModel()
     
     @State var title = ""
     
-    init(house: House?) {
+    init(house: HouseModel?) {
         if let house = house {
             self.house = house
         }

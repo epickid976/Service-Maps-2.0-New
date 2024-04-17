@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct TokenCell: View {
-    var token: MyToken
+    var token: TokenObject
     
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    Text("\(token.name ?? "ERROR_NO_NAME")")
+                    Text("\(token.name )")
                         .font(.title3)
                         .lineLimit(2)
                         .foregroundColor(.primary)
@@ -45,7 +45,7 @@ struct TokenCell: View {
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                 
-                Text(token.owner ?? "ERROR_NO_OWNER")
+                Text(token.owner )
                     .font(.headline)
                     .lineLimit(2)
                     .foregroundColor(.primary)

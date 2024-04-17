@@ -15,11 +15,11 @@ import UIKit
 
 struct TerritoryView: View {
     
-    @StateObject var viewModel = TerritoryViewModel()
+    @ObservedObject var viewModel = TerritoryViewModel()
     
-    @Environment(\.managedObjectContext) private var viewContext
+    //@Environment(\.managedObjectContext) private var viewContext
  
-    @StateObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
@@ -94,8 +94,8 @@ struct TerritoryView: View {
     
 }
 
-#Preview {
-    TerritoryView()
-        .environment(\.managedObjectContext, DataController.preview.container.viewContext)
-}
+//#Preview {
+//    TerritoryView()
+//        .environment(\.managedObjectContext, DataController.preview.container.viewContext)
+//}
 

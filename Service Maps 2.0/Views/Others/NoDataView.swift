@@ -15,7 +15,7 @@ struct NoDataView: View {
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
     @State var loading = false
-    @StateObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @State var goToAdminLogin = false
     

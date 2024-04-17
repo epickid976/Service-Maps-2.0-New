@@ -13,27 +13,27 @@ import Combine
 
 @MainActor
 class VisitsViewModel: ObservableObject {
-    private var visits: FetchedResultList<Visit>
     
+    @Published var visits = [VisitModel]() {
+        didSet {
+            visits.sort(by: { $0.date > $1.date })
+        }
+    }
+    //@ObservedObject var databaseManager = RealmManager.shared
     
-     init(house: House, context: NSManagedObjectContext = DataController.shared.container.viewContext) {
+     init(house: HouseModel) {
         self.house = house
         
-         visits = FetchedResultList(context: context, sortDescriptors: [
-            NSSortDescriptor(keyPath: \Visit.date, ascending: false)
-           ])
-         
-         visits.willChange = { [weak self] in self?.objectWillChange.send() }
-         
+         //visits = databaseManager.visitsFlow
     }
     
     @Published var backAnimation = false
     @Published var optionsAnimation = false
     @Published var progress: CGFloat = 0.0
-    @Published var house: House
+    @Published var house: HouseModel
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    @Published var currentVisit: Visit?
+    @Published var currentVisit: VisitModel?
     @Published var presentSheet = false {
         didSet {
             if presentSheet == false {
@@ -42,18 +42,7 @@ class VisitsViewModel: ObservableObject {
         }
     }
     
-    var sortDescriptors: [NSSortDescriptor] {
-        // Compute the sort descriptors based on the current sorting order
-        return [NSSortDescriptor(keyPath: \Visit.date, ascending: true)]
-    }
-    
     func deleteVisit(house: House) {
         //TODO CONNECT TO SERVER ETC
-    }
-}
-
-extension VisitsViewModel {
-    var visitsList: [Visit] {
-        visits.items
     }
 }

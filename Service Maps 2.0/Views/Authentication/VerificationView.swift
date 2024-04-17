@@ -11,16 +11,16 @@ import ActivityIndicatorView
 struct VerificationView: View {
     var onDone: () -> Void
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel: VerificationViewModel
+    @ObservedObject private var viewModel: VerificationViewModel
     @State var loading = false
     @State var alwaysLoading = true
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
-    @StateObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     init(onDone: @escaping() -> Void) {
         let initialViewModel = VerificationViewModel()
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
         
         self.onDone = onDone
     }

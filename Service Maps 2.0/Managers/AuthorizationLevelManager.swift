@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import RealmSwift
 
 class AuthorizationLevelManager: ObservableObject {
-    @Published private var dataController = DataController.shared
+    @Published private var realmManager = RealmManager.shared
     
     
     
@@ -38,8 +39,8 @@ class AuthorizationLevelManager: ObservableObject {
         return false
     }
     
-    func getAccessLevel<T>(model: T) async -> AccessLevel? {
-        if let token = await findToken(model: model) {
+    func getAccessLevel<T>(model: T) -> AccessLevel?  where T: Object{
+        if let token = findToken(model: model) {
             if token.moderator {
                 return .Moderator
             } else {
@@ -52,8 +53,8 @@ class AuthorizationLevelManager: ObservableObject {
         }
     }
     
-    func setAuthorizationTokenFor<T>(model: T) async {
-        if let token = await findToken(model: model) {
+    func setAuthorizationTokenFor<T>(model: T) async  where T: Object {
+        if let token = findToken(model: model) {
             authorizationProvider.token = token.id
         }
     }
@@ -67,20 +68,21 @@ class AuthorizationLevelManager: ObservableObject {
         authorizationProvider.congregationPass = password
     }
     
-    func findToken<T>(model: T) async -> MyToken? {
-        return switch model {
-        case is Territory:
-            await findToken(territory: model as! Territory)
-        case is TerritoryAddress:
-            await findToken(territoryAddress: model as! TerritoryAddress)
-        case is House:
-            await findToken(house: model as! House)
-        case is Visit:
-            await findToken(visit: model as! Visit)
-        default:
-            nil
-        }
+    func findToken<T>(model: T) -> TokenObject? where T: Object {
+      switch model {
+      case let territory as TerritoryObject:
+        return findToken(territory: territory)
+      case let territoryAddress as TerritoryAddressObject:
+        return findToken(territoryAddress: territoryAddress)
+      case let house as HouseObject:
+        return findToken(house: house)
+      case let visit as VisitObject:
+        return findToken(visit: visit)
+      default:
+        return nil
+      }
     }
+
     
     func adminNeedLogin() async -> Bool {
         if existsAdminCredentials() {
@@ -103,7 +105,7 @@ class AuthorizationLevelManager: ObservableObject {
     }
     
     func existsModeratorAccess() -> Bool {
-        for token in dataController.getMyTokens() {
+        for token in Array(realmManager.tokensFlow) {
             if token.moderator {
                 return true
             }
@@ -112,10 +114,10 @@ class AuthorizationLevelManager: ObservableObject {
         return false
     }
     
-    func findToken(territory: Territory) async -> MyToken? {
-        var tokens = [MyToken]()
-        let tokensDb = dataController.getMyTokens()
-        let tokenTerritories = dataController.getTokenTerritories()
+    func findToken(territory: TerritoryObject) -> TokenObject? {
+        var tokens = [TokenObject]()
+        let tokensDb = Array(realmManager.tokensFlow)
+        let tokenTerritories = Array(realmManager.tokenTerritoriesFlow)
         
         tokenTerritories.filter { tokenTerritory in
             return tokenTerritory.territory == territory.id
@@ -131,34 +133,34 @@ class AuthorizationLevelManager: ObservableObject {
             return moderatorToken
         }
         
-        return tokens.first(where: { $0.expires > Int64(Date().timeIntervalSince1970 * 1000) })
+        return tokens.first(where: { $0.expire ?? 0 > Int64(Date().timeIntervalSince1970 * 1000) })
     }
     
-    func findToken(territoryAddress: TerritoryAddress) async -> MyToken? {
-        let territories = dataController.getTerritories()
+    func findToken(territoryAddress: TerritoryAddressObject) -> TokenObject? {
+        let territories = Array(realmManager.territoriesFlow)
         
         if let territory = territories.first(where: { $0.id == territoryAddress.territory }) {
-            return await findToken(territory: territory)
+            return findToken(territory: territory)
         }
         
         return nil
     }
     
-    func findToken(house: House) async -> MyToken? {
-        let territoriesAddresses = dataController.getTerritoryAddresses()
+    func findToken(house: HouseObject) -> TokenObject? {
+        let territoriesAddresses = Array(realmManager.addressesFlow)
         
-        if let territoryAddress = territoriesAddresses.first(where: { $0.id == house.territoryAddress }) {
-            return await findToken(territoryAddress: territoryAddress)
+        if let territoryAddress = territoriesAddresses.first(where: { $0.id == house.territory_address }) {
+            return findToken(territoryAddress: territoryAddress)
         }
         
         return nil
     }
     
-    func findToken(visit: Visit) async -> MyToken? {
-        let houses = dataController.getHouses()
+    func findToken(visit: VisitObject) -> TokenObject? {
+        let houses = Array(realmManager.housesFlow)
         
         if let house = houses.first(where: { $0.id == visit.house }) {
-            return await findToken(house: house)
+            return findToken(house: house)
         }
         
         return nil

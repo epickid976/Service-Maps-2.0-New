@@ -12,12 +12,12 @@ import NavigationTransitions
 struct LoadingView: View {
     @Environment(\.dismiss) private var dismiss
     
-    @StateObject var storageManager = StorageManager.shared
+    @ObservedObject var storageManager = StorageManager.shared
     @State var loading = true
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
     @State var text = ""
-    @StateObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     var body: some View {
         NavigationStack {

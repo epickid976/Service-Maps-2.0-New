@@ -9,7 +9,7 @@ import CoreData
 import NukeUI
 
 struct CellView: View {
-    var territory: Territory
+    var territory: TerritoryObject
     var houseQuantity: Int
     
     var body: some View {
@@ -19,7 +19,7 @@ struct CellView: View {
                         .font(.title2)
                         .fontWeight(.heavy)
                         .foregroundColor(.primary)
-                Text(territory.territoryDescription ?? "")
+                Text(territory.territoryDescription )
                     .font(.headline)
                     .lineLimit(5)
                     .foregroundColor(.primary)
@@ -65,9 +65,4 @@ struct CellView: View {
         .foregroundColor(.white)
     }
     
-}
-
-#Preview {
-    TerritoryView()
-        .environment(\.managedObjectContext, DataController.preview.container.viewContext)
 }

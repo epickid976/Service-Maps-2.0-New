@@ -17,7 +17,7 @@ struct SignupView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
     
-    @StateObject private var viewModel: SignupViewModel
+    @ObservedObject private var viewModel: SignupViewModel
     
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
@@ -32,7 +32,7 @@ struct SignupView: View {
     
     init() {
         let initialViewModel = SignupViewModel()
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
     }
     var body: some View {
         NavigationStack {

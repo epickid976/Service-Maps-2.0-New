@@ -18,19 +18,19 @@ struct LoginView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
     
-    @StateObject private var viewModel: LoginViewModel
+    @ObservedObject private var viewModel: LoginViewModel
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0.0
     @FocusState private var emailFocus: Bool
     @FocusState private var passwordFocus: Bool
     @State var loading = false
     @State var alwaysLoading = true
-    @StateObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     let authenticationManager = AuthenticationManager()
     
     init(onDone: @escaping() -> Void) {
         let initialViewModel = LoginViewModel(username: "", password: "")
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
         
         self.onDone = onDone
     }

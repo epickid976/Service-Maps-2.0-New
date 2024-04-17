@@ -11,12 +11,12 @@ struct AddVisitView: View {
     @Environment(\.dismiss) private var dismiss
     var visit: Visit?
     
-    @StateObject var viewModel: AddVisitViewModel
+    @ObservedObject var viewModel: AddVisitViewModel
     @State var title = "Add"
     
     init() {
         let initialViewModel = AddVisitViewModel()
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
         if let visit = visit {
             self.viewModel.notes = visit.notes ?? ""
             self.viewModel.selectedDate = Date(timeIntervalSinceNow: (Double(visit.date) / 1000))

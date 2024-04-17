@@ -15,7 +15,7 @@ struct HomeTabView: View {
     
     @State private var selectedTab = 0
     @Environment(\.colorScheme) var colorScheme
-    @StateObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     var body: some View {
         NavigationStack {
@@ -93,7 +93,4 @@ struct HomeTabView: View {
     }
 }
 
-#Preview {
-    HomeTabView().environment(\.managedObjectContext, DataController.preview.container.viewContext)
-}
 

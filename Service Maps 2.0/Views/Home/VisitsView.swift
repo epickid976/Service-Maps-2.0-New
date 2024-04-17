@@ -14,27 +14,27 @@ import UIKit
 
 struct VisitsView: View {
     
-    @StateObject var viewModel: VisitsViewModel
-    var house: House
+    @ObservedObject var viewModel: VisitsViewModel
+    var house: HouseModel
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
-    @StateObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
     @State private var isScrollingDown = false
     
-    init(house: House) {
+    init(house: HouseModel) {
         self.house = house
         let initialViewModel = VisitsViewModel(house: house)
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
     }
     
     var body: some View {
             ScrollView {
                 ZStack {
                     LazyVStack {
-                        ForEach(viewModel.visitsList) { visit in
+                        ForEach(viewModel.visits) { visit in
                             SwipeView {
                                 VisitCell(visit: visit)
                                         .padding(.bottom, 2)
@@ -110,10 +110,6 @@ struct VisitsView: View {
     
 }
 
-#Preview {
-    TerritoryView()
-        .environment(\.managedObjectContext, DataController.preview.container.viewContext)
-}
 
 
 //#Preview {

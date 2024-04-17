@@ -25,7 +25,7 @@ class VerificationViewModel: ObservableObject {
     
     //MARK: API
     let authenticationManager = AuthenticationManager()
-    @StateObject var storageManager = StorageManager.shared
+    @ObservedObject var storageManager = StorageManager.shared
     
     
     func checkVerification(completion: @escaping (Result<Bool, Error>) -> Void) async {

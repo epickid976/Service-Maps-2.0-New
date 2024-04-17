@@ -80,13 +80,23 @@
 		824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CEF2BC43012001DE348 /* VisitCell.swift */; };
 		824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */; };
 		824E5CF42BC57F73001DE348 /* TokenCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF32BC57F73001DE348 /* TokenCell.swift */; };
-		824E5CF62BC5ABF4001DE348 /* DataBaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF52BC5ABF4001DE348 /* DataBaseManager.swift */; };
+		824E5CF62BC5ABF4001DE348 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF52BC5ABF4001DE348 /* DatabaseManager.swift */; };
 		8250B1A92A8A826800A7B70E /* TerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */; };
+		825645A02BCE0FC000F18AC9 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 8256459F2BCE0FC000F18AC9 /* Realm */; };
+		825645A22BCE0FC000F18AC9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 825645A12BCE0FC000F18AC9 /* RealmSwift */; };
+		825645A52BCE104300F18AC9 /* HouseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645A42BCE104300F18AC9 /* HouseObject.swift */; };
+		825645A72BCE117500F18AC9 /* TerritoryObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645A62BCE117500F18AC9 /* TerritoryObject.swift */; };
+		825645A92BCE11EE00F18AC9 /* VisitObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645A82BCE11EE00F18AC9 /* VisitObject.swift */; };
+		825645AB2BCE125000F18AC9 /* TokenObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645AA2BCE125000F18AC9 /* TokenObject.swift */; };
+		825645AD2BCE128E00F18AC9 /* TokenTerritoryObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645AC2BCE128E00F18AC9 /* TokenTerritoryObject.swift */; };
+		825645AF2BCE12DA00F18AC9 /* TerritoryAddressObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645AE2BCE12DA00F18AC9 /* TerritoryAddressObject.swift */; };
+		825645B12BCE13BD00F18AC9 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B02BCE13BD00F18AC9 /* RealmManager.swift */; };
+		825645B32BCE283500F18AC9 /* AreEqualFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B22BCE283500F18AC9 /* AreEqualFuncs.swift */; };
 		826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */; };
 		826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766F2A729FDE000A4BAA /* HomeTabView.swift */; };
 		826B76722A729FE1000A4BAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826B76712A729FE1000A4BAA /* Assets.xcassets */; };
 		826B76752A729FE1000A4BAA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826B76742A729FE1000A4BAA /* Preview Assets.xcassets */; };
-		826B76772A729FE1000A4BAA /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B76762A729FE1000A4BAA /* DataController.swift */; };
+		826B76772A729FE1000A4BAA /* NSManagedObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B76762A729FE1000A4BAA /* NSManagedObjectExtension.swift */; };
 		826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 826B76802A729FF6000A4BAA /* Service_Maps.xcdatamodeld */; };
 		827EF1A22AA7B7E3006C4631 /* VisitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827EF1A12AA7B7E3006C4631 /* VisitsView.swift */; };
 		827EF1A42AA7C2F0006C4631 /* DateFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827EF1A32AA7C2F0006C4631 /* DateFormat.swift */; };
@@ -179,14 +189,22 @@
 		824E5CEF2BC43012001DE348 /* VisitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitCell.swift; sourceTree = "<group>"; };
 		824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessViewModel.swift; sourceTree = "<group>"; };
 		824E5CF32BC57F73001DE348 /* TokenCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenCell.swift; sourceTree = "<group>"; };
-		824E5CF52BC5ABF4001DE348 /* DataBaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBaseManager.swift; sourceTree = "<group>"; };
+		824E5CF52BC5ABF4001DE348 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryViewModel.swift; sourceTree = "<group>"; };
+		825645A42BCE104300F18AC9 /* HouseObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseObject.swift; sourceTree = "<group>"; };
+		825645A62BCE117500F18AC9 /* TerritoryObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryObject.swift; sourceTree = "<group>"; };
+		825645A82BCE11EE00F18AC9 /* VisitObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitObject.swift; sourceTree = "<group>"; };
+		825645AA2BCE125000F18AC9 /* TokenObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenObject.swift; sourceTree = "<group>"; };
+		825645AC2BCE128E00F18AC9 /* TokenTerritoryObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenTerritoryObject.swift; sourceTree = "<group>"; };
+		825645AE2BCE12DA00F18AC9 /* TerritoryAddressObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryAddressObject.swift; sourceTree = "<group>"; };
+		825645B02BCE13BD00F18AC9 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
+		825645B22BCE283500F18AC9 /* AreEqualFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreEqualFuncs.swift; sourceTree = "<group>"; };
 		826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Service Maps 2.0.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service_Maps_2_0App.swift; sourceTree = "<group>"; };
 		826B766F2A729FDE000A4BAA /* HomeTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabView.swift; sourceTree = "<group>"; };
 		826B76712A729FE1000A4BAA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		826B76742A729FE1000A4BAA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		826B76762A729FE1000A4BAA /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
+		826B76762A729FE1000A4BAA /* NSManagedObjectExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSManagedObjectExtension.swift; sourceTree = "<group>"; };
 		826B76812A729FF6000A4BAA /* Service_Maps.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Service_Maps.xcdatamodel; sourceTree = "<group>"; };
 		827EF1A12AA7B7E3006C4631 /* VisitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitsView.swift; sourceTree = "<group>"; };
 		827EF1A32AA7C2F0006C4631 /* DateFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormat.swift; sourceTree = "<group>"; };
@@ -225,6 +243,7 @@
 			files = (
 				822FA0972AA6B6650008FA61 /* SwipeActions in Frameworks */,
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
+				825645A22BCE0FC000F18AC9 /* RealmSwift in Frameworks */,
 				821F090F2AA965FE00D6B6E6 /* GRDBQuery in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A32AA6B7C00008FA61 /* PopupView in Frameworks */,
@@ -234,6 +253,7 @@
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
 				822FA07D2AA6B6320008FA61 /* Nuke in Frameworks */,
+				825645A02BCE0FC000F18AC9 /* Realm in Frameworks */,
 				822FA07F2AA6B6320008FA61 /* NukeExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -276,6 +296,7 @@
 				827EF1A32AA7C2F0006C4631 /* DateFormat.swift */,
 				827EF1A92AA8D0CD006C4631 /* NavigationAnimation.swift */,
 				82A967B62AAABE890043946F /* RoundedCornerExtension.swift */,
+				825645B22BCE283500F18AC9 /* AreEqualFuncs.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -323,10 +344,11 @@
 		821111B42A73159400F94662 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				826B76762A729FE1000A4BAA /* DataController.swift */,
+				826B76762A729FE1000A4BAA /* NSManagedObjectExtension.swift */,
 				826B76802A729FF6000A4BAA /* Service_Maps.xcdatamodeld */,
 				827EF1A52AA8C628006C4631 /* ModelExtensions.swift */,
-				824E5CF52BC5ABF4001DE348 /* DataBaseManager.swift */,
+				824E5CF52BC5ABF4001DE348 /* DatabaseManager.swift */,
+				825645B02BCE13BD00F18AC9 /* RealmManager.swift */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -451,6 +473,19 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
+		825645A32BCE0FE500F18AC9 /* RealmObjects */ = {
+			isa = PBXGroup;
+			children = (
+				825645A42BCE104300F18AC9 /* HouseObject.swift */,
+				825645A62BCE117500F18AC9 /* TerritoryObject.swift */,
+				825645A82BCE11EE00F18AC9 /* VisitObject.swift */,
+				825645AA2BCE125000F18AC9 /* TokenObject.swift */,
+				825645AC2BCE128E00F18AC9 /* TokenTerritoryObject.swift */,
+				825645AE2BCE12DA00F18AC9 /* TerritoryAddressObject.swift */,
+			);
+			path = RealmObjects;
+			sourceTree = "<group>";
+		};
 		826B76612A729FDE000A4BAA = {
 			isa = PBXGroup;
 			children = (
@@ -478,6 +513,7 @@
 				820933F92A794BAD00AF3FF1 /* Helpers */,
 				824213672A82C4A300626DD5 /* Managers */,
 				821C12602A77EEA80050D106 /* API */,
+				825645A32BCE0FE500F18AC9 /* RealmObjects */,
 				820933E52A78505100AF3FF1 /* Structs */,
 				820933FC2A795FC900AF3FF1 /* Enums */,
 				821111B42A73159400F94662 /* CoreData */,
@@ -550,6 +586,8 @@
 				822FA09F2AA6B7800008FA61 /* NavigationTransitions */,
 				822FA0A22AA6B7C00008FA61 /* PopupView */,
 				821F090E2AA965FE00D6B6E6 /* GRDBQuery */,
+				8256459F2BCE0FC000F18AC9 /* Realm */,
+				825645A12BCE0FC000F18AC9 /* RealmSwift */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -589,6 +627,7 @@
 				822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
 				822FA0A12AA6B7C00008FA61 /* XCRemoteSwiftPackageReference "PopupView" */,
 				821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */,
+				8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -632,12 +671,14 @@
 				820933EF2A785B5800AF3FF1 /* TokenAPI.swift in Sources */,
 				820933F32A785DD500AF3FF1 /* TokenTerritory.swift in Sources */,
 				823FD4C92A7B52560036A1DD /* UIDeviceExtension.swift in Sources */,
+				825645AD2BCE128E00F18AC9 /* TokenTerritoryObject.swift in Sources */,
 				82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */,
 				824213752A82E7D000626DD5 /* LoginViewModel.swift in Sources */,
 				823FD4D52A7D6F2D0036A1DD /* TerritoryView.swift in Sources */,
 				82916C172A990955005133DE /* ImagePickerView.swift in Sources */,
 				822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */,
 				82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */,
+				825645AF2BCE12DA00F18AC9 /* TerritoryAddressObject.swift in Sources */,
 				824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */,
 				821C12642A77F0BD0050D106 /* LoginForm.swift in Sources */,
 				8209340B2A7AD1A800AF3FF1 /* UIScreen Extension.swift in Sources */,
@@ -648,6 +689,7 @@
 				82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */,
 				820934112A7ADC9600AF3FF1 /* OvalTextFieldStyle.swift in Sources */,
 				82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */,
+				825645A92BCE11EE00F18AC9 /* VisitObject.swift in Sources */,
 				820934002A7993E200AF3FF1 /* StructToModel.swift in Sources */,
 				820933E22A78444800AF3FF1 /* CongregationResponse.swift in Sources */,
 				824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */,
@@ -670,13 +712,16 @@
 				821C125F2A77EE810050D106 /* API_Requests.swift in Sources */,
 				82A967B72AAABE890043946F /* RoundedCornerExtension.swift in Sources */,
 				82A399C52BBEFAD200ECA5E6 /* AddHouseViewModel.swift in Sources */,
+				825645B12BCE13BD00F18AC9 /* RealmManager.swift in Sources */,
 				8242136B2A82C5C800626DD5 /* StorageManager.swift in Sources */,
 				820933EB2A7852FD00AF3FF1 /* VisitModel.swift in Sources */,
-				824E5CF62BC5ABF4001DE348 /* DataBaseManager.swift in Sources */,
+				825645A52BCE104300F18AC9 /* HouseObject.swift in Sources */,
+				824E5CF62BC5ABF4001DE348 /* DatabaseManager.swift in Sources */,
 				82BC0F272A9CD94500B255BF /* AddHouseView.swift in Sources */,
+				825645A72BCE117500F18AC9 /* TerritoryObject.swift in Sources */,
 				824213722A82DB7300626DD5 /* SplashScreenView.swift in Sources */,
 				82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */,
-				826B76772A729FE1000A4BAA /* DataController.swift in Sources */,
+				826B76772A729FE1000A4BAA /* NSManagedObjectExtension.swift in Sources */,
 				823FD4DC2A8165300036A1DD /* SettingsView.swift in Sources */,
 				823FD4D72A7E78DA0036A1DD /* CellView.swift in Sources */,
 				821C12762A78111C0050D106 /* ResetPasswordForm.swift in Sources */,
@@ -691,6 +736,7 @@
 				821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */,
 				827EF1A42AA7C2F0006C4631 /* DateFormat.swift in Sources */,
 				820933ED2A785A9400AF3FF1 /* UserAPI.swift in Sources */,
+				825645AB2BCE125000F18AC9 /* TokenObject.swift in Sources */,
 				826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */,
 				82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */,
 				821C126E2A780B310050D106 /* UserResponse.swift in Sources */,
@@ -710,6 +756,7 @@
 				820933E72A78506100AF3FF1 /* HouseModel.swift in Sources */,
 				820933F72A78631500AF3FF1 /* DeleteTokenForm.swift in Sources */,
 				822FA0A52AA7798A0008FA61 /* HousesViewModel.swift in Sources */,
+				825645B32BCE283500F18AC9 /* AreEqualFuncs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -989,6 +1036,14 @@
 				minimumVersion = 2.6.2;
 			};
 		};
+		8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1051,6 +1106,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 822FA0A12AA6B7C00008FA61 /* XCRemoteSwiftPackageReference "PopupView" */;
 			productName = PopupView;
+		};
+		8256459F2BCE0FC000F18AC9 /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		825645A12BCE0FC000F18AC9 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 

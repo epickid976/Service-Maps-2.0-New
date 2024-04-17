@@ -12,18 +12,18 @@ import ScalingHeaderScrollView
 import NavigationTransitions
 
 struct HousesView: View {
-    var territory: Territory
+    var territory: TerritoryModel
     
     @Environment(\.dismiss) private var dismiss
-    @StateObject var viewModel: HousesViewModel
+    @ObservedObject var viewModel: HousesViewModel
     
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
     
-    init(territory: Territory) {
+    init(territory: TerritoryModel) {
         self.territory = territory
         let initialViewModel = HousesViewModel(territory: territory)
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
     }
     
     var body: some View {
@@ -37,7 +37,7 @@ struct HousesView: View {
                 }
             } content: {
                 LazyVStack {
-                    ForEach(viewModel.housesList) { house in
+                    ForEach(viewModel.houses) { house in
                         SwipeView {
                             NavigationLink(destination: VisitsView(house: house)) {
                                 HouseCell(house: house, lastVisit: nil)
@@ -77,7 +77,7 @@ struct HousesView: View {
                 .padding(.horizontal)
                 .padding(.top)
                 .padding(.bottom)
-                .animation(.default, value: viewModel.housesList)
+                .animation(.default, value: viewModel.houses)
                 
             }
             .height(min: 180, max: 350.0)
@@ -122,7 +122,4 @@ struct HousesView: View {
     
 }
 
-#Preview {
-    TerritoryView()
-        .environment(\.managedObjectContext, DataController.preview.container.viewContext)
-}
+

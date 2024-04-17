@@ -10,14 +10,14 @@ import PhotosUI
 import NavigationTransitions
 
 struct AddTerritoryView: View {
-    var territory: Territory?
+    var territory: TerritoryObject?
     
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel = AddTerritoryViewModel()
     
     @State var title = ""
     
-    init(territory: Territory?) {
+    init(territory: TerritoryObject?) {
         if let territory = territory {
             self.territory = territory
         }
@@ -152,7 +152,7 @@ struct AddTerritoryView: View {
                         title = "Edit"
                         
                     }
-                    self.viewModel.description = territory!.territoryDescription ?? ""
+                    self.viewModel.description = territory!.description 
                     self.viewModel.number = Int(territory!.number)
                     self.viewModel.previewImage = UIImage(named: "testTerritoryImage")
                 } else {
@@ -165,8 +165,4 @@ struct AddTerritoryView: View {
             }
         
     }
-}
-
-#Preview {
-    AddTerritoryView(territory: DataController.preview.getTerritories().first!)
 }

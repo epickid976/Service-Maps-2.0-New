@@ -7,27 +7,29 @@
 
 import SwiftUI
 import NavigationTransitions
+import RealmSwift
 
 struct TerritoryAddressView: View {
-    var territory: Territory
-    
-    @FetchRequest(sortDescriptors: [
-        SortDescriptor(\TerritoryAddress.address, order: .reverse)
-    ]) var addresses: FetchedResults<TerritoryAddress>
+    var territory: TerritoryObject
+    @State var addresses = [TerritoryAddressObject]()
+    init(territory: TerritoryObject) {
+        self.territory = territory
+        
+        addresses = RealmManager.shared.addressesFlow.filter({Int32($0.territory) ?? 0 == territory.number})
+    }
     
     
     var body: some View {
-        NavigationView {
             ScrollView {
                 LazyVStack {
                     ForEach(addresses, id: \.id) { address in
                         HStack(spacing: 10) {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(territory.id ?? "")
+                                Text(territory.id )
                                     .font(.title2)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text(territory.territoryDescription ?? "")
+                                Text(territory.description )
                                     .font(.headline)
                                     .lineLimit(5)
                                     .foregroundColor(.primary)
@@ -56,11 +58,8 @@ struct TerritoryAddressView: View {
                     }
                 }
             }
-            .onAppear {
-                //addresses.nsPredicate = NSPredicate(format: "id == %@", String(territory.number))
-            }
-        }
-        .navigationTransition(.zoom.combined(with: .fade(.in)))
+            .navigationTransition(.slide.combined(with: .fade(.in)))
+        //viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : 
             //.navigationViewStyle(StackNavigationViewStyle())
     }
 }
