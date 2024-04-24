@@ -44,7 +44,7 @@ class AddTerritoryViewModel: ObservableObject {
             territoryObject.number = Int32(number!)
             territoryObject.territoryDescription = description
             territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
-            return await dataUploader.addTerritory(territory: territoryObject, image: previewImage)
+            return await dataUploader.addTerritory(territory: territoryObject, image: imageToSend)
     }
     
     func editTerritory(territory: TerritoryModel) async -> Result<Bool, Error> {
@@ -54,7 +54,7 @@ class AddTerritoryViewModel: ObservableObject {
         territoryObject.number = Int32(number!)
         territoryObject.territoryDescription = description
         territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
-        return await dataUploader.updateTerritory(territory: territoryObject, image: previewImage)
+        return await dataUploader.updateTerritory(territory: territoryObject, image: imageToSend)
     }
     
     init(territory: TerritoryModel? = nil) {

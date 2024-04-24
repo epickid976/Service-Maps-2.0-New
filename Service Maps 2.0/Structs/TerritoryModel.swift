@@ -34,10 +34,10 @@ struct TerritoryModel: Codable, Equatable, Hashable, Identifiable {
     
     func getImageURL() -> String {
         let baseURL = "https://servicemaps.ejvapps.online/api/"
-        if let imageToSend = image {
-            return baseURL + "territories/" + congregation + "/" + imageToSend
+        if image != nil {
+            return baseURL + "territories/" + congregation + "/" + image!
         } else {
-            return "https://www.google.com/url?sa=i&url=https%3A%2F%2Flottiefiles.com%2Fanimations%2Fno-data-bt8EDsKmcr&psig=AOvVaw2p2xZlutsRFWRoLRsg6LJ2&ust=1712619221457000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCPjeiPihsYUDFQAAAAAdAAAAABAE"
+            return ""
         }
     }
 }
@@ -45,5 +45,5 @@ struct TerritoryModel: Codable, Equatable, Hashable, Identifiable {
 
 
 func convertTerritoryToTerritoryModel(model: TerritoryObject) -> TerritoryModel {
-    return TerritoryModel(id: model.id, congregation: model.congregation, number: model.number, description: model.territoryDescription, created_at: "", updated_at: "")
+    return TerritoryModel(id: model.id, congregation: model.congregation, number: model.number, description: model.territoryDescription, image: model.image, created_at: "", updated_at: "")
 }

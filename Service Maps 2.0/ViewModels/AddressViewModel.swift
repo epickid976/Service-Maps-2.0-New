@@ -11,6 +11,7 @@ import SwipeActions
 import Combine
 import NukeUI
 import ScalingHeaderScrollView
+import Nuke
 
 @MainActor
 class AddressViewModel: ObservableObject {
@@ -136,15 +137,22 @@ class AddressViewModel: ObservableObject {
                                 
                                 //image.opacity(1 - progress)
                                 
+                            } else if state.isLoading  {
+                                ProgressView().progressViewStyle(.circular)
+                                
                             } else if state.error != nil {
                                 Image(uiImage: UIImage(named: "mapImage")!)
                                     .resizable()
                                     .frame(width: 100, height: 100)
                                     .padding(.bottom, 125)
                             } else {
-                                ProgressView().progressViewStyle(.circular)
+                                Image(uiImage: UIImage(named: "mapImage")!)
+                                    .resizable()
+                                    .frame(width: 100, height: 100)
+                                    .padding(.bottom, 125)
                             }
                         }
+                        .pipeline(ImagePipeline.shared)
                         .vSpacing(.bottom)
                         .cornerRadius(10)
                     }
@@ -195,6 +203,7 @@ class AddressViewModel: ObservableObject {
                         ProgressView().progressViewStyle(.circular)
                     }
                 }
+                
                 .cornerRadius(10)
                 .padding(.horizontal, 2)
             }

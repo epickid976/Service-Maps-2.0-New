@@ -8,21 +8,26 @@
 import SwiftUI
 import PhotosUI
 import NavigationTransitions
+import Nuke
 
 struct AddTerritoryView: View {
-    var territory: TerritoryModel?
+    var territory: TerritoryModel? {
+        didSet {
+            print("THIS IS EDIT \(territory)")
+        }
+    }
     
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel: AddTerritoryViewModel
+    @StateObject var viewModel: AddTerritoryViewModel
     
     @State var title = ""
     
     init(territory: TerritoryModel?, onDone: @escaping () -> Void) {
         if let territory = territory {
             self.territory = territory
-            viewModel = AddTerritoryViewModel(territory: territory)
+            _viewModel = StateObject(wrappedValue: AddTerritoryViewModel(territory: territory))
         } else {
-            viewModel = AddTerritoryViewModel()
+            _viewModel = StateObject(wrappedValue:AddTerritoryViewModel())
         }
         
         self.onDone = onDone
@@ -137,11 +142,15 @@ struct AddTerritoryView: View {
                         
                         CustomButton(loading: viewModel.loading, title: "Save") {
                             if viewModel.checkInfo() {
+                                withAnimation { viewModel.loading = true }
                                 if territory != nil {
                                     Task {
                                         let result = await viewModel.editTerritory(territory: territory!)
                                         switch result {
                                         case .success(_):
+                                            withAnimation {
+                                                viewModel.loading = false
+                                            }
                                             dismiss()
                                             onDone()
                                         case .failure(_):
@@ -154,6 +163,9 @@ struct AddTerritoryView: View {
                                         let result = await viewModel.addTerritory()
                                         switch result {
                                         case .success(_):
+                                            withAnimation {
+                                                viewModel.loading = false
+                                            }
                                             dismiss()
                                             onDone()
                                         case .failure(_):
@@ -194,6 +206,7 @@ struct AddTerritoryView: View {
             
         }.ignoresSafeArea(.keyboard)
             .onAppear {
+                print("THIS IS EDIT \(territory)")
                 if territory != nil {
                     withAnimation {
                         title = "Edit"

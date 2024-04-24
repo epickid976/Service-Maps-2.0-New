@@ -8,22 +8,19 @@
 import SwiftUI
 import NavigationTransitions
 import BackgroundTasks
+import Nuke
 
 @main
 struct Service_Maps_2_0App: App {
-    //let databaseManager = RealmManager.shared
-    //let cdPublisher = CDPublisher.shared
     
     @Environment(\.scenePhase) var scenePhase
     @StateObject var synchronizationManager = SynchronizationManager.shared
     @StateObject var territoryViewModel = TerritoryViewModel()
-    
     init() {
+        
 //        BGTaskScheduler.shared.register(forTaskWithIdentifier: "￼com.serviceMaps.uploadPendingTasks", using: nil) { task in
 //            ReuploaderWorker.shared.handleReupload(task: task as! BGProcessingTask)
 //        }
-        
-        
     }
     
     var body: some Scene {
@@ -72,7 +69,6 @@ struct Service_Maps_2_0App: App {
             if newPhase == .active {
                 synchronizationManager.startupProcess(synchronizing: true)
             }
-            //dataController.save()
         }
     }
 }

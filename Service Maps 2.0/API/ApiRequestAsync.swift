@@ -65,14 +65,15 @@ class ApiRequestAsync {
         print("Uploading file to: " + baseURL + url)
         
         AF.upload(multipartFormData: { multipartFormData in
-            multipartFormData.append(image.jpegData(compressionQuality: 0.8)!, withName: "file", fileName: "image", mimeType: "image/jpeg")
+            multipartFormData.append(image.pngData()!, withName: "file", fileName: "image.png", mimeType: "image/png")
           // Add any additional parameters here
           for (key, value) in parameters {
-            multipartFormData.append("\(value)".data(using: .utf8)!, withName: key)
+              multipartFormData.append("\(value)".data(using: .utf8)!, withName: key)
           }
-        }, to: baseURL + url, usingThreshold: UInt64.max, method: .post)
+        }, to: baseURL + url, usingThreshold: UInt64.max, method: .post, headers: getHeaders())
           .validate()
           .responseString { response in
+              print(response)
             if let string = response.value {
                 print("Upload Success: " + self.baseURL + url)
               continuation.resume(returning: string)

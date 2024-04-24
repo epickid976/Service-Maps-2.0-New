@@ -7,6 +7,7 @@
 
 import SwiftUI
 import NavigationTransitions
+import PopupView
 
 struct SettingsView: View {
     @State var loading = false
@@ -23,8 +24,27 @@ struct SettingsView: View {
             VStack {
                 viewModel.profile()
                 viewModel.administratorInfoCell()
+                viewModel.infosView()
+                //App Info (Clear Cache, Share App, Privacy Policy, About App)
+//                ImagePipeline.shared.cache.removeAll()
+//                DataLoader.sharedUrlCache.removeAllCachedResponses()
+                //Delete Account
             }
             .padding(.vertical)
+            .popup(isPresented: $viewModel.showAlert) {
+                viewModel.aboutApp()
+                    .frame(width: 400, height: 400)
+                    .background(Material.thin).cornerRadius(16, corners: .allCorners)
+            } customize: {
+                $0
+                    .type(.default)
+                    .closeOnTapOutside(false)
+                    .dragToDismiss(false)
+                    .isOpaque(true)
+                    .animation(.spring())
+                    .closeOnTap(false)
+                    .backgroundColor(.black.opacity(0.8))
+            }
             .fullScreenCover(isPresented: $viewModel.presentSheet) {
                 AdminLoginView {
                     synchronizationManager.startupProcess(synchronizing: true)

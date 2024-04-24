@@ -60,8 +60,14 @@ class AccessViewModel: ObservableObject {
     @Published var showAddedToast = false
     
     func deleteKey(key: String) async -> Result<Bool, Error> {
-        if isAdmin {
-            return await dataUploaderManager.unregisterToken(myToken: key)
+        if !isAdmin {
+            switch await dataUploaderManager.unregisterToken(myToken: key) {
+            case .success(_):
+                synchronizationManager.startupProcess(synchronizing: true)
+                return Result.success(true)
+            case .failure(let error):
+                return Result.failure(error)
+            }
         } else {
             return await dataUploaderManager.deleteToken(myToken: key)
         }
@@ -151,6 +157,7 @@ class AccessViewModel: ObservableObject {
                                         withAnimation {
                                             withAnimation {
                                                 self.loading = false
+                                                self.getKeys()
                                             }
                                             self.showAlert = false
                                             self.keyToDelete = (nil,nil)

@@ -167,17 +167,7 @@ class SynchronizationManager: ObservableObject {
         housesDb =  Array(housesEntities)
         visitsDb =  Array(visitsEntities)
         territoriesAddressesDb =  Array(addressesEntities)
-        
-        //tokenTerritoriesDb.append(contentsOf: databaseManager.tokenTerritoriesFlow)
-        
-        
-        for tokenTerritory in Array(tokenTerritoryEntities){
-            for token in tokensDb {
-                if tokenTerritory.token == token.id {
-                    tokenTerritoriesDb.append(tokenTerritory)
-                }
-            }
-        }
+        tokenTerritoriesDb = Array(tokenTerritoryEntities)
         
         //Comparing and Updating, adding or deleting data in database by server data
         await comparingAndSynchronizeTokens(apiList: tokensApi, dbList: tokensDb)

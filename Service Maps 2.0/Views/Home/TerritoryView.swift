@@ -13,6 +13,7 @@ import UIKit
 import Lottie
 import PopupView
 import AlertKit
+import Nuke
 
 struct TerritoryView: View {
     
@@ -29,6 +30,7 @@ struct TerritoryView: View {
     
     init() {
         
+
     }
     let alertViewDeleted = AlertAppleMusic17View(title: "Territory Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     let alertViewAdded = AlertAppleMusic17View(title: "Territory Added", subtitle: nil, icon: .done)

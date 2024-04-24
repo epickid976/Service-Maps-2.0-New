@@ -388,14 +388,12 @@ class DataUploaderManager: ObservableObject {
             let realm = try! await Realm()
             if let keyToDelete = realm.objects(TokenObject.self).filter("id == %d", myToken).first {
                 try await tokenApi.deleteToken(token: keyToDelete.id)
-                tokensEntities.forEach { token in
                     tokenTerritoryEntities.forEach { tokenTerritory in
-                        if token.id == tokenTerritory.token {
+                        if keyToDelete.id == tokenTerritory.token {
                             realmManager.deleteTokenTerritory(tokenTerritory: tokenTerritory)
                         }
-                        realmManager.deleteToken(token: token)
                     }
-                }
+                realmManager.deleteToken(token: keyToDelete)
                 return Result.success(true)
             }
             return Result.failure(CustomErrors.NotFound)

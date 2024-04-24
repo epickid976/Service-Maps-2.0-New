@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import Alamofire
-import ActivityIndicatorView
 import NavigationTransitions
 
 struct SignupView: View {
