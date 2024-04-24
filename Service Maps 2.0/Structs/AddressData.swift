@@ -6,3 +6,22 @@
 //
 
 import Foundation
+
+struct AddressData: Hashable, Identifiable {
+    var id: ObjectIdentifier 
+    var address: TerritoryAddressModel
+    var houseQuantity: Int
+    var accessLevel: AccessLevel
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(address)
+        hasher.combine(houseQuantity)
+        hasher.combine(accessLevel)
+    }
+    
+    static func ==(lhs: AddressData, rhs: AddressData) -> Bool {
+        return lhs.address == rhs.address &&
+        lhs.houseQuantity == rhs.houseQuantity &&
+        lhs.accessLevel == rhs.accessLevel
+    }
+}

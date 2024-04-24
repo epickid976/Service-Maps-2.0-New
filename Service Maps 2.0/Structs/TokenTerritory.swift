@@ -23,5 +23,10 @@ struct TokenTerritoryModel: Codable, Equatable, Hashable, Identifiable {
         hasher.combine(token)
         hasher.combine(territory)
       }
+    
+    
 }
 
+func convertTokenToMyTokenModel(model: TokenTerritoryObject) -> TokenTerritoryModel {
+    return TokenTerritoryModel(id: model.id.debugDescription, token: model.token, territory: model.territory, created_at: "", updated_at: "")
+}

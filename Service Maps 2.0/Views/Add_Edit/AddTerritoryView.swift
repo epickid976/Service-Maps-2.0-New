@@ -10,22 +10,28 @@ import PhotosUI
 import NavigationTransitions
 
 struct AddTerritoryView: View {
-    var territory: TerritoryObject?
+    var territory: TerritoryModel?
     
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel = AddTerritoryViewModel()
+    @ObservedObject var viewModel: AddTerritoryViewModel
     
     @State var title = ""
     
-    init(territory: TerritoryObject?) {
+    init(territory: TerritoryModel?, onDone: @escaping () -> Void) {
         if let territory = territory {
             self.territory = territory
+            viewModel = AddTerritoryViewModel(territory: territory)
+        } else {
+            viewModel = AddTerritoryViewModel()
         }
+        
+        self.onDone = onDone
     }
     
     @FocusState private var numberFocus: Bool
     @FocusState private var descriptionFocus: Bool
     
+    var onDone: () -> Void
 
     
     var body: some View {
@@ -43,23 +49,32 @@ struct AddTerritoryView: View {
                                 HStack {
                                     CustomField(text: viewModel.binding, isFocused: $numberFocus, textfield: true, keyboardType: .numberPad, textAlignment: .center, placeholder: "#")
                                         .frame(maxWidth: UIScreen.screenWidth * 0.3)
-                                    Stepper("", onIncrement: {
-                                        if viewModel.number != nil {
-                                            viewModel.number! += 1
-                                        } else {
-                                            viewModel.number = 0
-                                        }
-                                        
-                                    }, onDecrement: {
-                                        if viewModel.number != nil {
-                                            if viewModel.number != 0 {
-                                                viewModel.number! -= 1
+                                        .disabled(title == "Edit")
+                                    if title != "Edit" {
+                                        Stepper("", onIncrement: {
+                                            if viewModel.number != nil {
+                                                viewModel.number! += 1
+                                            } else {
+                                                viewModel.number = 0
                                             }
-                                        }
-                                    })
-                                    .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                    .labelsHidden()
-                                    .frame(maxWidth: UIScreen.screenWidth * 0.3)
+                                            
+                                        }, onDecrement: {
+                                            if viewModel.number != nil {
+                                                if viewModel.number != 0 {
+                                                    viewModel.number! -= 1
+                                                }
+                                            }
+                                        })
+                                        .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                                        .labelsHidden()
+                                        .frame(maxWidth: UIScreen.screenWidth * 0.3)
+                                    } else {
+                                        Text("Number Uneditable")
+                                            .font(.headline)
+                                            .fontWeight(.semibold)
+                                            .hSpacing(.leading)
+                                            .foregroundColor(.red)
+                                    }
                                 }
                                 .hSpacing(.leading)
                             }
@@ -109,13 +124,45 @@ struct AddTerritoryView: View {
                         }
                         .frame(minWidth: 250, maxWidth: 300, minHeight: 10, maxHeight: 300)
                         
+                        Text(viewModel.error)
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                            .vSpacing(.bottom)
                     
                     HStack {
-                        CustomBackButton() { dismiss() }
+                        if !viewModel.loading {
+                            CustomBackButton() { dismiss() }
+                        }
                         //.padding([.top])
                         
-                        CustomButton(loading: false, title: "Save") {
-                            viewModel.addTerritory()
+                        CustomButton(loading: viewModel.loading, title: "Save") {
+                            if viewModel.checkInfo() {
+                                if territory != nil {
+                                    Task {
+                                        let result = await viewModel.editTerritory(territory: territory!)
+                                        switch result {
+                                        case .success(_):
+                                            dismiss()
+                                            onDone()
+                                        case .failure(_):
+                                            viewModel.error = "Error updating territory."
+                                            viewModel.loading = false
+                                        }
+                                    }
+                                } else {
+                                    Task {
+                                        let result = await viewModel.addTerritory()
+                                        switch result {
+                                        case .success(_):
+                                            dismiss()
+                                            onDone()
+                                        case .failure(_):
+                                            viewModel.error = "Error adding territory."
+                                            viewModel.loading = false
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     .padding([.horizontal, .bottom])
@@ -152,16 +199,13 @@ struct AddTerritoryView: View {
                         title = "Edit"
                         
                     }
-                    self.viewModel.description = territory!.description 
+                    self.viewModel.description = territory!.description
                     self.viewModel.number = Int(territory!.number)
-                    self.viewModel.previewImage = UIImage(named: "testTerritoryImage")
                 } else {
                     withAnimation {
                         title = "Add"
                     }
                 }
-                
-                
             }
         
     }

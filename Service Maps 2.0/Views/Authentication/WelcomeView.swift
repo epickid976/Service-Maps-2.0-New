@@ -20,6 +20,7 @@ struct WelcomeView: View {
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
     @StateObject var synchronizationManager = SynchronizationManager.shared
+    
     var body: some View {
         NavigationStack {
             LazyVStack {

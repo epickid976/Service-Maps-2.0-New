@@ -22,6 +22,7 @@ class StorageManager: ObservableObject {
   private var passTempKey = "passTempKey"
   private var synchronizedKey = "synchronizedKey"
   private var pendingChangesKey = "pendingChangesKey"
+  private var lastTimeKey = "lastSyncKey"
 
   //MARK: Published Variables
   @Published var userEmail: String? = nil {
@@ -77,6 +78,17 @@ class StorageManager: ObservableObject {
       }
     }
   }
+    
+    @Published var lastTime: Date? {
+        didSet {
+            DispatchQueue.main.async {
+              self.defaults.set(self.lastTime, forKey: self.lastTimeKey)
+              self.objectWillChange.send()
+            }
+        }
+    }
+    
+   
 
   private func readValuesFromUserDefaults() {
     self.userEmail = defaults.string(forKey: userEmailKey)
@@ -104,5 +116,6 @@ class StorageManager: ObservableObject {
     congregationName = nil
     passTemp = nil
     synchronized = false
+      lastTime = nil
   }
 }

@@ -17,12 +17,13 @@ struct LottieAnimationUIView: UIViewRepresentable {
     var shouldLoop: Bool = true
     @Binding var shouldRestartAnimation: Bool
     @Binding var animationProgress: CGFloat
-
+    
+    
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         let animationView = LottieAnimationView(name: animationName)
         animationView.translatesAutoresizingMaskIntoConstraints = false
-        
+        animationView.layer.zPosition = 1
         if shouldLoop {
             animationView.loopMode = .loop
         } else {
@@ -59,10 +60,17 @@ struct LottieAnimationUIView: UIViewRepresentable {
             
             if shouldRestartAnimation {
                 animationView.play(fromProgress: 0, toProgress: 1, loopMode: context.coordinator.parent.animationView.loopMode) { _ in
-                    // Update the animationProgress after the animation completes
-                    context.coordinator.parent.animationProgress = 1
+                 
+                  context.coordinator.parent.animationProgress = 0 // Reset for potential restart
                 }
                 shouldRestartAnimation = false
+            } 
+            
+            animationView.play(fromProgress: 0, toProgress: 1, loopMode: context.coordinator.parent.animationView.loopMode) { finished in
+                // Update the animationProgress after the animation completes
+                if finished {
+                    context.coordinator.parent.animationProgress = 1
+                }
             }
         }
         

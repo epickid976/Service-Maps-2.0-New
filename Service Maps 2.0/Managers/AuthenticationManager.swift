@@ -99,7 +99,15 @@ class AuthenticationManager: ObservableObject {
             return Result.success(congregationResponse)
             
         } catch {
-            return Result.failure(error)
+            if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
+                return Result.failure(CustomErrors.NoInternet)
+            } else if error.asAFError?.responseCode == 401 {
+                return Result.failure(CustomErrors.WrongCredentials)
+            } else if error.asAFError?.responseCode == 404 {
+                return Result.failure(CustomErrors.NoCongregation)
+            } else {
+                return Result.failure(error)
+            }
         }
     }
     

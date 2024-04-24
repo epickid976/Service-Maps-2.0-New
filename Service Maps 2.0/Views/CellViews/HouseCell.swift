@@ -9,8 +9,7 @@ import SwiftUI
 import NukeUI
 
 struct HouseCell: View {
-    var house: HouseModel
-    var lastVisit: VisitModel? = nil
+    var house: HouseData
     
     var body: some View {
         HStack(spacing: 10) {
@@ -18,14 +17,12 @@ struct HouseCell: View {
                 HStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.gray.gradient)
+                                .fill(Color.gray.gradient.opacity(0.5))
                                 .foregroundStyle(Material.thin)
 
                             HStack {
-                                Image(systemName: "numbersign").imageScale(.large).fontWeight(.heavy)
-                                    .foregroundColor(.primary)
-                                Text("\(house.number ?? "")")
-                                    .font(.title)
+                                Text("\(house.house.number)")
+                                    .font(.title3)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
                                 
@@ -36,16 +33,16 @@ struct HouseCell: View {
                         }
                         .hSpacing(.center)
                         //.vSpacing(.leading)
-                        .frame(maxWidth: UIScreen.screenWidth * 0.4, maxHeight: 200)
+                        .frame(maxWidth: UIScreen.screenWidth * 0.3, maxHeight: 100)
                     
                     VStack {
                         HStack {
-                            if let lastVisit {
+                            if let visit = house.visit {
                                 Image(systemName: "tablecells.badge.ellipsis").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("Symbol: \(lastVisit.symbol ?? "")")
-                                    .font(.title3)
+                                Text("Symbol: \(visit.symbol)")
+                                    .font(.subheadline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
                                     .fontWeight(.heavy)
@@ -55,7 +52,7 @@ struct HouseCell: View {
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
                                 Text("Symbol: N/A")
-                                    .font(.title3)
+                                    .font(.subheadline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
                                     .fontWeight(.heavy)
@@ -65,45 +62,53 @@ struct HouseCell: View {
                         //.padding()
                         
                         HStack {
-                            if let lastVisit {
+                            if let visit = house.visit {
                                 Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("Date: \(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(lastVisit.date))))")
-                                    .font(.title3)
-                                    .lineLimit(2)
+                                Text("Date: ")
+                                    .font(.subheadline)
+                                    .lineLimit(1)
                                     .foregroundColor(.primary)
                                     .fontWeight(.heavy)
-                                    .hSpacing(.leading)
+                                    //.hSpacing(.leading)
+                                    Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(visit.date) / 1000) ))")
+                                    .font(.subheadline)
+                                        .lineLimit(2)
+                                        .foregroundColor(.primary)
+                                        .fontWeight(.heavy)
+                                       // .hSpacing(.leading)
                             } else {
                                 Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
                                 Text("Date: N/A")
-                                    .font(.title3)
+                                    .font(.subheadline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
                                     .fontWeight(.heavy)
                                     .hSpacing(.leading)
                             }
                         }
+                        .hSpacing(.leading)
                         //.padding()
                        
                     }
                     //.vSpacing(.leading)
                     .hSpacing(.leading)
+                    .frame(maxWidth: UIScreen.screenWidth * 0.7, maxHeight: 100)
                     //.frame(maxWidth: UIScreen.screenWidth * 0.6)
                 }
-                
+                Spacer()
                 VStack {
                     HStack {
-                        if let lastVisit {
+                        if let visit = house.visit  {
                             HStack {
                                 Image(systemName: "note.text").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("Note: \(lastVisit.notes ?? "")")
-                                    .font(.title3)
+                                Text("Note: \(visit.notes)")
+                                    .font(.headline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
                                     .fontWeight(.bold)
@@ -116,7 +121,7 @@ struct HouseCell: View {
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
                                 Text("Note: N/A")
-                                    .font(.title3)
+                                    .font(.headline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
                                     .fontWeight(.bold)
@@ -135,15 +140,8 @@ struct HouseCell: View {
             
         }
         .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(style: StrokeStyle(lineWidth: 5))
-                .fill(
-                    .ultraThinMaterial
-                )
-        )
-        .shadow(color: Color(UIColor.systemGray4), radius: 10, x: 0, y: 2)
-        .cornerRadius(16)
-        .foregroundColor(.white)
+        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }

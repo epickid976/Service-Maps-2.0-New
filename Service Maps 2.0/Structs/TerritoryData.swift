@@ -8,8 +8,8 @@
 import Foundation
 
 struct TerritoryData: Hashable {
-    let territory: TerritoryObject
-    let addresses: [TerritoryAddressObject]
+    let territory: TerritoryModel
+    let addresses: [TerritoryAddressModel]
     let housesQuantity: Int
     let accessLevel: AccessLevel
     

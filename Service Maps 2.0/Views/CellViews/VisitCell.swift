@@ -8,49 +8,41 @@
 import SwiftUI
 
 struct VisitCell: View {
-    var visit: VisitModel
+    var visit: VisitData
     
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                     HStack {
-                        Text(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(visit.date / 1000))))
-                            //.frame(maxWidth: .infinity)
+                        Text(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(visit.visit.date / 1000))))
+                        //.frame(maxWidth: .infinity)
                             .font(.title3)
                             .lineLimit(1)
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
-                           
-//                        Spacer()
-//                        Text(Date(timeIntervalSince1970: TimeInterval(visit.date / 1000)), style: .time)
-//                            .font(.title3)
-//                            .lineLimit(1)
-//                            .foregroundColor(.primary)
-//                            .fontWeight(.heavy)
-//                            .hSpacing(.leading)
-                    }
-                    //.frame(minWidth: 200)
+                    }.frame(maxWidth: UIScreen.screenWidth * 0.7, maxHeight: 100)
                     
                     HStack {
-                        Text(visit.symbol ?? "-")
+                        Text(visit.visit.symbol.uppercased())
                             .font(.title3)
                             .lineLimit(1)
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                             .hSpacing(.trailing)
                     }
+                    .frame(maxWidth: UIScreen.screenWidth * 0.3, maxHeight: 100)
                 }
                 
-                Text(visit.notes ?? "_NO_NOTES_")
+                Text(visit.visit.notes)
                     .font(.headline)
-                    .lineLimit(2)
+                    .lineLimit(4)
                     .foregroundColor(.primary)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                 
-                Text(visit.user ?? "ERROR_NO_USER")
+                Text(visit.visit.user)
                     .font(.headline)
                     .lineLimit(2)
                     .foregroundColor(.primary)
@@ -62,17 +54,11 @@ struct VisitCell: View {
             
         }
         .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(style: StrokeStyle(lineWidth: 5))
-                .fill(
-                    .ultraThinMaterial
-                )
-        )
-        .shadow(color: Color(UIColor.systemGray4), radius: 10, x: 0, y: 2)
-        .cornerRadius(16)
-        .foregroundColor(.white)
+        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
+    
 }
 
 //#Preview {

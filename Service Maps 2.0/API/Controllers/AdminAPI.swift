@@ -56,6 +56,7 @@ class AdminAPI {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/update", body: territory)
         } catch {
+            print(error)
             throw error.self
         }
     }

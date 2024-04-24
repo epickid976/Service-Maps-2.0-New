@@ -16,7 +16,7 @@ struct Service_Maps_2_0App: App {
     
     @Environment(\.scenePhase) var scenePhase
     @StateObject var synchronizationManager = SynchronizationManager.shared
-    
+    @StateObject var territoryViewModel = TerritoryViewModel()
     
     init() {
 //        BGTaskScheduler.shared.register(forTaskWithIdentifier: "￼com.serviceMaps.uploadPendingTasks", using: nil) { task in
@@ -55,6 +55,7 @@ struct Service_Maps_2_0App: App {
                     LoadingView()
                 case .Ready:
                     HomeTabView()
+                        //.environmentObject(territoryViewModel)
                 case .Empty:
                     NoDataView()
                 }

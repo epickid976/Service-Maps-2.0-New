@@ -10,22 +10,49 @@ import SwiftUI
 
 @MainActor
 class AddHouseViewModel: ObservableObject {
+    init(address: TerritoryAddressModel) {
+        error = ""
+        self.address = address
+    }
     
-    @Published var number: Int? = nil
+    @Published private var dataUploader = DataUploaderManager()
     
-    var binding: Binding<String> {
-            .init(get: {
-                if let number = self.number {
-                    "\(number)"
-                } else {
-                    ""
-                }
-            }, set: {
-                self.number = Int($0) ?? nil
-            })
+    @Published var address: TerritoryAddressModel
+    
+    @Published var error = ""
+    @Published var number = ""
+    
+    @Published var loading = false
+    
+    func addHouse() async -> Result<Bool, Error> {
+        withAnimation {
+            loading = true
         }
+        let houseObject = HouseObject()
+        houseObject.number = number
+        houseObject.territory_address = address.id
+        houseObject.floor = nil
+        return await dataUploader.addHouse(house: houseObject)
+    }
     
-    func addHouse(number: Int) {
-        
+    func editHouse(house: HouseModel) async -> Result<Bool, Error> {
+        withAnimation {
+            loading = true
+        }
+        let houseObject = HouseObject()
+        houseObject.id = house.id
+        houseObject.number = number
+        houseObject.territory_address = address.id
+        houseObject.floor = nil
+        return await dataUploader.updateHouse(house: houseObject)
+    }
+    
+    func checkInfo() -> Bool {
+        if number == "" {
+            error = "Number is required."
+            return false
+        } else {
+            return true
+        }
     }
 }

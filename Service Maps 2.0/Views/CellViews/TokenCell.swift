@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct TokenCell: View {
-    var token: TokenObject
+    @ObservedObject var dataStore = StorageManager.shared
+    var keyData: KeyData
     
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    Text("\(token.name )")
+                    Text("\(keyData.key.name )")
                         .font(.title3)
                         .lineLimit(2)
                         .foregroundColor(.primary)
@@ -22,7 +23,7 @@ struct TokenCell: View {
                         .hSpacing(.leading)
                 }
                 
-                if token.moderator {
+                if keyData.key.user == dataStore.userEmail || keyData.key.moderator {
                     Text("Level: Servant")
                         .font(.headline)
                         .lineLimit(2)
@@ -38,14 +39,14 @@ struct TokenCell: View {
                         .hSpacing(.leading)
                 }
                 
-                Text("Territories _NO_NOTES_")
+                Text("Territories: \(processData(key: keyData))")
                     .font(.headline)
                     .lineLimit(2)
                     .foregroundColor(.primary)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                 
-                Text(token.owner )
+                Text(keyData.key.user == dataStore.userEmail ? dataStore.userName ?? "" : keyData.key.user ?? keyData.key.owner)
                     .font(.headline)
                     .lineLimit(2)
                     .foregroundColor(.primary)
@@ -57,16 +58,25 @@ struct TokenCell: View {
             
         }
         .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(style: StrokeStyle(lineWidth: 5))
-                .fill(
-                    .ultraThinMaterial
-                )
-        )
-        .shadow(color: Color(UIColor.systemGray4), radius: 10, x: 0, y: 2)
-        .cornerRadius(16)
-        .foregroundColor(.white)
+        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+    
+    func processData(key: KeyData) -> String {
+        var name = ""
+        if !key.territories.isEmpty {
+            let data = key.territories.sorted { $0.number < $1.number}
+            for territory in data {
+                if name.isEmpty {
+                    name = String(territory.number)
+                } else {
+                    name += ", " + String(territory.number)
+                }
+            }
+            return name
+        }
+        return name
     }
 }
 

@@ -30,6 +30,6 @@ struct HouseModel: Codable, Equatable, Hashable, Identifiable {
       }
 }
 
-func convertHouseToHouseModel(model: House) -> HouseModel {
-    return HouseModel(id: model.id ?? "", territory_address: model.territoryAddress ?? "", number: model.number ?? "", created_at: "", updated_at: "")
+func convertHouseToHouseModel(model: HouseObject) -> HouseModel {
+    return HouseModel(id: model.id, territory_address: model.territory_address, number: model.number, floor: model.floor, created_at: "", updated_at: "")
 }

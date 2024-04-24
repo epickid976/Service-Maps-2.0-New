@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreData
 import Combine
 import RealmSwift
 
@@ -98,7 +97,7 @@ class SynchronizationManager: ObservableObject {
             print("REALM FAILED")
             return
         }
-    
+        
         let territoryEntities = realmDatabase.objects(TerritoryObject.self)
         let addressesEntities = realmDatabase.objects(TerritoryAddressObject.self)
         let housesEntities = realmDatabase.objects(HouseObject.self)
@@ -129,7 +128,12 @@ class SynchronizationManager: ObservableObject {
             let ownedTokens = try await tokenApi.loadOwnedTokens()
             tokensApi.append(contentsOf: ownedTokens)
             let userTokens = try await tokenApi.loadUserTokens()
-            tokensApi.append(contentsOf: userTokens)
+            
+            for token in userTokens {
+                if !tokensApi.contains(token) {
+                    tokensApi.append(token)
+                }
+            }
             
             
             if authorizationLevelManager.existsAdminCredentials() {
@@ -187,6 +191,7 @@ class SynchronizationManager: ObservableObject {
         
         startupProcess(synchronizing: false)
         DispatchQueue.main.async {
+            self.dataStore.lastTime = Date.now
             self.dataStore.synchronized = true
         }
     }
@@ -202,14 +207,10 @@ class SynchronizationManager: ObservableObject {
             
             if myTokenDb != nil {
                 if (myTokenDb! == myTokenApi) == false {
-        
+                    
                     //Save the changes
                     switch  realmManager.updateToken(token: myTokenApi) {
                     case .success(let success):
-                        //Remove from Db so it is not deleted from database after
-                        if let index = tokensDb.firstIndex(of: myTokenDb!) {
-                            tokensDb.remove(at: index)
-                        }
                         print(success)
                     case .failure(let error):
                         //check what to do here becasuse I don't know. ELIER what should I do here??
@@ -221,13 +222,15 @@ class SynchronizationManager: ObservableObject {
                 }
             } else {
                 // If it does not exist (if it is Nil), create it
-                switch  realmManager.addModel(TokenObject().createTokenObject(from: myTokenApi)) {
-                case .success(let success):
-                    print("Success Adding Token \(success)")
-                    return
-                case .failure(let error):
-                    print("There was an error adding Token \(error)")
-                    return
+                do {
+                    switch  realmManager.addModel(TokenObject().createTokenObject(from: myTokenApi)) {
+                    case .success(let success):
+                        print("Success Adding Token \(success)")
+                        return
+                    case .failure(let error):
+                        print("There was an error adding Token \(error)")
+                        return
+                    }
                 }
             }
         }
@@ -256,23 +259,18 @@ class SynchronizationManager: ObservableObject {
             if territoryDb != nil {
                 if (territoryDb! == territoryApi) == false {
                     //If not the same, UPDATE it
-                   
+                    
                     //Save the changes
                     switch  realmManager.updateTerritory(territory: territoryApi){
                     case .success(let success):
-                        //Remove from Db so it is not deleted from database after
-                        if let index = territoriesDb.firstIndex(of: territoryDb!) {
-                            territoriesDb.remove(at: index)
-                        }
                         print(success)
                     case .failure(let error):
                         //check what to do here becasuse I don't know. ELIER what should I do here??
                         print("I Don't know what to do if couldn't update \(error)") //<--
                     }
-                    
-                    if let index = territoriesDb.firstIndex(of: territoryDb!) {
-                        territoriesDb.remove(at: index)
-                    }
+                }
+                if let index = territoriesDb.firstIndex(of: territoryDb!) {
+                    territoriesDb.remove(at: index)
                 }
             } else {
                 // If it does not exist (if it is Nil), create it
@@ -298,7 +296,7 @@ class SynchronizationManager: ObservableObject {
             }
         }
     }
-
+    
     @MainActor
     private func comparingAndSynchronizeHouses(apiList: [HouseModel], dbList: [HouseObject]) async {
         let housesApi = apiList
@@ -312,9 +310,6 @@ class SynchronizationManager: ObservableObject {
                     //Save
                     switch  realmManager.updateHouse(house: houseApi) {
                     case .success(let success):
-                        if let index = housesDb.firstIndex(of: houseDb!) {
-                            housesDb.remove(at: index)
-                        }
                         print(success)
                     case .failure(let error):
                         print("I Don't know what to do if couldn't update \(error)")
@@ -357,10 +352,6 @@ class SynchronizationManager: ObservableObject {
                 if (visitDb! == visitApi) == false {
                     switch  realmManager.updateVisit(visit: visitApi){
                     case .success(let success):
-                        //Remove from Db so it is not deleted from database after
-                        if let index = visitsDb.firstIndex(of: visitDb!) {
-                            visitsDb.remove(at: index)
-                        }
                         print(success)
                     case .failure(let error):
                         //check what to do here becasuse I don't know. ELIER what should I do here??
@@ -406,10 +397,6 @@ class SynchronizationManager: ObservableObject {
                     //Save the changes
                     switch  realmManager.updateTokenTerritory(tokenTerritory: tokenTerritoryApi){
                     case .success(let success):
-                        //Remove from Db so it is not deleted from database after
-                        if let index = tokenTerritoriesDb.firstIndex(of: tokenTerritoryDb!) {
-                            tokenTerritoriesDb.remove(at: index)
-                        }
                         print(success)
                     case .failure(let error):
                         //check what to do here becasuse I don't know. ELIER what should I do here??
@@ -456,10 +443,6 @@ class SynchronizationManager: ObservableObject {
                     //Save the changes
                     switch  realmManager.updateAddress(address: territoryAddressApi){
                     case .success(let success):
-                        //Remove from Db so it is not deleted from database after
-                        if let index = territoryAddressesDb.firstIndex(of: territoryAddressDb!) {
-                            territoryAddressesDb.remove(at: index)
-                        }
                         print(success)
                     case .failure(let error):
                         //check what to do here becasuse I don't know. ELIER what should I do here??
@@ -493,47 +476,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-//    func comparingAndSynchronizeModels<T: Equatable>(
-//        apiList: [T],
-//        dbList: [T],
-//        getID: (T) -> String,
-//        add: @escaping (T) -> Void,
-//        update: @escaping (T) -> Void,
-//        delete: @escaping (T) -> Void
-//    ) throws {
-//        let modelsApi = apiList
-//        var modelsDb = dbList
-//        
-//        for modelApi in modelsApi {
-//            guard let modelDbIndex = modelsDb.firstIndex(where: { getID($0) == getID(modelApi) }) else {
-//                // Model not found in database, create it
-//                add(modelApi)
-//                continue
-//            }
-//            
-//            let modelDb = modelsDb.remove(at: modelDbIndex)
-//            
-//            if modelApi != modelDb {
-//                // Model on server has differences, update it
-//                update(modelApi)
-//            }
-//        }
-//        
-//        // Delete models that no longer exist on the server
-//        for modelDb in modelsDb {
-//            delete(modelDb)
-//        }
-//    }
     
-    
-//    func allData() {
-//        territories = DatabaseManager.shared.getTerritories()
-//        houses = DatabaseManager.shared.getHouses()
-//        visits = DatabaseManager.shared.getVisits()
-//        tokens = DatabaseManager.shared.getMyTokens()
-//        territoryAddresses = DatabaseManager.shared.getTerritoryAddresses()
-//        tokenTerritories = DatabaseManager.shared.getTokenTerritories()
-//    }
     
     class var shared: SynchronizationManager {
         struct Static {

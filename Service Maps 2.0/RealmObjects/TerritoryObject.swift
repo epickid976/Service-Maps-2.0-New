@@ -37,4 +37,12 @@ class TerritoryObject: Object, Identifiable{
       return territoryObject
     }
 
+    func getImageURL() -> String {
+        let baseURL = "https://servicemaps.ejvapps.online/api/"
+        if let imageToSend = image {
+            return baseURL + "territories/" + congregation + "/" + imageToSend
+        } else {
+            return "https://www.google.com/url?sa=i&url=https%3A%2F%2Flottiefiles.com%2Fanimations%2Fno-data-bt8EDsKmcr&psig=AOvVaw2p2xZlutsRFWRoLRsg6LJ2&ust=1712619221457000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCPjeiPihsYUDFQAAAAAdAAAAABAE"
+        }
+    }
 }

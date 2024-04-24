@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-import ActivityIndicatorView
-
+import NavigationTransitions
 
 struct SettingsView: View {
     @State var loading = false
@@ -15,45 +14,37 @@ struct SettingsView: View {
     
     //MARK: API
     let authenticationManager = AuthenticationManager()
-    let authorizationProvider = AuthorizationProvider.shared
     
-    @State var errorText = ""
+    @ObservedObject var viewModel = SettingsViewModel()
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     var body: some View {
-        NavigationStack {
+        ScrollView {
             VStack {
-                Spacer()
-                Text(errorText)
-                Button {
-                    Task {
-                           let result = await authenticationManager.logout()
-                                switch result {
-                                case .success(_):
-                                    authorizationProvider.isLoggedOut = true
-                                    authorizationProvider.authorizationToken = nil
-                                    SynchronizationManager.shared.startupProcess(synchronizing: false)
-                                case .failure(let error):
-                                    print("logout failed")
-                                    errorText = error.asAFError?.localizedDescription ?? ""
-                                }
-                            
-                    }
-                } label: {
-                    if loading {
-                        ActivityIndicatorView(isVisible: $alwaysLoading, type: .growingArc(.primary, lineWidth: 1.0))
-                            .frame(width: 25, height: 25)
-                    } else {
-                        Text("Logout")
-                            .frame(maxWidth: .infinity)
-                            .fontWeight(.heavy)
-                    }
+                viewModel.profile()
+                viewModel.administratorInfoCell()
+            }
+            .padding(.vertical)
+            .fullScreenCover(isPresented: $viewModel.presentSheet) {
+                AdminLoginView {
+                    synchronizationManager.startupProcess(synchronizing: true)
+                    viewModel.presentSheet = false
                 }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .controlSize(.large)
             }
             .padding()
         }
+        .navigationBarTitle("Settings", displayMode: .automatic)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                HStack {
+                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                }
+            }
+        }
+        .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

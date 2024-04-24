@@ -10,6 +10,11 @@ import Foundation
 enum CustomErrors: Error {
     case NotFound
     case NothingToSave
+    case ErrorUploading
+    case WrongCredentials
+    case NoInternet
+    case NoCongregation
+    case GenericError
     
     var localizedDescription: String {
         switch self {
@@ -17,6 +22,16 @@ enum CustomErrors: Error {
             return "Not Found"
         case .NothingToSave:
             return "No changes to save"
+        case .ErrorUploading:
+            return "Error uploading Info"
+        case .WrongCredentials:
+            return "Wrong Credentials"
+        case .NoInternet:
+            return "No Internet"
+        case .NoCongregation:
+            return "No Congregation"
+        case .GenericError:
+            return "ERROR ERROR"
         }
     }
 }

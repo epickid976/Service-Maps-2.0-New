@@ -9,113 +9,140 @@ import SwiftUI
 
 struct AddVisitView: View {
     @Environment(\.dismiss) private var dismiss
-    var visit: Visit?
+    var visit: VisitModel?
     
-    @ObservedObject var viewModel: AddVisitViewModel
-    @State var title = "Add"
+    @StateObject var viewModel: AddVisitViewModel
+    @State var title = ""
     
-    init() {
-        let initialViewModel = AddVisitViewModel()
-        _viewModel = ObservedObject(wrappedValue: initialViewModel)
+    init(visit: VisitModel?, house: HouseModel, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+        let initialViewModel = AddVisitViewModel(house: house)
+        _viewModel = StateObject(wrappedValue: initialViewModel)
         if let visit = visit {
-            self.viewModel.notes = visit.notes ?? ""
-            self.viewModel.selectedDate = Date(timeIntervalSinceNow: (Double(visit.date) / 1000))
-            self.viewModel.selectedOption = Symbols(rawValue: visit.symbol!) ?? .NC
-            title = "Edit"
+            self.visit = visit
         }
+        
+        self.onDone = onDone
+        self.onDismiss = onDismiss
     }
+    
+    var onDone: () -> Void
+    var onDismiss: () -> Void
     
     @FocusState var notesFocus: Bool
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                //Visit will be added to current house.
-                
-                Text("Visit will be added to current house.")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal)
-                
-                Divider().padding([.horizontal, .bottom])
-                
-                HStack {
-                    VStack {
-                        Text("Date")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        //.frame(alignment: .leading)
-                            .hSpacing(.center)
-                        //.padding(.leading)
-                        DatePicker("", selection: $viewModel.selectedDate)
-                            .datePickerStyle(.compact)
-                            .labelsHidden()
-                    }.padding(.leading)
-                    
-                    VStack {
-                        Text("Symbol")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        //.frame(alignment: .leading)
-                            .hSpacing(.center)
-                        //.padding(.leading)
-                        Picker("Symbols", selection: $viewModel.selectedOption) {
-                            ForEach(Symbols.allCases) { option in
-                                Text(String(describing: option))
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .buttonStyle(.bordered)
-                        .tint(.primary)
-                    }.padding(.trailing)
-                }
-                .padding(.bottom)
-                
-                Text("Notes")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                // .frame(alignment: .center)
-                    .hSpacing(.center)
-                //.padding(.leading)
-                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Notes")
-                    .animation(.spring, value: viewModel.notes)
-                
+        ZStack {
                 VStack {
                     HStack {
-                            CustomBackButton() { dismiss() }
-                            //.padding([.top])
+                        Text("\(title) Visit")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .hSpacing(.leading)
+                            .padding(.leading)
+                            .frame(maxWidth: UIScreen.screenWidth * 0.7, maxHeight: 100)
                         
-                        CustomButton(loading: false, title: "Save") {
-                            
+                        HStack {
+                            Text("Symbol: ")
+                                .font(.subheadline)
+                                .lineLimit(2)
+                                .foregroundColor(.primary)
+                                .fontWeight(.heavy)
+                                .hSpacing(.leading)
+                            Picker("Select Symbol", selection: $viewModel.selectedOption) {
+                                ForEach(Symbols.allCases) { symbol in
+                                    Text(symbol.rawValue)
+                                        .tag(symbol)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: UIScreen.screenWidth * 0.3, maxHeight: 100)
+                    }
+                    CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Notes")
+                            .padding(.bottom)
+                    
+                        Text(viewModel.error)
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                            //.vSpacing(.bottom)
+                    
+                    HStack {
+                        if !viewModel.loading {
+                            CustomBackButton() { onDismiss() }
+                        }
+                        //.padding([.top])
+                        
+                        CustomButton(loading: viewModel.loading, title: "Save") {
+                            if viewModel.checkInfo() {
+                                if visit != nil {
+                                    Task {
+                                        withAnimation {
+                                            viewModel.loading = true
+                                        }
+                                        let result = await viewModel.editVisit(visit: visit!)
+                                        switch result {
+                                        case .success(_):
+                                            onDone()
+                                        case .failure(_):
+                                            viewModel.error = "Error updating Visit."
+                                            viewModel.loading = false
+                                        }
+                                    }
+                                } else {
+                                    Task {
+                                        withAnimation {
+                                            viewModel.loading = true
+                                        }
+                                        let result = await viewModel.addVisit()
+                                        switch result {
+                                        case .success(_):
+                                            onDone()
+                                        case .failure(_):
+                                            viewModel.error = "Error adding Visit."
+                                            viewModel.loading = false
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                    .padding()
-                }.vSpacing(.bottom)
-                
+                    .padding([.horizontal, .bottom])
+                    //.vSpacing(.bottom)
+                    
+                }
+                .ignoresSafeArea(.keyboard)
+                .navigationBarTitle("\(title) Visit", displayMode: .large)
+                .navigationBarBackButtonHidden()
+                .toolbar{
+                    ToolbarItemGroup(placement: .keyboard){
+                        Spacer()
+                        Button {
+                            DispatchQueue.main.async {
+                                hideKeyboard()
+                            }
+                        } label: {
+                            Text("Done")
+                                .tint(.primary)
+                                .fontWeight(.bold)
+                                .font(.body)
+                        }
+                    }
+                }
+            
+        }.ignoresSafeArea(.keyboard)
+            .onAppear {
+                if visit != nil {
+                    //withAnimation {
+                        title = "Edit"
+                    self.viewModel.notes = visit!.notes                    //}
+                    self.viewModel.selectedOption = Symbols(rawValue: visit!.symbol.uppercased()) ?? .none
+                } else {
+                    //withAnimation {
+                        title = "Add"
+                    //}
+                }
             }
-            .navigationBarTitle("Add Visit", displayMode: .large)
-            .vSpacing(.top)
-        }
-        
     }
     
 }
 
-#Preview {
-    NavigationStack {
-        @State var present = true
-        VStack {
-            AddVisitView()
-        }
-        .sheet(isPresented: $present) {
-            AddVisitView()
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
-        }
-           
-    }
-    
-}
 

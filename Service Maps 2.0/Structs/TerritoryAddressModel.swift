@@ -28,9 +28,10 @@ struct TerritoryAddressModel: Codable, Equatable, Hashable, Identifiable{
         hasher.combine(address)
         hasher.combine(floors ?? 0) // Combine 0 for nil floors value
       }
+    
+    
 }
 
-
-func convertTerritoryToTerritoryAddressModel(model: TerritoryAddress) -> TerritoryAddressModel {
-    return TerritoryAddressModel(id: model.id ?? "", territory: model.territory ?? "", address: model.address ?? "", created_at: "", updated_at: "")
+func convertTerritoryToTerritoryAddressModel(model: TerritoryAddressObject) -> TerritoryAddressModel {
+    return TerritoryAddressModel(id: model.id, territory: model.territory, address: model.address, created_at: "", updated_at: "")
 }

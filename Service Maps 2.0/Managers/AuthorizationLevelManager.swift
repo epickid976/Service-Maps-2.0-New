@@ -40,17 +40,19 @@ class AuthorizationLevelManager: ObservableObject {
     }
     
     func getAccessLevel<T>(model: T) -> AccessLevel?  where T: Object{
+        if existsAdminCredentials() {
+            return .Admin
+        }
+        
         if let token = findToken(model: model) {
-            if token.moderator {
+            if (dataStore.userEmail == token.user) {
                 return .Moderator
             } else {
                 return .User
             }
-        } else if existsAdminCredentials() {
-            return .Admin
-        } else {
-            return nil
         }
+        
+        return nil
     }
     
     func setAuthorizationTokenFor<T>(model: T) async  where T: Object {
@@ -129,7 +131,7 @@ class AuthorizationLevelManager: ObservableObject {
             }
         }
         
-        if let moderatorToken = tokens.first(where: { $0.moderator }) {
+        if let moderatorToken = tokens.first(where: { $0.user == dataStore.userEmail }) {
             return moderatorToken
         }
         

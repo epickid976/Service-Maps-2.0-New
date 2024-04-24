@@ -8,470 +8,411 @@
 import Foundation
 import BackgroundTasks
 import SwiftUI
-import CoreData
+import RealmSwift
 
 class DataUploaderManager: ObservableObject {
     
     @Published private var authorizationLevelManager = AuthorizationLevelManager()
-    @Published private var databaseManager = RealmManager.shared
+    @Published private var realmManager = RealmManager.shared
     @Published private var dataStore = StorageManager.shared
+    @Published private var synchronizationManager = SynchronizationManager.shared
+    var realm: Realm
     
     init() {
-        //allData()
+            realm = try! Realm()
+            
+            territoryEntities = realm.objects(TerritoryObject.self)
+            addressesEntities = realm.objects(TerritoryAddressObject.self)
+            housesEntities = realm.objects(HouseObject.self)
+            visitsEntities = realm.objects(VisitObject.self)
+            tokensEntities = realm.objects(TokenObject.self)
+            tokenTerritoryEntities = realm.objects(TokenTerritoryObject.self)
     }
     
-    private var territories = [Territory]()
-    private var houses = [House]()
-    private var visits = [Visit]()
-    private var tokens = [MyToken]()
-    private var territoryAddresses = [TerritoryAddress]()
-    private var tokenTerritories = [TokenTerritory]()
+    let territoryEntities: Results<TerritoryObject>
+    let addressesEntities: Results<TerritoryAddressObject>
+    let housesEntities: Results<HouseObject>
+    let visitsEntities: Results<VisitObject>
+    let tokensEntities: Results<TokenObject>
+    let tokenTerritoryEntities: Results<TokenTerritoryObject>
     
     private var adminApi = AdminAPI()
     private var userApi = UserAPI()
     private var tokenApi = TokenAPI()
     
-//    func addTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Bool, Error> {
-//        allData()
-//        
-//        var result: Result<Bool, Error>?
-//        
-//        if(image == nil) {
-//            do {
-//                try await adminApi.addTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: territory.number, description: territory.description, created_at: "", updated_at: ""))
-//                result = Result.success(true)
-//            } catch {
-//                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Add, modelId: territory.id!))
-//                result = Result.failure(error)
-//            }
-//        } else {
-//            //Add IMAGE Function here
-//            do {
-//                try await adminApi.addTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: territory.number, description: territory.description, created_at: "", updated_at: ""), image: image!)
-//                result = Result.success(true)
-//            } catch {
-//                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Add, modelId: territory.id!))
-//                result = Result.failure(error)
-//            }
-//        }
-//        
-//        switch result {
-//        case .success(true):
-////            databaseManager.container.viewContext.insert(territory)
-////            if databaseManager.container.viewContext.hasChanges {
-////                do {
-////                    try databaseManager.container.viewContext.save()
-////
-////                } catch {
-////                    return Result.failure(error)
-////                }
-////            }
-//        default:
-//            print("Si no se pudo no se pudo (DatauploaderManager ADD TERRITORY)")
-//        }
-//        
-//        return result ?? Result.failure(CustomErrors.NotFound)
-//    }
-//    
-//    func addTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Bool, Error> {
-//        allData()
-//        
-//        var result: Result<Bool, Error>?
-//        
-//        do {
-//            try await adminApi.addTerritoryAddress(territoryAddress: TerritoryAddressModel(id: territoryAddress.id!, territory: territoryAddress.territory!, address: territoryAddress.address!, created_at: "", updated_at: ""))
-//            result = Result.success(true)
-//        } catch {
-//            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .TerritoryAddress, changeAction: .Add, modelId: territoryAddress.id!))
-//            result = Result.failure(error)
-//        }
-//        
-//        switch result {
-//        case .success(true):
-////            databaseManager.container.viewContext.insert(territoryAddress)
-////            if databaseManager.container.viewContext.hasChanges {
-////                do {
-////                    DatabaseManager.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-////                    try databaseManager.container.viewContext.save()
-////                    
-////                } catch {
-////                    return Result.failure(error)
-////                }
-////            }
-//        default:
-//            print("Si no se pudo no se pudo (DatauploaderManager ADD TERRITORYADDRESS)")
-//        }
-//        
-//        return result ?? Result.failure(CustomErrors.NotFound)
-//    }
-//    
-//    func addHouse(house: House) async -> Result<Bool, Error> {
-//        allData()
-//        
-//        var result: Result<Bool, Error>?
-//        
-//        do {
-//            try await adminApi.addHouse(house: HouseModel(id: house.id!, territory_address: house.territoryAddress!, number: house.number!, created_at: "", updated_at: ""))
-//            result = Result.success(true)
-//        } catch {
-//            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .House, changeAction: .Add, modelId: house.id!))
-//            result = Result.failure(error)
-//        }
-//        
-//        switch result {
-//        case .success(true):
-////            databaseManager.container.viewContext.insert(house)
-////            if databaseManager.container.viewContext.hasChanges {
-////                do {
-////                    DatabaseManager.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-////                    try databaseManager.container.viewContext.save()
-////                } catch {
-////                    return Result.failure(error)
-////                }
-////            }
-//        default:
-//            print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
-//        }
-//        
-//        return result ?? Result.failure(CustomErrors.NotFound)
-//    }
-//    
-//    func addVisit(visit: Visit) async -> Result<Bool, Error> {
-//        allData()
-//        var result: Result<Bool, Error>?
-//        
-//        do {
-//            try await adminApi.addVisit(visit: VisitModel(id: visit.id!, house: visit.house!, date: visit.date, symbol: visit.symbol!, notes: visit.notes!, user: visit.user!, created_at: "", updated_at: ""))
-//            result = Result.success(true)
-//        } catch {
-//            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Visit, changeAction: .Add, modelId: visit.id!))
-//            result = Result.failure(error)
-//        }
-//        
-//        switch result {
-//        case .success(true):
-////            databaseManager.container.viewContext.insert(visit)
-////            if databaseManager.container.viewContext.hasChanges {
-////                do {
-////                    DatabaseManager.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-////                    try databaseManager.container.viewContext.save()
-////                } catch {
-////                    return Result.failure(error)
-////                }
-////            }
-//        default:
-//            print("Si no se pudo no se pudo (DatauploaderManager ADD VISIT)")
-//        }
-//        
-//        return result ?? Result.failure(CustomErrors.NotFound)
-//    }
-//    
-//    func updateTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Bool, Error> {
-//        allData()
-//        
-//        var result: Result<Bool, Error>?
-//        
-//        
-//        if authorizationLevelManager.existsAdminCredentials() {
-//            if image == nil {
-//                do {
-//                    try await adminApi.updateTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: territory.number, description: territory.description, created_at: "", updated_at: ""))
-//                    result = Result.success(true)
-//                } catch {
-//                    await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Update, modelId: territory.id!))
-//                    result = Result.failure(error)
-//                }
-//            } else {
-//                do {
-//                    try await adminApi.updateTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: territory.number, description: territory.description, created_at: "", updated_at: ""), image: image!)
-//                    result = Result.success(true)
-//                } catch {
-//                    await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Update, modelId: territory.id!))
-//                    result = Result.failure(error)
-//                }
-//            }
-//        } else {
-//            await authorizationLevelManager.setAuthorizationTokenFor(model: territory)
-//            if image == nil {
-//                do {
-//                    try await userApi.updateTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: territory.number, description: territory.description, created_at: "", updated_at: ""))
-//                    result = Result.success(true)
-//                } catch {
-//                    await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Update, modelId: territory.id!))
-//                    result = Result.failure(error)
-//                }
-//            } else {
-//                do {
-//                    try await userApi.updateTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: territory.number, description: territory.description, created_at: "", updated_at: ""), image: image!)
-//                    result = Result.success(true)
-//                } catch {
-//                    await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Update, modelId: territory.id!))
-//                    result = Result.failure(error)
-//                }
-//            }
-//        }
-//        
-//        switch result {
-//        case .success(true):
-////            let territoryToUpdate = territories.first(where: { $0.id == territory.id})
-////            territoryToUpdate?.number = territory.number
-////            territoryToUpdate?.territoryDescription = territory.territoryDescription
-////            territoryToUpdate?.congregation = territory.description
-////            territoryToUpdate?.image = territory.image
-////            do {
-////                DatabaseManager.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-////                try databaseManager.container.viewContext.save()
-////            } catch {
-//                return Result.failure(error)
-////            }
-//        default:
-//            print("Si no se pudo no se pudo (DatauploaderManager UPDATETERRITORY)")
-//        }
-//        
-//        return result ?? Result.failure(CustomErrors.NotFound)
-//    }
-//    
-//    func updateTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Bool, Error> {
-//        allData()
-//        
-//        var result: Result<Bool, Error>?
-//        
-//        if authorizationLevelManager.existsAdminCredentials() {
-//            do {
-//                try await adminApi.updateTerritoryAddress(territoryAddress: TerritoryAddressModel(id: territoryAddress.id!, territory: territoryAddress.territory!, address: territoryAddress.address!, created_at: "", updated_at: ""))
-//                result = Result.success(true)
-//            } catch {
-//                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .TerritoryAddress, changeAction: .Update, modelId: territoryAddress.id!))
-//                result = Result.failure(error)
-//            }
-//        } else {
-//            await authorizationLevelManager.setAuthorizationTokenFor(model: territoryAddress)
-//            do {
-//                try await userApi.updateTerritoryAddress(territoryAddress: TerritoryAddressModel(id: territoryAddress.id!, territory: territoryAddress.territory!, address: territoryAddress.address!, created_at: "", updated_at: ""))
-//                result = Result.success(true)
-//            } catch {
-//                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .TerritoryAddress, changeAction: .Update, modelId: territoryAddress.id!))
-//                result = Result.failure(error)
-//            }
-//        }
-//        
-//        switch result {
-//        case .success(true):
-//            print("")
-////            let territoryAddressToUpdate = territoryAddresses.first(where: { $0.id == territoryAddress.id})
-////            territoryAddressToUpdate?.territory = territoryAddress.territory
-////            territoryAddressToUpdate?.address = territoryAddress.address
-////            territoryAddressToUpdate?.floors = territoryAddress.floors
-////            do {
-////                DatabaseManager.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-////                try databaseManager.container.viewContext.save()
-////            } catch {
-////                return Result.failure(error)
-////            }
-//        default:
-//            print("Si no se pudo no se pudo (DatauploaderManager UPDATETERRITORYADDRESS)")
-//        }
-//        
-//        return result ?? Result.failure(CustomErrors.NotFound)
-//    }
-//    
-//    func updateHouse(house: House) async -> Result<Bool, Error> {
-//        allData()
-//        
-//        var result: Result<Bool, Error>?
-//        
-//        if authorizationLevelManager.existsAdminCredentials() {
-//            do {
-//                try await adminApi.updateHouse(house: HouseModel(id: house.id!, territory_address: house.territoryAddress!, number: house.number!, created_at: "", updated_at: ""))
-//                result = Result.success(true)
-//            } catch {
-//                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .House, changeAction: .Update, modelId: house.id!))
-//                result = Result.failure(error)
-//            }
-//        } else {
-//            await authorizationLevelManager.setAuthorizationTokenFor(model: house)
-//            do {
-//                try await userApi.updateHouse(house: HouseModel(id: house.id!, territory_address: house.territoryAddress!, number: house.number!, created_at: "", updated_at: ""))
-//                result = Result.success(true)
-//            } catch {
-//                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .House, changeAction: .Update, modelId: house.id!))
-//                result = Result.failure(error)
-//            }
-//        }
-//        
-//        switch result {
-//        case .success(true):
-////            let houseToUpdate = houses.first(where: { $0.id == house.id})
-////            houseToUpdate?.territoryAddress = house.territoryAddress
-////            houseToUpdate?.floor = house.floor
-////            houseToUpdate?.number = house.number
-////            do {
-////                DatabaseManager.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-////                try databaseManager.container.viewContext.save()
-////            } catch {
-////                return Result.failure(error)
-////            }
-//            print("")
-//        default:
-//            print("Si no se pudo no se pudo (DatauploaderManager UPDATEHOUSE)")
-//        }
-//        
-//        return result ?? Result.failure(CustomErrors.NotFound)
-//    }
-//    
-//    func updateVisit(visit: Visit) async -> Result<Bool, Error> {
-//        allData()
-//        
-//        
-//        var result: Result<Bool, Error>?
-//        
-//        if authorizationLevelManager.existsAdminCredentials() {
-//            do {
-//                try await adminApi.updateVisit(visit: VisitModel(id: visit.id!, house: visit.house!, date: visit.date, symbol: visit.symbol!, notes: visit.notes!, user: visit.user!, created_at: "", updated_at: ""))
-//                result = Result.success(true)
-//            } catch {
-//                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Visit, changeAction: .Update, modelId: visit.id!))
-//                result = Result.failure(error)
-//            }
-//        } else {
-//            await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
-//            do {
-//                try await adminApi.updateVisit(visit: VisitModel(id: visit.id!, house: visit.house!, date: visit.date, symbol: visit.symbol!, notes: visit.notes!, user: visit.user!, created_at: "", updated_at: ""))
-//                result = Result.success(true)
-//            } catch {
-//                await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Visit, changeAction: .Update, modelId: visit.id!))
-//                result = Result.failure(error)
-//            }
-//        }
-//        
-//        switch result {
-//        case .success(true):
-////            let visitsToUpdate = visits.first(where: { $0.id == visit.id})
-////            visitsToUpdate?.house = visit.house
-////            visitsToUpdate?.date = visit.date
-////            visitsToUpdate?.notes = visit.notes
-////            visitsToUpdate?.symbol = visit.symbol
-////            visitsToUpdate?.user = visit.user
-////            
-////            do {
-////                DatabaseManager.shared.container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-////                try databaseManager.container.viewContext.save()
-////            } catch {
-////                return Result.failure(error)
-////            }
-//            print("")
-//        default:
-//            print("Si no se pudo no se pudo (DatauploaderManager UPDATEVISIT)")
-//        }
-//        
-//        return result ?? Result.failure(CustomErrors.NotFound)
-//    }
-//    
-//    func deleteTerritory(territory: Territory) async -> Result<Bool, Error> {
-//        allData()
-//        do {
-//            try await adminApi.deleteTerritory(territory: TerritoryModel(id: territory.id!, congregation: territory.congregation!, number: territory.number, description: territory.description, created_at: "", updated_at: ""))
-//            databaseManager.container.viewContext.delete(territory)
-//            return Result.success(true)
-//        } catch {
-//            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Territory, changeAction: .Delete, modelId: territory.id!))
-//            return Result.failure(error)
-//        }
-//    }
-//    
-//    func deleteTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Bool, Error> {
-//        allData()
-//        do {
-//            try await adminApi.deleteTerritoryAddress(territoryAddress: TerritoryAddressModel(id: territoryAddress.id!, territory: territoryAddress.territory!, address: territoryAddress.address!, created_at: "", updated_at: ""))
-//            databaseManager.container.viewContext.delete(territoryAddress)
-//            return Result.success(true)
-//        } catch {
-//            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .TerritoryAddress, changeAction: .Delete, modelId: territoryAddress.id!))
-//            return Result.failure(error)
-//        }
-//    }
-//    
-//    func deleteHouse(house: House) async -> Result<Bool, Error> {
-//        allData()
-//        do {
-//            try await adminApi.deleteHouse(house: HouseModel(id: house.id!, territory_address: house.territoryAddress!, number: house.number!, created_at: "", updated_at: ""))
-//            databaseManager.container.viewContext.delete(house)
-//            return Result.success(true)
-//        } catch {
-//            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .House, changeAction: .Delete, modelId: house.id!))
-//            return Result.failure(error)
-//        }
-//    }
-//    
-//    func deleteVisit(visit: Visit) async -> Result<Bool, Error> {
-//        allData()
-//        do {
-//            try await adminApi.deleteVisit(visit: VisitModel(id: visit.id!, house: visit.house!, date: visit.date, symbol: visit.symbol!, notes: visit.notes!, user: visit.user!, created_at: "", updated_at: ""))
-//            databaseManager.container.viewContext.delete(visit)
-//            return Result.success(true)
-//        } catch {
-//            await addPendingChange(pendingChange: PendingChange(id: UUID(), changeType: .Visit, changeAction: .Delete, modelId: visit.id!))
-//            return Result.failure(error)
-//        }
-//    }
-//    
-//    
-//    
-//    func createToken(newTokenForm: NewTokenForm, territories: [Territory]) async -> Result<MyToken, Error> {
-//        do {
-//            let token = try await tokenApi.createToken(name: newTokenForm.name, moderator: newTokenForm.moderator, territories: newTokenForm.territories, congregation: newTokenForm.congregation, expire: newTokenForm.expire)
-//            
-//            var tokenTerritories = [TokenTerritory]()
-//            
-//            let newToken = MyToken(context: databaseManager.container.viewContext)
-//            newToken.id = token.id
-//            newToken.moderator = token.moderator
-//            newToken.congregation = token.congregation
-//            if let expire = token.expire {
-//                newToken.expires = expire
-//            }
-//            newToken.name = token.name
-//            newToken.owner = token.owner
-//            newToken.user = token.user
-//            try databaseManager.container.viewContext.save()
-//            
-//            for territory in territories {
-//                let newTokenTerritory = TokenTerritory()
-//                newTokenTerritory.token = newToken.id
-//                newTokenTerritory.territory = territory.id
-//                tokenTerritories.append(newTokenTerritory)
-//            }
-//            
-//            tokenTerritories.forEach { tokenTerritory in
-//                databaseManager.container.viewContext.insert(tokenTerritory)
-//            }
-//            
-//            return Result.success(newToken)
-//            
-//        } catch {
-//            return Result.failure(error)
-//        }
-//    }
-//    
-//    func deleteToken(myToken: MyToken) async -> Result<Bool, Error> {
-//        do {
-//            try await tokenApi.deleteToken(token: myToken.id!)
-//            
-//            tokens.forEach { token in
-//                tokenTerritories.forEach { tokenTerritory in
-//                    if token.id == tokenTerritory.token {
-//                        databaseManager.container.viewContext.delete(tokenTerritory)
-//                    }
-//                    databaseManager.container.viewContext.delete(token)
-//                }
-//            }
-//            
-//            return Result.success(true)
-//            
-//        } catch {
-//            return Result.failure(error)
-//        }
-//    }
+    func addTerritory(territory: TerritoryObject, image: UIImage? = nil) async -> Result<Bool, Error> {
+        
+        var result: Result<Bool, Error>?
+        
+        if(image == nil) {
+            do {
+                try await adminApi.addTerritory(territory: convertTerritoryToTerritoryModel(model: territory))
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        } else {
+            //Add IMAGE Function here
+            do {
+                try await adminApi.addTerritory(territory: convertTerritoryToTerritoryModel(model: territory), image: image!)
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.addModel(territory)
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD TERRITORY)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func addTerritoryAddress(territoryAddress: TerritoryAddressObject) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        do {
+            try await adminApi.addTerritoryAddress(territoryAddress: convertTerritoryToTerritoryAddressModel(model: territoryAddress))
+            result = Result.success(true)
+        } catch {
+            result = Result.failure(error)
+        }
+        
+        switch result {
+        case .success(true):
+           return realmManager.addModel(territoryAddress)
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD TERRITORYADDRESS)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func addHouse(house: HouseObject) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        do {
+            try await adminApi.addHouse(house: convertHouseToHouseModel(model: house))
+            result = Result.success(true)
+        } catch {
+            result = Result.failure(error)
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.addModel(house)
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func addVisit(visit: VisitObject) async -> Result<Bool, Error> {
+        
+        var result: Result<Bool, Error>?
+        
+        do {
+            try await adminApi.addVisit(visit: convertVisitToVisitModel(model: visit))
+            result = Result.success(true)
+        } catch {
+            result = Result.failure(error)
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.addModel(visit)
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD VISIT)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func updateTerritory(territory: TerritoryObject, image: UIImage? = nil) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        
+        if authorizationLevelManager.existsAdminCredentials() {
+            if image == nil {
+                do {
+                    try await adminApi.updateTerritory(territory: convertTerritoryToTerritoryModel(model: territory))
+                    result = Result.success(true)
+                } catch {
+                    result = Result.failure(error)
+                }
+            } else {
+                do {
+                    try await adminApi.updateTerritory(territory: convertTerritoryToTerritoryModel(model: territory), image: image!)
+                    result = Result.success(true)
+                } catch {
+                    result = Result.failure(error)
+                }
+            }
+        } else {
+            await authorizationLevelManager.setAuthorizationTokenFor(model: territory)
+            if image == nil {
+                do {
+                    try await userApi.updateTerritory(territory: convertTerritoryToTerritoryModel(model: territory))
+                    result = Result.success(true)
+                } catch {
+                    result = Result.failure(error)
+                }
+            } else {
+                do {
+                    try await userApi.updateTerritory(territory: convertTerritoryToTerritoryModel(model: territory), image: image!)
+                    result = Result.success(true)
+                } catch {
+                    result = Result.failure(error)
+                }
+            }
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.updateTerritory(territory: convertTerritoryToTerritoryModel(model: territory))
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager UPDATETERRITORY)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    
+    func updateTerritoryAddress(territoryAddress: TerritoryAddressObject) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        if authorizationLevelManager.existsAdminCredentials() {
+            do {
+                try await adminApi.updateTerritoryAddress(territoryAddress: convertTerritoryToTerritoryAddressModel(model: territoryAddress))
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        } else {
+            await authorizationLevelManager.setAuthorizationTokenFor(model: territoryAddress)
+            do {
+                try await userApi.updateTerritoryAddress(territoryAddress: convertTerritoryToTerritoryAddressModel(model: territoryAddress))
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.updateAddress(address: convertTerritoryToTerritoryAddressModel(model: territoryAddress))
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager UPDATETERRITORYADDRESS)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func updateHouse(house: HouseObject) async -> Result<Bool, Error> {
+        
+        var result: Result<Bool, Error>?
+        
+        if authorizationLevelManager.existsAdminCredentials() {
+            do {
+                try await adminApi.updateHouse(house: convertHouseToHouseModel(model: house))
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        } else {
+            await authorizationLevelManager.setAuthorizationTokenFor(model: house)
+            do {
+                try await userApi.updateHouse(house: convertHouseToHouseModel(model: house))
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.updateHouse(house: convertHouseToHouseModel(model: house))
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager UPDATEHOUSE)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func updateVisit(visit: VisitObject) async -> Result<Bool, Error> {
+        
+        
+        
+        var result: Result<Bool, Error>?
+        
+        if authorizationLevelManager.existsAdminCredentials() {
+            do {
+                try await adminApi.updateVisit(visit: convertVisitToVisitModel(model: visit))
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        } else {
+            await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
+            do {
+                try await userApi.updateVisit(visit: convertVisitToVisitModel(model: visit))
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.updateVisit(visit: convertVisitToVisitModel(model: visit))
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager UPDATEVISIT)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    @MainActor
+    func deleteTerritory(territory: String) async -> Result<Bool, Error> {
+        
+        do {
+            let realm = try! await Realm()
+            if let territoryToDelete = realm.objects(TerritoryObject.self).filter("id == %d", territory).first {
+                try await adminApi.deleteTerritory(territory: convertTerritoryToTerritoryModel(model: territoryToDelete))
+                DispatchQueue.main.async {
+                    self.synchronizationManager.startupProcess(synchronizing: true)
+                }
+                return Result.success(true)
+            }
+            
+            return Result.failure(CustomErrors.NotFound)
+           //return realmManager.deleteTerritory(territory: territory)
+        } catch {
+            print("THIS IS THE ERROR FROM DELETE TERRITORY \(error)")
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func deleteTerritoryAddress(territoryAddress: String) async -> Result<Bool, Error> {
+        
+        do {
+            let realm = try! await Realm()
+            if let addressToDelete = realm.objects(TerritoryAddressObject.self).filter("id == %d", territoryAddress).first {
+                try await adminApi.deleteTerritoryAddress(territoryAddress: convertTerritoryToTerritoryAddressModel(model: addressToDelete))
+                return realmManager.deleteAddress(address: addressToDelete)
+            }
+            return Result.failure(CustomErrors.NotFound)
+           //return realmManager.deleteTerritory(territory: territory)
+        } catch {
+            print("THIS IS THE ERROR FROM DELETE TERRITORY \(error)")
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func deleteHouse(house: String) async -> Result<Bool, Error> {
+        
+        do {
+            let realm = try! await Realm()
+            if let houseToDelete = realm.objects(HouseObject.self).filter("id == %d", house).first {
+                try await adminApi.deleteHouse(house: convertHouseToHouseModel(model: houseToDelete))
+                return realmManager.deleteHouse(house: houseToDelete)
+            }
+            return Result.failure(CustomErrors.NotFound)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func deleteVisit(visit: String) async -> Result<Bool, Error> {
+        
+        do {
+            let realm = try! await Realm()
+            if let visitToDelete = realm.objects(VisitObject.self).filter("id == %d", visit).first {
+                try await adminApi.deleteVisit(visit: convertVisitToVisitModel(model: visitToDelete))
+                return realmManager.deleteVisit(visit: visitToDelete)
+            }
+            return Result.failure(CustomErrors.NotFound)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    
+    
+    func createToken(newTokenForm: NewTokenForm, territories: [TerritoryObject]) async -> Result<TokenObject, Error> {
+        do {
+            let token = try await tokenApi.createToken(name: newTokenForm.name, moderator: newTokenForm.moderator, territories: newTokenForm.territories, congregation: newTokenForm.congregation, expire: newTokenForm.expire)
+            
+            var tokenTerritories = [TokenTerritoryObject]()
+            
+            let tokenObject = TokenObject().createTokenObject(from: token)
+            
+            realmManager.addModel(tokenObject)
+            
+            for territory in territories {
+                let newTokenTerritory = TokenTerritoryObject()
+                newTokenTerritory.token = tokenObject.id
+                newTokenTerritory.territory = territory.id
+                tokenTerritories.append(newTokenTerritory)
+            }
+            
+            tokenTerritories.forEach { tokenTerritory in
+                realmManager.addModel(tokenTerritory)
+            }
+            
+            return Result.success(tokenObject)
+            
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func deleteToken(myToken: String) async -> Result<Bool, Error> {
+        do {
+            let realm = try! await Realm()
+            if let keyToDelete = realm.objects(TokenObject.self).filter("id == %d", myToken).first {
+                try await tokenApi.deleteToken(token: keyToDelete.id)
+                tokensEntities.forEach { token in
+                    tokenTerritoryEntities.forEach { tokenTerritory in
+                        if token.id == tokenTerritory.token {
+                            realmManager.deleteTokenTerritory(tokenTerritory: tokenTerritory)
+                        }
+                        realmManager.deleteToken(token: token)
+                    }
+                }
+                return Result.success(true)
+            }
+            return Result.failure(CustomErrors.NotFound)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func unregisterToken(myToken: String) async -> Result<Bool, Error> {
+        do {
+           try await tokenApi.unregister(token: myToken)
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
     
     func addPendingChange(pendingChange: PendingChange) async {
         dataStore.pendingChanges.append(pendingChange)
@@ -482,16 +423,4 @@ class DataUploaderManager: ObservableObject {
     func getAllPendingChanges() async -> [PendingChange] {
         return dataStore.pendingChanges
     }
-    
-    
-//    func allData() {
-//        territories = databaseManager.getTerritories()
-//        houses = databaseManager.getHouses()
-//        visits = databaseManager.getVisits()
-//        tokens = databaseManager.getMyTokens()
-//        territoryAddresses = databaseManager.getTerritoryAddresses()
-//        tokenTerritories = databaseManager.getTokenTerritories()
-//    }
-    
-    
 }

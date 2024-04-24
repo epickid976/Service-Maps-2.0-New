@@ -15,12 +15,14 @@ struct CustomField: View {
     var keyboardType: UIKeyboardType?
     var textAlignment: TextAlignment?
     var textfieldAxis: Axis?
+    var disabled: Bool?
     
     let placeholder: String
     
     var body: some View {
         if textfield {
             TextField(placeholder, text: $text, axis: textfieldAxis ?? .horizontal)
+                .disabled(disabled ?? false)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)

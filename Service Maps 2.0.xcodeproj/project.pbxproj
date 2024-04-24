@@ -92,6 +92,8 @@
 		825645AF2BCE12DA00F18AC9 /* TerritoryAddressObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645AE2BCE12DA00F18AC9 /* TerritoryAddressObject.swift */; };
 		825645B12BCE13BD00F18AC9 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B02BCE13BD00F18AC9 /* RealmManager.swift */; };
 		825645B32BCE283500F18AC9 /* AreEqualFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B22BCE283500F18AC9 /* AreEqualFuncs.swift */; };
+		825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B42BD04E9F00F18AC9 /* AddressData.swift */; };
+		825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */; };
 		826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */; };
 		826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766F2A729FDE000A4BAA /* HomeTabView.swift */; };
 		826B76722A729FE1000A4BAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826B76712A729FE1000A4BAA /* Assets.xcassets */; };
@@ -110,6 +112,16 @@
 		82916C1B2A994387005133DE /* AddVisitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82916C1A2A994387005133DE /* AddVisitViewModel.swift */; };
 		82916C1D2A9944B3005133DE /* Symbols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82916C1C2A9944B3005133DE /* Symbols.swift */; };
 		82A399C52BBEFAD200ECA5E6 /* AddHouseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */; };
+		82A5B4592BD1A48500F52F2F /* TerritoryDataWithKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4582BD1A48500F52F2F /* TerritoryDataWithKeys.swift */; };
+		82A5B45B2BD2F64800F52F2F /* AddAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B45A2BD2F64800F52F2F /* AddAddressView.swift */; };
+		82A5B45D2BD2F65E00F52F2F /* AddAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B45C2BD2F65E00F52F2F /* AddAddressViewModel.swift */; };
+		82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */ = {isa = PBXBuildFile; productRef = 82A5B45F2BD482EB00F52F2F /* AlertKit */; };
+		82A5B4622BD5B31600F52F2F /* HouseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4612BD5B31600F52F2F /* HouseData.swift */; };
+		82A5B4642BD5B9D700F52F2F /* VisitData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4632BD5B9D700F52F2F /* VisitData.swift */; };
+		82A5B4662BD6C41D00F52F2F /* KeyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4652BD6C41D00F52F2F /* KeyData.swift */; };
+		82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4672BD815A200F52F2F /* AddKeyViewModel.swift */; };
+		82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4692BD820BB00F52F2F /* AddKeyView.swift */; };
+		82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */; };
 		82A967B72AAABE890043946F /* RoundedCornerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A967B62AAABE890043946F /* RoundedCornerExtension.swift */; };
 		82BC0F1B2A9BEFCB00B255BF /* TerritoryAddressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1A2A9BEFCB00B255BF /* TerritoryAddressModel.swift */; };
 		82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1C2A9BF53900B255BF /* DataUploaderManager.swift */; };
@@ -199,6 +211,8 @@
 		825645AE2BCE12DA00F18AC9 /* TerritoryAddressObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryAddressObject.swift; sourceTree = "<group>"; };
 		825645B02BCE13BD00F18AC9 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 		825645B22BCE283500F18AC9 /* AreEqualFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreEqualFuncs.swift; sourceTree = "<group>"; };
+		825645B42BD04E9F00F18AC9 /* AddressData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressData.swift; sourceTree = "<group>"; };
+		825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressViewModel.swift; sourceTree = "<group>"; };
 		826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Service Maps 2.0.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service_Maps_2_0App.swift; sourceTree = "<group>"; };
 		826B766F2A729FDE000A4BAA /* HomeTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabView.swift; sourceTree = "<group>"; };
@@ -219,6 +233,15 @@
 		82916C1A2A994387005133DE /* AddVisitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddVisitViewModel.swift; sourceTree = "<group>"; };
 		82916C1C2A9944B3005133DE /* Symbols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbols.swift; sourceTree = "<group>"; };
 		82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHouseViewModel.swift; sourceTree = "<group>"; };
+		82A5B4582BD1A48500F52F2F /* TerritoryDataWithKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryDataWithKeys.swift; sourceTree = "<group>"; };
+		82A5B45A2BD2F64800F52F2F /* AddAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAddressView.swift; sourceTree = "<group>"; };
+		82A5B45C2BD2F65E00F52F2F /* AddAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAddressViewModel.swift; sourceTree = "<group>"; };
+		82A5B4612BD5B31600F52F2F /* HouseData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseData.swift; sourceTree = "<group>"; };
+		82A5B4632BD5B9D700F52F2F /* VisitData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitData.swift; sourceTree = "<group>"; };
+		82A5B4652BD6C41D00F52F2F /* KeyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyData.swift; sourceTree = "<group>"; };
+		82A5B4672BD815A200F52F2F /* AddKeyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddKeyViewModel.swift; sourceTree = "<group>"; };
+		82A5B4692BD820BB00F52F2F /* AddKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddKeyView.swift; sourceTree = "<group>"; };
+		82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		82A967B62AAABE890043946F /* RoundedCornerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedCornerExtension.swift; sourceTree = "<group>"; };
 		82BC0F1A2A9BEFCB00B255BF /* TerritoryAddressModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryAddressModel.swift; sourceTree = "<group>"; };
 		82BC0F1C2A9BF53900B255BF /* DataUploaderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploaderManager.swift; sourceTree = "<group>"; };
@@ -243,6 +266,7 @@
 			files = (
 				822FA0972AA6B6650008FA61 /* SwipeActions in Frameworks */,
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
+				82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */,
 				825645A22BCE0FC000F18AC9 /* RealmSwift in Frameworks */,
 				821F090F2AA965FE00D6B6E6 /* GRDBQuery in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
@@ -272,6 +296,11 @@
 				82BC0F1A2A9BEFCB00B255BF /* TerritoryAddressModel.swift */,
 				82BC0F242A9C2C1D00B255BF /* PendingChange.swift */,
 				827EF1A72AA8C644006C4631 /* TerritoryData.swift */,
+				825645B42BD04E9F00F18AC9 /* AddressData.swift */,
+				82A5B4582BD1A48500F52F2F /* TerritoryDataWithKeys.swift */,
+				82A5B4612BD5B31600F52F2F /* HouseData.swift */,
+				82A5B4632BD5B9D700F52F2F /* VisitData.swift */,
+				82A5B4652BD6C41D00F52F2F /* KeyData.swift */,
 			);
 			path = Structs;
 			sourceTree = "<group>";
@@ -463,12 +492,16 @@
 				8242137C2A84810300626DD5 /* SignupViewModel.swift */,
 				82F288862A86C21100930849 /* VerificationViewModel.swift */,
 				8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */,
-				82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */,
-				82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */,
-				82916C1A2A994387005133DE /* AddVisitViewModel.swift */,
+				825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */,
 				822FA0A42AA7798A0008FA61 /* HousesViewModel.swift */,
 				824E5CED2BC37962001DE348 /* VisitsViewModel.swift */,
 				824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */,
+				82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */,
+				82A5B45C2BD2F65E00F52F2F /* AddAddressViewModel.swift */,
+				82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */,
+				82916C1A2A994387005133DE /* AddVisitViewModel.swift */,
+				82A5B4672BD815A200F52F2F /* AddKeyViewModel.swift */,
+				82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -537,6 +570,8 @@
 				82D526042A9290EE00B42916 /* AddTerritoryView.swift */,
 				82916C182A994298005133DE /* AddVisitView.swift */,
 				82BC0F262A9CD94500B255BF /* AddHouseView.swift */,
+				82A5B45A2BD2F64800F52F2F /* AddAddressView.swift */,
+				82A5B4692BD820BB00F52F2F /* AddKeyView.swift */,
 			);
 			path = Add_Edit;
 			sourceTree = "<group>";
@@ -588,6 +623,7 @@
 				821F090E2AA965FE00D6B6E6 /* GRDBQuery */,
 				8256459F2BCE0FC000F18AC9 /* Realm */,
 				825645A12BCE0FC000F18AC9 /* RealmSwift */,
+				82A5B45F2BD482EB00F52F2F /* AlertKit */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -628,6 +664,7 @@
 				822FA0A12AA6B7C00008FA61 /* XCRemoteSwiftPackageReference "PopupView" */,
 				821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */,
 				8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -658,6 +695,7 @@
 				824213772A8332EB00626DD5 /* CustomField.swift in Sources */,
 				822FA0A72AA77A200008FA61 /* CirlceButtonStyle.swift in Sources */,
 				8209340D2A7ADB3700AF3FF1 /* SignupView.swift in Sources */,
+				825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */,
 				824213662A82BF0200626DD5 /* StartupState.swift in Sources */,
 				82916C1D2A9944B3005133DE /* Symbols.swift in Sources */,
 				82DAEEDE2AAF597100465DA5 /* HomeView.swift in Sources */,
@@ -678,6 +716,7 @@
 				82916C172A990955005133DE /* ImagePickerView.swift in Sources */,
 				822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */,
 				82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */,
+				82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */,
 				825645AF2BCE12DA00F18AC9 /* TerritoryAddressObject.swift in Sources */,
 				824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */,
 				821C12642A77F0BD0050D106 /* LoginForm.swift in Sources */,
@@ -685,8 +724,10 @@
 				820933F12A785D7F00AF3FF1 /* MyTokenModel.swift in Sources */,
 				820933E42A784C3300AF3FF1 /* AllDataResponse.swift in Sources */,
 				8250B1A92A8A826800A7B70E /* TerritoryViewModel.swift in Sources */,
+				82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */,
 				82BC0F252A9C2C1D00B255BF /* PendingChange.swift in Sources */,
 				82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */,
+				82A5B4662BD6C41D00F52F2F /* KeyData.swift in Sources */,
 				820934112A7ADC9600AF3FF1 /* OvalTextFieldStyle.swift in Sources */,
 				82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */,
 				825645A92BCE11EE00F18AC9 /* VisitObject.swift in Sources */,
@@ -707,6 +748,7 @@
 				824E5CEE2BC37962001DE348 /* VisitsViewModel.swift in Sources */,
 				820934052A7ABB6D00AF3FF1 /* LottieAnimationUIView.swift in Sources */,
 				824213792A83335B00626DD5 /* CustomBackButton.swift in Sources */,
+				82A5B45D2BD2F65E00F52F2F /* AddAddressViewModel.swift in Sources */,
 				820933DE2A78425F00AF3FF1 /* CongregationAPI.swift in Sources */,
 				821C12682A77F6180050D106 /* LoginResponse.swift in Sources */,
 				821C125F2A77EE810050D106 /* API_Requests.swift in Sources */,
@@ -720,6 +762,7 @@
 				82BC0F272A9CD94500B255BF /* AddHouseView.swift in Sources */,
 				825645A72BCE117500F18AC9 /* TerritoryObject.swift in Sources */,
 				824213722A82DB7300626DD5 /* SplashScreenView.swift in Sources */,
+				82A5B4642BD5B9D700F52F2F /* VisitData.swift in Sources */,
 				82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */,
 				826B76772A729FE1000A4BAA /* NSManagedObjectExtension.swift in Sources */,
 				823FD4DC2A8165300036A1DD /* SettingsView.swift in Sources */,
@@ -729,6 +772,7 @@
 				824213702A82DAEA00626DD5 /* NoDataView.swift in Sources */,
 				82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */,
 				826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */,
+				82A5B4622BD5B31600F52F2F /* HouseData.swift in Sources */,
 				82BC0F232A9C24AC00B255BF /* ChangeType.swift in Sources */,
 				82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */,
 				821111B62A7315B600F94662 /* AuthenticationAPI.swift in Sources */,
@@ -750,7 +794,11 @@
 				820933F52A78608C00AF3FF1 /* NewTokenForm.swift in Sources */,
 				823FD4D02A7BF07B0036A1DD /* LoadingView.swift in Sources */,
 				820933E02A78427E00AF3FF1 /* CongregationSignInForm.swift in Sources */,
+				825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */,
+				82A5B4592BD1A48500F52F2F /* TerritoryDataWithKeys.swift in Sources */,
 				820933E92A7852B400AF3FF1 /* TerritoryModel.swift in Sources */,
+				82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */,
+				82A5B45B2BD2F64800F52F2F /* AddAddressView.swift in Sources */,
 				82916C192A994298005133DE /* AddVisitView.swift in Sources */,
 				820934032A7ABB3A00AF3FF1 /* WelcomeView.swift in Sources */,
 				820933E72A78506100AF3FF1 /* HouseModel.swift in Sources */,
@@ -903,7 +951,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Jose.Blanco.Service-Maps-2-0";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -932,7 +980,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Jose.Blanco.Service-Maps-2-0";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -1044,6 +1092,14 @@
 				kind = branch;
 			};
 		};
+		82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparrowcode/AlertKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.9;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1116,6 +1172,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		82A5B45F2BD482EB00F52F2F /* AlertKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */;
+			productName = AlertKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -36,4 +36,9 @@ struct MyTokenModel: Codable, Equatable, Identifiable, Hashable {
         hasher.combine(moderator)
         hasher.combine(expire ?? 0) // Combine 0 for nil expire value
       }
+    
+   
+}
+func convertTokenToMyTokenModel(model: TokenObject) -> MyTokenModel {
+    return MyTokenModel(id: model.id, name: model.name, owner: model.owner, congregation: model.congregation, moderator: model.moderator, created_at: "", updated_at: "")
 }

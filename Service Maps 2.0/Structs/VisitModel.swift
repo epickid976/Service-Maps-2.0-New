@@ -36,6 +36,6 @@ struct VisitModel: Codable, Equatable, Hashable, Identifiable {
       }
 }
 
-func convertVisitToVisitModel(model: Visit) -> VisitModel {
-    return VisitModel(id: model.id ?? "", house: model.house ?? "", date: model.date, symbol: model.symbol ?? "", notes: model.notes ?? "", user: model.user ?? "", created_at: "", updated_at: "")
+func convertVisitToVisitModel(model: VisitObject) -> VisitModel {
+    return VisitModel(id: model.id, house: model.house, date: model.date, symbol: model.symbol, notes: model.notes, user: model.user, created_at: "", updated_at: "")
 }

@@ -10,27 +10,30 @@ import SwiftUI
 import CoreData
 import NukeUI
 import Combine
+import SwipeActions
 
 @MainActor
 class HousesViewModel: ObservableObject {
     
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var dataStore = StorageManager.shared
+    @ObservedObject var dataUploaderManager = DataUploaderManager()
+    
+    private var cancellables = Set<AnyCancellable>()
     //@ObservedObject var databaseManager = RealmManager.shared
-    @Published var houses = [HouseModel]() {
-        didSet {
-            houses.sort(by: { $0.number < $1.number})
-        }
-    }
+    @Published var houseData: Optional<[HouseData]> = nil
 
-     init(territory: TerritoryModel) {
-         self.territory = territory
+     init(territoryAddress: TerritoryAddressModel) {
+         self.territoryAddress = territoryAddress
          
+         getHouses()
          //houses = databaseManager.housesFlow
     }
     
     @Published var backAnimation = false
     @Published var optionsAnimation = false
     @Published var progress: CGFloat = 0.0
-    @Published var territory: TerritoryModel
+    @Published var territoryAddress: TerritoryAddressModel
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     @Published var currentHouse: HouseModel?
@@ -42,85 +45,153 @@ class HousesViewModel: ObservableObject {
         }
     }
     
+    @Published var houseToDelete: (String?, String?)
+    
+    @Published var showAlert = false
+    @Published var ifFailed = false
+    @Published var loading = false
+    
+    @Published var showToast = false
+    @Published var showAddedToast = false
+    
+    @Published var syncAnimation = false
+    @Published var syncAnimationprogress: CGFloat = 0.0
+    
+    func deleteHouse(house: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteHouse(house: house)
+    }
+    
+    func houseCellView(houseData: HouseData) -> some View {
+            SwipeView {
+                NavigationLink(destination: VisitsView(house: houseData.house)) {
+                    HouseCell(house: houseData)
+                        .padding(.bottom, 2)
+                }
+            } trailingActions: { context in
+                if houseData.accessLevel == .Admin {
+                    SwipeAction(
+                        systemImage: "trash",
+                        backgroundColor: .red
+                    ) {
+                        DispatchQueue.main.async {
+                            self.houseToDelete = (houseData.house.id, houseData.house.number)
+                            self.showAlert = true
+                        }
+                    }
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
+                    
+                    
+                    }
+                
+//                if houseData.accessLevel == .Moderator || houseData.accessLevel == .Admin {
+//                    SwipeAction(
+//                        systemImage: "pencil",
+//                        backgroundColor: Color.teal
+//                    ) {
+//                        context.state.wrappedValue = .closed
+//                        self.currentHouse = houseData.house
+//                        self.presentSheet = true
+//                    }
+//                    .allowSwipeToTrigger()
+//                    .font(.title.weight(.semibold))
+//                    .foregroundColor(.white)
+//                }
+            }
+            .swipeActionCornerRadius(16)
+            .swipeSpacing(5)
+            .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+            .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+            .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+            .swipeMinimumDistance(houseData.accessLevel != .User ? 25:1000)
+        
+    }
+    
     @ViewBuilder
-    func largeHeader(progress: CGFloat) -> some View  {
-        VStack {
-            ZStack {
-                    VStack {
-                        LazyImage(url: URL(string: territory.image ?? "https://www.google.com/url?sa=i&url=https%3A%2F%2Flottiefiles.com%2Fanimations%2Fno-data-bt8EDsKmcr&psig=AOvVaw2p2xZlutsRFWRoLRsg6LJ2&ust=1712619221457000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCPjeiPihsYUDFQAAAAAdAAAAABAE")) { state in
-                            if let image = state.image {
-                                image.resizable().aspectRatio(contentMode: .fill).frame(width: UIScreen.screenWidth, height: 350)
-                                
-                                //image.opacity(1 - progress)
-                                
-                            } else if state.error != nil {
-                                Color.red
-                            } else {
-                                ProgressView().progressViewStyle(.circular)
+    func alert() -> some View {
+        ZStack {
+                VStack {
+                    Text("Delete House \(houseToDelete.1 ?? "0")")
+                        .font(.title)
+                            .fontWeight(.heavy)
+                            .hSpacing(.leading)
+                        .padding(.leading)
+                    Text("Are you sure you want to delete the selected house?")
+                        .font(.title3)
+                            .fontWeight(.bold)
+                            .hSpacing(.leading)
+                        .padding(.leading)
+                    if ifFailed {
+                        Text("Error deleting house, please try again later")
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                    }
+                            //.vSpacing(.bottom)
+                    
+                    HStack {
+                        if !loading {
+                            CustomBackButton() {
+                                withAnimation {
+                                    self.showAlert = false
+                                    self.houseToDelete = (nil,nil)
+                                }
                             }
                         }
-                        .vSpacing(.bottom)
-                        .cornerRadius(10)
-                    }
-                    .frame(width: UIScreen.screenSize.width, height: 350, alignment: .center)
-                    VStack {
-                        smallHeader
-                           
-                            .padding(.vertical)
-                        .cornerRadius(16, corners: [.bottomLeft, .bottomRight])
+                        //.padding([.top])
                         
-                    }.frame(height: 85)
-                        .background(
-                            Material.ultraThickMaterial
-                        )
-                        .vSpacing(.bottom)
-            }
-            .frame(width: UIScreen.screenWidth, height: 350)
-        }
-        
-        .animation(.default, value: progress)
-    }
-    
-    @ViewBuilder
-    var smallHeader: some View {
-        HStack(spacing: 12.0) {
-            HStack {
-                Image(systemName: "numbersign").imageScale(.large).fontWeight(.heavy)
-                    .foregroundColor(.primary).font(.title2)
-                Text("\(territory.number)")
-                    .font(.largeTitle)
-                    .bold()
-                    .fontWeight(.heavy)
-            }
-            
-            Divider()
-                .frame(maxHeight: 75)
-                .padding(.horizontal, -5)
-            if !(progress < 0.98) {
-                LazyImage(url: URL(string: territory.image ?? "https://www.google.com/url?sa=i&url=https%3A%2F%2Flottiefiles.com%2Fanimations%2Fno-data-bt8EDsKmcr&psig=AOvVaw2p2xZlutsRFWRoLRsg6LJ2&ust=1712619221457000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCPjeiPihsYUDFQAAAAAdAAAAABAE")) { state in
-                    if let image = state.image {
-                        image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 75, maxHeight: 60)
-                    } else if state.error != nil {
-                       // print(state.error)
-                        Color.red
-                    } else {
-                        ProgressView().progressViewStyle(.circular)
+                        CustomButton(loading: loading, title: "Delete", color: .red) {
+                            withAnimation {
+                                self.loading = true
+                            }
+                            Task {
+                                if self.houseToDelete.0 != nil && self.houseToDelete.1 != nil {
+                                    switch await self.deleteHouse(house: self.houseToDelete.0 ?? "") {
+                                    case .success(_):
+                                        withAnimation {
+                                            self.synchronizationManager.startupProcess(synchronizing: true)
+                                            self.getHouses()
+                                            self.loading = false
+                                            self.showAlert = false
+                                            self.ifFailed = false
+                                            self.houseToDelete = (nil,nil)
+                                            self.showToast = true
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                                self.showToast = false
+                                            }
+                                        }
+                                    case .failure(_):
+                                        withAnimation {
+                                            self.loading = false
+                                            self.ifFailed = true
+                                        }
+                                    }
+                                }
+                            }
+                            
+                        }
                     }
+                    .padding([.horizontal, .bottom])
+                    //.vSpacing(.bottom)
+                    
                 }
-                .cornerRadius(10)
-                .padding(.horizontal, 2)
-            }
-            Text(territory.description )
-                .font(.body)
-                .fontWeight(.heavy)
-        }
-        .frame(maxHeight: 75)
-        .animation(.easeInOut(duration: 0.25), value: progress)
-        .padding(.horizontal)
-        .hSpacing(.center)
+                .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
     }
-    
-    func deleteHouse(house: HouseModel) {
-        
+}
+
+extension HousesViewModel {
+    func getHouses() {
+        RealmManager.shared.getHouseData(addressId: territoryAddress.id)
+            .receive(on: DispatchQueue.main) // Update on main thread
+            .sink(receiveCompletion: { completion in
+              if case .failure(let error) = completion {
+                // Handle errors here
+                print("Error retrieving territory data: \(error)")
+              }
+            }, receiveValue: { houseData in
+              self.houseData = houseData
+            })
+            .store(in: &cancellables)
     }
 }

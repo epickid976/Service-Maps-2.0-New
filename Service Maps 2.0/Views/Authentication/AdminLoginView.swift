@@ -127,64 +127,62 @@ struct AdminLoginView: View {
                         let validation = validate()
                         if validation {
                             Task {
-                                do {
                                     withAnimation {
                                         loading = true
                                     }
                                     
-                                    _ = try await congregationApi.signIn(congregationId: Int64(username) ?? 0, congregationPass: password)
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                        withAnimation {
-                                            loading = false
-                                            AuthorizationProvider.shared.congregationId = Int64(username)
-                                            AuthorizationProvider.shared.congregationPass = password
+                                    switch await AuthenticationManager().signInAdmin(congregationSignInForm: CongregationSignInForm(id: Int64(username) ?? 0, password: password)) {
+                                    case .success(_):
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                            withAnimation {
+                                                loading = false
+                                            }
                                             onDone()
                                         }
+                                    case .failure(let error):
+                                        if error.localizedDescription == "No Internet" {
+                                            alertTitle = "No Internet Connection"
+                                            alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                                withAnimation {
+                                                    //apiError = "Error Signing up"
+                                                    loading = false
+                                                    showAlert = true
+                                                }
+                                            }
+                                        } else if error.localizedDescription == "Wrong Credentials" {
+                                            alertTitle = "Wrong Credentials"
+                                            alertMessage = "The credentials you typed don't seem to be correct.\n Please try again."
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                                withAnimation {
+                                                    //apiError = "Error Signing up"
+                                                    loading = false
+                                                    showAlert = true
+                                                }
+                                            }
+                                        } else if error.localizedDescription == "No Congregation" {
+                                            alertTitle = "Wrong Congregation"
+                                            alertMessage = "The congregation you're trying to access does not exist. \n Please try again."
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                                withAnimation {
+                                                    //apiError = "Error Signing up"
+                                                    loading = false
+                                                    showAlert = true
+                                                }
+                                            }
+                                        } else {
+                                            alertTitle = "Error"
+                                            alertMessage = "Error logging in. \nPlease try again."
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                                withAnimation {
+                                                    //apiError = "Error Signing up"
+                                                    loading = false
+                                                    showAlert = true
+                                                }
+                                            }
+                                        }
                                     }
-                                } catch {
-                                    if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                                        alertTitle = "No Internet Connection"
-                                        alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                            withAnimation {
-                                                //apiError = "Error Signing up"
-                                                loading = false
-                                                showAlert = true
-                                            }
-                                        }
-                                    } else if error.asAFError?.responseCode == 401 {
-                                        alertTitle = "Wrong Credentials"
-                                        alertMessage = "The credentials you typed don't seem to be correct.\n Please try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                            withAnimation {
-                                                //apiError = "Error Signing up"
-                                                loading = false
-                                                showAlert = true
-                                            }
-                                        }
-                                    } else if error.asAFError?.responseCode == 404 {
-                                        alertTitle = "Wrong Congregation"
-                                        alertMessage = "The congregation you're trying to access does not exist. \n Please try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                            withAnimation {
-                                                //apiError = "Error Signing up"
-                                                loading = false
-                                                showAlert = true
-                                            }
-                                        }
-                                    } else {
-                                        alertTitle = "Error"
-                                        alertMessage = "Error logging in. \nPlease try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                            withAnimation {
-                                                //apiError = "Error Signing up"
-                                                loading = false
-                                                showAlert = true
-                                            }
-                                        }
-                                    }
-                                }
+                                
                             }
                         } else {
                             withAnimation {
@@ -227,7 +225,7 @@ struct AdminLoginView: View {
         )
         //.animation(.spring(duration: 1.0), value: synchronizationManager.startupState)
         .navigationViewStyle(StackNavigationViewStyle())
-        .navigationTransition(.slide.combined(with: .fade(.in)))
+        .navigationTransition(.zoom.combined(with: .fade(.in)))
         .toolbar{
             ToolbarItemGroup(placement: .keyboard){
                 Spacer()
