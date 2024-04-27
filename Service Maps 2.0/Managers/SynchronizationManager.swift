@@ -216,10 +216,8 @@ class SynchronizationManager: ObservableObject {
                     switch  realmManager.addModel(TokenObject().createTokenObject(from: myTokenApi)) {
                     case .success(let success):
                         print("Success Adding Token \(success)")
-                        return
                     case .failure(let error):
                         print("There was an error adding Token \(error)")
-                        return
                     }
                 }
             }
@@ -399,10 +397,8 @@ class SynchronizationManager: ObservableObject {
                 switch  realmManager.addModel(TokenTerritoryObject().createTokenTerritoryObject(from: tokenTerritoryApi)) {
                 case .success(let success):
                     print("Success Adding TokenTerritory \(success)")
-                    return
                 case .failure(let error):
                     print("There was an error adding TokenTerritory \(error)")
-                    return
                 }
             }
             
@@ -445,10 +441,8 @@ class SynchronizationManager: ObservableObject {
                 switch  realmManager.addModel(TerritoryAddressObject().createTerritoryAddressObject(from: territoryAddressApi)) {
                 case .success(let success):
                     print("Success Adding Address \(success)")
-                    return
                 case .failure(let error):
                     print("There was an error adding Address \(error)")
-                    return
                 }
             }
         }

@@ -30,7 +30,6 @@ struct TerritoryView: View {
     
     init() {
         
-        
     }
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Territory Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
