@@ -171,16 +171,16 @@ class AddKeyViewModel: ObservableObject {
 extension AddKeyViewModel {
     func getTerritories() {
         RealmManager.shared.getTerritoryData()
-        .receive(on: DispatchQueue.main) // Update on main thread
-        .sink(receiveCompletion: { completion in
-          if case .failure(let error) = completion {
-            // Handle errors here
-            print("Error retrieving territory data: \(error)")
-          }
-        }, receiveValue: { territoryData in
-          self.territoryData = territoryData
-        })
-        .store(in: &cancellables)
+            .receive(on: DispatchQueue.main) // Update on main thread
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    // Handle errors here
+                    print("Error retrieving territory data: \(error)")
+                }
+            }, receiveValue: { territoryData in
+                self.territoryData = territoryData
+            })
+            .store(in: &cancellables)
     }
 }
 

@@ -25,7 +25,7 @@ struct LoadingView: View {
                 VStack {
                     LottieAnimationUIView(animationName: "LoadingAnimation", shouldLoop: true, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
                         .frame(width: 350, height: 350)
-                        
+                    
                     Text("Loading")
                         .bold()
                         .font(.title3)
@@ -37,7 +37,7 @@ struct LoadingView: View {
                     Text(text)
                         .bold()
                         .font(.title3)
-                        //.padding(.top, -80)
+                    //.padding(.top, -80)
                 }
             }
         }

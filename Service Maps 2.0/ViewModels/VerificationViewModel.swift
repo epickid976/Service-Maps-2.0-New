@@ -26,7 +26,7 @@ class VerificationViewModel: ObservableObject {
     //MARK: API
     let authenticationManager = AuthenticationManager()
     @ObservedObject var storageManager = StorageManager.shared
-    
+    @ObservedObject var universalLinksManager = UniversalLinksManager.shared
     
     func checkVerification(completion: @escaping (Result<Bool, Error>) -> Void) async {
         
@@ -85,5 +85,10 @@ class VerificationViewModel: ObservableObject {
             }
         }
     }
+    
+    //    func activateEmail() async -> Result<Bool, Error> {
+    //        let extractedToken = universalLinksManager.extractFromURL(urlString: universalLinksManager.incomingUrl ?? "", after: <#T##String#>)
+    //        let result = await authenticationManager.activateEmail(token: <#T##String#>)
+    //    }
     
 }

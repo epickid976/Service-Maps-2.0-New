@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ActivityIndicatorView
+import NavigationTransitions
 
 struct VerificationView: View {
     var onDone: () -> Void
@@ -17,6 +18,7 @@ struct VerificationView: View {
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var universalLinksManager = UniversalLinksManager.shared
     
     init(onDone: @escaping() -> Void) {
         let initialViewModel = VerificationViewModel()
@@ -27,7 +29,7 @@ struct VerificationView: View {
     
     var body: some View {
         NavigationStack {
-            LazyVStack {
+            VStack {
                 Text("Verification")
                     .frame(alignment:.leading)
                     .font(.largeTitle)
@@ -104,11 +106,10 @@ struct VerificationView: View {
             
         }
         .navigationBarBackButtonHidden(true)
+        .navigationViewStyle(StackNavigationViewStyle())
+        .navigationTransition(
+            .slide.combined(with: .fade(.in))
+        )
     }
 }
 
-#Preview {
-    VerificationView() {
-        
-    }
-}

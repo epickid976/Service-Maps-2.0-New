@@ -34,93 +34,93 @@ struct AddHouseView: View {
     
     var body: some View {
         ZStack {
-                VStack {
-                        Text("\(title) House")
-                        .font(.title)
-                            .fontWeight(.bold)
-                            .hSpacing(.leading)
-                        .padding(.leading)
-                    CustomField(text: $viewModel.number, isFocused: $numberFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Number")
-                            .padding(.bottom)
+            VStack {
+                Text("\(title) House")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                CustomField(text: $viewModel.number, isFocused: $numberFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Number")
+                    .padding(.bottom)
+                
+                Text(viewModel.error)
+                    .fontWeight(.bold)
+                    .foregroundColor(.red)
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() { onDismiss() }
+                    }
+                    //.padding([.top])
                     
-                        Text(viewModel.error)
-                            .fontWeight(.bold)
-                            .foregroundColor(.red)
-                            //.vSpacing(.bottom)
-                    
-                    HStack {
-                        if !viewModel.loading {
-                            CustomBackButton() { onDismiss() }
-                        }
-                        //.padding([.top])
-                        
-                        CustomButton(loading: viewModel.loading, title: "Save") {
-                            if viewModel.checkInfo() {
-                                if house != nil {
-                                    Task {
-                                        withAnimation {
-                                            viewModel.loading = true
-                                        }
-                                        let result = await viewModel.editHouse(house: house!)
-                                        switch result {
-                                        case .success(_):
-                                            onDone()
-                                        case .failure(_):
-                                            viewModel.error = "Error updating house."
-                                            viewModel.loading = false
-                                        }
+                    CustomButton(loading: viewModel.loading, title: "Save") {
+                        if viewModel.checkInfo() {
+                            if house != nil {
+                                Task {
+                                    withAnimation {
+                                        viewModel.loading = true
                                     }
-                                } else {
-                                    Task {
-                                        withAnimation {
-                                            viewModel.loading = true
-                                        }
-                                        let result = await viewModel.addHouse()
-                                        switch result {
-                                        case .success(_):
-                                            onDone()
-                                        case .failure(_):
-                                            viewModel.error = "Error adding house."
-                                            viewModel.loading = false
-                                        }
+                                    let result = await viewModel.editHouse(house: house!)
+                                    switch result {
+                                    case .success(_):
+                                        onDone()
+                                    case .failure(_):
+                                        viewModel.error = "Error updating house."
+                                        viewModel.loading = false
+                                    }
+                                }
+                            } else {
+                                Task {
+                                    withAnimation {
+                                        viewModel.loading = true
+                                    }
+                                    let result = await viewModel.addHouse()
+                                    switch result {
+                                    case .success(_):
+                                        onDone()
+                                    case .failure(_):
+                                        viewModel.error = "Error adding house."
+                                        viewModel.loading = false
                                     }
                                 }
                             }
                         }
                     }
-                    .padding([.horizontal, .bottom])
-                    //.vSpacing(.bottom)
-                    
                 }
-                .ignoresSafeArea(.keyboard)
-                .navigationBarTitle("\(title) House", displayMode: .large)
-                .navigationBarBackButtonHidden()
-                .toolbar{
-                    ToolbarItemGroup(placement: .keyboard){
-                        Spacer()
-                        Button {
-                            DispatchQueue.main.async {
-                                hideKeyboard()
-                            }
-                        } label: {
-                            Text("Done")
-                                .tint(.primary)
-                                .fontWeight(.bold)
-                                .font(.body)
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
+            .navigationBarTitle("\(title) House", displayMode: .large)
+            .navigationBarBackButtonHidden()
+            .toolbar{
+                ToolbarItemGroup(placement: .keyboard){
+                    Spacer()
+                    Button {
+                        DispatchQueue.main.async {
+                            hideKeyboard()
                         }
+                    } label: {
+                        Text("Done")
+                            .tint(.primary)
+                            .fontWeight(.bold)
+                            .font(.body)
                     }
                 }
+            }
             
         }.ignoresSafeArea(.keyboard)
             .onAppear {
                 if house != nil {
                     //withAnimation {
-                        title = "Edit"
+                    title = "Edit"
                     self.viewModel.number = house!.number
                     //}
                 } else {
                     //withAnimation {
-                        title = "Add"
+                    title = "Add"
                     //}
                 }
             }

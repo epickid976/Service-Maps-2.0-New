@@ -30,8 +30,9 @@ struct TerritoryView: View {
     
     init() {
         
-
+        
     }
+    
     let alertViewDeleted = AlertAppleMusic17View(title: "Territory Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     let alertViewAdded = AlertAppleMusic17View(title: "Territory Added", subtitle: nil, icon: .done)
     
@@ -82,12 +83,12 @@ struct TerritoryView: View {
                                         viewModel.territoryCell(dataWithKeys: dataWithKeys)
                                     }
                                     .animation(.default, value: viewModel.territoryData!)
-                                   
-
+                                    
+                                    
                                 }
                             }.animation(.spring(), value: viewModel.territoryData)
-                                
-
+                            
+                            
                             
                         }
                     }

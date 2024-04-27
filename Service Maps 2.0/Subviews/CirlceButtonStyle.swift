@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 struct CircleButtonStyle: ButtonStyle {
     
@@ -26,10 +27,10 @@ struct CircleButtonStyle: ButtonStyle {
                         .fill(Color.clear)
                 } else {
                     content
-                    .fill(Material.ultraThin)
+                        .fill(Material.ultraThin)
                 }
             }
-            
+        
             .overlay(Image(systemName: imageName)
                 .resizable()
                 .scaledToFit()
@@ -43,7 +44,7 @@ struct CircleButtonStyle: ButtonStyle {
                 }
             )
             .frame(width: width, height: height)
-            
+        
     }
 }
 
@@ -60,65 +61,68 @@ struct PillButtonStyle: ButtonStyle {
     @Binding var lastTime: Date?
     //@Binding var text: String
     
-    let timePassed = getElapsedMinutes()
+    @State var timePassed = getElapsedMinutes()
     
     func makeBody(configuration: Configuration) -> some View {
-      RoundedRectangle(cornerSize: CGSize(width: 100.0, height: 100.0), style: .continuous)
-        .optionalViewModifier { content in
-          if progress > 0.01 {
-            content
-              .fill(Color.clear)
-          } else {
-            content
-              .fill(Material.ultraThin)
-          }
-        }
-        .overlay(
-          VStack {
-            if synced {
-              if isMoreThanAMinuteOld(date: lastTime) {
-                  displayText("Last Synced", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
-                  displayText("\(getElapsedMinutes()) minute(s)", fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
-              } else {
-                  displayText("Last Synced", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
-                  displayText("Now", fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
-              }
-            } else {
-                displayText("Syncing", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+        RoundedRectangle(cornerSize: CGSize(width: 100.0, height: 100.0), style: .continuous)
+            .optionalViewModifier { content in
+                if progress > 0.01 {
+                    content
+                        .fill(Color.clear)
+                } else {
+                    content
+                        .fill(Material.ultraThin)
+                }
             }
-          }
-        )
-        .frame(width: width, height: height)
-        .padding(5)
+            .overlay(
+                VStack {
+                    if synced {
+                        if isMoreThanAMinuteOld(date: lastTime) {
+                            displayText("Last Synced", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                            displayText("\(getElapsedMinutes()) minute(s)", fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
+                        } else {
+                            displayText("Last Synced", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                            displayText("Now", fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
+                        }
+                    } else {
+                        displayText("Syncing", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                    }
+                }
+            )
+            .frame(width: width, height: height)
+            .padding(5)
+            .onReceive(Timer.publish(every: 5, on: .main, in: .common).autoconnect()) { _ in
+                timePassed = getElapsedMinutes()
+            }
     }
-
+    
     
     func displayText(_ text: String, fontWeight: Font.Weight = .bold, fontSize: Font = .caption, foregroundColor: Color) -> some View {
-      Text(text)
-        .fontWeight(fontWeight)
-        .font(fontSize)
-        .foregroundColor(foregroundColor)
-        .multilineTextAlignment(.center)
-        .optionalViewModifier { content in
-          if #available(iOS 17, *) {
-            content.contentTransition(.numericText()).animation(.spring(duration: 0.5), value: text)
-                  .minimumScaleFactor (0.8)
-          }
-        }
+        Text(text)
+            .fontWeight(fontWeight)
+            .font(fontSize)
+            .foregroundColor(foregroundColor)
+            .multilineTextAlignment(.center)
+            .optionalViewModifier { content in
+                if #available(iOS 17, *) {
+                    content.contentTransition(.numericText()).animation(.spring(duration: 0.5), value: text)
+                        .minimumScaleFactor (0.8)
+                }
+            }
         
     }
 }
 
 func getElapsedMinutes() -> Int {
-  guard let startTime = StorageManager.shared.lastTime else { return 0 } // Handle no start time
-  let elapsedTime = floor(Date().timeIntervalSince(startTime) / 60.0)
-  return Int(elapsedTime)
+    guard let startTime = StorageManager.shared.lastTime else { return 0 } // Handle no start time
+    let elapsedTime = floor(Date().timeIntervalSince(startTime) / 60.0)
+    return Int(elapsedTime)
 }
 
 func isMoreThanAMinuteOld(date: Date?) -> Bool {
     guard let date = date else { return true }
-  let calendar = Calendar.current
-  let oneMinuteAgo = calendar.date(byAdding: .minute, value: -1, to: Date())!
-  return date < oneMinuteAgo
+    let calendar = Calendar.current
+    let oneMinuteAgo = calendar.date(byAdding: .minute, value: -1, to: Date())!
+    return date < oneMinuteAgo
 }
 

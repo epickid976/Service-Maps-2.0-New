@@ -10,16 +10,21 @@ import SwiftUI
 
 
 struct CustomBackButton: View {
+    var showImage: Bool = true
+    var text: String = "Back"
     @Environment(\.colorScheme) var colorScheme
     var action: () -> Void
-
+    
+    
     var body: some View {
         Button(action: action) {
             HStack {
-                Image(systemName: "chevron.backward")
-                    .fontWeight(.heavy)
-                    .foregroundStyle(colorScheme == .dark ? .white : .black)
-                Text("Back")
+                if showImage {
+                    Image(systemName: "chevron.backward")
+                        .fontWeight(.heavy)
+                        .foregroundStyle(colorScheme == .dark ? .white : .black)
+                }
+                Text("\(text)")
                     .fontWeight(.heavy)
                     .foregroundStyle(colorScheme == .dark ? .white : .black)
             }

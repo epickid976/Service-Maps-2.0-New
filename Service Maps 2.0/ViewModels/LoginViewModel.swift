@@ -37,26 +37,50 @@ class LoginViewModel: ObservableObject {
     @Published var loginError = false
     
     
-    func validate() -> Bool {
+    func validate(forReset: Bool = false) -> Bool {
         
-        if !self.isValidEmail(self.username) {
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.loginErrorText = "Not a valid email."
-                    self.loginError = true
+        if !forReset {
+            if !self.isValidEmail(self.username) {
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.loginErrorText = "Not a valid email."
+                        self.loginError = true
+                    }
                 }
+                return false
             }
-            return false
+            
+            if self.username.contains(" ") {
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.loginErrorText = "Email cannot contain spaces."
+                        self.loginError = true
+                    }
+                }
+                return false
+            }
         }
         
-        if self.username.contains(" ") {
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.loginErrorText = "Email cannot contain spaces."
-                    self.loginError = true
+        if forReset {
+            if self.password.count < 8 {
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.loginErrorText = "Password must be more than 8 characters."
+                        self.loginError = true
+                    }
                 }
+                return false
             }
-            return false
+            
+            if self.password != self.username {
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.loginErrorText = "Passwords must match."
+                        self.loginError = true
+                    }
+                }
+                return false
+            }
         }
         
         if self.username.isEmpty || self.password.isEmpty {
@@ -128,6 +152,29 @@ class LoginViewModel: ObservableObject {
                     completion(Result.failure(error))
                 }
             }
+        }
+    }
+    
+    func resetPassword(password: String, token: String ) async {
+        switch await authenticationManager.resetPassword( password: password, token: token) {
+        case .success(_):
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                withAnimation {
+                    UniversalLinksManager.shared.resetLink()
+                }
+            }
+        case .failure(let error):
+            if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
+                DispatchQueue.main.async {
+                    self.loginErrorText = "No Internet Connection. Please try again later."
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.loginErrorText = "Error Resetting Password. Please try again later"
+                }
+            }
+            self.loginError = true
+            withAnimation { self.loading = false}
         }
     }
 }

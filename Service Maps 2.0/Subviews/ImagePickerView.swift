@@ -56,7 +56,7 @@ struct ImagePickerView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                         .aspectRatio(contentMode: .fit)
                         .padding(15)
-                        
+                    
                 }
             }
             //Displaying Loading UI

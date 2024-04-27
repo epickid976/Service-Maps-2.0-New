@@ -56,7 +56,7 @@ class TerritoryViewModel: ObservableObject {
     
     
     func deleteTerritory(territory: String) async -> Result<Bool, Error> {
-            return await dataUploaderManager.deleteTerritory(territory: territory)
+        return await dataUploaderManager.deleteTerritory(territory: territory)
     }
     
     func resync() {
@@ -83,58 +83,58 @@ class TerritoryViewModel: ObservableObject {
                     .frame(height: 20)
             }
         }
-            // Loop through territoryData here (replace with your TerritoryItemView implementation)
-            
-                ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                    SwipeView {
-                        NavigationLink(destination: TerritoryAddressView(territory: territoryData.territory)) {
-                            CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity)
-                                .padding(.bottom, 2)
-                        }
-                    } trailingActions: { context in
-                        if territoryData.accessLevel == .Admin {
-                            SwipeAction(
-                                systemImage: "trash",
-                                backgroundColor: .red
-                            ) {
-                                DispatchQueue.main.async {
-                                    self.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                                    self.showAlert = true
-                                }
-                            }
-                            .font(.title.weight(.semibold))
-                            .foregroundColor(.white)
-                            
-                            
-                            }
-                        
-                        if territoryData.accessLevel == .Moderator || territoryData.accessLevel == .Admin {
-                            SwipeAction(
-                                systemImage: "pencil",
-                                backgroundColor: Color.teal
-                            ) {
-                                context.state.wrappedValue = .closed
-                                self.currentTerritory = territoryData.territory
-                                self.presentSheet = true
-                            }
-                            .allowSwipeToTrigger()
-                            .font(.title.weight(.semibold))
-                            .foregroundColor(.white)
+        // Loop through territoryData here (replace with your TerritoryItemView implementation)
+        
+        ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+            SwipeView {
+                NavigationLink(destination: TerritoryAddressView(territory: territoryData.territory)) {
+                    CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity)
+                        .padding(.bottom, 2)
+                }
+            } trailingActions: { context in
+                if territoryData.accessLevel == .Admin {
+                    SwipeAction(
+                        systemImage: "trash",
+                        backgroundColor: .red
+                    ) {
+                        DispatchQueue.main.async {
+                            self.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
+                            self.showAlert = true
                         }
                     }
-                    .swipeActionCornerRadius(16)
-                    .swipeSpacing(5)
-                    .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
-                    .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
-                    .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
-                    .swipeMinimumDistance(territoryData.accessLevel != .User ? 25:1000)
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
+                    
+                    
                 }
                 
+                if territoryData.accessLevel == .Moderator || territoryData.accessLevel == .Admin {
+                    SwipeAction(
+                        systemImage: "pencil",
+                        backgroundColor: Color.teal
+                    ) {
+                        context.state.wrappedValue = .closed
+                        self.currentTerritory = territoryData.territory
+                        self.presentSheet = true
+                    }
+                    .allowSwipeToTrigger()
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
+                }
+            }
+            .swipeActionCornerRadius(16)
+            .swipeSpacing(5)
+            .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+            .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+            .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+            .swipeMinimumDistance(territoryData.accessLevel != .User ? 25:1000)
+        }
+        
     }
     
     
     init() {
-      getTerritories()
+        getTerritories()
     }
     
     
@@ -159,70 +159,70 @@ class TerritoryViewModel: ObservableObject {
     @ViewBuilder
     func alert() -> some View {
         ZStack {
-                VStack {
-                    Text("Delete Territory \(territoryToDelete.1 ?? "0")")
-                        .font(.title)
-                            .fontWeight(.heavy)
-                            .hSpacing(.leading)
-                        .padding(.leading)
-                    Text("Are you sure you want to delete the selected territory?")
-                        .font(.title3)
-                            .fontWeight(.bold)
-                            .hSpacing(.leading)
-                        .padding(.leading)
-                    if ifFailed {
-                        Text("Error deleting territory, please try again later")
-                            .fontWeight(.bold)
-                            .foregroundColor(.red)
-                    }
-                            //.vSpacing(.bottom)
-                    
-                    HStack {
-                        if !loading {
-                            CustomBackButton() {
-                                withAnimation {
-                                    self.showAlert = false
-                                    self.territoryToDelete = (nil,nil)
-                                }
+            VStack {
+                Text("Delete Territory \(territoryToDelete.1 ?? "0")")
+                    .font(.title)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected territory?")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if ifFailed {
+                    Text("Error deleting territory, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                self.showAlert = false
+                                self.territoryToDelete = (nil,nil)
                             }
                         }
-                        //.padding([.top])
-                        
-                        CustomButton(loading: loading, title: "Delete", color: .red) {
-                            withAnimation {
-                                self.loading = true
-                            }
-                            Task {
-                                if self.territoryToDelete.0 != nil && self.territoryToDelete.1 != nil {
-                                    switch await self.deleteTerritory(territory: self.territoryToDelete.0 ?? "") {
-                                    case .success(_):
-                                        withAnimation {
-                                            withAnimation {
-                                                self.loading = false
-                                            }
-                                            self.showAlert = false
-                                            self.territoryToDelete = (nil,nil)
-                                            self.showToast = true
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                                self.showToast = false
-                                            }
-                                        }
-                                    case .failure(_):
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.loading = true
+                        }
+                        Task {
+                            if self.territoryToDelete.0 != nil && self.territoryToDelete.1 != nil {
+                                switch await self.deleteTerritory(territory: self.territoryToDelete.0 ?? "") {
+                                case .success(_):
+                                    withAnimation {
                                         withAnimation {
                                             self.loading = false
                                         }
-                                        self.ifFailed = true
+                                        self.showAlert = false
+                                        self.territoryToDelete = (nil,nil)
+                                        self.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.showToast = false
+                                        }
                                     }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.loading = false
+                                    }
+                                    self.ifFailed = true
                                 }
                             }
-                            
                         }
+                        
                     }
-                    .padding([.horizontal, .bottom])
-                    //.vSpacing(.bottom)
-                    
                 }
-                .ignoresSafeArea(.keyboard)
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
             
         }.ignoresSafeArea(.keyboard)
     }
@@ -232,16 +232,18 @@ class TerritoryViewModel: ObservableObject {
 extension TerritoryViewModel {
     func getTerritories() {
         RealmManager.shared.getTerritoryData()
-        .receive(on: DispatchQueue.main) // Update on main thread
-        .sink(receiveCompletion: { completion in
-          if case .failure(let error) = completion {
-            // Handle errors here
-            print("Error retrieving territory data: \(error)")
-          }
-        }, receiveValue: { territoryData in
-          self.territoryData = territoryData
-        })
-        .store(in: &cancellables)
+            .receive(on: DispatchQueue.main) // Update on main thread
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    // Handle errors here
+                    print("Error retrieving territory data: \(error)")
+                }
+            }, receiveValue: { territoryData in
+                DispatchQueue.main.async {
+                    self.territoryData = territoryData
+                }
+            })
+            .store(in: &cancellables)
     }
 }
 

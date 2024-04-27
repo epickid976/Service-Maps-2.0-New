@@ -412,6 +412,16 @@ class DataUploaderManager: ObservableObject {
         }
     }
     
+    @MainActor
+    func registerToken(myToken: String) async -> Result<Bool, Error> {
+        do {
+            try await tokenApi.register(token: myToken)
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
     func addPendingChange(pendingChange: PendingChange) async {
         dataStore.pendingChanges.append(pendingChange)
         //Schedule background task

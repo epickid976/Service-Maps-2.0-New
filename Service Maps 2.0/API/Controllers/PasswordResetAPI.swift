@@ -19,9 +19,9 @@ class PasswordResetAPI {
         }
     }
     
-    func resetPassword(email: String, password: String, token: String) async throws -> UserResponse{
+    func resetPassword(password: String, token: String) async throws -> UserResponse{
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "reset", body: ResetPasswordForm(email: email, password: password, password_confirmation: password, token: token))
+            let response = try await ApiRequestAsync().postRequest(url: baseURL + "reset", body: ResetPasswordForm(password: password, password_confirmation: password, token: token))
             
             let decoder = JSONDecoder()
             

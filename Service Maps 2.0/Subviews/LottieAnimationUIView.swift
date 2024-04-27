@@ -60,11 +60,11 @@ struct LottieAnimationUIView: UIViewRepresentable {
             
             if shouldRestartAnimation {
                 animationView.play(fromProgress: 0, toProgress: 1, loopMode: context.coordinator.parent.animationView.loopMode) { _ in
-                 
-                  context.coordinator.parent.animationProgress = 0 // Reset for potential restart
+                    
+                    context.coordinator.parent.animationProgress = 0 // Reset for potential restart
                 }
                 shouldRestartAnimation = false
-            } 
+            }
             
             animationView.play(fromProgress: 0, toProgress: 1, loopMode: context.coordinator.parent.animationView.loopMode) { finished in
                 // Update the animationProgress after the animation completes
@@ -84,14 +84,14 @@ struct LottieAnimationUIView: UIViewRepresentable {
             shouldRestartAnimation = false
         }
     }
-
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-
+    
     class Coordinator: NSObject {
         var parent: LottieAnimationUIView
-
+        
         init(_ parent: LottieAnimationUIView) {
             self.parent = parent
         }

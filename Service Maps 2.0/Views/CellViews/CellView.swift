@@ -17,7 +17,7 @@ struct CellView: View {
         HStack(spacing: 10) {
             VStack {
                 ZStack {
-                   Circle()
+                    Circle()
                         .fill(
                             LinearGradient(
                                 gradient: Gradient(colors: [.blue, .teal]),

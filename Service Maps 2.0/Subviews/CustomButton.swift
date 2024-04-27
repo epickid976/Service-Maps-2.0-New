@@ -11,17 +11,28 @@ import ActivityIndicatorView
 
 struct CustomButton: View {
     var loading: Bool
+    var alwaysExpanded: Bool = false
     var title: String
     var color: Color?
     var action: () -> Void
     
-
+    
     @State var alwaysLoading = true
     var body: some View {
         Button(action: action) {
             if loading {
-                ActivityIndicatorView(isVisible: $alwaysLoading, type: .growingArc(.primary, lineWidth: 1.0))
-                    .frame(width: 25, height: 25)
+                if alwaysExpanded {
+                    HStack {
+                        Spacer()
+                        ActivityIndicatorView(isVisible: $alwaysLoading, type: .growingArc(.primary, lineWidth: 1.0))
+                            .frame(width: 25, height: 25)
+                        Spacer()
+                    }.frame(width: .infinity)
+                } else {
+                    ActivityIndicatorView(isVisible: $alwaysLoading, type: .growingArc(.primary, lineWidth: 1.0))
+                        .frame(width: 25, height: 25)
+                }
+                
             } else {
                 Text(title)
                     .frame(maxWidth: .infinity)

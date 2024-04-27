@@ -90,7 +90,7 @@ struct AddKeyView: View {
                         }
                     }
                     CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Key Name")
-                   
+                    
                     ScrollView {
                         LazyVStack {
                             ForEach(viewModel.territoryData!) { dataWithKey in
@@ -107,20 +107,20 @@ struct AddKeyView: View {
                         
                         CustomButton(loading: viewModel.loading, title: "Add") {
                             if viewModel.checkInfo() {
-                                    Task {
-                                        withAnimation {
-                                            viewModel.loading = true
-                                        }
-                                        let result = await viewModel.addToken()
-                                        switch result {
-                                        case .success(_):
-                                            onDone()
-                                            presentationMode.wrappedValue.dismiss()
-                                        case .failure(_):
-                                            viewModel.error = "Error adding key."
-                                            viewModel.loading = false
-                                        }
+                                Task {
+                                    withAnimation {
+                                        viewModel.loading = true
                                     }
+                                    let result = await viewModel.addToken()
+                                    switch result {
+                                    case .success(_):
+                                        onDone()
+                                        presentationMode.wrappedValue.dismiss()
+                                    case .failure(_):
+                                        viewModel.error = "Error adding key."
+                                        viewModel.loading = false
+                                    }
+                                }
                                 
                             }
                         }
@@ -158,7 +158,7 @@ struct CheckmarkToggleStyle: ToggleStyle {
                         )
                         .offset(x: configuration.isOn ? 11 : -11, y: 0)
                         .animation(Animation.linear(duration: 0.1))
-                        
+                    
                 ).cornerRadius(20)
                 .onTapGesture { configuration.isOn.toggle() }
         }

@@ -34,21 +34,21 @@ struct NoDataView: View {
                 Text("You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below.")
                     .font(.title3)
                     .fontWeight(.bold)
-                    //.padding(.bottom, -50)
+                //.padding(.bottom, -50)
                 
                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                     LottieAnimationUIView(animationName: "NoDataAnimation", shouldLoop: true, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
                         .frame(width: 400, height: 400)
-                        //.padding(.bottom, -50)
+                    //.padding(.bottom, -50)
                 } else {
                     LottieAnimationUIView(animationName: "NoDataAnimation", shouldLoop: true, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
                         .frame(width: 400, height: 400)
-                        //.padding(.bottom, -50)
+                    //.padding(.bottom, -50)
                 }
                 
                 Spacer()
                 VStack(spacing: 20) {
-//                    synchronizationManager.startupProcess(synchronizing: true)
+                    //                    synchronizationManager.startupProcess(synchronizing: true)
                     Button {
                         goToAdminLogin = true
                     }label: {

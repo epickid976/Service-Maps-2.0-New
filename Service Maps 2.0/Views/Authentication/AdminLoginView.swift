@@ -86,18 +86,18 @@ struct AdminLoginView: View {
                     .padding(.leading)
                     .keyboardType(.emailAddress)
                 TextField("ID", text: $username)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                .padding(.horizontal)
-                .font(.system(size: 16, weight: .regular))
-                .accentColor(.blue)
-                .focused($emailFocus)
-                .keyboardType(.numberPad)
-                .gesture(TapGesture().onEnded {
-                    // Handle tap action
-                    emailFocus = true
-                })
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                    .font(.system(size: 16, weight: .regular))
+                    .accentColor(.blue)
+                    .focused($emailFocus)
+                    .keyboardType(.numberPad)
+                    .gesture(TapGesture().onEnded {
+                        // Handle tap action
+                        emailFocus = true
+                    })
                 Text("Congregation Password")
                     .font(.headline)
                     .fontWeight(.semibold)
@@ -127,61 +127,61 @@ struct AdminLoginView: View {
                         let validation = validate()
                         if validation {
                             Task {
-                                    withAnimation {
-                                        loading = true
+                                withAnimation {
+                                    loading = true
+                                }
+                                
+                                switch await AuthenticationManager().signInAdmin(congregationSignInForm: CongregationSignInForm(id: Int64(username) ?? 0, password: password)) {
+                                case .success(_):
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        withAnimation {
+                                            loading = false
+                                        }
+                                        onDone()
                                     }
-                                    
-                                    switch await AuthenticationManager().signInAdmin(congregationSignInForm: CongregationSignInForm(id: Int64(username) ?? 0, password: password)) {
-                                    case .success(_):
+                                case .failure(let error):
+                                    if error.localizedDescription == "No Internet" {
+                                        alertTitle = "No Internet Connection"
+                                        alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                             withAnimation {
+                                                //apiError = "Error Signing up"
                                                 loading = false
+                                                showAlert = true
                                             }
-                                            onDone()
                                         }
-                                    case .failure(let error):
-                                        if error.localizedDescription == "No Internet" {
-                                            alertTitle = "No Internet Connection"
-                                            alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                                withAnimation {
-                                                    //apiError = "Error Signing up"
-                                                    loading = false
-                                                    showAlert = true
-                                                }
+                                    } else if error.localizedDescription == "Wrong Credentials" {
+                                        alertTitle = "Wrong Credentials"
+                                        alertMessage = "The credentials you typed don't seem to be correct.\n Please try again."
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                            withAnimation {
+                                                //apiError = "Error Signing up"
+                                                loading = false
+                                                showAlert = true
                                             }
-                                        } else if error.localizedDescription == "Wrong Credentials" {
-                                            alertTitle = "Wrong Credentials"
-                                            alertMessage = "The credentials you typed don't seem to be correct.\n Please try again."
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                                withAnimation {
-                                                    //apiError = "Error Signing up"
-                                                    loading = false
-                                                    showAlert = true
-                                                }
+                                        }
+                                    } else if error.localizedDescription == "No Congregation" {
+                                        alertTitle = "Wrong Congregation"
+                                        alertMessage = "The congregation you're trying to access does not exist. \n Please try again."
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                            withAnimation {
+                                                //apiError = "Error Signing up"
+                                                loading = false
+                                                showAlert = true
                                             }
-                                        } else if error.localizedDescription == "No Congregation" {
-                                            alertTitle = "Wrong Congregation"
-                                            alertMessage = "The congregation you're trying to access does not exist. \n Please try again."
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                                withAnimation {
-                                                    //apiError = "Error Signing up"
-                                                    loading = false
-                                                    showAlert = true
-                                                }
-                                            }
-                                        } else {
-                                            alertTitle = "Error"
-                                            alertMessage = "Error logging in. \nPlease try again."
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                                withAnimation {
-                                                    //apiError = "Error Signing up"
-                                                    loading = false
-                                                    showAlert = true
-                                                }
+                                        }
+                                    } else {
+                                        alertTitle = "Error"
+                                        alertMessage = "Error logging in. \nPlease try again."
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                            withAnimation {
+                                                //apiError = "Error Signing up"
+                                                loading = false
+                                                showAlert = true
                                             }
                                         }
                                     }
+                                }
                                 
                             }
                         } else {
@@ -209,7 +209,7 @@ struct AdminLoginView: View {
                 
             }
             .padding()
-           
+            
         }
         .navigationBarBackButtonHidden(true)
         .simultaneousGesture(

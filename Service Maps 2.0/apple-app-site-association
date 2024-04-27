@@ -1,8 +1,41 @@
-//
-//  apple-app-site-association.swift
-//  Service Maps 2.0
-//
-//  Created by Jose Blanco on 4/24/24.
-//
-
-import Foundation
+{
+    "applinks": {
+        "details": [{
+            "appIDs": ["6FLCXFF4D9.com.Jose.Blanco.Territorios", "GB8LSX9HB5.com.Jose.Blanco.Territorios"],
+            "components": [
+            {
+             "#": "no_universal_links",
+                  "exclude": true,
+                  "comment": "Matches any URL with a fragment that equals no_universal_links and instructs the system not to open it as a universal link."
+            },
+            {
+                "/": "/*",
+                "comment": "Matches any URL whose path starts with /stock/"
+            },
+            {
+                "/": "/app/registerkey/*",
+                "comment": "Matches any URL whose path starts with /stock/"
+            },
+            {
+                "/": "/app/passwordreset/*",
+                "comment": "Matches any URL whose path starts with /stock/"
+            },
+            {
+                "/": "/privacy*",
+                "comment": "Matches any URL whose path starts with /stock/"
+            },
+            {
+                "/": "/auth/signup/activate/*",
+                "comment": "Matches any URL whose path starts with /stock/"
+            }]
+        }]
+    },
+    "webcredentials": {
+      "apps": [ "6FLCXFF4D9.com.example.app", "GB8LSX9HB5.com.Jose.Blanco.Territorios"]
+    },
+    "appclips": {
+        "apps": [
+            "6FLCXFF4D9.com.Jose.Blanco.Territorios", "GB8LSX9HB5.com.Jose.Blanco.Territorios"
+        ]
+    }
+}

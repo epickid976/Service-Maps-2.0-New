@@ -54,6 +54,6 @@ struct CustomField: View {
                 .multilineTextAlignment(textAlignment ?? .leading)
                 .frame(minHeight: 40)
         }
-            
+        
     }
 }

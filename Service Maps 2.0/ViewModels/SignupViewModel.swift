@@ -46,13 +46,23 @@ class SignupViewModel: ObservableObject {
     
     @Published var loginErrorText = ""
     @Published var loginError = false
-
+    
     func validate() -> Bool {
         
         if self.username.isEmpty || self.password.isEmpty || self.name.isEmpty || self.passwordConfirmation.isEmpty {
             DispatchQueue.main.async {
                 withAnimation {
                     self.loginErrorText = "Fields cannot be empty"
+                    self.loginError = true
+                }
+            }
+            return false
+        }
+        
+        if self.password != self.passwordConfirmation {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.loginErrorText = "Passwords must match."
                     self.loginError = true
                 }
             }
@@ -69,15 +79,7 @@ class SignupViewModel: ObservableObject {
             return false
         }
         
-        if self.password != self.passwordConfirmation {
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.loginErrorText = "Passwords must match."
-                    self.loginError = true
-                }
-            }
-            return false
-        }
+        
         
         if !self.isValidEmail(self.username) {
             DispatchQueue.main.async {
@@ -113,51 +115,51 @@ class SignupViewModel: ObservableObject {
         Task {
             let result = await authenticationManager.signUp(signUpForm: SignUpForm(name: name, email: username, password: password, password_confirmation: password))
             
-                
-                switch result {
-                case .success(_):
-                    DispatchQueue.main.async { // Update properties on the main thread
-                        withAnimation { self.loading = false
-                            // Handle success case
-                            completion(Result.success(true))
-                        }
-                    }
-                case .failure(let error):
-                    if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                        DispatchQueue.main.async {
-                            self.alertTitle = "No Internet Connection"
-                            self.alertMessage = "There was a problem with the internet connection. \nPlease check your internet connection and try again."
-                            self.loading = false
-                            self.showAlert = true
-                        }
-                        completion(Result.failure(error))
-                    } else if error.asAFError?.responseCode == 401 {
-                        DispatchQueue.main.async {
-                            self.alertTitle = "Invalid Credentials"
-                            self.alertMessage = "Email or Password is incorrect. Please try again."
-                            self.loading = false
-                            self.showAlert = true
-                        }
-                        completion(Result.failure(error))
-                    } else if error.asAFError?.responseCode == 422 {
-                        DispatchQueue.main.async {
-                            self.alertTitle = "Email Taken"
-                            self.alertMessage = "It seems this email is taken. Try logging in."
-                            self.loading = false
-                            self.showAlert = true
-                        }
-                        completion(Result.failure(error))
-                    } else {
-                        DispatchQueue.main.async {
-                            self.alertTitle = "Error"
-                            self.alertMessage = "Error logging in. \nPlease try again."
-                            self.loading = false
-                            self.showAlert = true
-                        }
-                        completion(Result.failure(error))
+            
+            switch result {
+            case .success(_):
+                DispatchQueue.main.async { // Update properties on the main thread
+                    withAnimation { self.loading = false
+                        // Handle success case
+                        completion(Result.success(true))
                     }
                 }
-                return completion(Result.success(true))
+            case .failure(let error):
+                if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
+                    DispatchQueue.main.async {
+                        self.alertTitle = "No Internet Connection"
+                        self.alertMessage = "There was a problem with the internet connection. \nPlease check your internet connection and try again."
+                        self.loading = false
+                        self.showAlert = true
+                    }
+                    completion(Result.failure(error))
+                } else if error.asAFError?.responseCode == 401 {
+                    DispatchQueue.main.async {
+                        self.alertTitle = "Invalid Credentials"
+                        self.alertMessage = "Email or Password is incorrect. Please try again."
+                        self.loading = false
+                        self.showAlert = true
+                    }
+                    completion(Result.failure(error))
+                } else if error.asAFError?.responseCode == 422 {
+                    DispatchQueue.main.async {
+                        self.alertTitle = "Email Taken"
+                        self.alertMessage = "It seems this email is taken. Try logging in."
+                        self.loading = false
+                        self.showAlert = true
+                    }
+                    completion(Result.failure(error))
+                } else {
+                    DispatchQueue.main.async {
+                        self.alertTitle = "Error"
+                        self.alertMessage = "Error logging in. \nPlease try again."
+                        self.loading = false
+                        self.showAlert = true
+                    }
+                    completion(Result.failure(error))
+                }
+            }
+            return completion(Result.success(true))
         }
     }
 }

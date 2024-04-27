@@ -39,7 +39,7 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            NavigationView {
+            NavigationStack {
                 LazyVStack {
                     Text("Login")
                         .frame(alignment:.leading)
@@ -52,7 +52,15 @@ struct LoginView: View {
                     
                     
                     LottieAnimationUIView(animationName: "LoginAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
-                        .frame(width: 400, height: 400)
+                        .optionalViewModifier { content in
+                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                content
+                                    .frame(width: 250, height: 250)
+                            } else {
+                                content
+                                    .frame(width: 400, height: 400)
+                            }
+                        }
                         .padding(.bottom, -50)
                     
                     Text("Email")
@@ -89,8 +97,11 @@ struct LoginView: View {
                                 case .success(_):
                                     viewModel.resetFeedbackText = "Request Successfully Sent"
                                     viewModel.resetFeedback = true
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                        dismiss()
+                                    }
                                 case .failure(_):
-                                    viewModel.resetFeedbackText = "Error. Check your internet connection."
+                                    viewModel.resetFeedbackText = "Please type email above"
                                     viewModel.resetFeedback = true
                                 }
                             }
@@ -100,7 +111,7 @@ struct LoginView: View {
                         }
                     }
                     
-                   
+                    
                     Spacer()
                     
                     HStack {
@@ -116,25 +127,25 @@ struct LoginView: View {
                         CustomButton(loading: loading, title: "Login") {
                             withAnimation { loading = true }
                             let validation = viewModel.validate()
-                                if validation {
-                                    Task {
-                                        await viewModel.login() { result in
-                                            switch result {
-                                            case .success(_):
-                                                onDone()
-                                                DispatchQueue.main.async {
-                                                    dismiss()
-                                                }
-                                                withAnimation { loading = false }
-                                            case .failure(_):
-                                                withAnimation { loading = false }
+                            if validation {
+                                Task {
+                                    await viewModel.login() { result in
+                                        switch result {
+                                        case .success(_):
+                                            onDone()
+                                            DispatchQueue.main.async {
+                                                dismiss()
                                             }
+                                            withAnimation { loading = false }
+                                        case .failure(_):
+                                            withAnimation { loading = false }
                                         }
                                     }
-                                } else {
-                                    withAnimation { viewModel.loginError = true }
-                                    withAnimation { loading = false }
                                 }
+                            } else {
+                                withAnimation { viewModel.loginError = true }
+                                withAnimation { loading = false }
+                            }
                             
                             //withAnimation { loading = false }
                         }
@@ -155,8 +166,8 @@ struct LoginView: View {
                                 Text(viewModel.resetFeedbackText)
                                     .lineLimit(2)
                                     .bold()
-                                Image(systemName: "checkmark.seal.fill")
-                                    .foregroundColor(.green)
+                                Image(systemName: viewModel.resetFeedbackText == "Please type email above" ? "x.circle.fill" : "checkmark.seal.fill")
+                                    .foregroundColor(viewModel.resetFeedbackText == "Please type email above" ? .red : .green)
                                     .imageScale(.large)
                                 
                             }

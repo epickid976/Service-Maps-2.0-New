@@ -116,6 +116,6 @@ class StorageManager: ObservableObject {
     congregationName = nil
     passTemp = nil
     synchronized = false
-      lastTime = nil
+    lastTime = nil
   }
 }

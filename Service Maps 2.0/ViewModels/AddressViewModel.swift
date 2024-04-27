@@ -58,7 +58,7 @@ class AddressViewModel: ObservableObject {
         self.territory = territory
         
         getAddresses()
-   }
+    }
     
     @Published var showToast = false
     @Published var showAddedToast = false
@@ -130,44 +130,44 @@ class AddressViewModel: ObservableObject {
     func largeHeader(progress: CGFloat) -> some View  {
         VStack {
             ZStack {
-                    VStack {
-                        LazyImage(url: URL(string: territory.getImageURL())) { state in
-                            if let image = state.image {
-                                image.resizable().aspectRatio(contentMode: .fill).frame(width: UIScreen.screenWidth, height: 350)
-                                
-                                //image.opacity(1 - progress)
-                                
-                            } else if state.isLoading  {
-                                ProgressView().progressViewStyle(.circular)
-                                
-                            } else if state.error != nil {
-                                Image(uiImage: UIImage(named: "mapImage")!)
-                                    .resizable()
-                                    .frame(width: 100, height: 100)
-                                    .padding(.bottom, 125)
-                            } else {
-                                Image(uiImage: UIImage(named: "mapImage")!)
-                                    .resizable()
-                                    .frame(width: 100, height: 100)
-                                    .padding(.bottom, 125)
-                            }
+                VStack {
+                    LazyImage(url: URL(string: territory.getImageURL())) { state in
+                        if let image = state.image {
+                            image.resizable().aspectRatio(contentMode: .fill).frame(width: UIScreen.screenWidth, height: 350)
+                            
+                            //image.opacity(1 - progress)
+                            
+                        } else if state.isLoading  {
+                            ProgressView().progressViewStyle(.circular)
+                            
+                        } else if state.error != nil {
+                            Image(uiImage: UIImage(named: "mapImage")!)
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .padding(.bottom, 125)
+                        } else {
+                            Image(uiImage: UIImage(named: "mapImage")!)
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .padding(.bottom, 125)
                         }
-                        .pipeline(ImagePipeline.shared)
-                        .vSpacing(.bottom)
-                        .cornerRadius(10)
                     }
-                    .frame(width: UIScreen.screenSize.width, height: 350, alignment: .center)
-                    VStack {
-                        smallHeader
-                           
-                            .padding(.vertical)
+                    .pipeline(ImagePipeline.shared)
+                    .vSpacing(.bottom)
+                    .cornerRadius(10)
+                }
+                .frame(width: UIScreen.screenSize.width, height: 350, alignment: .center)
+                VStack {
+                    smallHeader
+                    
+                        .padding(.vertical)
                         .cornerRadius(16, corners: [.bottomLeft, .bottomRight])
-                        
-                    }.frame(height: 85)
-                        .background(
-                            Material.ultraThickMaterial
-                        )
-                        .vSpacing(.bottom)
+                    
+                }.frame(height: 85)
+                    .background(
+                        Material.ultraThickMaterial
+                    )
+                    .vSpacing(.bottom)
             }
             .frame(width: UIScreen.screenWidth, height: 350)
         }
@@ -220,72 +220,72 @@ class AddressViewModel: ObservableObject {
     @ViewBuilder
     func alert() -> some View {
         ZStack {
-                VStack {
-                    Text("Delete Address: \(addressToDelete.1 ?? "0")")
-                        .font(.title)
-                            .fontWeight(.heavy)
-                            .hSpacing(.leading)
-                        .padding(.leading)
-                    Text("Are you sure you want to delete the selected address?")
-                        .font(.title3)
-                            .fontWeight(.bold)
-                            .hSpacing(.leading)
-                        .padding(.leading)
-                    if ifFailed {
-                        Text("Error deleting address, please try again later")
-                            .fontWeight(.bold)
-                            .foregroundColor(.red)
-                    }
-                            //.vSpacing(.bottom)
-                    
-                    HStack {
-                        if !loading {
-                            CustomBackButton() {
-                                withAnimation {
-                                    self.showAlert = false
-                                    self.ifFailed = false
-                                    self.addressToDelete = (nil,nil)
-                                }
-                            }
-                        }
-                        //.padding([.top])
-                        
-                        CustomButton(loading: loading, title: "Delete", color: .red) {
-                            withAnimation {
-                                self.loading = true
-                            }
-                            Task {
-                                if self.addressToDelete.0 != nil && self.addressToDelete.1 != nil {
-                                    switch await self.deleteAddress(address: self.addressToDelete.0 ?? "") {
-                                    case .success(_):
-                                        withAnimation {
-                                                self.synchronizationManager.startupProcess(synchronizing: true)
-                                                self.getAddresses()
-                                                self.loading = false
-                                                self.showAlert = false
-                                                self.ifFailed = false
-                                                self.addressToDelete = (nil,nil)
-                                                self.showToast = true
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                                    self.showToast = false
-                                                }
-                                        }
-                                    case .failure(_):
-                                        withAnimation {
-                                            self.loading = false
-                                        }
-                                        self.ifFailed = true
-                                    }
-                                }
-                            }
-                            
-                        }
-                    }
-                    .padding([.horizontal, .bottom])
-                    //.vSpacing(.bottom)
-                    
+            VStack {
+                Text("Delete Address: \(addressToDelete.1 ?? "0")")
+                    .font(.title)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected address?")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if ifFailed {
+                    Text("Error deleting address, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
                 }
-                .ignoresSafeArea(.keyboard)
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                self.showAlert = false
+                                self.ifFailed = false
+                                self.addressToDelete = (nil,nil)
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.loading = true
+                        }
+                        Task {
+                            if self.addressToDelete.0 != nil && self.addressToDelete.1 != nil {
+                                switch await self.deleteAddress(address: self.addressToDelete.0 ?? "") {
+                                case .success(_):
+                                    withAnimation {
+                                        self.synchronizationManager.startupProcess(synchronizing: true)
+                                        self.getAddresses()
+                                        self.loading = false
+                                        self.showAlert = false
+                                        self.ifFailed = false
+                                        self.addressToDelete = (nil,nil)
+                                        self.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.loading = false
+                                    }
+                                    self.ifFailed = true
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
             
         }.ignoresSafeArea(.keyboard)
     }
@@ -295,15 +295,17 @@ class AddressViewModel: ObservableObject {
 extension AddressViewModel {
     func getAddresses() {
         databaseManager.getAddressData(territoryId: territory.id)
-        .receive(on: DispatchQueue.main) // Update on main thread
-        .sink(receiveCompletion: { completion in
-          if case .failure(let error) = completion {
-            // Handle errors here
-            print("Error retrieving territory data: \(error)")
-          }
-        }, receiveValue: { addressData in
-          self.addressData = addressData
-        })
-        .store(in: &cancellables)
+            .receive(on: DispatchQueue.main) // Update on main thread
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    // Handle errors here
+                    print("Error retrieving territory data: \(error)")
+                }
+            }, receiveValue: { addressData in
+                DispatchQueue.main.async {
+                    self.addressData = addressData
+                }
+            })
+            .store(in: &cancellables)
     }
 }

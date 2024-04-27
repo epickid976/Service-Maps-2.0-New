@@ -190,9 +190,9 @@ struct TerritoryAddressView: View {
             //.scrollOffset($scrollOffset)
             .collapseProgress($viewModel.progress)
             .scrollIndicators(.hidden)
-//            .navigationDestination(isPresented: $viewModel.presentSheet) {
-//                
-//            }
+            //            .navigationDestination(isPresented: $viewModel.presentSheet) {
+            //                
+            //            }
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()

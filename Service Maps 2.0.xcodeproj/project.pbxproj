@@ -42,6 +42,8 @@
 		821C12742A780F4C0050D106 /* RequestResetForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12732A780F4C0050D106 /* RequestResetForm.swift */; };
 		821C12762A78111C0050D106 /* ResetPasswordForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12752A78111C0050D106 /* ResetPasswordForm.swift */; };
 		821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12772A7811CD0050D106 /* AdminAPI.swift */; };
+		821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74C2BD9EA46001D092D /* AppDelegate.swift */; };
+		821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74E2BD9EB66001D092D /* apple-app-site-association */; };
 		821F090F2AA965FE00D6B6E6 /* GRDBQuery in Frameworks */ = {isa = PBXBuildFile; productRef = 821F090E2AA965FE00D6B6E6 /* GRDBQuery */; };
 		822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0732AA6B61C0008FA61 /* Lottie */; };
 		822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0762AA6B6230008FA61 /* Alamofire */; };
@@ -137,6 +139,11 @@
 		82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBEA992A880B9E002048DC /* ResetPassword.swift */; };
 		82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EC3E922A9CFF68000E2926 /* HousesView.swift */; };
 		82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F288862A86C21100930849 /* VerificationViewModel.swift */; };
+		82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */; };
+		82F75C122BDC01AA002CCAB0 /* RegisterKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */; };
+		82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */; };
+		82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913082BDAB27F00644A67 /* LinkScreens.swift */; };
+		82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9130B2BDAE7D000644A67 /* ValidationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -175,6 +182,8 @@
 		821C12732A780F4C0050D106 /* RequestResetForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestResetForm.swift; sourceTree = "<group>"; };
 		821C12752A78111C0050D106 /* ResetPasswordForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordForm.swift; sourceTree = "<group>"; };
 		821C12772A7811CD0050D106 /* AdminAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAPI.swift; sourceTree = "<group>"; };
+		821DE74C2BD9EA46001D092D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		821DE74E2BD9EB66001D092D /* apple-app-site-association */ = {isa = PBXFileReference; lastKnownFileType = text; path = "apple-app-site-association"; sourceTree = "<group>"; };
 		822FA0A42AA7798A0008FA61 /* HousesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesViewModel.swift; sourceTree = "<group>"; };
 		822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CirlceButtonStyle.swift; sourceTree = "<group>"; };
 		822FA0A92AA77C8F0008FA61 /* HouseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseCell.swift; sourceTree = "<group>"; };
@@ -257,6 +266,12 @@
 		82DBEA992A880B9E002048DC /* ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPassword.swift; sourceTree = "<group>"; };
 		82EC3E922A9CFF68000E2926 /* HousesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesView.swift; sourceTree = "<group>"; };
 		82F288862A86C21100930849 /* VerificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationViewModel.swift; sourceTree = "<group>"; };
+		82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicy.swift; sourceTree = "<group>"; };
+		82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterKeyView.swift; sourceTree = "<group>"; };
+		82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Service Maps 2.0.entitlements"; sourceTree = "<group>"; };
+		82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalLinksManager.swift; sourceTree = "<group>"; };
+		82F913082BDAB27F00644A67 /* LinkScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkScreens.swift; sourceTree = "<group>"; };
+		82F9130B2BDAE7D000644A67 /* ValidationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,6 +354,7 @@
 				82916C1C2A9944B3005133DE /* Symbols.swift */,
 				82BC0F202A9C249300B255BF /* ChangeAction.swift */,
 				82BC0F222A9C24AC00B255BF /* ChangeType.swift */,
+				82F913082BDAB27F00644A67 /* LinkScreens.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -348,6 +364,7 @@
 			children = (
 				823FD4D32A7D40E30036A1DD /* Authentication */,
 				823FD4D82A81632B0036A1DD /* Home */,
+				82F9130A2BDAE79100644A67 /* LinkViews */,
 				8242136E2A82DACC00626DD5 /* Others */,
 				82D526032A9290D800B42916 /* Add_Edit */,
 				82DBEA982A8809DB002048DC /* Reset */,
@@ -472,6 +489,7 @@
 				82BC0F1E2A9BF55B00B255BF /* AuthorizationLevelManager.swift */,
 				8288001D2AA6621D00725826 /* ReuploaderWorker.swift */,
 				8288001F2AA68BAA00725826 /* CDPublisher.swift */,
+				82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -538,8 +556,11 @@
 		826B766C2A729FDE000A4BAA /* Service Maps 2.0 */ = {
 			isa = PBXGroup;
 			children = (
+				82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */,
 				8288001C2AA65DE800725826 /* Service-Maps-2-0-Info.plist */,
+				821DE74E2BD9EB66001D092D /* apple-app-site-association */,
 				826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */,
+				821DE74C2BD9EA46001D092D /* AppDelegate.swift */,
 				820934012A7AB9D300AF3FF1 /* Views */,
 				824213732A82E7BB00626DD5 /* ViewModels */,
 				820934062A7ABB7600AF3FF1 /* Subviews */,
@@ -587,9 +608,19 @@
 		82DBEA982A8809DB002048DC /* Reset */ = {
 			isa = PBXGroup;
 			children = (
-				82DBEA992A880B9E002048DC /* ResetPassword.swift */,
 			);
 			path = Reset;
+			sourceTree = "<group>";
+		};
+		82F9130A2BDAE79100644A67 /* LinkViews */ = {
+			isa = PBXGroup;
+			children = (
+				82F9130B2BDAE7D000644A67 /* ValidationView.swift */,
+				82DBEA992A880B9E002048DC /* ResetPassword.swift */,
+				82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */,
+				82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */,
+			);
+			path = LinkViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -711,6 +742,7 @@
 				823FD4C92A7B52560036A1DD /* UIDeviceExtension.swift in Sources */,
 				825645AD2BCE128E00F18AC9 /* TokenTerritoryObject.swift in Sources */,
 				82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */,
+				82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */,
 				824213752A82E7D000626DD5 /* LoginViewModel.swift in Sources */,
 				823FD4D52A7D6F2D0036A1DD /* TerritoryView.swift in Sources */,
 				82916C172A990955005133DE /* ImagePickerView.swift in Sources */,
@@ -732,6 +764,7 @@
 				82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */,
 				825645A92BCE11EE00F18AC9 /* VisitObject.swift in Sources */,
 				820934002A7993E200AF3FF1 /* StructToModel.swift in Sources */,
+				82F75C122BDC01AA002CCAB0 /* RegisterKeyView.swift in Sources */,
 				820933E22A78444800AF3FF1 /* CongregationResponse.swift in Sources */,
 				824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */,
 				827EF1A22AA7B7E3006C4631 /* VisitsView.swift in Sources */,
@@ -750,6 +783,7 @@
 				824213792A83335B00626DD5 /* CustomBackButton.swift in Sources */,
 				82A5B45D2BD2F65E00F52F2F /* AddAddressViewModel.swift in Sources */,
 				820933DE2A78425F00AF3FF1 /* CongregationAPI.swift in Sources */,
+				821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */,
 				821C12682A77F6180050D106 /* LoginResponse.swift in Sources */,
 				821C125F2A77EE810050D106 /* API_Requests.swift in Sources */,
 				82A967B72AAABE890043946F /* RoundedCornerExtension.swift in Sources */,
@@ -770,8 +804,10 @@
 				821C12762A78111C0050D106 /* ResetPasswordForm.swift in Sources */,
 				824E5CF42BC57F73001DE348 /* TokenCell.swift in Sources */,
 				824213702A82DAEA00626DD5 /* NoDataView.swift in Sources */,
+				821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */,
 				82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */,
 				826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */,
+				82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */,
 				82A5B4622BD5B31600F52F2F /* HouseData.swift in Sources */,
 				82BC0F232A9C24AC00B255BF /* ChangeType.swift in Sources */,
 				82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */,
@@ -779,6 +815,7 @@
 				826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */,
 				821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */,
 				827EF1A42AA7C2F0006C4631 /* DateFormat.swift in Sources */,
+				82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */,
 				820933ED2A785A9400AF3FF1 /* UserAPI.swift in Sources */,
 				825645AB2BCE125000F18AC9 /* TokenObject.swift in Sources */,
 				826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */,
@@ -794,6 +831,7 @@
 				820933F52A78608C00AF3FF1 /* NewTokenForm.swift in Sources */,
 				823FD4D02A7BF07B0036A1DD /* LoadingView.swift in Sources */,
 				820933E02A78427E00AF3FF1 /* CongregationSignInForm.swift in Sources */,
+				82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */,
 				825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */,
 				82A5B4592BD1A48500F52F2F /* TerritoryDataWithKeys.swift in Sources */,
 				820933E92A7852B400AF3FF1 /* TerritoryModel.swift in Sources */,
@@ -935,6 +973,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Service Maps 2.0/Service Maps 2.0.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Service Maps 2.0/Preview Content\"";
@@ -946,6 +985,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -964,6 +1004,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Service Maps 2.0/Service Maps 2.0.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Service Maps 2.0/Preview Content\"";
@@ -975,6 +1016,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

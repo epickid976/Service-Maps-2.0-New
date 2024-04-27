@@ -11,11 +11,7 @@ import NavigationTransitions
 import Nuke
 
 struct AddTerritoryView: View {
-    var territory: TerritoryModel? {
-        didSet {
-            print("THIS IS EDIT \(territory)")
-        }
-    }
+    var territory: TerritoryModel?
     
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: AddTerritoryViewModel
@@ -37,102 +33,102 @@ struct AddTerritoryView: View {
     @FocusState private var descriptionFocus: Bool
     
     var onDone: () -> Void
-
+    
     
     var body: some View {
         ZStack {
             NavigationStack {
                 VStack {
-                            VStack {
-                                Text("Number")
+                    VStack {
+                        Text("Number")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .hSpacing(.leading)
+                        //.frame(alignment: .leading)
+                        //.hSpacing(.center)
+                            .padding(.leading)
+                        HStack {
+                            CustomField(text: viewModel.binding, isFocused: $numberFocus, textfield: true, keyboardType: .numberPad, textAlignment: .center, placeholder: "#")
+                                .frame(maxWidth: UIScreen.screenWidth * 0.3)
+                                .disabled(title == "Edit")
+                            if title != "Edit" {
+                                Stepper("", onIncrement: {
+                                    if viewModel.number != nil {
+                                        viewModel.number! += 1
+                                    } else {
+                                        viewModel.number = 0
+                                    }
+                                    
+                                }, onDecrement: {
+                                    if viewModel.number != nil {
+                                        if viewModel.number != 0 {
+                                            viewModel.number! -= 1
+                                        }
+                                    }
+                                })
+                                .scaleEffect(CGSize(width: 1.5, height: 1.5))
+                                .labelsHidden()
+                                .frame(maxWidth: UIScreen.screenWidth * 0.3)
+                            } else {
+                                Text("Number Uneditable")
                                     .font(.headline)
                                     .fontWeight(.semibold)
                                     .hSpacing(.leading)
-                                //.frame(alignment: .leading)
-                                    //.hSpacing(.center)
-                                .padding(.leading)
-                                HStack {
-                                    CustomField(text: viewModel.binding, isFocused: $numberFocus, textfield: true, keyboardType: .numberPad, textAlignment: .center, placeholder: "#")
-                                        .frame(maxWidth: UIScreen.screenWidth * 0.3)
-                                        .disabled(title == "Edit")
-                                    if title != "Edit" {
-                                        Stepper("", onIncrement: {
-                                            if viewModel.number != nil {
-                                                viewModel.number! += 1
-                                            } else {
-                                                viewModel.number = 0
-                                            }
-                                            
-                                        }, onDecrement: {
-                                            if viewModel.number != nil {
-                                                if viewModel.number != 0 {
-                                                    viewModel.number! -= 1
-                                                }
-                                            }
-                                        })
-                                        .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                        .labelsHidden()
-                                        .frame(maxWidth: UIScreen.screenWidth * 0.3)
-                                    } else {
-                                        Text("Number Uneditable")
-                                            .font(.headline)
-                                            .fontWeight(.semibold)
-                                            .hSpacing(.leading)
-                                            .foregroundColor(.red)
-                                    }
-                                }
-                                .hSpacing(.leading)
+                                    .foregroundColor(.red)
                             }
-                            .padding(.vertical)
-                        
-                        Text("Description")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                        // .frame(alignment: .center)
-                            .hSpacing(.leading)
+                        }
+                        .hSpacing(.leading)
+                    }
+                    .padding(.vertical)
+                    
+                    Text("Description")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    // .frame(alignment: .center)
+                        .hSpacing(.leading)
                         .padding(.leading)
                     CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Description")
-                            .animation(.spring, value: viewModel.description)
-                            .padding(.bottom)
+                        .animation(.spring, value: viewModel.description)
+                        .padding(.bottom)
                     
-                        Text("Image")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .hSpacing(.center)
-                        VStack {
-                            ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue, previewImage: $viewModel.previewImage) { image in
-                                viewModel.imageToSend = image
-                            }
-                            .optionalViewModifier { content in
-                                    content
-                                        .overlay(
-                                            Button {
-                                                DispatchQueue.main.async {
-                                                    viewModel.imageToSend = nil
-                                                    viewModel.previewImage = nil
-                                                    content.previewImage = nil
-                                                }
-                                            } label: {
-                                                if viewModel.imageToSend != nil {
-                                                    Image(systemName: "xmark")
-                                                        .foregroundColor(.red)
-                                                        .padding(8)
-                                                        .background(Color.white)
-                                                        .clipShape(Circle())
-                                                }
-                                            }
-                                            .offset(x: 10, y: -10),
-                                            alignment: .topTrailing
-                                            )
-                            }
-                            
+                    Text("Image")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .hSpacing(.center)
+                    VStack {
+                        ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue, previewImage: $viewModel.previewImage) { image in
+                            viewModel.imageToSend = image
                         }
-                        .frame(minWidth: 250, maxWidth: 300, minHeight: 10, maxHeight: 300)
+                        .optionalViewModifier { content in
+                            content
+                                .overlay(
+                                    Button {
+                                        DispatchQueue.main.async {
+                                            viewModel.imageToSend = nil
+                                            viewModel.previewImage = nil
+                                            content.previewImage = nil
+                                        }
+                                    } label: {
+                                        if viewModel.imageToSend != nil {
+                                            Image(systemName: "xmark")
+                                                .foregroundColor(.red)
+                                                .padding(8)
+                                                .background(Color.white)
+                                                .clipShape(Circle())
+                                        }
+                                    }
+                                        .offset(x: 10, y: -10),
+                                    alignment: .topTrailing
+                                )
+                        }
                         
-                        Text(viewModel.error)
-                            .fontWeight(.bold)
-                            .foregroundColor(.red)
-                            .vSpacing(.bottom)
+                    }
+                    .frame(minWidth: 250, maxWidth: 300, minHeight: 10, maxHeight: 300)
+                    
+                    Text(viewModel.error)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                        .vSpacing(.bottom)
                     
                     HStack {
                         if !viewModel.loading {

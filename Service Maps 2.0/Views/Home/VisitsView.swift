@@ -19,7 +19,7 @@ struct VisitsView: View {
     
     @StateObject var viewModel: VisitsViewModel
     var house: HouseModel
-   
+    
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode

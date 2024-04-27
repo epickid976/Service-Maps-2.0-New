@@ -15,25 +15,25 @@ struct HouseCell: View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.gray.gradient.opacity(0.5))
-                                .foregroundStyle(Material.thin)
-
-                            HStack {
-                                Text("\(house.house.number)")
-                                    .font(.title3)
-                                    .fontWeight(.heavy)
-                                    .foregroundColor(.primary)
-                                
-                                //.padding(1)
-                            }
-                            .padding(10)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.gradient.opacity(0.5))
+                            .foregroundStyle(Material.thin)
+                        
+                        HStack {
+                            Text("\(house.house.number)")
+                                .font(.title3)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
                             
+                            //.padding(1)
                         }
-                        .hSpacing(.center)
-                        //.vSpacing(.leading)
-                        .frame(maxWidth: UIScreen.screenWidth * 0.3, maxHeight: 100)
+                        .padding(10)
+                        
+                    }
+                    .hSpacing(.center)
+                    //.vSpacing(.leading)
+                    .frame(maxWidth: UIScreen.screenWidth * 0.3, maxHeight: 100)
                     
                     VStack {
                         HStack {
@@ -71,13 +71,13 @@ struct HouseCell: View {
                                     .lineLimit(1)
                                     .foregroundColor(.primary)
                                     .fontWeight(.heavy)
-                                    //.hSpacing(.leading)
-                                    Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(visit.date) / 1000) ))")
+                                //.hSpacing(.leading)
+                                Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(visit.date) / 1000) ))")
                                     .font(.subheadline)
-                                        .lineLimit(2)
-                                        .foregroundColor(.primary)
-                                        .fontWeight(.heavy)
-                                       // .hSpacing(.leading)
+                                    .lineLimit(2)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.heavy)
+                                // .hSpacing(.leading)
                             } else {
                                 Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
                                     .fontWeight(.heavy)
@@ -92,7 +92,7 @@ struct HouseCell: View {
                         }
                         .hSpacing(.leading)
                         //.padding()
-                       
+                        
                     }
                     //.vSpacing(.leading)
                     .hSpacing(.leading)

@@ -20,16 +20,16 @@ class AddTerritoryViewModel: ObservableObject {
     @Published private var dataUploader = DataUploaderManager()
     
     var binding: Binding<String> {
-            .init(get: {
-                if let number = self.number {
-                    "\(number)"
-                } else {
-                    ""
-                }
-            }, set: {
-                self.number = Int($0) ?? nil
-            })
-        }
+        .init(get: {
+            if let number = self.number {
+                "\(number)"
+            } else {
+                ""
+            }
+        }, set: {
+            self.number = Int($0) ?? nil
+        })
+    }
     
     @Published var description = ""
     @Published var previewImage: UIImage? = nil
@@ -39,12 +39,12 @@ class AddTerritoryViewModel: ObservableObject {
     @Published var loading = false
     
     func addTerritory() async -> Result<Bool, Error>{
-            loading = true
-            let territoryObject = TerritoryObject()
-            territoryObject.number = Int32(number!)
-            territoryObject.territoryDescription = description
-            territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
-            return await dataUploader.addTerritory(territory: territoryObject, image: imageToSend)
+        loading = true
+        let territoryObject = TerritoryObject()
+        territoryObject.number = Int32(number!)
+        territoryObject.territoryDescription = description
+        territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
+        return await dataUploader.addTerritory(territory: territoryObject, image: imageToSend)
     }
     
     func editTerritory(territory: TerritoryModel) async -> Result<Bool, Error> {
@@ -61,9 +61,9 @@ class AddTerritoryViewModel: ObservableObject {
         Task {
             if let territory = territory {
                 if let imageLink = URL(string: territory.getImageURL()) {
-                        let image = try await ImagePipeline.shared.image(for: imageLink)
-                        self.previewImage = image
-                    }
+                    let image = try await ImagePipeline.shared.image(for: imageLink)
+                    self.previewImage = image
+                }
                 
             }
         }

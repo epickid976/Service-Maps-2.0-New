@@ -356,10 +356,8 @@ class SynchronizationManager: ObservableObject {
                 switch  realmManager.addModel(VisitObject().createVisitObject(from: visitApi)) {
                 case .success(let success):
                     print("Success Adding Visit \(success)")
-                    return
                 case .failure(let error):
                     print("There was an error adding Visit \(error)")
-                    return
                 }
             }
         }

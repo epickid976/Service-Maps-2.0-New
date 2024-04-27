@@ -517,8 +517,8 @@ class RealmManager: ObservableObject {
     @MainActor
     func getHouseData(addressId: String) -> AnyPublisher<[HouseData], Never>  {
         let flow = Publishers.CombineLatest(
-            $housesFlow,
-            $visitsFlow
+            $housesFlow.share(),
+            $visitsFlow.share()
         )
             .flatMap { houseData -> AnyPublisher<[HouseData], Never> in
                 var data = [HouseData]()

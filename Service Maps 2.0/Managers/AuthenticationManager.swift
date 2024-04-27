@@ -34,11 +34,11 @@ class AuthenticationManager: ObservableObject {
     func login(logInForm: LoginForm) async -> Result<LoginResponse, Error> {
         do {
             let loginResponse = try await authenticationApi.login(email: logInForm.email, password: logInForm.password)
-            
-            dataStore.passTemp = nil
-            authorizationProvider.authorizationToken = loginResponse.access_token
-            
-            _ = await getUser()
+            DispatchQueue.main.async {
+                self.dataStore.passTemp = nil
+                self.authorizationProvider.authorizationToken = loginResponse.access_token
+            }
+                _ = await getUser()
             
             return Result.success(loginResponse)
             
@@ -123,12 +123,13 @@ class AuthenticationManager: ObservableObject {
         
     }
     
-    func resetPassword(email: String, password: String, token: String) async -> Result<UserResponse, Error> {
+    func resetPassword(password: String, token: String) async -> Result<UserResponse, Error> {
         do {
-            let userResponse = try await passwordResetApi.resetPassword(email: email, password: password, token: token)
+            let userResponse = try await passwordResetApi.resetPassword(password: password, token: token)
             
-            _ = await login(logInForm: LoginForm(email: email, password: password))
             
+            _ = await login(logInForm: LoginForm(email: userResponse.email, password: password))
+            SynchronizationManager.shared.startupProcess(synchronizing: true)
             return Result.success(userResponse)
             
         } catch {
@@ -141,12 +142,16 @@ class AuthenticationManager: ObservableObject {
     }
     
     func deleteAccount() async -> Result<Bool, Error> {
-        var result = await authenticationApi.deleteAccount()
+        let result = await authenticationApi.deleteAccount()
         
         switch result {
         case .success(true):
-            dataStore.clear()
-            authorizationProvider.clear()
+            DispatchQueue.main.async {
+                self.dataStore.clear()
+                self.authorizationProvider.clear()
+            }
+            
+            SynchronizationManager.shared.startupProcess(synchronizing: true)
         default:
             print("delete account entered default")
         }

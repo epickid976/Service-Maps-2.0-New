@@ -8,7 +8,6 @@
 import Foundation
 
 struct ResetPasswordForm: Codable {
-    var email: String
     var password: String
     var password_confirmation: String
     var token: String

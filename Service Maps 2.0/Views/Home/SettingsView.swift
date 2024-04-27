@@ -8,6 +8,7 @@
 import SwiftUI
 import NavigationTransitions
 import PopupView
+import AlertKit
 
 struct SettingsView: View {
     @State var loading = false
@@ -19,20 +20,56 @@ struct SettingsView: View {
     @ObservedObject var viewModel = SettingsViewModel()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
+    let alertViewDeleted = AlertAppleMusic17View(title: "Cache Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
+    
     var body: some View {
         ScrollView {
             VStack {
                 viewModel.profile()
+                Spacer().frame(height: 25)
                 viewModel.administratorInfoCell()
                 viewModel.infosView()
+                Spacer().frame(height: 25)
+                viewModel.deleteCacheMenu()
+                Spacer().frame(height: 25)
+                viewModel.deleteAccount()
                 //App Info (Clear Cache, Share App, Privacy Policy, About App)
-//                ImagePipeline.shared.cache.removeAll()
-//                DataLoader.sharedUrlCache.removeAllCachedResponses()
+                //                ImagePipeline.shared.cache.removeAll()
+                //                DataLoader.sharedUrlCache.removeAllCachedResponses()
                 //Delete Account
             }
             .padding(.vertical)
+            .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
             .popup(isPresented: $viewModel.showAlert) {
                 viewModel.aboutApp()
+                    .frame(width: 400, height: 400)
+                    .background(Material.thin).cornerRadius(16, corners: .allCorners)
+            } customize: {
+                $0
+                    .type(.default)
+                    .closeOnTapOutside(false)
+                    .dragToDismiss(false)
+                    .isOpaque(true)
+                    .animation(.spring())
+                    .closeOnTap(false)
+                    .backgroundColor(.black.opacity(0.8))
+            }
+            .popup(isPresented: $viewModel.showDeletionConfirmationAlert) {
+                viewModel.accountDeletionAlertConfirmation()
+                    .frame(width: 400, height: 250)
+                    .background(Material.thin).cornerRadius(16, corners: .allCorners)
+            } customize: {
+                $0
+                    .type(.default)
+                    .closeOnTapOutside(false)
+                    .dragToDismiss(false)
+                    .isOpaque(true)
+                    .animation(.spring())
+                    .closeOnTap(false)
+                    .backgroundColor(.black.opacity(0.8))
+            }
+            .popup(isPresented: $viewModel.showDeletionAlert) {
+                viewModel.accountDeletionAlert()
                     .frame(width: 400, height: 400)
                     .background(Material.thin).cornerRadius(16, corners: .allCorners)
             } customize: {
@@ -52,6 +89,11 @@ struct SettingsView: View {
                 }
             }
             .padding()
+            .fullScreenCover(isPresented: $viewModel.presentPolicy) {
+                NavigationStack {
+                    PrivacyPolicy(sheet: true)
+                }
+            }
         }
         .navigationBarTitle("Settings", displayMode: .automatic)
         .navigationBarBackButtonHidden(true)
