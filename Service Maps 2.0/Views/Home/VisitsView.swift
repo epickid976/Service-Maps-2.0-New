@@ -126,7 +126,7 @@ struct VisitsView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                 viewModel.showAddedToast = false
                             }
-                        }
+                          }
                     } onDismiss: {
                         viewModel.presentSheet = false
                     }

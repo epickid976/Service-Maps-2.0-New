@@ -1,0 +1,264 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ Address" : {
+
+    },
+    "%@ House" : {
+
+    },
+    "%@ Territory" : {
+
+    },
+    "%@ Visit" : {
+
+    },
+    "%d" : {
+
+    },
+    "About App" : {
+
+    },
+    "Activating Account" : {
+
+    },
+    "Activating Account..." : {
+
+    },
+    "Add Key" : {
+
+    },
+    "Addresses" : {
+
+    },
+    "Administrator" : {
+
+    },
+    "An email was sent to verify your account. When you have verified, click the button below to continue to your account." : {
+
+    },
+    "Are you sure about deleting your account? This action can not be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again." : {
+
+    },
+    "Are you sure you want to delete the selected address?" : {
+
+    },
+    "Are you sure you want to delete the selected house?" : {
+
+    },
+    "Are you sure you want to delete the selected key?" : {
+
+    },
+    "Are you sure you want to delete the selected territory?" : {
+
+    },
+    "Are you sure you want to delete your account?" : {
+
+    },
+    "Become Administrator" : {
+
+    },
+    "Confirm Password" : {
+
+    },
+    "Congregation \nLogin" : {
+
+    },
+    "Congregation ID" : {
+
+    },
+    "Congregation Password" : {
+
+    },
+    "Date: " : {
+
+    },
+    "Date: N/A" : {
+
+    },
+    "Delete Account" : {
+
+    },
+    "Delete Address: %@" : {
+
+    },
+    "Delete Cache" : {
+
+    },
+    "Delete House %@" : {
+
+    },
+    "Delete Key: %@" : {
+
+    },
+    "Delete Territory %@" : {
+
+    },
+    "Delete Visit" : {
+
+    },
+    "Description" : {
+
+    },
+    "Done" : {
+
+    },
+    "Doors: %lld" : {
+
+    },
+    "Email" : {
+
+    },
+    "Error deleting address, please try again later" : {
+
+    },
+    "Error deleting house, please try again later" : {
+
+    },
+    "Error deleting key, please try again later" : {
+
+    },
+    "Error deleting territory, please try again later" : {
+
+    },
+    "Everything at the palm of your hand" : {
+
+    },
+    "Forgot Password" : {
+
+    },
+    "House: %@" : {
+
+    },
+    "ID" : {
+
+    },
+    "Image" : {
+
+    },
+    "Keys" : {
+
+    },
+    "Level: Publisher" : {
+
+    },
+    "Level: Servant" : {
+
+    },
+    "Loading" : {
+
+    },
+    "Login" : {
+
+    },
+    "Name" : {
+
+    },
+    "No Data" : {
+
+    },
+    "Note: %@" : {
+
+    },
+    "Note: N/A" : {
+
+    },
+    "Number" : {
+
+    },
+    "Number Uneditable" : {
+
+    },
+    "OK" : {
+
+    },
+    "Password" : {
+
+    },
+    "Password Confirmation" : {
+
+    },
+    "Privacy Policy" : {
+
+    },
+    "Registering Key" : {
+
+    },
+    "Registering key..." : {
+
+    },
+    "Resend Verification" : {
+
+    },
+    "Reset Password" : {
+
+    },
+    "Select Symbol" : {
+
+    },
+    "Servant" : {
+
+    },
+    "Service Maps" : {
+
+    },
+    "Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.\nThis tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps." : {
+
+    },
+    "Settings" : {
+
+    },
+    "Share App" : {
+
+    },
+    "Sign up" : {
+
+    },
+    "Sign Up" : {
+
+    },
+    "Symbol: " : {
+
+    },
+    "Symbol: %@" : {
+
+    },
+    "Symbol: N/A" : {
+
+    },
+    "Tab 1" : {
+
+    },
+    "Tab 2" : {
+
+    },
+    "Tab 3" : {
+
+    },
+    "Territories" : {
+
+    },
+    "Territories: %@" : {
+
+    },
+    "This is nonreversible" : {
+
+    },
+    "Verification" : {
+
+    },
+    "Welcome to \nService Maps!" : {
+
+    },
+    "You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below." : {
+
+    }
+  },
+  "version" : "1.0"
+}

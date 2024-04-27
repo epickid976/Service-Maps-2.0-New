@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
+  <file original="Service Maps 2.0/Localizable.xcstrings" source-language="en" target-language="en" datatype="plaintext">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.3" build-num="15E204a"/>
+    </header>
+    <body>
+      <trans-unit id="" xml:space="preserve">
+        <source/>
+        <target state="new"/>
+        <note/>
+      </trans-unit>
+      <trans-unit id="%@" xml:space="preserve">
+        <source>%@</source>
+        <target state="new">%@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="%@ Address" xml:space="preserve">
+        <source>%@ Address</source>
+        <target state="new">%@ Address</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="%@ House" xml:space="preserve">
+        <source>%@ House</source>
+        <target state="new">%@ House</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="%@ Territory" xml:space="preserve">
+        <source>%@ Territory</source>
+        <target state="new">%@ Territory</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="%@ Visit" xml:space="preserve">
+        <source>%@ Visit</source>
+        <target state="new">%@ Visit</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="%d" xml:space="preserve">
+        <source>%d</source>
+        <target state="new">%d</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="About App" xml:space="preserve">
+        <source>About App</source>
+        <target state="new">About App</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Activating Account" xml:space="preserve">
+        <source>Activating Account</source>
+        <target state="new">Activating Account</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Activating Account..." xml:space="preserve">
+        <source>Activating Account...</source>
+        <target state="new">Activating Account...</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Add Key" xml:space="preserve">
+        <source>Add Key</source>
+        <target state="new">Add Key</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Addresses" xml:space="preserve">
+        <source>Addresses</source>
+        <target state="new">Addresses</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Administrator" xml:space="preserve">
+        <source>Administrator</source>
+        <target state="new">Administrator</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="An email was sent to verify your account. When you have verified, click the button below to continue to your account." xml:space="preserve">
+        <source>An email was sent to verify your account. When you have verified, click the button below to continue to your account.</source>
+        <target state="new">An email was sent to verify your account. When you have verified, click the button below to continue to your account.</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Are you sure about deleting your account? This action can not be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again." xml:space="preserve">
+        <source>Are you sure about deleting your account? This action can not be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again.</source>
+        <target state="new">Are you sure about deleting your account? This action can not be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again.</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Are you sure you want to delete the selected address?" xml:space="preserve">
+        <source>Are you sure you want to delete the selected address?</source>
+        <target state="new">Are you sure you want to delete the selected address?</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Are you sure you want to delete the selected house?" xml:space="preserve">
+        <source>Are you sure you want to delete the selected house?</source>
+        <target state="new">Are you sure you want to delete the selected house?</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Are you sure you want to delete the selected key?" xml:space="preserve">
+        <source>Are you sure you want to delete the selected key?</source>
+        <target state="new">Are you sure you want to delete the selected key?</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Are you sure you want to delete the selected territory?" xml:space="preserve">
+        <source>Are you sure you want to delete the selected territory?</source>
+        <target state="new">Are you sure you want to delete the selected territory?</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Are you sure you want to delete your account?" xml:space="preserve">
+        <source>Are you sure you want to delete your account?</source>
+        <target state="new">Are you sure you want to delete your account?</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Become Administrator" xml:space="preserve">
+        <source>Become Administrator</source>
+        <target state="new">Become Administrator</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Confirm Password" xml:space="preserve">
+        <source>Confirm Password</source>
+        <target state="new">Confirm Password</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Congregation &#10;Login" xml:space="preserve">
+        <source>Congregation 
+Login</source>
+        <target state="new">Congregation 
+Login</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Congregation ID" xml:space="preserve">
+        <source>Congregation ID</source>
+        <target state="new">Congregation ID</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Congregation Password" xml:space="preserve">
+        <source>Congregation Password</source>
+        <target state="new">Congregation Password</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Date: " xml:space="preserve">
+        <source>Date: </source>
+        <target state="new">Date: </target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Date: N/A" xml:space="preserve">
+        <source>Date: N/A</source>
+        <target state="new">Date: N/A</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Delete Account" xml:space="preserve">
+        <source>Delete Account</source>
+        <target state="new">Delete Account</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Delete Address: %@" xml:space="preserve">
+        <source>Delete Address: %@</source>
+        <target state="new">Delete Address: %@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Delete Cache" xml:space="preserve">
+        <source>Delete Cache</source>
+        <target state="new">Delete Cache</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Delete House %@" xml:space="preserve">
+        <source>Delete House %@</source>
+        <target state="new">Delete House %@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Delete Key: %@" xml:space="preserve">
+        <source>Delete Key: %@</source>
+        <target state="new">Delete Key: %@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Delete Territory %@" xml:space="preserve">
+        <source>Delete Territory %@</source>
+        <target state="new">Delete Territory %@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Delete Visit" xml:space="preserve">
+        <source>Delete Visit</source>
+        <target state="new">Delete Visit</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Description" xml:space="preserve">
+        <source>Description</source>
+        <target state="new">Description</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Done" xml:space="preserve">
+        <source>Done</source>
+        <target state="new">Done</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Doors: %lld" xml:space="preserve">
+        <source>Doors: %lld</source>
+        <target state="new">Doors: %lld</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Email" xml:space="preserve">
+        <source>Email</source>
+        <target state="new">Email</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Error deleting address, please try again later" xml:space="preserve">
+        <source>Error deleting address, please try again later</source>
+        <target state="new">Error deleting address, please try again later</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Error deleting house, please try again later" xml:space="preserve">
+        <source>Error deleting house, please try again later</source>
+        <target state="new">Error deleting house, please try again later</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Error deleting key, please try again later" xml:space="preserve">
+        <source>Error deleting key, please try again later</source>
+        <target state="new">Error deleting key, please try again later</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Error deleting territory, please try again later" xml:space="preserve">
+        <source>Error deleting territory, please try again later</source>
+        <target state="new">Error deleting territory, please try again later</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Everything at the palm of your hand" xml:space="preserve">
+        <source>Everything at the palm of your hand</source>
+        <target state="new">Everything at the palm of your hand</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Forgot Password" xml:space="preserve">
+        <source>Forgot Password</source>
+        <target state="new">Forgot Password</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="House: %@" xml:space="preserve">
+        <source>House: %@</source>
+        <target state="new">House: %@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="ID" xml:space="preserve">
+        <source>ID</source>
+        <target state="new">ID</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Image" xml:space="preserve">
+        <source>Image</source>
+        <target state="new">Image</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Keys" xml:space="preserve">
+        <source>Keys</source>
+        <target state="new">Keys</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Level: Publisher" xml:space="preserve">
+        <source>Level: Publisher</source>
+        <target state="new">Level: Publisher</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Level: Servant" xml:space="preserve">
+        <source>Level: Servant</source>
+        <target state="new">Level: Servant</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Loading" xml:space="preserve">
+        <source>Loading</source>
+        <target state="new">Loading</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Login" xml:space="preserve">
+        <source>Login</source>
+        <target state="new">Login</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Name" xml:space="preserve">
+        <source>Name</source>
+        <target state="new">Name</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="No Data" xml:space="preserve">
+        <source>No Data</source>
+        <target state="new">No Data</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Note: %@" xml:space="preserve">
+        <source>Note: %@</source>
+        <target state="new">Note: %@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Note: N/A" xml:space="preserve">
+        <source>Note: N/A</source>
+        <target state="new">Note: N/A</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Number" xml:space="preserve">
+        <source>Number</source>
+        <target state="new">Number</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Number Uneditable" xml:space="preserve">
+        <source>Number Uneditable</source>
+        <target state="new">Number Uneditable</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="OK" xml:space="preserve">
+        <source>OK</source>
+        <target state="new">OK</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Password" xml:space="preserve">
+        <source>Password</source>
+        <target state="new">Password</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Password Confirmation" xml:space="preserve">
+        <source>Password Confirmation</source>
+        <target state="new">Password Confirmation</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Privacy Policy" xml:space="preserve">
+        <source>Privacy Policy</source>
+        <target state="new">Privacy Policy</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Registering Key" xml:space="preserve">
+        <source>Registering Key</source>
+        <target state="new">Registering Key</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Registering key..." xml:space="preserve">
+        <source>Registering key...</source>
+        <target state="new">Registering key...</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Resend Verification" xml:space="preserve">
+        <source>Resend Verification</source>
+        <target state="new">Resend Verification</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Reset Password" xml:space="preserve">
+        <source>Reset Password</source>
+        <target state="new">Reset Password</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Select Symbol" xml:space="preserve">
+        <source>Select Symbol</source>
+        <target state="new">Select Symbol</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Servant" xml:space="preserve">
+        <source>Servant</source>
+        <target state="new">Servant</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Service Maps" xml:space="preserve">
+        <source>Service Maps</source>
+        <target state="new">Service Maps</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.&#10;This tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps." xml:space="preserve">
+        <source>Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.
+This tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps.</source>
+        <target state="new">Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.
+This tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps.</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Settings" xml:space="preserve">
+        <source>Settings</source>
+        <target state="new">Settings</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Share App" xml:space="preserve">
+        <source>Share App</source>
+        <target state="new">Share App</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Sign Up" xml:space="preserve">
+        <source>Sign Up</source>
+        <target state="new">Sign Up</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Sign up" xml:space="preserve">
+        <source>Sign up</source>
+        <target state="new">Sign up</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Symbol: " xml:space="preserve">
+        <source>Symbol: </source>
+        <target state="new">Symbol: </target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Symbol: %@" xml:space="preserve">
+        <source>Symbol: %@</source>
+        <target state="new">Symbol: %@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Symbol: N/A" xml:space="preserve">
+        <source>Symbol: N/A</source>
+        <target state="new">Symbol: N/A</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Tab 1" xml:space="preserve">
+        <source>Tab 1</source>
+        <target state="new">Tab 1</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Tab 2" xml:space="preserve">
+        <source>Tab 2</source>
+        <target state="new">Tab 2</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Tab 3" xml:space="preserve">
+        <source>Tab 3</source>
+        <target state="new">Tab 3</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Territories" xml:space="preserve">
+        <source>Territories</source>
+        <target state="new">Territories</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Territories: %@" xml:space="preserve">
+        <source>Territories: %@</source>
+        <target state="new">Territories: %@</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="This is nonreversible" xml:space="preserve">
+        <source>This is nonreversible</source>
+        <target state="new">This is nonreversible</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Verification" xml:space="preserve">
+        <source>Verification</source>
+        <target state="new">Verification</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="Welcome to &#10;Service Maps!" xml:space="preserve">
+        <source>Welcome to 
+Service Maps!</source>
+        <target state="new">Welcome to 
+Service Maps!</target>
+        <note/>
+      </trans-unit>
+      <trans-unit id="You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below." xml:space="preserve">
+        <source>You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below.</source>
+        <target state="new">You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below.</target>
+        <note/>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="Service Maps 2.0/Service-Maps-2-0-InfoPlist.xcstrings" source-language="en" target-language="en" datatype="plaintext">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="15.3" build-num="15E204a"/>
+    </header>
+    <body>
+      <trans-unit id="CFBundleName" xml:space="preserve">
+        <source>Service Maps 2.0</source>
+        <target state="new">Service Maps 2.0</target>
+        <note>Bundle name</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -141,6 +141,7 @@
 		82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F288862A86C21100930849 /* VerificationViewModel.swift */; };
 		82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */; };
 		82F75C122BDC01AA002CCAB0 /* RegisterKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */; };
+		82F75C142BDC98B7002CCAB0 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 82F75C132BDC98B7002CCAB0 /* Localizable.xcstrings */; };
 		82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */; };
 		82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913082BDAB27F00644A67 /* LinkScreens.swift */; };
 		82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9130B2BDAE7D000644A67 /* ValidationView.swift */; };
@@ -268,6 +269,7 @@
 		82F288862A86C21100930849 /* VerificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationViewModel.swift; sourceTree = "<group>"; };
 		82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicy.swift; sourceTree = "<group>"; };
 		82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterKeyView.swift; sourceTree = "<group>"; };
+		82F75C132BDC98B7002CCAB0 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Service Maps 2.0.entitlements"; sourceTree = "<group>"; };
 		82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalLinksManager.swift; sourceTree = "<group>"; };
 		82F913082BDAB27F00644A67 /* LinkScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkScreens.swift; sourceTree = "<group>"; };
@@ -556,6 +558,7 @@
 		826B766C2A729FDE000A4BAA /* Service Maps 2.0 */ = {
 			isa = PBXGroup;
 			children = (
+				82F75C132BDC98B7002CCAB0 /* Localizable.xcstrings */,
 				82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */,
 				8288001C2AA65DE800725826 /* Service-Maps-2-0-Info.plist */,
 				821DE74E2BD9EB66001D092D /* apple-app-site-association */,
@@ -682,6 +685,8 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
+				es,
 			);
 			mainGroup = 826B76612A729FDE000A4BAA;
 			packageReferences = (
@@ -713,6 +718,7 @@
 			files = (
 				826B76752A729FE1000A4BAA /* Preview Assets.xcassets in Resources */,
 				826B76722A729FE1000A4BAA /* Assets.xcassets in Resources */,
+				82F75C142BDC98B7002CCAB0 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -990,7 +996,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1021,7 +1027,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

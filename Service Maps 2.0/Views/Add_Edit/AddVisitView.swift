@@ -48,6 +48,7 @@ struct AddVisitView: View {
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
+                        Spacer().frame(width: 4)
                         Picker("Select Symbol", selection: $viewModel.selectedOption) {
                             ForEach(Symbols.allCases) { symbol in
                                 Text(symbol.rawValue)
