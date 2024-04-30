@@ -142,6 +142,13 @@
 		82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */; };
 		82F75C122BDC01AA002CCAB0 /* RegisterKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */; };
 		82F75C142BDC98B7002CCAB0 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 82F75C132BDC98B7002CCAB0 /* Localizable.xcstrings */; };
+		82F75C162BE132D3002CCAB0 /* AllPhoneDataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C152BE132D3002CCAB0 /* AllPhoneDataResponse.swift */; };
+		82F75C182BE1333E002CCAB0 /* PhoneTerritoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C172BE1333E002CCAB0 /* PhoneTerritoryModel.swift */; };
+		82F75C1A2BE1343A002CCAB0 /* PhoneNumberModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C192BE1343A002CCAB0 /* PhoneNumberModel.swift */; };
+		82F75C1C2BE134D3002CCAB0 /* PhoneCallModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C1B2BE134D3002CCAB0 /* PhoneCallModel.swift */; };
+		82F75C1E2BE13710002CCAB0 /* PhoneTerritoryObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C1D2BE13710002CCAB0 /* PhoneTerritoryObject.swift */; };
+		82F75C202BE13885002CCAB0 /* PhoneNumberObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C1F2BE13885002CCAB0 /* PhoneNumberObject.swift */; };
+		82F75C222BE138FC002CCAB0 /* PhoneCallObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C212BE138FC002CCAB0 /* PhoneCallObject.swift */; };
 		82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */; };
 		82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913082BDAB27F00644A67 /* LinkScreens.swift */; };
 		82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9130B2BDAE7D000644A67 /* ValidationView.swift */; };
@@ -270,6 +277,13 @@
 		82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicy.swift; sourceTree = "<group>"; };
 		82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterKeyView.swift; sourceTree = "<group>"; };
 		82F75C132BDC98B7002CCAB0 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		82F75C152BE132D3002CCAB0 /* AllPhoneDataResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllPhoneDataResponse.swift; sourceTree = "<group>"; };
+		82F75C172BE1333E002CCAB0 /* PhoneTerritoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTerritoryModel.swift; sourceTree = "<group>"; };
+		82F75C192BE1343A002CCAB0 /* PhoneNumberModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberModel.swift; sourceTree = "<group>"; };
+		82F75C1B2BE134D3002CCAB0 /* PhoneCallModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneCallModel.swift; sourceTree = "<group>"; };
+		82F75C1D2BE13710002CCAB0 /* PhoneTerritoryObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTerritoryObject.swift; sourceTree = "<group>"; };
+		82F75C1F2BE13885002CCAB0 /* PhoneNumberObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberObject.swift; sourceTree = "<group>"; };
+		82F75C212BE138FC002CCAB0 /* PhoneCallObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneCallObject.swift; sourceTree = "<group>"; };
 		82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Service Maps 2.0.entitlements"; sourceTree = "<group>"; };
 		82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalLinksManager.swift; sourceTree = "<group>"; };
 		82F913082BDAB27F00644A67 /* LinkScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkScreens.swift; sourceTree = "<group>"; };
@@ -318,6 +332,9 @@
 				82A5B4612BD5B31600F52F2F /* HouseData.swift */,
 				82A5B4632BD5B9D700F52F2F /* VisitData.swift */,
 				82A5B4652BD6C41D00F52F2F /* KeyData.swift */,
+				82F75C172BE1333E002CCAB0 /* PhoneTerritoryModel.swift */,
+				82F75C192BE1343A002CCAB0 /* PhoneNumberModel.swift */,
+				82F75C1B2BE134D3002CCAB0 /* PhoneCallModel.swift */,
 			);
 			path = Structs;
 			sourceTree = "<group>";
@@ -426,6 +443,7 @@
 				820933E32A784C3300AF3FF1 /* AllDataResponse.swift */,
 				820933F42A78608C00AF3FF1 /* NewTokenForm.swift */,
 				820933F62A78631500AF3FF1 /* DeleteTokenForm.swift */,
+				82F75C152BE132D3002CCAB0 /* AllPhoneDataResponse.swift */,
 			);
 			path = APIStructs;
 			sourceTree = "<group>";
@@ -535,6 +553,9 @@
 				825645AA2BCE125000F18AC9 /* TokenObject.swift */,
 				825645AC2BCE128E00F18AC9 /* TokenTerritoryObject.swift */,
 				825645AE2BCE12DA00F18AC9 /* TerritoryAddressObject.swift */,
+				82F75C1D2BE13710002CCAB0 /* PhoneTerritoryObject.swift */,
+				82F75C1F2BE13885002CCAB0 /* PhoneNumberObject.swift */,
+				82F75C212BE138FC002CCAB0 /* PhoneCallObject.swift */,
 			);
 			path = RealmObjects;
 			sourceTree = "<group>";
@@ -729,6 +750,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82F75C1E2BE13710002CCAB0 /* PhoneTerritoryObject.swift in Sources */,
 				824213772A8332EB00626DD5 /* CustomField.swift in Sources */,
 				822FA0A72AA77A200008FA61 /* CirlceButtonStyle.swift in Sources */,
 				8209340D2A7ADB3700AF3FF1 /* SignupView.swift in Sources */,
@@ -804,11 +826,14 @@
 				824213722A82DB7300626DD5 /* SplashScreenView.swift in Sources */,
 				82A5B4642BD5B9D700F52F2F /* VisitData.swift in Sources */,
 				82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */,
+				82F75C162BE132D3002CCAB0 /* AllPhoneDataResponse.swift in Sources */,
 				826B76772A729FE1000A4BAA /* NSManagedObjectExtension.swift in Sources */,
 				823FD4DC2A8165300036A1DD /* SettingsView.swift in Sources */,
 				823FD4D72A7E78DA0036A1DD /* CellView.swift in Sources */,
 				821C12762A78111C0050D106 /* ResetPasswordForm.swift in Sources */,
 				824E5CF42BC57F73001DE348 /* TokenCell.swift in Sources */,
+				82F75C182BE1333E002CCAB0 /* PhoneTerritoryModel.swift in Sources */,
+				82F75C1C2BE134D3002CCAB0 /* PhoneCallModel.swift in Sources */,
 				824213702A82DAEA00626DD5 /* NoDataView.swift in Sources */,
 				821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */,
 				82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */,
@@ -816,6 +841,7 @@
 				82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */,
 				82A5B4622BD5B31600F52F2F /* HouseData.swift in Sources */,
 				82BC0F232A9C24AC00B255BF /* ChangeType.swift in Sources */,
+				82F75C1A2BE1343A002CCAB0 /* PhoneNumberModel.swift in Sources */,
 				82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */,
 				821111B62A7315B600F94662 /* AuthenticationAPI.swift in Sources */,
 				826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */,
@@ -836,11 +862,13 @@
 				8242136D2A82CF4000626DD5 /* CustomErrors.swift in Sources */,
 				820933F52A78608C00AF3FF1 /* NewTokenForm.swift in Sources */,
 				823FD4D02A7BF07B0036A1DD /* LoadingView.swift in Sources */,
+				82F75C202BE13885002CCAB0 /* PhoneNumberObject.swift in Sources */,
 				820933E02A78427E00AF3FF1 /* CongregationSignInForm.swift in Sources */,
 				82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */,
 				825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */,
 				82A5B4592BD1A48500F52F2F /* TerritoryDataWithKeys.swift in Sources */,
 				820933E92A7852B400AF3FF1 /* TerritoryModel.swift in Sources */,
+				82F75C222BE138FC002CCAB0 /* PhoneCallObject.swift in Sources */,
 				82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */,
 				82A5B45B2BD2F64800F52F2F /* AddAddressView.swift in Sources */,
 				82916C192A994298005133DE /* AddVisitView.swift in Sources */,

@@ -24,6 +24,9 @@ class AuthorizationProvider: ObservableObject {
     private var congregationIdKey = "congregationIdKey"
     private var congregationPassKey = "congregationPassKey"
     
+    private var phoneCongregationIdKey = "phoneCongregationIdKey"
+    private var phoneCongregationPassKey = "phoneCongregationPassKey"
+    
     //MARK: Published Variables
     @Published var authorizationToken: String? = nil {
         didSet {
@@ -43,6 +46,18 @@ class AuthorizationProvider: ObservableObject {
     @Published var congregationPass: String? = nil {
         didSet {
             defaults.set(congregationPass, forKey: congregationPassKey)
+        }
+    }
+    
+    @Published var phoneCongregationId: String? = nil {
+        didSet {
+            defaults.set(phoneCongregationId, forKey: phoneCongregationIdKey)
+        }
+    }
+    
+    @Published var phoneCongregationPass: String? = nil {
+        didSet {
+            defaults.set(phoneCongregationPass, forKey: phoneCongregationPassKey)
         }
     }
     

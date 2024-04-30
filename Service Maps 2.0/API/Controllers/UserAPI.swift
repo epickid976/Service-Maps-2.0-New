@@ -28,6 +28,22 @@ class UserAPI {
         }
     }
     
+    func allPhoneData() async -> Result<AllPhoneDataResponse, Error> {
+        do {
+            let response = try await ApiRequestAsync().getRequest(url: baseURL + "allphonedata")
+            
+            let decoder = JSONDecoder()
+            
+            let jsonData = response.data(using: .utf8)!
+            
+            let reply = try decoder.decode(AllPhoneDataResponse.self, from: jsonData)
+            
+            return Result.success(reply)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
     //MARK: UPDATE
     func updateTerritory(territory: TerritoryModel) async throws {
         do {
@@ -79,6 +95,33 @@ class UserAPI {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/update", body: visit)
         } catch {
             throw error.self
+        }
+    }
+    
+    func addPhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/add", body: phoneCall)
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    func updatePhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/update", body: phoneCall)
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    func deletePhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/delete", body: phoneCall)
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
         }
     }
 }

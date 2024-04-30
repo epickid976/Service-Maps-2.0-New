@@ -23,6 +23,7 @@ class StorageManager: ObservableObject {
   private var synchronizedKey = "synchronizedKey"
   private var pendingChangesKey = "pendingChangesKey"
   private var lastTimeKey = "lastSyncKey"
+    private var phoneCongregationNameKey = "phoneCongregationNameKey"
 
   //MARK: Published Variables
   @Published var userEmail: String? = nil {
@@ -51,6 +52,15 @@ class StorageManager: ObservableObject {
       }
     }
   }
+    
+    @Published var phoneCongregationName: String? = nil {
+      didSet {
+        DispatchQueue.main.async {
+          self.defaults.set(self.phoneCongregationName, forKey: self.phoneCongregationNameKey)
+          self.objectWillChange.send()
+        }
+      }
+    }
 
   @Published var passTemp: String? = nil {
     didSet {

@@ -24,4 +24,18 @@ class CongregationAPI {
             throw error.self
         }
     }
+    
+    func phoneSignIn(congregationSignInForm: CongregationSignInForm) async throws -> CongregationResponse{
+        do {
+            let response = try await ApiRequestAsync().postRequest(url: baseURL + "phone/sign", body: CongregationSignInForm(id: congregationSignInForm.id, password: congregationSignInForm.password))
+            let decoder = JSONDecoder()
+            let jsonData = response.data(using: .utf8)!
+            
+            let congregationResponse = try decoder.decode(CongregationResponse.self, from: jsonData)
+            
+            return congregationResponse
+        } catch {
+            throw error.self
+        }
+    }
 }

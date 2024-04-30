@@ -7,6 +7,7 @@
 
 import Foundation
 import RealmSwift
+import Alamofire
 
 class AuthorizationLevelManager: ObservableObject {
     @Published private var realmManager = RealmManager.shared
@@ -93,7 +94,6 @@ class AuthorizationLevelManager: ObservableObject {
             } catch {
                 if let error = error.asAFError {
                     if error.responseCode == 401 {
-                        authorizationProvider.authorizationToken = nil
                         return true
                     }
                 }
@@ -172,5 +172,32 @@ class AuthorizationLevelManager: ObservableObject {
         authorizationProvider.congregationId = nil
         authorizationProvider.congregationPass = nil
         dataStore.congregationName = nil
+    }
+    
+    func existsPhoneCredentials() -> Bool {
+        return authorizationProvider.phoneCongregationId != nil && authorizationProvider.phoneCongregationPass != nil
+    }
+    
+    func phoneNeedLogin() async -> Bool {
+        if existsPhoneCredentials() {
+            do {
+                _ = try await CongregationAPI().phoneSignIn(congregationSignInForm: CongregationSignInForm(
+                    id: authorizationProvider.congregationId!,
+                    password: authorizationProvider.congregationPass!)
+                    )
+            } catch {
+                if let error = error.asAFError {
+                    if error.responseCode == 401 {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+    
+    func setPhoneCredentials(password: String, congregationResponse: CongregationResponse) {
+        authorizationProvider.phoneCongregationId = congregationResponse.id
+        authorizationProvider.phoneCongregationPass = password
     }
 }

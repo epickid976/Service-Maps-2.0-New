@@ -15,6 +15,7 @@ class AuthenticationManager: ObservableObject {
     private var congregationApi = CongregationAPI()
     private var passwordResetApi = PasswordResetAPI()
     private var dataStore = StorageManager.shared
+    private var authorizationLevelManager = AuthorizationLevelManager()
     
     func signUp(signUpForm: SignUpForm) async -> Result<Bool, Error> {
         do {
@@ -161,5 +162,21 @@ class AuthenticationManager: ObservableObject {
     
     func exitAdministrator() {
         AuthorizationLevelManager().exitAdministrator()
+    }
+    
+    func signInPhone(congregationSignInForm: CongregationSignInForm) async -> Result<CongregationResponse, Error> {
+        
+        do {
+            let result = try await congregationApi.phoneSignIn(congregationSignInForm: congregationSignInForm)
+            
+            authorizationLevelManager.setPhoneCredentials(password: congregationSignInForm.password, congregationResponse: result)
+            
+            dataStore.phoneCongregationName = result.name
+            
+            return Result.success(result)
+        } catch {
+            return Result.failure(error)
+        }
+        
     }
 }

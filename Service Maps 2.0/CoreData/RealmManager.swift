@@ -31,6 +31,15 @@ class RealmManager: ObservableObject {
         tokensFlow = tokensEntities
         let tokenTerritoryEntities = realmDatabase.objects(TokenTerritoryObject.self)
         tokenTerritoriesFlow = tokenTerritoryEntities
+        
+        let phoneTerritoriesEntities = realmDatabase.objects(PhoneTerritoryObject.self)
+        phoneTerritoriesFlow = phoneTerritoriesEntities
+        
+        let phoneNumbersEntities = realmDatabase.objects(PhoneNumberObject.self)
+        phoneNumbersFlow = phoneNumbersEntities
+        
+        let phoneCallsEntities = realmDatabase.objects(PhoneCallObject.self)
+        phoneCallsFlow = phoneCallsEntities
     }
     
     @Published var territoriesFlow: Results<TerritoryObject>
@@ -39,6 +48,10 @@ class RealmManager: ObservableObject {
     @Published var visitsFlow: Results<VisitObject>
     @Published var tokensFlow: Results<TokenObject>
     @Published var tokenTerritoriesFlow: Results<TokenTerritoryObject>
+    
+    @Published var phoneTerritoriesFlow: Results<PhoneTerritoryObject>
+    @Published var phoneNumbersFlow: Results<PhoneNumberObject>
+    @Published var phoneCallsFlow: Results<PhoneCallObject>
     
     @Published var dataStore = StorageManager.shared
     
@@ -178,6 +191,68 @@ class RealmManager: ObservableObject {
         }
     }
     
+    func updatePhoneTerritory(phoneTerritory: PhoneTerritoryModel) -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try Realm()
+            if let entity = realmDatabase.objects(PhoneTerritoryObject.self)
+                .filter("id == %d", phoneTerritory.id)
+                .first {
+                try realmDatabase.write {
+                    entity.congregation = phoneTerritory.congregation
+                    entity.image = phoneTerritory.image
+                    entity.territoryDescription = phoneTerritory.description
+                    entity.number = phoneTerritory.number
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    func updatePhoneNumber(phoneNumber: PhoneNumberModel) -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try Realm()
+            if let entity = realmDatabase.objects(PhoneNumberObject.self)
+                .filter("id == %d", phoneNumber.id)
+                .first {
+                try realmDatabase.write {
+                    entity.congregation = phoneNumber.congregation
+                    entity.house = phoneNumber.house
+                    entity.territory = phoneNumber.territory
+                    entity.number = phoneNumber.number
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    func updatePhoneCall(phoneCall: PhoneCallModel) -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try Realm()
+            if let entity = realmDatabase.objects(PhoneCallObject.self)
+                .filter("id == %d", phoneCall.id)
+                .first {
+                try realmDatabase.write {
+                    entity.date = phoneCall.date
+                    entity.notes = phoneCall.notes
+                    entity.phoneNumber = phoneCall.phoneNumber
+                    entity.user = phoneCall.user
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
     
     func deleteTerritory(territory: TerritoryObject) -> Result<Bool, Error> {
         do {
@@ -285,111 +360,52 @@ class RealmManager: ObservableObject {
         }
     }
     
-    
-    func refreshTerritories() {
+    func deletePhoneTerritory(phoneTerritory: PhoneTerritoryObject) -> Result<Bool, Error> {
         do {
             let realmDatabase = try Realm()
-            let territoryEntities = realmDatabase.objects(TerritoryObject.self)
-            territoriesFlow = territoryEntities
+            if let entity = realmDatabase.objects(PhoneTerritoryObject.self).filter("id == %d", phoneTerritory.id).first {
+                try realmDatabase.write {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
         } catch {
-            print(error)
+            return .failure(error)
         }
     }
     
-    func refreshAddresses() {
+    func deletePhoneNumber(phoneNumber: PhoneNumberObject) -> Result<Bool, Error> {
         do {
             let realmDatabase = try Realm()
-            let addressesEntities = realmDatabase.objects(TerritoryAddressObject.self)
-            addressesFlow = addressesEntities
+            if let entity = realmDatabase.objects(PhoneNumberObject.self).filter("id == %d", phoneNumber.id).first {
+                try realmDatabase.write {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
         } catch {
-            print(error)
+            return .failure(error)
         }
     }
     
-    func refreshHouses() {
+    func deletePhoneCall(phoneCall: PhoneCallObject) -> Result<Bool, Error> {
         do {
             let realmDatabase = try Realm()
-            let housesEntities = realmDatabase.objects(HouseObject.self)
-            housesFlow = housesEntities
+            if let entity = realmDatabase.objects(PhoneCallObject.self).filter("id == %d", phoneCall.id).first {
+                try realmDatabase.write {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
         } catch {
-            print(error)
+            return .failure(error)
         }
-    }
-    
-    func refreshVisits() {
-        do {
-            let realmDatabase = try Realm()
-            let visitsEntities = realmDatabase.objects(VisitObject.self)
-            visitsFlow = visitsEntities
-        } catch {
-            print(error)
-        }
-    }
-    
-    func refreshTokens() {
-        do {
-            let realmDatabase = try Realm()
-            let tokensEntities = realmDatabase.objects(TokenObject.self)
-            tokensFlow = tokensEntities
-        } catch {
-            print(error)
-        }
-    }
-    
-    func refreshTokenTerritories() {
-        do {
-            let realmDatabase = try Realm()
-            let tokenTerritoryEntities = realmDatabase.objects(TokenTerritoryObject.self)
-            tokenTerritoriesFlow = tokenTerritoryEntities
-        } catch {
-            print(error)
-        }
-    }
-    
-    func getTerritories() async throws -> Results<TerritoryObject> {
-        let realmDatabase = try await Realm()
-        let territoryEntities = realmDatabase.objects(TerritoryObject.self)
-        return territoryEntities
-    }
-    
-    func getAddresses() async throws -> Results<TerritoryAddressObject> {
-        let realmDatabase = try await Realm()
-        let addressesEntities = realmDatabase.objects(TerritoryAddressObject.self)
-        return addressesEntities
-    }
-    
-    func getHouses() async throws -> Results<HouseObject> {
-        let realmDatabase = try await Realm()
-        let housesEntities = realmDatabase.objects(HouseObject.self)
-        return housesEntities
-    }
-    
-    func getVisits() async throws -> Results<VisitObject> {
-        let realmDatabase = try await Realm()
-        let visitsEntities = realmDatabase.objects(VisitObject.self)
-        return visitsEntities
-    }
-    
-    func getTokens() async throws -> Results<TokenObject> {
-        let realmDatabase = try await Realm()
-        let tokensEntities = realmDatabase.objects(TokenObject.self)
-        return tokensEntities
-    }
-    
-    func getTokenTerritories() async throws -> Results<TokenTerritoryObject> {
-        let realmDatabase = try await Realm()
-        let tokenTerritoryEntities = realmDatabase.objects(TokenTerritoryObject.self)
-        return tokenTerritoryEntities
-    }
-    
-    
-    func refreshAll() {
-        refreshTerritories()
-        refreshAddresses()
-        refreshHouses()
-        refreshVisits()
-        refreshTokens()
-        refreshTokenTerritories()
     }
     
     @MainActor
