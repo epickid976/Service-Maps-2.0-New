@@ -65,7 +65,6 @@ class AdminAPI {
         } catch {
             throw error.self
         }
-        
     }
     
     func updateTerritory(territory: TerritoryModel) async throws {
@@ -201,6 +200,104 @@ class AdminAPI {
             return Result.success(true)
         } catch {
             return Result.failure(error)
+        }
+    }
+    
+    //MARK: TERRITORY
+    func addPhoneTerritory(territory: PhoneTerritoryModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/territories/add", body: territory)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    //PENDING UPLOAD PHOTOS ADDTERRITORYFUNC
+    
+    func addPhoneTerritory(territory: PhoneTerritoryModel, image: UIImage) async throws {
+        do {
+            let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
+            
+            _ = try await ApiRequestAsync().uploadWithImage(url: baseURL + "phone/territories/add", withFile: image, parameters: parameters)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func updatePhoneTerritory(territory: PhoneTerritoryModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/territories/update", body: territory)
+        } catch {
+            print(error)
+            throw error.self
+        }
+    }
+    
+    func updatePhoneTerritory(territory: PhoneTerritoryModel, image: UIImage) async throws {
+        do {
+            let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
+            
+            _ = try await ApiRequestAsync().uploadWithImage(url: baseURL + "phone/territories/update", withFile: image, parameters: parameters)
+        } catch {
+            throw error.self
+        }
+        
+    }
+    //PENDING UPLOAD PHOTOS UPDATETERRITORYFUNC
+    
+    func deletePhoneTerritory(territory: PhoneTerritoryModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/territories/delete", body: territory)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func deletePhoneNumber(number: PhoneNumberModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/numbers/delete", body: number)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func addPhoneNumber(number: PhoneNumberModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/numbers/add", body: number)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func updatePhoneNumber(number: PhoneNumberModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/numbers/update", body: number)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func deleteCall(call: PhoneCallModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/delete", body: call)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func addCall(call: PhoneCallModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/add", body: call)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func updateCall(call: PhoneCallModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/update", body: call)
+        } catch {
+            throw error.self
         }
     }
 }

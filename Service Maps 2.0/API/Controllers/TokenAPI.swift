@@ -70,7 +70,7 @@ class TokenAPI {
         do {
             let response = try await ApiRequestAsync().postRequest(url: baseURL + "new", body: NewTokenForm(name: name, moderator: moderator, territories: territories, congregation: congregation, expire: expire))
             
-            let decoder = JSONDecoder()
+            _ = JSONDecoder()
             
             let jsonData = response.data(using: .utf8)!
             

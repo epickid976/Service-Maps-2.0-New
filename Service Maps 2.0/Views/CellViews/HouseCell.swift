@@ -41,7 +41,7 @@ struct HouseCell: View {
                                 Image(systemName: "tablecells.badge.ellipsis").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("Symbol: \(visit.symbol.uppercased())")
+                                Text("Symbol: \(visit.symbol.localizedUppercase)")
                                     .font(.subheadline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)

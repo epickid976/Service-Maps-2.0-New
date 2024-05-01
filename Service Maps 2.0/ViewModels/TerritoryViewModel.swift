@@ -161,12 +161,12 @@ class TerritoryViewModel: ObservableObject {
         ZStack {
             VStack {
                 Text("Delete Territory \(territoryToDelete.1 ?? "0")")
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .padding(.leading)
                 Text("Are you sure you want to delete the selected territory?")
-                    .font(.title3)
+                    .font(.headline)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)

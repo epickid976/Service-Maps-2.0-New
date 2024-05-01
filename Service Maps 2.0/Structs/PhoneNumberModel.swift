@@ -9,10 +9,12 @@ import Foundation
 
 struct PhoneNumberModel: Codable, Equatable, Hashable, Identifiable{
     var id: String
-    var congregation: Int64
-    var number: Int64
+    var congregation: String
+    var number: String
     var territory: String
     var house: String?
+    var created_at: String
+    var updated_at: String
     
     static func == (lhs: PhoneNumberModel, rhs: PhoneNumberModel) -> Bool {
         return lhs.id == rhs.id &&

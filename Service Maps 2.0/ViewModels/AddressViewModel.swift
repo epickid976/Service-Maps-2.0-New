@@ -222,12 +222,12 @@ class AddressViewModel: ObservableObject {
         ZStack {
             VStack {
                 Text("Delete Address: \(addressToDelete.1 ?? "0")")
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .padding(.leading)
                 Text("Are you sure you want to delete the selected address?")
-                    .font(.title3)
+                    .font(.headline)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
@@ -282,8 +282,6 @@ class AddressViewModel: ObservableObject {
                     }
                 }
                 .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
             }
             .ignoresSafeArea(.keyboard)
             
@@ -303,7 +301,7 @@ extension AddressViewModel {
                 }
             }, receiveValue: { addressData in
                 DispatchQueue.main.async {
-                    self.addressData = addressData
+                    self.addressData = addressData.sorted { $0.address.address < $1.address.address }
                 }
             })
             .store(in: &cancellables)

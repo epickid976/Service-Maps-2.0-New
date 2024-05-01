@@ -10,7 +10,7 @@ import RealmSwift
 
 class PhoneTerritoryObject: Object, Identifiable {
     @Persisted var id: String
-    @Persisted var congregation: Int64
+    @Persisted var congregation: String
     @Persisted var number: Int64
     @Persisted var territoryDescription: String
     @Persisted var image: String?

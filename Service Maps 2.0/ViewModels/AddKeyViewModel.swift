@@ -133,7 +133,7 @@ class AddKeyViewModel: ObservableObject {
         }
         
         switch await dataUploader.createToken(newTokenForm: NewTokenForm(name: tokenObject.name, moderator: tokenObject.moderator, territories: territories.description, congregation: AuthorizationProvider.shared.congregationId ?? 0, expire: tokenObject.expire), territories: StructToModel().convertTerritoryStructsToEntities(structs: territoryObjects)) {
-        case .success(let token):
+        case .success(_):
             return Result.success(true)
         case .failure(let error):
             return Result.failure(error)

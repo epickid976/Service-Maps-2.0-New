@@ -25,7 +25,7 @@ struct VisitCell: View {
                     }.frame(maxWidth: UIScreen.screenWidth * 0.7, maxHeight: 100)
                     
                     HStack {
-                        Text(visit.visit.symbol.uppercased())
+                        Text(visit.visit.symbol.localizedUppercase)
                             .font(.title3)
                             .lineLimit(1)
                             .foregroundColor(.primary)

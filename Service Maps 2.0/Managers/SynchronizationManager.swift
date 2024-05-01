@@ -51,6 +51,7 @@ class SynchronizationManager: ObservableObject {
     private func loadStartupState() -> StartupState {
         let realmDatabase = try! Realm()
         let territoryEntities = realmDatabase.objects(TerritoryObject.self)
+        let phoneTerritoriesEntities = realmDatabase.objects(PhoneTerritoryObject.self)
         
         if dataStore.userEmail == nil {
             return StartupState.Welcome
@@ -65,7 +66,11 @@ class SynchronizationManager: ObservableObject {
                 if authorizationLevelManager.existsAdminCredentials() {
                     return .Ready
                 } else {
-                    return .Empty
+                    if phoneTerritoriesEntities.isEmpty {
+                        return .Empty
+                    } else {
+                        return .Ready
+                    }
                 }
             }
             
@@ -86,6 +91,13 @@ class SynchronizationManager: ObservableObject {
             return StartupState.AdminLogin
         }
         
+        if !authorizationLevelManager.existsAdminCredentials() {
+            if await authorizationLevelManager.phoneNeedLogin() {
+                return .PhoneLogin
+            }
+            
+        }
+        
         return nil
     }
     
@@ -104,6 +116,10 @@ class SynchronizationManager: ObservableObject {
         let visitsEntities = realmDatabase.objects(VisitObject.self)
         let tokensEntities = realmDatabase.objects(TokenObject.self)
         let tokenTerritoryEntities = realmDatabase.objects(TokenTerritoryObject.self)
+        let phoneTerritoriesEntities = realmDatabase.objects(PhoneTerritoryObject.self)
+        let phoneNumberEntities = realmDatabase.objects(PhoneNumberObject.self)
+        let phoneCallEntities = realmDatabase.objects(PhoneCallObject.self)
+        
         //Server Data
         var tokensApi = [MyTokenModel]()
         var territoriesApi = [TerritoryModel]()
@@ -111,6 +127,9 @@ class SynchronizationManager: ObservableObject {
         var housesApi = [HouseModel]()
         var visitsApi = [VisitModel]()
         var tokenTerritoriesApi = [TokenTerritoryModel]()
+        var phoneTerritoriesApi = [PhoneTerritoryModel]()
+        var phoneNumbersApi = [PhoneNumberModel]()
+        var phoneCallsApi = [PhoneCallModel]()
         
         //Database Data
         var tokensDb = [TokenObject]()
@@ -119,6 +138,9 @@ class SynchronizationManager: ObservableObject {
         var housesDb = [HouseObject]()
         var visitsDb = [VisitObject]()
         var tokenTerritoriesDb = [TokenTerritoryObject]()
+        var phoneTerritoriesDb = [PhoneTerritoryObject]()
+        var phoneNumbersDb = [PhoneNumberObject]()
+        var phoneCallsDb = [PhoneCallObject]()
         
         //MARK: Fetching data from server
         let tokenApi = TokenAPI()
@@ -155,6 +177,39 @@ class SynchronizationManager: ObservableObject {
                 tokenTerritoriesApi.append(contentsOf: response)
             }
             
+            let allPhoneResponse: AllPhoneDataResponse
+            
+            if authorizationLevelManager.existsAdminCredentials() {
+                let result = await AdminAPI().allPhoneData()
+                switch result {
+                case .success(let response):
+                    allPhoneResponse = response
+                    phoneTerritoriesApi.append(contentsOf: allPhoneResponse.territories)
+                    phoneCallsApi.append(contentsOf: allPhoneResponse.calls)
+                    phoneNumbersApi.append(contentsOf: allPhoneResponse.numbers)
+                case .failure(let error):
+                    print(error)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.dataStore.synchronized = true
+                    }
+                }
+                
+            } else {
+                let result = await UserAPI().allPhoneData()
+                switch result {
+                case .success(let response):
+                    allPhoneResponse = response
+                    phoneTerritoriesApi.append(contentsOf: allPhoneResponse.territories)
+                    phoneCallsApi.append(contentsOf: allPhoneResponse.calls)
+                    phoneNumbersApi.append(contentsOf: allPhoneResponse.numbers)
+                case .failure(_):
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.dataStore.synchronized = true
+                    }
+                }
+                
+            }
+            
         } catch {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.dataStore.synchronized = true
@@ -168,6 +223,9 @@ class SynchronizationManager: ObservableObject {
         visitsDb =  Array(visitsEntities)
         territoriesAddressesDb =  Array(addressesEntities)
         tokenTerritoriesDb = Array(tokenTerritoryEntities)
+        phoneTerritoriesDb = Array(phoneTerritoriesEntities)
+        phoneCallsDb = Array(phoneCallEntities)
+        phoneNumbersDb = Array(phoneNumberEntities)
         
         //Comparing and Updating, adding or deleting data in database by server data
         await comparingAndSynchronizeTokens(apiList: tokensApi, dbList: tokensDb)
@@ -176,7 +234,9 @@ class SynchronizationManager: ObservableObject {
         await comparingAndSynchronizeTerritoryAddresses(apiList: territoriesAddressesApi, dbList: territoriesAddressesDb)
         await comparingAndSynchronizeHouses(apiList: housesApi, dbList: housesDb)
         await comparingAndSynchronizeVisits(apiList: visitsApi, dbList: visitsDb)
-        
+        await comparingAndSynchronizePhoneTerritories(apiList: phoneTerritoriesApi, dbList: phoneTerritoriesDb)
+        await comparingAndSynchronizePhoneNumbers(apiList: phoneNumbersApi, dbList: phoneNumbersDb)
+        await comparingAndSynchronizePhoneCalls(apiList: phoneCallsApi, dbList: phoneCallsDb)
         
         
         startupProcess(synchronizing: false)
@@ -458,7 +518,131 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
+    @MainActor
+    private func comparingAndSynchronizePhoneTerritories(apiList: [PhoneTerritoryModel], dbList: [PhoneTerritoryObject]) async{
+        let territoriesApi = apiList
+        var territoriesDb = dbList
+        
+        for territoryApi in territoriesApi {
+            let territoryDb = territoriesDb.first { $0.id == territoryApi.id }
+            
+            if territoryDb != nil {
+                if (territoryDb! == territoryApi) == false {
+                    switch  realmManager.updatePhoneTerritory(phoneTerritory: territoryApi){
+                    case .success(let success):
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
+                    }
+                }
+                
+                if let index = territoriesDb.firstIndex(of: territoryDb!) {
+                    territoriesDb.remove(at: index)
+                }
+            } else {
+                switch  realmManager.addModel(PhoneTerritoryObject ().createTerritoryObject(from: territoryApi)) {
+                case .success(let success):
+                    print("Success Adding Visit \(success)")
+                case .failure(let error):
+                    print("There was an error adding Visit \(error)")
+                }
+            }
+        }
+        
+        for territoryDb in territoriesDb {
+            switch  realmManager.deletePhoneTerritory(phoneTerritory: territoryDb) {
+            case .success(let success):
+                print("Success Deleting Visit \(success)")
+            case .failure(let error):
+                print("There was an error deleting Visit \(error)")
+            }
+        }
+    }
     
+    @MainActor
+    private func comparingAndSynchronizePhoneNumbers(apiList: [PhoneNumberModel], dbList: [PhoneNumberObject]) async{
+        let numbersApi = apiList
+        var numbersDb = dbList
+        
+        for numberApi in numbersApi {
+            let numberDb = numbersDb.first { $0.id == numberApi.id }
+            
+            if numberDb != nil {
+                if (numberDb! == numberApi) == false {
+                    switch  realmManager.updatePhoneNumber(phoneNumber: numberApi){
+                    case .success(let success):
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
+                    }
+                }
+                
+                if let index = numbersDb.firstIndex(of: numberDb!) {
+                    numbersDb.remove(at: index)
+                }
+            } else {
+                switch  realmManager.addModel(PhoneNumberObject().createTerritoryObject(from: numberApi)) {
+                case .success(let success):
+                    print("Success Adding Visit \(success)")
+                case .failure(let error):
+                    print("There was an error adding Visit \(error)")
+                }
+            }
+        }
+        
+        for numberDb in numbersDb {
+            switch  realmManager.deletePhoneNumber(phoneNumber: numberDb) {
+            case .success(let success):
+                print("Success Deleting Visit \(success)")
+            case .failure(let error):
+                print("There was an error deleting Visit \(error)")
+            }
+        }
+    }
+    
+    @MainActor
+    private func comparingAndSynchronizePhoneCalls(apiList: [PhoneCallModel], dbList: [PhoneCallObject]) async{
+        let callsApi = apiList
+        var callsDb = dbList
+        
+        for callApi in callsApi {
+            let callDb = callsDb.first { $0.id == callApi.id }
+            
+            if callDb != nil {
+                if (callDb! == callApi) == false {
+                    switch  realmManager.updatePhoneCall(phoneCall: callApi){
+                    case .success(let success):
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
+                    }
+                }
+                
+                if let index = callsDb.firstIndex(of: callDb!) {
+                    callsDb.remove(at: index)
+                }
+            } else {
+                switch  realmManager.addModel(PhoneCallObject().createTerritoryObject(from: callApi)) {
+                case .success(let success):
+                    print("Success Adding Visit \(success)")
+                case .failure(let error):
+                    print("There was an error adding Visit \(error)")
+                }
+            }
+        }
+        
+        for callDb in callsDb {
+            switch  realmManager.deletePhoneCall(phoneCall: callDb) {
+            case .success(let success):
+                print("Success Deleting Visit \(success)")
+            case .failure(let error):
+                print("There was an error deleting Visit \(error)")
+            }
+        }
+    }
     
     class var shared: SynchronizationManager {
         struct Static {

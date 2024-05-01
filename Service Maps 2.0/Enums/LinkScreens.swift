@@ -21,6 +21,7 @@ enum DestinationEnum: String {
     case WelcomeScreen = "WelcomeView"
     case LoginScreen = "LoginView"
     case AdministratorLoginScreen = "AdministratorLoginView"
+    case PhoneLoginScreen = "PhoneLoginScreenView"
     case ValidationScreen = "ValidationView"
     case LoadingScreen = "LoadingView"
     case NoDataScreen = "NoDataView"

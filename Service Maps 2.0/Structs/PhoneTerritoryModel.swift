@@ -9,10 +9,12 @@ import Foundation
 
 struct PhoneTerritoryModel: Codable, Equatable, Hashable, Identifiable{
     var id: String
-    var congregation: Int64
+    var congregation: String
     var number: Int64
     var description: String
     var image: String?
+    var created_at: String
+    var updated_at: String
     
     static func == (lhs: PhoneTerritoryModel, rhs: PhoneTerritoryModel) -> Bool {
         return lhs.id == rhs.id &&
@@ -30,5 +32,12 @@ struct PhoneTerritoryModel: Codable, Equatable, Hashable, Identifiable{
         hasher.combine(image) // Combine an empty string for optional floor
       }
     
-    
+    func getImageURL() -> String {
+        let baseURL = "https://servicemaps.ejvapps.online/api/"
+        if image != nil {
+            return baseURL + "phone/territories/" + String(congregation) + "/" + image!
+        } else {
+            return ""
+        }
+    }
 }

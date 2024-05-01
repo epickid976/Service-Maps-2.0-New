@@ -53,6 +53,12 @@ struct Service_Maps_2_0App: App {
                     AdminLoginView() {
                         synchronizationManager.startupProcess(synchronizing: true)
                     }
+                    
+                case .PhoneLoginScreen:
+                    PhoneLoginScreen() {
+                        synchronizationManager.startupProcess(synchronizing: true)
+                    }
+                    
                 case .ValidationScreen:
                     VerificationView() {
                         synchronizationManager.startupProcess(synchronizing: true)
@@ -97,7 +103,7 @@ struct Service_Maps_2_0App: App {
     func instantiateDestination() -> DestinationEnum {
         
         var destination: DestinationEnum = .SplashScreen
-        var resultDestination = universalLinksManager.determineDestination()
+        let resultDestination = universalLinksManager.determineDestination()
         
         switch synchronizationManager.startupState {
         case .Unknown:
@@ -112,6 +118,8 @@ struct Service_Maps_2_0App: App {
             destination = .LoginScreen
         case .AdminLogin:
             destination = .AdministratorLoginScreen
+        case .PhoneLogin:
+            destination = .PhoneLoginScreen
         case .Validate:
             if resultDestination != .RegisterKeyView {
                 destination = resultDestination ?? .ValidationScreen

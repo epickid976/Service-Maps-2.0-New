@@ -16,6 +16,7 @@ struct HomeTabView: View {
     @State private var selectedTab = 0
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var authorizationLevelManager = AuthorizationLevelManager()
     
     var body: some View {
         NavigationStack {
@@ -27,14 +28,22 @@ struct HomeTabView: View {
                             Image(systemName: "1.circle")
                             Text("Tab 1")
                         }
-                } else if selectedTab == 1 {
-                    AccessView()
+                } else if selectedTab == 1  {
+                    //&& (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials())
+                        PhoneTerritoriesScreen()
                         .tag(1)
                         .tabItem {
                             Image(systemName: "2.circle")
                             Text("Tab 2")
                         }
                 } else if selectedTab == 2 {
+                    AccessView()
+                        .tag(1)
+                        .tabItem {
+                            Image(systemName: "2.circle")
+                            Text("Tab 2")
+                        }
+                } else if selectedTab == 3 {
                     SettingsView()
                         .tag(2)
                         .tabItem {
@@ -50,7 +59,7 @@ struct HomeTabView: View {
                             selectedTab = 0
                         }
                     }) {
-                        Image(systemName: selectedTab == 0 ? "house.fill" : "house")
+                        Image(systemName: selectedTab == 0 ? "map.fill" : "map")
                             .imageScale(.large)
                             .foregroundColor(selectedTab == 0 ? .blue : .gray)
                             .scaleEffect(selectedTab == 0 ? 1.2 : 1.0) // Add scale effect
@@ -62,22 +71,36 @@ struct HomeTabView: View {
                             selectedTab = 1
                         }
                     }) {
-                        Image(systemName: selectedTab == 1 ? "person.badge.key.fill" : "person.badge.key")
+                        Image(systemName: selectedTab == 1 ? "phone.connection.fill" : "phone.connection")
                             .imageScale(.large)
                             .foregroundColor(selectedTab == 1 ? .blue : .gray)
                             .scaleEffect(selectedTab == 1 ? 1.2 : 1.0) // Add scale effect
                     }
                     .frame(maxWidth: .infinity)
                     
+                    //if authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials() {
+                        Button(action: {
+                            withAnimation(.default) {
+                                selectedTab = 2
+                            }
+                        }) {
+                            Image(systemName: selectedTab == 2 ? "person.badge.key.fill" : "person.badge.key")
+                                .imageScale(.large)
+                                .foregroundColor(selectedTab == 2 ? .blue : .gray)
+                                .scaleEffect(selectedTab == 2 ? 1.2 : 1.0) // Add scale effect
+                        }
+                        .frame(maxWidth: .infinity)
+                    //}
+                    
                     Button(action: {
                         withAnimation(.default) {
-                            selectedTab = 2
+                            selectedTab = 3
                         }
                     }) {
-                        Image(systemName: selectedTab == 2 ? "gearshape.fill" : "gearshape")
+                        Image(systemName: selectedTab == 3 ? "gearshape.fill" : "gearshape")
                             .imageScale(.large)
-                            .scaleEffect(selectedTab == 2 ? 1.2 : 1.0) // Add scale effect
-                            .foregroundColor(selectedTab == 2 ? .blue : .gray)
+                            .scaleEffect(selectedTab == 3 ? 1.2 : 1.0) // Add scale effect
+                            .foregroundColor(selectedTab == 3 ? .blue : .gray)
                     }
                     .frame(maxWidth: .infinity)
                 }

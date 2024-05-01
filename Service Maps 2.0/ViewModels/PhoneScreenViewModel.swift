@@ -1,29 +1,23 @@
 //
-//  AccessViewModel.swift
+//  PhoneScreenViewModel.swift
 //  Service Maps 2.0
 //
-//  Created by Jose Blanco on 4/9/24.
+//  Created by Jose Blanco on 4/30/24.
 //
 
 import Foundation
 import SwiftUI
-import CoreData
+import Nuke
+import AlertKit
 import Combine
-import NavigationTransitions
 import SwipeActions
-import RealmSwift
 
 @MainActor
-class AccessViewModel: ObservableObject {
+class PhoneScreenViewModel: ObservableObject {
     
     init() {
-        getKeys()
-        
+        getTeritories()
     }
-    
-    @ObservedObject var universalLinksManager = UniversalLinksManager.shared
-    
-    @ObservedObject var authenticationManager = AuthenticationManager()
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
@@ -31,22 +25,21 @@ class AccessViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    @Published var keyData: Optional<[KeyData]> = nil
+    @Published var phoneData: Optional<[PhoneData]> = nil
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    
-    @Published var currentToken: MyTokenModel?
+    // Boolean state variable to track the sorting order
+    @Published var currentTerritory: PhoneTerritoryModel?
     @Published var presentSheet = false {
         didSet {
             if presentSheet == false {
-                currentToken = nil
+                currentTerritory = nil
             }
         }
     }
     
-    @Published var optionsAnimation = false
     @Published var progress: CGFloat = 0.0
-    
+    @Published var optionsAnimation = false
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     
@@ -60,87 +53,73 @@ class AccessViewModel: ObservableObject {
     @Published var showAlert = false
     @Published var ifFailed = false
     @Published var loading = false
-    @Published var keyToDelete: (String?,String?)
+    @Published var territoryToDelete: (String?,String?)
     
     @Published var showToast = false
     @Published var showAddedToast = false
     
-    func deleteKey(key: String) async -> Result<Bool, Error> {
-        if !isAdmin {
-            switch await dataUploaderManager.unregisterToken(myToken: key) {
-            case .success(_):
-                synchronizationManager.startupProcess(synchronizing: true)
-                return Result.success(true)
-            case .failure(let error):
-                return Result.failure(error)
-            }
-        } else {
-            return await dataUploaderManager.deleteToken(myToken: key)
-        }
+    func deleteTerritory(territory: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteTerritory(phoneTerritory: territory)
     }
     
     @ViewBuilder
-    func keyCell(keyData: KeyData) -> some View {
+    func territoryCell(phoneData: PhoneData) -> some View {
         SwipeView {
-            TokenCell(keyData: keyData)
-                .padding(.bottom, 2)
+            NavigationLink(destination: PhoneNumbersView(territory: phoneData.territory)) {
+                PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity)
+                    .padding(.bottom, 2)
+            }
         } trailingActions: { context in
-            SwipeAction(
-                systemImage: "trash",
-                backgroundColor: .red
-            ) {
-                DispatchQueue.main.async {
-                    self.keyToDelete = (keyData.key.id, keyData.key.name)
-                    self.showAlert = true
+            if self.isAdmin {
+                SwipeAction(
+                    systemImage: "trash",
+                    backgroundColor: .red
+                ) {
+                    DispatchQueue.main.async {
+                        self.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
+                        self.showAlert = true
+                    }
                 }
-            }
-            .font(.title.weight(.semibold))
-            .foregroundColor(.white)
-            
-            SwipeAction(
-                systemImage: "square.and.arrow.up",
-                backgroundColor: Color.green
-            ) {
-                context.state.wrappedValue = .closed
-                let url = URL(string: getShareLink(id: keyData.key.id))
-                let av = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
                 
-                UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
-                
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
-                    av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                SwipeAction(
+                    systemImage: "pencil",
+                    backgroundColor: Color.teal
+                ) {
+                    context.state.wrappedValue = .closed
+                    self.currentTerritory = phoneData.territory
+                    self.presentSheet = true
                 }
-                
+                .allowSwipeToTrigger()
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
             }
-            .allowSwipeToTrigger()
-            .font(.title.weight(.semibold))
-            .foregroundColor(.white)
         }
         .swipeActionCornerRadius(16)
         .swipeSpacing(5)
         .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
         .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
         .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
-        .swipeMinimumDistance(25)
+        .swipeMinimumDistance(isAdmin ? 25:1000)
     }
     
     @ViewBuilder
     func alert() -> some View {
         ZStack {
             VStack {
-                Text("Delete Key: \(keyToDelete.1 ?? "0")")
+                Text("Delete Territory \(territoryToDelete.1 ?? "0")")
                     .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .padding(.leading)
-                Text("Are you sure you want to delete the selected key?")
+                Text("Are you sure you want to delete the selected territory?")
                     .font(.headline)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
                 if ifFailed {
-                    Text("Error deleting key, please try again later")
+                    Text("Error deleting territory, please try again later")
                         .fontWeight(.bold)
                         .foregroundColor(.red)
                 }
@@ -151,7 +130,7 @@ class AccessViewModel: ObservableObject {
                         CustomBackButton() {
                             withAnimation {
                                 self.showAlert = false
-                                self.keyToDelete = (nil,nil)
+                                self.territoryToDelete = (nil,nil)
                             }
                         }
                     }
@@ -162,16 +141,15 @@ class AccessViewModel: ObservableObject {
                             self.loading = true
                         }
                         Task {
-                            if self.keyToDelete.0 != nil && self.keyToDelete.1 != nil {
-                                switch await self.deleteKey(key: self.keyToDelete.0 ?? "") {
+                            if self.territoryToDelete.0 != nil && self.territoryToDelete.1 != nil {
+                                switch await self.deleteTerritory(territory: self.territoryToDelete.0 ?? "") {
                                 case .success(_):
                                     withAnimation {
                                         withAnimation {
                                             self.loading = false
-                                            self.getKeys()
                                         }
                                         self.showAlert = false
-                                        self.keyToDelete = (nil,nil)
+                                        self.territoryToDelete = (nil,nil)
                                         self.showToast = true
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                             self.showToast = false
@@ -196,26 +174,22 @@ class AccessViewModel: ObservableObject {
             
         }.ignoresSafeArea(.keyboard)
     }
-    
-    @MainActor
-    func registerKey() async -> Result<Bool, Error> {
-        return await dataUploaderManager.registerToken(myToken: universalLinksManager.dataFromUrl ?? "")
-    }
-    
 }
 
 @MainActor
-extension AccessViewModel {
-    func getKeys() {
-        RealmManager.shared.getKeyData()
+extension PhoneScreenViewModel {
+    func getTeritories() {
+        RealmManager.shared.getPhoneData()
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
                     // Handle errors here
                     print("Error retrieving territory data: \(error)")
                 }
-            }, receiveValue: { keyData in
-                self.keyData = keyData
+            }, receiveValue: { phoneData in
+                DispatchQueue.main.async {
+                    self.phoneData = phoneData
+                }
             })
             .store(in: &cancellables)
     }

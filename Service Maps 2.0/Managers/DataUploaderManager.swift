@@ -362,7 +362,7 @@ class DataUploaderManager: ObservableObject {
             
             let tokenObject = TokenObject().createTokenObject(from: token)
             
-            realmManager.addModel(tokenObject)
+            _ = realmManager.addModel(tokenObject)
             
             for territory in territories {
                 let newTokenTerritory = TokenTerritoryObject()
@@ -372,7 +372,7 @@ class DataUploaderManager: ObservableObject {
             }
             
             tokenTerritories.forEach { tokenTerritory in
-                realmManager.addModel(tokenTerritory)
+                _ = realmManager.addModel(tokenTerritory)
             }
             
             return Result.success(tokenObject)
@@ -390,10 +390,10 @@ class DataUploaderManager: ObservableObject {
                 try await tokenApi.deleteToken(token: keyToDelete.id)
                     tokenTerritoryEntities.forEach { tokenTerritory in
                         if keyToDelete.id == tokenTerritory.token {
-                            realmManager.deleteTokenTerritory(tokenTerritory: tokenTerritory)
+                            _ = realmManager.deleteTokenTerritory(tokenTerritory: tokenTerritory)
                         }
                     }
-                realmManager.deleteToken(token: keyToDelete)
+                _ = realmManager.deleteToken(token: keyToDelete)
                 return Result.success(true)
             }
             return Result.failure(CustomErrors.NotFound)
@@ -430,5 +430,214 @@ class DataUploaderManager: ObservableObject {
     
     func getAllPendingChanges() async -> [PendingChange] {
         return dataStore.pendingChanges
+    }
+    
+    func addPhoneTerritory(territory: PhoneTerritoryObject, image: UIImage? = nil) async -> Result<Bool, Error> {
+        var result: Result<Bool, Error>?
+        
+        if(image == nil) {
+            do {
+                try await adminApi.addPhoneTerritory(territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory))
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        } else {
+            //Add IMAGE Function here
+            do {
+                try await adminApi.addPhoneTerritory(territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory), image: image!)
+                result = Result.success(true)
+            } catch {
+                result = Result.failure(error)
+            }
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.addModel(territory)
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD TERRITORY)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func updatePhoneTerritory(territory: PhoneTerritoryObject, image: UIImage? = nil) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        
+        if authorizationLevelManager.existsAdminCredentials() {
+            if image == nil {
+                do {
+                    try await adminApi.updatePhoneTerritory(territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory))
+                    result = Result.success(true)
+                } catch {
+                    result = Result.failure(error)
+                }
+            } else {
+                do {
+                    try await adminApi.updatePhoneTerritory(territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory), image: image!)
+                    result = Result.success(true)
+                } catch {
+                    result = Result.failure(error)
+                }
+            }
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.updatePhoneTerritory(phoneTerritory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory))
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager UPDATETERRITORY)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    @MainActor
+    func deleteTerritory(phoneTerritory: String) async -> Result<Bool, Error> {
+        
+        do {
+            let realm = try! await Realm()
+            if let territoryToDelete = realm.objects(PhoneTerritoryObject.self).filter("id == %d", phoneTerritory).first {
+                try await adminApi.deletePhoneTerritory(territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territoryToDelete))
+                DispatchQueue.main.async {
+                    self.synchronizationManager.startupProcess(synchronizing: true)
+                }
+                return Result.success(true)
+            }
+            
+            return Result.failure(CustomErrors.NotFound)
+           //return realmManager.deleteTerritory(territory: territory)
+        } catch {
+            print("THIS IS THE ERROR FROM DELETE TERRITORY \(error)")
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func deleteNumber(number: String) async -> Result<Bool, Error> {
+        
+        do {
+            let realm = try! await Realm()
+            if let numberToDelete = realm.objects(PhoneNumberObject.self).filter("id == %d", number).first {
+                try await adminApi.deletePhoneNumber(number: convertPhoneNumberModelToPhoneNumberModel(model: numberToDelete))
+                return realmManager.deletePhoneNumber(phoneNumber: numberToDelete)
+            }
+            
+            return Result.failure(CustomErrors.NotFound)
+           //return realmManager.deleteTerritory(territory: territory)
+        } catch {
+            print("THIS IS THE ERROR FROM DELETE TERRITORY \(error)")
+            return Result.failure(error)
+        }
+    }
+    
+    func addNumber(number: PhoneNumberObject) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        do {
+            try await adminApi.addPhoneNumber(number: convertPhoneNumberModelToPhoneNumberModel(model: number))
+            result = Result.success(true)
+        } catch {
+            result = Result.failure(error)
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.addModel(number)
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func addCall(call: PhoneCallObject) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        do {
+            try await adminApi.addCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
+            result = Result.success(true)
+        } catch {
+            result = Result.failure(error)
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.addModel(call)
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func updateNumber(number: PhoneNumberObject) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        do {
+            try await adminApi.updatePhoneNumber(number: convertPhoneNumberModelToPhoneNumberModel(model: number))
+            result = Result.success(true)
+        } catch {
+            result = Result.failure(error)
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.updatePhoneNumber(phoneNumber: convertPhoneNumberModelToPhoneNumberModel(model: number))
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    func updateCall(call: PhoneCallObject) async -> Result<Bool, Error> {
+        
+        
+        var result: Result<Bool, Error>?
+        
+        do {
+            try await adminApi.updateCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
+            result = Result.success(true)
+        } catch {
+            result = Result.failure(error)
+        }
+        
+        switch result {
+        case .success(true):
+            return realmManager.updatePhoneCall(phoneCall: convertPhoneCallModelToPhoneCallModel(model: call))
+        default:
+            print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
+        }
+        
+        return result ?? Result.failure(CustomErrors.ErrorUploading)
+    }
+    
+    @MainActor
+    func deleteCall(call: String) async -> Result<Bool, Error> {
+        
+        do {
+            let realm = try! await Realm()
+            if let callToDelete = realm.objects(PhoneCallObject.self).filter("id == %d", call).first {
+                try await adminApi.deleteCall(call: convertPhoneCallModelToPhoneCallModel(model: callToDelete))
+                return realmManager.deletePhoneCall(phoneCall: callToDelete)
+            }
+            
+            return Result.failure(CustomErrors.NotFound)
+           //return realmManager.deleteTerritory(territory: territory)
+        } catch {
+            print("THIS IS THE ERROR FROM DELETE TERRITORY \(error)")
+            return Result.failure(error)
+        }
     }
 }

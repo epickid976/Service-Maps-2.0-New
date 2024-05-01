@@ -595,14 +595,14 @@ class RealmManager: ObservableObject {
             }
             .eraseToAnyPublisher()
     }
-
+    
     @MainActor
     func getKeyData() -> AnyPublisher<[KeyData], Never> {
         
         let flow = Publishers.CombineLatest3(
-            $tokensFlow,
-            $territoriesFlow,
-            $tokenTerritoriesFlow
+            $tokensFlow.share(),
+            $territoriesFlow.share(),
+            $tokenTerritoriesFlow.share()
         )
             .flatMap { keyData -> AnyPublisher<[KeyData], Never> in
                 let myTokens = keyData.0
@@ -632,7 +632,101 @@ class RealmManager: ObservableObject {
             .eraseToAnyPublisher()
         return flow
     }
-
+    
+    @MainActor
+    func getPhoneData() -> AnyPublisher<[PhoneData], Never> {
+        
+        let flow = Publishers.CombineLatest(
+            $phoneTerritoriesFlow.share(),
+            $phoneNumbersFlow.share()
+        )
+            .flatMap { keyData -> AnyPublisher<[PhoneData], Never> in
+                let phoneTerritories = keyData.0
+                let phoneNumbers = keyData.1
+                var data = [PhoneData]()
+                
+                for territory in phoneTerritories {
+                    let currentPhoneNumbers = phoneNumbers.filter { $0.territory == String(territory.id) }
+                    
+                    data.append(
+                        PhoneData(
+                            id: UUID(),
+                            territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory),
+                            numbersQuantity: currentPhoneNumbers.count)
+                    )
+                }
+                
+                return Just(data).eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+        return flow
+    }
+    
+    @MainActor
+    func getPhoneNumbersData(phoneTerritoryId: String) -> AnyPublisher<[PhoneNumbersData], Never> {
+        
+        let flow = Publishers.CombineLatest(
+            $phoneNumbersFlow.share(),
+            $phoneCallsFlow.share()
+        )
+            .flatMap { keyData -> AnyPublisher<[PhoneNumbersData], Never> in
+                let phoneNumbers = keyData.0
+                let phoneCalls = keyData.1
+                var data = [PhoneNumbersData]()
+                
+                phoneNumbers.filter { $0.territory == phoneTerritoryId }.forEach { number in
+                    let phoneCall = phoneCalls.filter { $0.phoneNumber == number.id  }.sorted { $0.date > $1.date }.first
+                    data.append(
+                        PhoneNumbersData(
+                            id: UUID(),
+                            phoneNumber: convertPhoneNumberModelToPhoneNumberModel(model: number),
+                            phoneCall: phoneCall != nil ? convertPhoneCallModelToPhoneCallModel(model: phoneCall!) : nil
+                        )
+                    )
+                }
+                
+                return Just(data).eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+        return flow
+    }
+    
+    @MainActor
+    func getPhoneCallData(phoneNumberId: String) -> AnyPublisher<[PhoneCallData], Never> {
+        return Just(phoneCallsFlow)
+            .flatMap { phoneCalls -> AnyPublisher<[PhoneCallData], Never> in
+                let email = self.dataStore.userEmail
+                let name = self.dataStore.userName
+                
+                var data = [PhoneCallData]()
+                
+                phoneCalls.filter { $0.phoneNumber == phoneNumberId }.forEach { call in
+                    let callToAdd = PhoneCallModel(id: call.id, phoneNumber: call.phoneNumber, date: call.date, notes: call.notes, user: (call.user == email ? name : call.user) ?? "", created_at: "", updated_at: "")
+                    data.append(
+                        PhoneCallData(
+                            id: UUID(),
+                            phoneCall: callToAdd,
+                            accessLevel: self.phoneCallAccessLevel(call: call, email: email ?? "")
+                        )
+                    )
+                }
+                
+                data.sort { $0.phoneCall.date > $1.phoneCall.date }
+                return Just(data).eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func phoneCallAccessLevel(call: PhoneCallObject, email: String) -> AccessLevel {
+        if AuthorizationLevelManager().existsAdminCredentials() {
+            return .Admin
+        } else if call.user == email {
+            return .Moderator
+        } else {
+            return .User
+        }
+    }
+    
     func containsSame<T: Hashable>(first: [T], second: [T], getId: (T) -> String) -> Bool {
         if first.count != second.count {
             return false

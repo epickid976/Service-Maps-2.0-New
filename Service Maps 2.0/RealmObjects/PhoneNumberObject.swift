@@ -10,8 +10,8 @@ import RealmSwift
 
 class PhoneNumberObject: Object, Identifiable {
     @Persisted var id: String
-    @Persisted var congregation: Int64
-    @Persisted var number: Int64
+    @Persisted var congregation: String
+    @Persisted var number: String
     @Persisted var territory: String
     @Persisted var house: String?
     
@@ -36,4 +36,5 @@ class PhoneNumberObject: Object, Identifiable {
       territoryObject.house = model.house
       return territoryObject
     }
+
 }

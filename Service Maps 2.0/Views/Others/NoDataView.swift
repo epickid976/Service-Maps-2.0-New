@@ -18,6 +18,7 @@ struct NoDataView: View {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @State var goToAdminLogin = false
+    @State var goToPhoneLogin = false
     
     var body: some View {
         NavigationStack {
@@ -48,7 +49,17 @@ struct NoDataView: View {
                 
                 Spacer()
                 VStack(spacing: 20) {
-                    //                    synchronizationManager.startupProcess(synchronizing: true)
+                    
+                    Button {
+                        goToPhoneLogin = true
+                    }label: {
+                        Text("Phone Book Login")
+                            .bold()
+                    }
+                    .buttonStyle(.automatic)
+                    .buttonBorderShape(.capsule)
+                    .controlSize(.large)
+                    
                     Button {
                         goToAdminLogin = true
                     }label: {
@@ -67,11 +78,14 @@ struct NoDataView: View {
                         }
                     }
                 }
-                
             }
             .padding()
             .fullScreenCover(isPresented: $goToAdminLogin) {
                 AdminLoginView() { synchronizationManager.startupProcess(synchronizing: true)}
+            }
+            
+            .fullScreenCover(isPresented: $goToPhoneLogin) {
+                PhoneLoginScreen() { synchronizationManager.startupProcess(synchronizing: true)}
             }
         }
         .navigationTransition(

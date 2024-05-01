@@ -1,29 +1,29 @@
 //
-//  AddTerritoryView.swift
+//  AddPhoneTerritoryView.swift
 //  Service Maps 2.0
 //
-//  Created by Jose Blanco on 8/20/23.
+//  Created by Jose Blanco on 4/30/24.
 //
 
+import Foundation
 import SwiftUI
-import PhotosUI
-import NavigationTransitions
 import Nuke
 
-struct AddTerritoryView: View {
-    var territory: TerritoryModel?
+struct AddPhoneTerritoryView: View {
+    
+    var territory: PhoneTerritoryModel?
     
     @Environment(\.dismiss) private var dismiss
-    @StateObject var viewModel: AddTerritoryViewModel
+    @StateObject var viewModel: AddPhoneTerritoryViewModel
     
     @State var title = ""
     
-    init(territory: TerritoryModel?, onDone: @escaping () -> Void) {
+    init(territory: PhoneTerritoryModel?, onDone: @escaping () -> Void) {
         if let territory = territory {
             self.territory = territory
-            _viewModel = StateObject(wrappedValue: AddTerritoryViewModel(territory: territory))
+            _viewModel = StateObject(wrappedValue: AddPhoneTerritoryViewModel(territory: territory))
         } else {
-            _viewModel = StateObject(wrappedValue:AddTerritoryViewModel())
+            _viewModel = StateObject(wrappedValue:AddPhoneTerritoryViewModel())
         }
         
         self.onDone = onDone
@@ -33,7 +33,6 @@ struct AddTerritoryView: View {
     @FocusState private var descriptionFocus: Bool
     
     var onDone: () -> Void
-    
     
     var body: some View {
         ZStack {
@@ -215,6 +214,77 @@ struct AddTerritoryView: View {
                     }
                 }
             }
-        
     }
+}
+
+@MainActor
+class AddPhoneTerritoryViewModel: ObservableObject {
+    
+    init() {
+        error = ""
+    }
+    
+    @Published var number: Int? = nil
+    @Published private var dataUploader = DataUploaderManager()
+    
+    var binding: Binding<String> {
+        .init(get: {
+            if let number = self.number {
+                "\(number)"
+            } else {
+                ""
+            }
+        }, set: {
+            self.number = Int($0) ?? nil
+        })
+    }
+    
+    @Published var description = ""
+    @Published var previewImage: UIImage? = nil
+    @Published var imageToSend: UIImage? = nil
+    @Published var error = ""
+    
+    @Published var loading = false
+    
+    func addTerritory() async -> Result<Bool, Error>{
+        loading = true
+        let territoryObject = PhoneTerritoryObject()
+        territoryObject.number = Int64(number!)
+        territoryObject.territoryDescription = description
+        territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
+        return await dataUploader.addPhoneTerritory(territory: territoryObject, image: imageToSend)
+    }
+    
+    func editTerritory(territory: PhoneTerritoryModel) async -> Result<Bool, Error> {
+        loading = true
+        let territoryObject = PhoneTerritoryObject()
+        territoryObject.id = territory.id
+        territoryObject.number = Int64(number!)
+        territoryObject.territoryDescription = description
+        territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
+        return await dataUploader.updatePhoneTerritory(territory: territoryObject, image: imageToSend)
+    }
+    
+    init(territory: PhoneTerritoryModel? = nil) {
+        Task {
+            if let territory = territory {
+                if let imageLink = URL(string: territory.getImageURL()) {
+                    let image = try await ImagePipeline.shared.image(for: imageLink)
+                    self.previewImage = image
+                }
+                
+            }
+        }
+    }
+    
+    func checkInfo() -> Bool {
+        if number == nil || description == "" {
+            error = "Number and Description are required."
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    
 }

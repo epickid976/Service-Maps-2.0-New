@@ -112,12 +112,12 @@ class HousesViewModel: ObservableObject {
         ZStack {
             VStack {
                 Text("Delete House \(houseToDelete.1 ?? "0")")
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .padding(.leading)
                 Text("Are you sure you want to delete the selected house?")
-                    .font(.title3)
+                    .font(.headline)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
@@ -192,7 +192,7 @@ extension HousesViewModel {
                 }
             }, receiveValue: { houseData in
                 DispatchQueue.main.async {
-                    self.houseData = houseData
+                    self.houseData = houseData.sorted { $0.house.number < $1.house.number }
                 }
             })
             .store(in: &cancellables)

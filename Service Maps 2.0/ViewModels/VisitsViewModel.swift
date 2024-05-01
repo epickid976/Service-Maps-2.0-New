@@ -111,12 +111,12 @@ class VisitsViewModel: ObservableObject {
         ZStack {
             VStack {
                 Text("Delete Visit")
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .padding(.leading)
                 Text("Are you sure you want to delete the selected house?")
-                    .font(.title3)
+                    .font(.headline)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)

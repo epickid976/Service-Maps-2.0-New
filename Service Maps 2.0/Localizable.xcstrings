@@ -4,6 +4,9 @@
     "" : {
 
     },
+    "-" : {
+
+    },
     "%@" : {
       "localizations" : {
         "fr" : {
@@ -45,6 +48,12 @@
           }
         }
       }
+    },
+    "%@ Number" : {
+
+    },
+    "%@ Phone Number" : {
+
     },
     "%@ Territory" : {
       "localizations" : {
@@ -93,6 +102,9 @@
           }
         }
       }
+    },
+    "%lld" : {
+
     },
     "About App" : {
       "localizations" : {
@@ -494,6 +506,9 @@
         }
       }
     },
+    "Delete Number: %@" : {
+
+    },
     "Delete Territory %@" : {
       "localizations" : {
         "es" : {
@@ -686,6 +701,19 @@
         }
       }
     },
+    "H" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "H"
+          }
+        }
+      }
+    },
+    "House" : {
+
+    },
     "House: %@" : {
       "localizations" : {
         "es" : {
@@ -814,6 +842,22 @@
         }
       }
     },
+    "M" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "W"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "F"
+          }
+        }
+      }
+    },
     "Name" : {
       "localizations" : {
         "es" : {
@@ -826,6 +870,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nom"
+          }
+        }
+      }
+    },
+    "NC" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NH"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "A"
           }
         }
       }
@@ -878,6 +938,22 @@
         }
       }
     },
+    "NT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DV"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "PV"
+          }
+        }
+      }
+    },
     "Number" : {
       "localizations" : {
         "es" : {
@@ -906,6 +982,25 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Numéro non modifiable"
+          }
+        }
+      }
+    },
+    "Numbers" : {
+
+    },
+    "O" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "B"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O"
           }
         }
       }
@@ -954,6 +1049,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Confirmation de Mot de Passe"
+          }
+        }
+      }
+    },
+    "Phone Book \nLogin" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar Sesión Repertorio Telefonico"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se connecter au Répertoire Téléphonique"
+          }
+        }
+      }
+    },
+    "Phone Book Login" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar Sesión Repertorio Telefonico"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se connecter au Répertoire Téléphonique"
+          }
+        }
+      }
+    },
+    "Phone Numbers: %lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Números Telefónicos: %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéros Téléphoniques: %lld"
+          }
+        }
+      }
+    },
+    "Phone Territories" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territorios Telefónicos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territoires Téléphoniques"
           }
         }
       }
