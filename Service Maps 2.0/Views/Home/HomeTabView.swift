@@ -28,8 +28,7 @@ struct HomeTabView: View {
                             Image(systemName: "1.circle")
                             Text("Tab 1")
                         }
-                } else if selectedTab == 1  {
-                    //&& (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials())
+                } else if selectedTab == 1 && (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
                         PhoneTerritoriesScreen()
                         .tag(1)
                         .tabItem {

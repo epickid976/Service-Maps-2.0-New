@@ -121,6 +121,14 @@ class ApiRequestAsync {
             headers.add(name: "congregationPass", value: congregationPass)
         }
         
+        if let phoneCongregationId = authorizationProvider.phoneCongregationId {
+            headers.add(name: "phoneId", value: phoneCongregationId)
+        }
+        
+        if let phoneCongregationPass = authorizationProvider.phoneCongregationPass {
+            headers.add(name: "phonePass", value: phoneCongregationPass)
+        }
+        
         
         return headers
     }

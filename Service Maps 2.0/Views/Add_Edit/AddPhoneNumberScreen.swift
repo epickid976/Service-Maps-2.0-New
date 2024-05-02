@@ -46,7 +46,7 @@ struct AddPhoneNumberScreen: View {
                 //.frame(alignment: .leading)
                 //.hSpacing(.center)
                     .padding(.leading)
-                CustomField(text: $viewModel.numberText, isFocused: $numberTextFocus, textfield: true, keyboardType: .numberPad, textfieldAxis: .vertical, placeholder: "#")
+                CustomField(text: $viewModel.numberText, isFocused: $numberTextFocus, textfield: true, keyboardType: .numberPad, textfieldAxis: .vertical, formatAsPhone: true, placeholder: "#")
                     .padding(.bottom)
                 Text("House")
                     .font(.headline)
@@ -168,7 +168,7 @@ class AddPhoneNumberViewModel: ObservableObject {
         let numberObject = PhoneNumberObject()
         numberObject.id = territory.id + String(Date().timeIntervalSince1970 * 1000)
         numberObject.congregation = territory.congregation
-        numberObject.number = numberText
+        numberObject.number = numberText.removeFormatting()
         numberObject.house = houseText == "" ? nil : houseText
         numberObject.territory = territory.id
         return await dataUploader.addNumber(number: numberObject)
@@ -179,7 +179,7 @@ class AddPhoneNumberViewModel: ObservableObject {
         let numberObject = PhoneNumberObject()
         numberObject.id = number.id
         numberObject.congregation = number.congregation
-        numberObject.number = numberText
+        numberObject.number = numberText.removeFormatting()
         numberObject.house = houseText == "" ? nil : houseText
         numberObject.territory = number.territory
         return await dataUploader.updateNumber(number: numberObject)
@@ -188,6 +188,9 @@ class AddPhoneNumberViewModel: ObservableObject {
     func checkInfo() -> Bool {
         if numberText == "" {
             error = "Phone Number is required."
+            return false
+        } else if !numberText.isValidPhoneNumber() {
+            error = "That is not a valid phone number."
             return false
         } else {
             return true

@@ -242,7 +242,7 @@ class RealmManager: ObservableObject {
                 try realmDatabase.write {
                     entity.date = phoneCall.date
                     entity.notes = phoneCall.notes
-                    entity.phoneNumber = phoneCall.phoneNumber
+                    entity.phoneNumber = phoneCall.phonenumber
                     entity.user = phoneCall.user
                 }
             } else {
@@ -701,7 +701,7 @@ class RealmManager: ObservableObject {
                 var data = [PhoneCallData]()
                 
                 phoneCalls.filter { $0.phoneNumber == phoneNumberId }.forEach { call in
-                    let callToAdd = PhoneCallModel(id: call.id, phoneNumber: call.phoneNumber, date: call.date, notes: call.notes, user: (call.user == email ? name : call.user) ?? "", created_at: "", updated_at: "")
+                    let callToAdd = PhoneCallModel(id: call.id, phonenumber: call.phoneNumber, date: call.date, notes: call.notes, user: (call.user == email ? name : call.user) ?? "", created_at: "", updated_at: "")
                     data.append(
                         PhoneCallData(
                             id: UUID(),

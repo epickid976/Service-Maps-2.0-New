@@ -27,16 +27,15 @@ struct SettingsView: View {
             VStack {
                 viewModel.profile()
                 Spacer().frame(height: 25)
+                if !AuthorizationLevelManager().existsAdminCredentials() {
+                    viewModel.phoneLoginInfoCell()
+                }
                 viewModel.administratorInfoCell()
                 viewModel.infosView()
                 Spacer().frame(height: 25)
                 viewModel.deleteCacheMenu()
                 Spacer().frame(height: 25)
                 viewModel.deleteAccount()
-                //App Info (Clear Cache, Share App, Privacy Policy, About App)
-                //                ImagePipeline.shared.cache.removeAll()
-                //                DataLoader.sharedUrlCache.removeAllCachedResponses()
-                //Delete Account
             }
             .padding(.vertical)
             .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
@@ -88,10 +87,17 @@ struct SettingsView: View {
                     viewModel.presentSheet = false
                 }
             }
+            
             .padding()
             .fullScreenCover(isPresented: $viewModel.presentPolicy) {
                 NavigationStack {
                     PrivacyPolicy(sheet: true)
+                }
+            }
+            .fullScreenCover(isPresented: $viewModel.phoneBookLogin) {
+                PhoneLoginScreen {
+                    synchronizationManager.startupProcess(synchronizing: true)
+                    viewModel.phoneBookLogin = false
                 }
             }
         }

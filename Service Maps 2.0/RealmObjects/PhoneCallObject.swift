@@ -21,7 +21,7 @@ class PhoneCallObject: Object, Identifiable {
     
     static func == (lhs: PhoneCallObject, rhs: PhoneCallModel) -> Bool {
         return lhs.id == rhs.id &&
-               lhs.phoneNumber == rhs.phoneNumber &&
+               lhs.phoneNumber == rhs.phonenumber &&
                lhs.date == rhs.date &&
                lhs.notes == rhs.notes && // Match description property name
                lhs.user == rhs.user
@@ -30,7 +30,7 @@ class PhoneCallObject: Object, Identifiable {
     func createTerritoryObject(from model: PhoneCallModel) -> PhoneCallObject {
       let territoryObject = PhoneCallObject()
       territoryObject.id = model.id
-      territoryObject.phoneNumber = model.phoneNumber
+      territoryObject.phoneNumber = model.phonenumber
       territoryObject.date = model.date
       territoryObject.notes = model.notes  // Match description property name
       territoryObject.user = model.user

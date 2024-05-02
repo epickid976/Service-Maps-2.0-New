@@ -566,6 +566,7 @@ class DataUploaderManager: ObservableObject {
             try await adminApi.addCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
             result = Result.success(true)
         } catch {
+            print(error)
             result = Result.failure(error)
         }
         

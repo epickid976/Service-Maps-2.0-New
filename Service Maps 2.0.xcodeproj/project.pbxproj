@@ -158,6 +158,10 @@
 		82F75C302BE27919002CCAB0 /* PhoneCallData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C2F2BE27919002CCAB0 /* PhoneCallData.swift */; };
 		82F75C342BE29886002CCAB0 /* PhoneNumbersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C332BE29886002CCAB0 /* PhoneNumbersView.swift */; };
 		82F75C362BE2A5C8002CCAB0 /* AddPhoneNumberScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C352BE2A5C8002CCAB0 /* AddPhoneNumberScreen.swift */; };
+		82F75C382BE2D1A8002CCAB0 /* CallsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C372BE2D1A8002CCAB0 /* CallsView.swift */; };
+		82F75C3A2BE2D1BA002CCAB0 /* CallsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C392BE2D1BA002CCAB0 /* CallsViewModel.swift */; };
+		82F75C3C2BE2D6D7002CCAB0 /* AddCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C3B2BE2D6D7002CCAB0 /* AddCallView.swift */; };
+		82F75C3E2BE2D6E3002CCAB0 /* AddCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C3D2BE2D6E3002CCAB0 /* AddCallViewModel.swift */; };
 		82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */; };
 		82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913082BDAB27F00644A67 /* LinkScreens.swift */; };
 		82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9130B2BDAE7D000644A67 /* ValidationView.swift */; };
@@ -302,6 +306,10 @@
 		82F75C2F2BE27919002CCAB0 /* PhoneCallData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneCallData.swift; sourceTree = "<group>"; };
 		82F75C332BE29886002CCAB0 /* PhoneNumbersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumbersView.swift; sourceTree = "<group>"; };
 		82F75C352BE2A5C8002CCAB0 /* AddPhoneNumberScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhoneNumberScreen.swift; sourceTree = "<group>"; };
+		82F75C372BE2D1A8002CCAB0 /* CallsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsView.swift; sourceTree = "<group>"; };
+		82F75C392BE2D1BA002CCAB0 /* CallsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsViewModel.swift; sourceTree = "<group>"; };
+		82F75C3B2BE2D6D7002CCAB0 /* AddCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCallView.swift; sourceTree = "<group>"; };
+		82F75C3D2BE2D6E3002CCAB0 /* AddCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCallViewModel.swift; sourceTree = "<group>"; };
 		82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Service Maps 2.0.entitlements"; sourceTree = "<group>"; };
 		82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalLinksManager.swift; sourceTree = "<group>"; };
 		82F913082BDAB27F00644A67 /* LinkScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkScreens.swift; sourceTree = "<group>"; };
@@ -519,6 +527,7 @@
 				823FD4DB2A8165300036A1DD /* SettingsView.swift */,
 				82F75C252BE15A2E002CCAB0 /* PhoneTerritoriesScreen.swift */,
 				82F75C332BE29886002CCAB0 /* PhoneNumbersView.swift */,
+				82F75C372BE2D1A8002CCAB0 /* CallsView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -565,6 +574,8 @@
 				82A5B4672BD815A200F52F2F /* AddKeyViewModel.swift */,
 				82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */,
 				82F75C292BE15F04002CCAB0 /* PhoneScreenViewModel.swift */,
+				82F75C392BE2D1BA002CCAB0 /* CallsViewModel.swift */,
+				82F75C3D2BE2D6E3002CCAB0 /* AddCallViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -644,6 +655,7 @@
 				82A5B4692BD820BB00F52F2F /* AddKeyView.swift */,
 				82F75C2B2BE160F5002CCAB0 /* AddPhoneTerritoryView.swift */,
 				82F75C352BE2A5C8002CCAB0 /* AddPhoneNumberScreen.swift */,
+				82F75C3B2BE2D6D7002CCAB0 /* AddCallView.swift */,
 			);
 			path = Add_Edit;
 			sourceTree = "<group>";
@@ -779,6 +791,7 @@
 			files = (
 				82F75C1E2BE13710002CCAB0 /* PhoneTerritoryObject.swift in Sources */,
 				824213772A8332EB00626DD5 /* CustomField.swift in Sources */,
+				82F75C3E2BE2D6E3002CCAB0 /* AddCallViewModel.swift in Sources */,
 				822FA0A72AA77A200008FA61 /* CirlceButtonStyle.swift in Sources */,
 				8209340D2A7ADB3700AF3FF1 /* SignupView.swift in Sources */,
 				825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */,
@@ -804,6 +817,7 @@
 				822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */,
 				82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */,
 				82F75C342BE29886002CCAB0 /* PhoneNumbersView.swift in Sources */,
+				82F75C3C2BE2D6D7002CCAB0 /* AddCallView.swift in Sources */,
 				82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */,
 				825645AF2BCE12DA00F18AC9 /* TerritoryAddressObject.swift in Sources */,
 				824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */,
@@ -841,6 +855,7 @@
 				824E5CEE2BC37962001DE348 /* VisitsViewModel.swift in Sources */,
 				820934052A7ABB6D00AF3FF1 /* LottieAnimationUIView.swift in Sources */,
 				824213792A83335B00626DD5 /* CustomBackButton.swift in Sources */,
+				82F75C382BE2D1A8002CCAB0 /* CallsView.swift in Sources */,
 				82A5B45D2BD2F65E00F52F2F /* AddAddressViewModel.swift in Sources */,
 				820933DE2A78425F00AF3FF1 /* CongregationAPI.swift in Sources */,
 				821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */,
@@ -884,6 +899,7 @@
 				82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */,
 				820933ED2A785A9400AF3FF1 /* UserAPI.swift in Sources */,
 				825645AB2BCE125000F18AC9 /* TokenObject.swift in Sources */,
+				82F75C3A2BE2D1BA002CCAB0 /* CallsViewModel.swift in Sources */,
 				826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */,
 				82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */,
 				821C126E2A780B310050D106 /* UserResponse.swift in Sources */,
@@ -1053,6 +1069,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Service-Maps-2-0-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Service Maps";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1062,7 +1079,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1084,6 +1101,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Service-Maps-2-0-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Service Maps";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1093,7 +1111,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

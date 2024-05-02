@@ -9,7 +9,7 @@ import Foundation
 
 struct PhoneCallModel: Codable, Equatable, Hashable, Identifiable{
     var id: String
-    var phoneNumber: String
+    var phonenumber: String
     var date: Int64
     var notes: String
     var user: String
@@ -18,7 +18,7 @@ struct PhoneCallModel: Codable, Equatable, Hashable, Identifiable{
     
     static func == (lhs: PhoneCallModel, rhs: PhoneCallModel) -> Bool {
         return lhs.id == rhs.id &&
-        lhs.phoneNumber == rhs.phoneNumber &&
+        lhs.phonenumber == rhs.phonenumber &&
         lhs.date == rhs.date &&
         lhs.notes == rhs.notes &&
         lhs.user == rhs.user
@@ -26,7 +26,7 @@ struct PhoneCallModel: Codable, Equatable, Hashable, Identifiable{
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-        hasher.combine(phoneNumber)
+        hasher.combine(phonenumber)
         hasher.combine(date)
         hasher.combine(notes)
         hasher.combine(user)// Combine an empty string for optional floor
@@ -60,7 +60,7 @@ func convertPhoneNumberModelToPhoneNumberModel(model: PhoneNumberObject) -> Phon
 func convertPhoneCallModelToPhoneCallModel(model: PhoneCallObject) -> PhoneCallModel {
   return PhoneCallModel(
     id: model.id,
-    phoneNumber: model.phoneNumber,
+    phonenumber: model.phoneNumber,
     date: model.date,
     notes: model.notes,
     user: model.user,

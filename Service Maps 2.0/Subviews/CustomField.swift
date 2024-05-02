@@ -16,6 +16,7 @@ struct CustomField: View {
     var textAlignment: TextAlignment?
     var textfieldAxis: Axis?
     var disabled: Bool?
+    var formatAsPhone: Bool?
     
     let placeholder: String
     
@@ -37,6 +38,18 @@ struct CustomField: View {
                 .keyboardType(keyboardType ?? .default)
                 .multilineTextAlignment(textAlignment ?? .leading)
                 .frame(minHeight: 40)
+                .optionalViewModifier { content in
+                    if formatAsPhone != nil {
+                        if formatAsPhone! {
+                            content
+                                .onChange(of: text) { newValue in
+                                    text = newValue.formatPhoneNumber()
+                                }
+                        }
+                    } else {
+                        content
+                    }
+                }
         } else {
             SecureField(placeholder, text: $text)
                 .padding()
@@ -56,4 +69,5 @@ struct CustomField: View {
         }
         
     }
+    
 }

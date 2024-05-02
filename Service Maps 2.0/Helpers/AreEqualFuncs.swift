@@ -17,4 +17,44 @@ func areEqual(tokenModel: MyTokenModel, tokenObject: TokenObject) -> Bool {
          tokenModel.user == tokenObject.user
 }
 
+extension String {
+    func formatPhoneNumber() -> String {
+        let cleanNumber = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        
+        let mask = "(XXX) XXX-XXXX"
+        
+        var result = ""
+        var startIndex = cleanNumber.startIndex
+        var endIndex = cleanNumber.endIndex
+        
+        for char in mask where startIndex < endIndex {
+            if char == "X" {
+                result.append(cleanNumber[startIndex])
+                startIndex = cleanNumber.index(after: startIndex)
+            } else {
+                result.append(char)
+            }
+        }
+        
+        return result
+    }
+}
+
+extension String {
+  func removeFormatting() -> String {
+    return replacingOccurrences(of: "(", with: "").replacingOccurrences(of: ")", with: "").replacingOccurrences(of: "-", with: "").replacingOccurrences(of: " ", with: "")
+  }
+}
+
+extension String {
+    func isValidPhoneNumber() -> Bool {
+        // Use a regular expression to match a valid phone number format
+        let phoneRegex = "^\\(\\d{3}\\) \\d{3}-\\d{4}$"
+        let phoneTest = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
+        return phoneTest.evaluate(with: self)
+    }
+}
+
+
+
 

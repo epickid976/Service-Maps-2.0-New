@@ -85,7 +85,7 @@ struct PhoneNumbersView: View {
                                 SwipeViewGroup {
                                     ForEach(viewModel.phoneNumbersData!) { numbersData in
                                         SwipeView {
-                                            NavigationLink(destination: EmptyView()) {
+                                            NavigationLink(destination: CallsView(phoneNumber: numbersData.phoneNumber)) {
                                                 viewModel.numbersCell(numbersData: numbersData)
                                                     .padding(.bottom, 2)
                                             }
@@ -272,10 +272,10 @@ class NumbersViewModel: ObservableObject {
     
     func numbersCell(numbersData: PhoneNumbersData) -> some View {
         SwipeView {
-            NavigationLink(destination: EmptyView()) {
+            NavigationLink(destination: CallsView(phoneNumber: numbersData.phoneNumber)) {
                 HStack(spacing: 10) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("\(numbersData.phoneNumber.number)")
+                        Text("\(numbersData.phoneNumber.number.formatPhoneNumber())")
                             .font(.headline)
                             .fontWeight(.heavy)
                             .foregroundColor(.primary)

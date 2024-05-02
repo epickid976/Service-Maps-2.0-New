@@ -16,6 +16,8 @@ class AuthorizationProvider: ObservableObject {
         self.token = defaults.string(forKey: tokenKey)
         self.congregationId = Int64(defaults.integer(forKey: congregationIdKey))
         self.congregationPass = defaults.string(forKey: congregationPassKey)
+        self.phoneCongregationId = defaults.string(forKey: phoneCongregationIdKey)
+        self.phoneCongregationPass = defaults.string(forKey: phoneCongregationPassKey)
     }
     
     //MARK: Keys

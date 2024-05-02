@@ -40,6 +40,7 @@ class UserAPI {
             
             return Result.success(reply)
         } catch {
+            
             return Result.failure(error)
         }
     }

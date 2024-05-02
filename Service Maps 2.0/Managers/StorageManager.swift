@@ -106,6 +106,7 @@ class StorageManager: ObservableObject {
     self.congregationName = defaults.string(forKey: congregationnameKey)
     self.passTemp = defaults.string(forKey: passTempKey)
     self.synchronized = defaults.bool(forKey: synchronizedKey)
+      self.phoneCongregationName = defaults.string(forKey: phoneCongregationNameKey)
     if let data = defaults.data(forKey: pendingChangesKey) {
       do {
         // Create JSON Decoder

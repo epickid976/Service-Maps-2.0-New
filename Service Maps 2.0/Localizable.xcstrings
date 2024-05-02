@@ -33,6 +33,22 @@
         }
       }
     },
+    "%@ Call" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Llamada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Appel"
+          }
+        }
+      }
+    },
     "%@ House" : {
       "localizations" : {
         "es" : {
@@ -50,10 +66,36 @@
       }
     },
     "%@ Number" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Número"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Numéro"
+          }
+        }
+      }
     },
     "%@ Phone Number" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Número Telefónico"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Numéro Téléphonique"
+          }
+        }
+      }
     },
     "%@ Territory" : {
       "localizations" : {
@@ -250,6 +292,22 @@
         }
       }
     },
+    "Are you sure you want to delete the selected call?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Esta seguro de que quiere borrar esta llamada?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sur de vouloir supprimer cet appel?"
+          }
+        }
+      }
+    },
     "Are you sure you want to delete the selected house?" : {
       "localizations" : {
         "es" : {
@@ -278,6 +336,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Êtes-vous sur de vouloir supprimer cette clé ?"
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete the selected number?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Esta seguro de que quiere borrar este número?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sur de vouloir supprimer ce numéro?"
           }
         }
       }
@@ -474,6 +548,22 @@
         }
       }
     },
+    "Delete Call" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar Llamada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l'Appel"
+          }
+        }
+      }
+    },
     "Delete House %@" : {
       "localizations" : {
         "es" : {
@@ -507,7 +597,20 @@
       }
     },
     "Delete Number: %@" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar Número: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer le Numéro: %@"
+          }
+        }
+      }
     },
     "Delete Territory %@" : {
       "localizations" : {
@@ -621,6 +724,22 @@
         }
       }
     },
+    "Error deleting call, please try again later" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al borrar llamada, por favor intente más tarde"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une erreur est survenu en supprimant l'appel, essayez plus tard."
+          }
+        }
+      }
+    },
     "Error deleting house, please try again later" : {
       "localizations" : {
         "es" : {
@@ -649,6 +768,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une erreur est survenu en supprimant la clé, essayez plus tard."
+          }
+        }
+      }
+    },
+    "Error deleting number, please try again later" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al borrar número, por favor intente más tarde"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une erreur est survenu en supprimant le numéro, essayez plus tard."
           }
         }
       }
@@ -706,13 +841,38 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "M"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "H"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "H"
           }
         }
       }
     },
     "House" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maison"
+          }
+        }
+      }
     },
     "House: %@" : {
       "localizations" : {
@@ -826,6 +986,22 @@
         }
       }
     },
+    "Log into Phone Book" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar Sesión a Repertorio Telefónico"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se connecter au Répertoire Téléphonique"
+          }
+        }
+      }
+    },
     "Login" : {
       "localizations" : {
         "es" : {
@@ -848,6 +1024,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "W"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "M"
           }
         },
         "fr" : {
@@ -880,6 +1062,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "NH"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NC"
           }
         },
         "fr" : {
@@ -946,6 +1134,12 @@
             "value" : "DV"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NT"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -986,8 +1180,37 @@
         }
       }
     },
+    "Number: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Número: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéro: %@"
+          }
+        }
+      }
+    },
     "Numbers" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Números"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéros"
+          }
+        }
+      }
     },
     "O" : {
       "localizations" : {
@@ -995,6 +1218,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "B"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O"
           }
         },
         "fr" : {
@@ -1049,6 +1278,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Confirmation de Mot de Passe"
+          }
+        }
+      }
+    },
+    "Phone Book" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repertorio Telefónico"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Répertoire Téléphonique"
           }
         }
       }

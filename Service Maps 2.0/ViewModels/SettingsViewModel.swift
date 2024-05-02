@@ -32,10 +32,15 @@ class SettingsViewModel: ObservableObject {
         authenticationManager.exitAdministrator()
     }
     
+    func exitPhoneLogin() {
+        authenticationManager.exitPhoneLogin()
+    }
+    
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     
     @Published var presentSheet = false
+    @Published var phoneBookLogin = false
     @Published var presentPolicy = false
     @Published var showAlert = false
     @Published var showDeletionAlert = false
@@ -88,6 +93,70 @@ class SettingsViewModel: ObservableObject {
                     }
                 }
             }
+        }.padding(.bottom)
+    }
+    
+    @ViewBuilder
+    func phoneLoginInfoCell() -> some View {
+        VStack {
+            HStack {
+                if dataStore.phoneCongregationName != nil {
+                    VStack {
+                        HStack {
+                            VStack {
+                                Text("Phone Book")
+                                    .font(.title3)
+                                    .lineLimit(4)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.heavy)
+                                    .hSpacing(.leading)
+                                HStack {
+                                    Image(systemName: "house.lodge.fill")
+                                    
+                                    Text("\(dataStore.phoneCongregationName!)")
+                                        .font(.headline)
+                                        .lineLimit(4)
+                                        .foregroundColor(.primary)
+                                        .fontWeight(.heavy)
+                                        .hSpacing(.leading)
+                                }
+                            }
+                            CustomBackButton(showImage: false, text: "Exit") {
+                                self.exitPhoneLogin()
+                                self.synchronizationManager.startupProcess(synchronizing: true)
+                            }
+                            .frame(maxWidth: 120)
+                            .hSpacing(.trailing)
+                            
+                        }
+                    }
+                } else {
+                    HStack {
+                        HStack {
+                            Image(systemName: "book.pages.fill")
+                                .imageScale(.large)
+                                .padding(.horizontal)
+                            Text("Log into Phone Book")
+                                .font(.title3)
+                                .lineLimit(1)
+                                .foregroundColor(.primary)
+                                .fontWeight(.heavy)
+                        }
+                        .hSpacing(.leading)
+                        Spacer()
+                        Image(systemName: "arrowshape.right.circle.fill")
+                            .imageScale(.large)
+                            .padding(.horizontal)
+                    }.onTapGesture {
+                        self.phoneBookLogin = true
+                    }
+                    //.padding(.horizontal)
+                }
+            }
+            .padding(10)
+            .frame(minWidth: UIScreen.main.bounds.width * 0.95, minHeight: 75)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }.padding(.bottom)
     }
     

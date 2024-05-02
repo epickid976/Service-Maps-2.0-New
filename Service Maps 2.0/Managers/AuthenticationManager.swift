@@ -164,6 +164,10 @@ class AuthenticationManager: ObservableObject {
         AuthorizationLevelManager().exitAdministrator()
     }
     
+    func exitPhoneLogin() {
+        AuthorizationLevelManager().exitPhoneLogin()
+    }
+    
     func signInPhone(congregationSignInForm: CongregationSignInForm) async -> Result<CongregationResponse, Error> {
         
         do {

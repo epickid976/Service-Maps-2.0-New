@@ -174,6 +174,11 @@ class AuthorizationLevelManager: ObservableObject {
         dataStore.congregationName = nil
     }
     
+    func exitPhoneLogin() {
+        authorizationProvider.phoneCongregationId = nil
+        authorizationProvider.phoneCongregationPass = nil
+    }
+    
     func existsPhoneCredentials() -> Bool {
         return authorizationProvider.phoneCongregationId != nil && authorizationProvider.phoneCongregationPass != nil
     }
@@ -182,8 +187,8 @@ class AuthorizationLevelManager: ObservableObject {
         if existsPhoneCredentials() {
             do {
                 _ = try await CongregationAPI().phoneSignIn(congregationSignInForm: CongregationSignInForm(
-                    id: authorizationProvider.congregationId!,
-                    password: authorizationProvider.congregationPass!)
+                    id: Int64(authorizationProvider.phoneCongregationId!)!,
+                    password: authorizationProvider.phoneCongregationPass!)
                     )
             } catch {
                 if let error = error.asAFError {
@@ -197,7 +202,9 @@ class AuthorizationLevelManager: ObservableObject {
     }
     
     func setPhoneCredentials(password: String, congregationResponse: CongregationResponse) {
-        authorizationProvider.phoneCongregationId = congregationResponse.id
-        authorizationProvider.phoneCongregationPass = password
+        DispatchQueue.main.async {
+            self.authorizationProvider.phoneCongregationId = congregationResponse.id
+            self.authorizationProvider.phoneCongregationPass = password
+        }
     }
 }

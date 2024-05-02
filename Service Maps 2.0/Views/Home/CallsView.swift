@@ -1,9 +1,10 @@
 //
-//  VisitsView.swift
+//  CallsView.swift
 //  Service Maps 2.0
 //
-//  Created by Jose Blanco on 9/5/23.
+//  Created by Jose Blanco on 5/1/24.
 //
+
 import SwiftUI
 import CoreData
 import NavigationTransitions
@@ -14,11 +15,9 @@ import Lottie
 import AlertKit
 import PopupView
 
-
-struct VisitsView: View {
-    
-    @StateObject var viewModel: VisitsViewModel
-    var house: HouseModel
+struct CallsView: View {
+    @StateObject var viewModel: CallsViewModel
+    var phoneNumber: PhoneNumberModel
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -30,9 +29,9 @@ struct VisitsView: View {
     @State var scrollOffset: CGFloat = 0.00
     @State private var isScrollingDown = false
     
-    init(house: HouseModel) {
-        self.house = house
-        let initialViewModel = VisitsViewModel(house: house)
+    init(phoneNumber: PhoneNumberModel) {
+        self.phoneNumber = phoneNumber
+        let initialViewModel = CallsViewModel(phoneNumber: phoneNumber)
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
@@ -43,7 +42,7 @@ struct VisitsView: View {
         ScrollView {
             ZStack {
                 VStack {
-                    if viewModel.visitData == nil || viewModel.dataStore.synchronized == false {
+                    if viewModel.callsData == nil || viewModel.dataStore.synchronized == false {
                         if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                             LottieView(animation: .named("loadsimple"))
                                 .playing()
@@ -64,7 +63,7 @@ struct VisitsView: View {
                                 .frame(width: 350, height: 350)
                         }
                     } else {
-                        if viewModel.visitData!.isEmpty {
+                        if viewModel.callsData!.isEmpty {
                             VStack {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("nodatapreview"))
@@ -82,25 +81,25 @@ struct VisitsView: View {
                         } else {
                             LazyVStack {
                                 SwipeViewGroup {
-                                    ForEach(viewModel.visitData!, id: \.self) { visitData in
-                                        viewModel.visitCellView(visitData: visitData)
+                                    ForEach(viewModel.callsData!, id: \.self) { callData in
+                                        viewModel.callCellView(callData: callData)
                                     }
-                                    .animation(.default, value: viewModel.visitData!)
+                                    .animation(.default, value: viewModel.callsData!)
                                     
                                     
                                 }
-                            }.animation(.spring(), value: viewModel.visitData)
+                            }.animation(.spring(), value: viewModel.callsData)
                                 .padding()
                             
                             
                         }
                     }
                 }
-                .animation(.easeInOut(duration: 0.25), value: viewModel.visitData == nil || animationProgressTime < 0.25)
+                .animation(.easeInOut(duration: 0.25), value: viewModel.callsData == nil || animationProgressTime < 0.25)
                 .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                 .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                 .popup(isPresented: $viewModel.showAlert) {
-                    if viewModel.visitToDelete != nil{
+                    if viewModel.callToDelete != nil{
                         viewModel.alert()
                             .frame(width: 400, height: 260)
                             .background(Material.thin).cornerRadius(16, corners: .allCorners)
@@ -116,11 +115,11 @@ struct VisitsView: View {
                         .backgroundColor(.black.opacity(0.8))
                 }
                 .popup(isPresented: $viewModel.presentSheet) {
-                    AddVisitView(visit: viewModel.currentVisit, house: house) {
+                    AddCallView(call: viewModel.currentCall, phoneNumber: phoneNumber) {
                         DispatchQueue.main.async {
                             viewModel.presentSheet = false
                             viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                            viewModel.getVisits()
+                            viewModel.getCalls()
                             viewModel.showAddedToast = true
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -144,7 +143,7 @@ struct VisitsView: View {
                 }
             }
             //.scrollIndicators(.hidden)
-            .navigationBarTitle("House: \(viewModel.house.number)", displayMode: .automatic)
+            .navigationBarTitle("Number: \(viewModel.phoneNumber.number)", displayMode: .automatic)
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
@@ -161,6 +160,7 @@ struct VisitsView: View {
                     HStack {
                         Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })
                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                        
                             Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
                                 .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                         
@@ -174,11 +174,4 @@ struct VisitsView: View {
             viewModel.synchronizationManager.startupProcess(synchronizing: true)
         }
     }
-    
 }
-
-
-
-//#Preview {
-//    VisitsView()
-//}
