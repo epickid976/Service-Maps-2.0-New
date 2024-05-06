@@ -22,7 +22,7 @@ struct VisitCell: View {
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
-                    }.frame(maxWidth: UIScreen.screenWidth * 0.7, maxHeight: 100)
+                    }.frame(maxWidth: UIScreen.screenWidth * 0.9, maxHeight: 100)
                     
                     HStack {
                         Text(visit.visit.symbol.localizedUppercase)
@@ -32,7 +32,7 @@ struct VisitCell: View {
                             .fontWeight(.heavy)
                             .hSpacing(.trailing)
                     }
-                    .frame(maxWidth: UIScreen.screenWidth * 0.3, maxHeight: 100)
+                    .frame(maxWidth: UIScreen.screenWidth * 0.1, maxHeight: 100)
                 }
                 
                 Text(visit.visit.notes)

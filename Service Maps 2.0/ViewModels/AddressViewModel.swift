@@ -65,7 +65,7 @@ class AddressViewModel: ObservableObject {
     
     func addressCell(addressData: AddressData) -> some View {
         SwipeView {
-            NavigationLink(destination: HousesView(address: addressData.address)) {
+            NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address))) {
                 HStack(spacing: 10) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(addressData.address.address)")
@@ -210,6 +210,8 @@ class AddressViewModel: ObservableObject {
             Text(territory.description)
                 .font(.body)
                 .fontWeight(.heavy)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxHeight: 75)
         .animation(.easeInOut(duration: 0.25), value: progress)

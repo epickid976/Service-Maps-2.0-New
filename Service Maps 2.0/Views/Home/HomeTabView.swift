@@ -65,19 +65,20 @@ struct HomeTabView: View {
                     }
                     .frame(maxWidth: .infinity)
                     
-                    Button(action: {
-                        withAnimation(.default) {
-                            selectedTab = 1
+                    if authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials() {
+                        Button(action: {
+                            withAnimation(.default) {
+                                selectedTab = 1
+                            }
+                        }) {
+                            Image(systemName: selectedTab == 1 ? "phone.connection.fill" : "phone.connection")
+                                .imageScale(.large)
+                                .foregroundColor(selectedTab == 1 ? .blue : .gray)
+                                .scaleEffect(selectedTab == 1 ? 1.2 : 1.0) // Add scale effect
                         }
-                    }) {
-                        Image(systemName: selectedTab == 1 ? "phone.connection.fill" : "phone.connection")
-                            .imageScale(.large)
-                            .foregroundColor(selectedTab == 1 ? .blue : .gray)
-                            .scaleEffect(selectedTab == 1 ? 1.2 : 1.0) // Add scale effect
+                        .frame(maxWidth: .infinity)
                     }
-                    .frame(maxWidth: .infinity)
-                    
-                    //if authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials() {
+                   
                         Button(action: {
                             withAnimation(.default) {
                                 selectedTab = 2
@@ -89,7 +90,7 @@ struct HomeTabView: View {
                                 .scaleEffect(selectedTab == 2 ? 1.2 : 1.0) // Add scale effect
                         }
                         .frame(maxWidth: .infinity)
-                    //}
+                    
                     
                     Button(action: {
                         withAnimation(.default) {

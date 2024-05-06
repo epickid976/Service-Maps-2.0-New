@@ -42,7 +42,7 @@ struct TerritoryView: View {
                     if viewModel.territoryData == nil || viewModel.dataStore.synchronized == false {
                         if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                             LottieView(animation: .named("loadsimple"))
-                                .playing()
+                                .playing(loopMode: .loop)
                                 .resizable()
                                 .animationDidFinish { completed in
                                     self.animationDone = completed
@@ -51,7 +51,7 @@ struct TerritoryView: View {
                                 .frame(width: 250, height: 250)
                         } else {
                             LottieView(animation: .named("loadsimple"))
-                                .playing()
+                                .playing(loopMode: .loop)
                                 .resizable()
                                 .animationDidFinish { completed in
                                     self.animationDone = completed

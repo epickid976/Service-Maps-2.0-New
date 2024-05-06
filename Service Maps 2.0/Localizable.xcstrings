@@ -196,6 +196,22 @@
         }
       }
     },
+    "Add House" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir Casa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter Maison"
+          }
+        }
+      }
+    },
     "Add Key" : {
       "localizations" : {
         "es" : {
@@ -469,6 +485,7 @@
       }
     },
     "Date: " : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -816,6 +833,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tout dans la paume de votre main"
+          }
+        }
+      }
+    },
+    "Filter" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrer"
           }
         }
       }
@@ -1560,6 +1593,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Se Registrer"
+          }
+        }
+      }
+    },
+    "Sort" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trier"
           }
         }
       }

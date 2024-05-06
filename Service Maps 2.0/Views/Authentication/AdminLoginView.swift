@@ -52,6 +52,8 @@ struct AdminLoginView: View {
     @State var loginErrorText = ""
     @State var loginError = false
     
+    @Environment(\.sizeCategory) var sizeCategory
+    
     var body: some View {
         
         NavigationStack {
@@ -59,7 +61,7 @@ struct AdminLoginView: View {
                 
                 Text("Congregation \nLogin")
                     .frame(alignment:.leading)
-                    .font(.largeTitle)
+                    .font(sizeCategory == .large || sizeCategory == .extraLarge ? .largeTitle : .title2)
                     .fontWeight(.black)
                     .multilineTextAlignment(.leading)
                     .hSpacing(.leading)
@@ -207,6 +209,9 @@ struct AdminLoginView: View {
                 }
                 .padding()
                 
+            }
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("\(alertTitle)"), message: Text("\(alertMessage)"), dismissButton: .default(Text("OK")))
             }
             .padding()
             

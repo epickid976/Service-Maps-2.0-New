@@ -1,5 +1,5 @@
 {
-  "originHash" : "be05a5417627c63ff034de4e48231c0cfc06cbab2d39b36d3958c06fa097c1f0",
+  "originHash" : "2915c1e44a306609ca9e8de5f12a1ca99eca368637ed03adacb23623a8c928b0",
   "pins" : [
     {
       "identity" : "activityindicatorview",
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/exyte/ScalingHeaderScrollView",
       "state" : {
-        "revision" : "a3d0454aeebaf70362806599d8287db21724e349",
-        "version" : "1.1.0"
+        "revision" : "77274e1936b654322e736b43d63b548cea10eb30",
+        "version" : "1.1.3"
       }
     },
     {

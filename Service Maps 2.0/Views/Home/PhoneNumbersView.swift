@@ -30,44 +30,33 @@ struct PhoneNumbersView: View {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
+    @State var isLoading = false
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Number Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     let alertViewAdded = AlertAppleMusic17View(title: "Number Added", subtitle: nil, icon: .done)
     
     var body: some View {
-        ZStack {
             ScalingHeaderScrollView {
                 ZStack {
                     Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
                     viewModel.largeHeader(progress: viewModel.progress)
-                    
-                    
                 }
             } content: {
-                VStack {
+                LazyVStack {
                     if viewModel.phoneNumbersData == nil || viewModel.dataStore.synchronized == false {
                         if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                             LottieView(animation: .named("loadsimple"))
-                                .playing()
+                                .playing(loopMode: .loop)
                                 .resizable()
-                                .animationDidFinish { completed in
-                                    self.animationDone = completed
-                                }
-                                .getRealtimeAnimationProgress($animationProgressTime)
                                 .frame(width: 250, height: 250)
                         } else {
                             LottieView(animation: .named("loadsimple"))
-                                .playing()
+                                .playing(loopMode: .loop)
                                 .resizable()
-                                .animationDidFinish { completed in
-                                    self.animationDone = completed
-                                }
-                                .getRealtimeAnimationProgress($animationProgressTime)
                                 .frame(width: 350, height: 350)
                         }
                     } else {
                         if viewModel.phoneNumbersData!.isEmpty {
-                            VStack {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("nodatapreview"))
                                         .playing()
@@ -79,56 +68,20 @@ struct PhoneNumbersView: View {
                                         .resizable()
                                         .frame(width: 350, height: 350)
                                 }
-                            }
                         } else {
                             LazyVStack {
                                 SwipeViewGroup {
-                                    ForEach(viewModel.phoneNumbersData!) { numbersData in
-                                        SwipeView {
-                                            NavigationLink(destination: CallsView(phoneNumber: numbersData.phoneNumber)) {
-                                                viewModel.numbersCell(numbersData: numbersData)
+                                    ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
+                                            viewModel.numbersCell(numbersData: numbersData)
                                                     .padding(.bottom, 2)
-                                            }
-                                            
-                                        } trailingActions: { context in
-                                            if AuthorizationLevelManager().existsAdminCredentials() {
-                                                SwipeAction(
-                                                    systemImage: "trash",
-                                                    backgroundColor: .red
-                                                ) {
-                                                    DispatchQueue.main.async {
-                                                        self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
-                                                        self.viewModel.showAlert = true
-                                                    }
-                                                }
-                                                .font(.title.weight(.semibold))
-                                                .foregroundColor(.white)
-                                                SwipeAction(
-                                                    systemImage: "pencil",
-                                                    backgroundColor: Color.teal
-                                                ) {
-                                                    context.state.wrappedValue = .closed
-                                                    viewModel.currentNumber = numbersData.phoneNumber
-                                                    viewModel.presentSheet = true
-                                                }
-                                                .allowSwipeToTrigger()
-                                                .font(.title.weight(.semibold))
-                                                .foregroundColor(.white)
-                                            }
-                                        }
-                                        .swipeActionCornerRadius(16)
-                                        .swipeSpacing(5)
-                                        .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
-                                        .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
-                                        .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
-                                        .swipeMinimumDistance(AuthorizationLevelManager().existsAdminCredentials() ? 50:1000)
                                     }
+                                    .animation(.default, value: viewModel.phoneNumbersData)
                                 }
                             }
                             .padding(.horizontal)
                             .padding(.top)
                             .padding(.bottom)
-                            .animation(.default, value: viewModel.phoneNumbersData)
+                            
                             
                         }
                     }
@@ -178,19 +131,15 @@ struct PhoneNumbersView: View {
                         .closeOnTap(false)
                         .backgroundColor(.black.opacity(0.8))
                 }
-                .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil || animationProgressTime < 0.25)
+                .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil)
             }
             .height(min: 180, max: 350.0)
-            //.allowsHeaderCollapse()
             .allowsHeaderGrowth()
-            //.headerIsClipped()
-            //.scrollOffset($scrollOffset)
             .collapseProgress($viewModel.progress)
+            .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
+                synchronizationManager.startupProcess(synchronizing: true)
+            }
             .scrollIndicators(.hidden)
-            //            .navigationDestination(isPresented: $viewModel.presentSheet) {
-            //
-            //            }
-        }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()
         .navigationBarTitle("Numbers", displayMode: .inline)
@@ -270,69 +219,97 @@ class NumbersViewModel: ObservableObject {
     @Published var showToast = false
     @Published var showAddedToast = false
     
+    @ViewBuilder
     func numbersCell(numbersData: PhoneNumbersData) -> some View {
-        SwipeView {
-            NavigationLink(destination: CallsView(phoneNumber: numbersData.phoneNumber)) {
-                HStack(spacing: 10) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("\(numbersData.phoneNumber.number.formatPhoneNumber())")
-                            .font(.headline)
-                            .fontWeight(.heavy)
-                            .foregroundColor(.primary)
-                            .hSpacing(.leading)
-                        Text("House: \(numbersData.phoneNumber.house ?? "N/A")")
-                            .font(.body)
-                            .lineLimit(5)
-                            .foregroundColor(.primary)
-                            .fontWeight(.bold)
-                            .multilineTextAlignment(.leading)
-                            .hSpacing(.leading)
+        LazyVStack {
+            SwipeView {
+                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: numbersData.phoneNumber))) {
+                    HStack(spacing: 10) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(numbersData.phoneNumber.number.formatPhoneNumber())")
+                                .font(.headline)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
+                                .hSpacing(.leading)
+                            Text("House: \(numbersData.phoneNumber.house ?? "N/A")")
+                                .font(.body)
+                                .lineLimit(5)
+                                .foregroundColor(.primary)
+                                .fontWeight(.bold)
+                                .multilineTextAlignment(.leading)
+                                .hSpacing(.leading)
+                            VStack {
+                                HStack {
+                                    if let call = numbersData.phoneCall  {
+                                            Text("Note: \(call.notes)")
+                                                .font(.headline)
+                                                .lineLimit(2)
+                                                .foregroundColor(.primary)
+                                                .fontWeight(.bold)
+                                                .multilineTextAlignment(.leading)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                                .hSpacing(.leading)
+                                        
+                                    } else {
+                                        Text("Note: N/A")
+                                            .font(.headline)
+                                            .lineLimit(2)
+                                            .foregroundColor(.primary)
+                                            .fontWeight(.bold)
+                                            .multilineTextAlignment(.leading)
+                                            .hSpacing(.leading)
+                                        
+                                    }
+                                }
+                            }
+                            .frame(maxWidth: UIScreen.screenWidth * 0.95, maxHeight: 75)
+                        }
+                        .frame(maxWidth: UIScreen.screenWidth * 0.90)
                     }
-                    .frame(maxWidth: UIScreen.screenWidth * 0.90)
+                    //.id(territory.id)
+                    .padding(10)
+                    .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+                    .background(.thinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
-                //.id(territory.id)
-                .padding(10)
-                .frame(minWidth: UIScreen.main.bounds.width * 0.95)
-                .background(.thinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
-        } trailingActions: { context in
-            if AuthorizationLevelManager().existsAdminCredentials() {
-                SwipeAction(
-                    systemImage: "trash",
-                    backgroundColor: .red
-                ) {
-                    DispatchQueue.main.async {
-                        self.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
-                        self.showAlert = true
+            } trailingActions: { context in
+                if self.isAdmin {
+                    SwipeAction(
+                        systemImage: "trash",
+                        backgroundColor: .red
+                    ) {
+                        DispatchQueue.main.async {
+                            self.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
+                            self.showAlert = true
+                        }
                     }
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
+                    SwipeAction(
+                        systemImage: "pencil",
+                        backgroundColor: Color.teal
+                    ) {
+                        context.state.wrappedValue = .closed
+                        self.currentNumber = numbersData.phoneNumber
+                        self.presentSheet = true
+                    }
+                    .allowSwipeToTrigger()
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
                 }
-                .font(.title.weight(.semibold))
-                .foregroundColor(.white)
-                SwipeAction(
-                    systemImage: "pencil",
-                    backgroundColor: Color.teal
-                ) {
-                    context.state.wrappedValue = .closed
-                    self.currentNumber = numbersData.phoneNumber
-                    self.presentSheet = true
-                }
-                .allowSwipeToTrigger()
-                .font(.title.weight(.semibold))
-                .foregroundColor(.white)
             }
+            .swipeActionCornerRadius(16)
+            .swipeSpacing(5)
+            .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
+            .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
+            .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
+            .swipeMinimumDistance(self.isAdmin ? 25:1000)
         }
-        .swipeActionCornerRadius(16)
-        .swipeSpacing(5)
-        .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
-        .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
-        .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
-        .swipeMinimumDistance(AuthorizationLevelManager().existsAdminCredentials() ? 50:1000)
     }
     
     @ViewBuilder
     func largeHeader(progress: CGFloat) -> some View  {
-        VStack {
+        LazyVStack {
             ZStack {
                 VStack {
                     LazyImage(url: URL(string: territory.getImageURL())) { state in
@@ -414,6 +391,8 @@ class NumbersViewModel: ObservableObject {
             Text(territory.description)
                 .font(.body)
                 .fontWeight(.heavy)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxHeight: 75)
         .animation(.easeInOut(duration: 0.25), value: progress)
@@ -511,5 +490,25 @@ extension NumbersViewModel {
                 }
             })
             .store(in: &cancellables)
+    }
+}
+
+extension Binding where Value == Bool {
+    // nagative bool binding same as `!Value`
+    var not: Binding<Value> {
+        Binding<Value> (
+            get: { !self.wrappedValue },
+            set: { self.wrappedValue = $0}
+        )
+    }
+}
+
+struct NavigationLazyView<Content: View>: View {
+    let build: () -> Content
+    init(_ build: @autoclosure @escaping () -> Content) {
+        self.build = build
+    }
+    var body: Content {
+        build()
     }
 }

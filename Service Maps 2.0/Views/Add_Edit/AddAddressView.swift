@@ -34,7 +34,7 @@ struct AddAddressView: View {
         ZStack {
             VStack {
                 Text("\(title) Address")
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)

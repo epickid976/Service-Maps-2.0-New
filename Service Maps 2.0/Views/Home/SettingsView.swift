@@ -20,6 +20,8 @@ struct SettingsView: View {
     @ObservedObject var viewModel = SettingsViewModel()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
+    @Environment(\.sizeCategory) var sizeCategory
+    
     let alertViewDeleted = AlertAppleMusic17View(title: "Cache Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     
     var body: some View {
@@ -40,7 +42,7 @@ struct SettingsView: View {
             .padding(.vertical)
             .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
             .popup(isPresented: $viewModel.showAlert) {
-                viewModel.aboutApp()
+                viewModel.aboutApp(usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true)
                     .frame(width: 400, height: 400)
                     .background(Material.thin).cornerRadius(16, corners: .allCorners)
             } customize: {
@@ -68,7 +70,7 @@ struct SettingsView: View {
                     .backgroundColor(.black.opacity(0.8))
             }
             .popup(isPresented: $viewModel.showDeletionAlert) {
-                viewModel.accountDeletionAlert()
+                viewModel.accountDeletionAlert(usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true)
                     .frame(width: 400, height: 400)
                     .background(Material.thin).cornerRadius(16, corners: .allCorners)
             } customize: {

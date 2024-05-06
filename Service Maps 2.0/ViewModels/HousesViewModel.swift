@@ -57,6 +57,17 @@ class HousesViewModel: ObservableObject {
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     
+    @Published var sortPredicate: HouseSortPredicate = .increasing {
+        didSet {
+            getHouses()
+        }
+    }
+    @Published var filterPredicate: HouseFilterPredicate = .normal {
+        didSet {
+            getHouses()
+        }
+    }
+    
     func deleteHouse(house: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteHouse(house: house)
     }
@@ -83,20 +94,6 @@ class HousesViewModel: ObservableObject {
                 
                 
             }
-            
-            //                if houseData.accessLevel == .Moderator || houseData.accessLevel == .Admin {
-            //                    SwipeAction(
-            //                        systemImage: "pencil",
-            //                        backgroundColor: Color.teal
-            //                    ) {
-            //                        context.state.wrappedValue = .closed
-            //                        self.currentHouse = houseData.house
-            //                        self.presentSheet = true
-            //                    }
-            //                    .allowSwipeToTrigger()
-            //                    .font(.title.weight(.semibold))
-            //                    .foregroundColor(.white)
-            //                }
         }
         .swipeActionCornerRadius(16)
         .swipeSpacing(5)
@@ -192,9 +189,69 @@ extension HousesViewModel {
                 }
             }, receiveValue: { houseData in
                 DispatchQueue.main.async {
-                    self.houseData = houseData.sorted { $0.house.number < $1.house.number }
+                    var data = [HouseData]()
+                    
+                    if self.sortPredicate == .decreasing {
+                        data = houseData.sorted { $0.house.number > $1.house.number }
+                    } else if self.sortPredicate == .increasing {
+                        data = houseData.sorted { $0.house.number < $1.house.number }
+                    }
+                    
+                    if self.filterPredicate == .normal {
+                        if self.sortPredicate == .decreasing {
+                            data = houseData.sorted { $0.house.number > $1.house.number }
+                        } else if self.sortPredicate == .increasing {
+                            data = houseData.sorted { $0.house.number < $1.house.number }
+                        }
+                    } else if self.filterPredicate == .oddEven {
+                        data = sortHousesByNumber(houses: houseData, sort: self.sortPredicate)
+                    }
+                    
+                    self.houseData = data
                 }
             })
             .store(in: &cancellables)
     }
 }
+
+func sortHousesByNumber(houses: [HouseData], sort: HouseSortPredicate = .increasing) -> [HouseData] {
+    var oddHouses: [HouseData] = []
+    var evenHouses: [HouseData] = []
+
+    for house in houses {
+        if let number = Int(house.house.number.filter { "0"..."9" ~= $0 }) {
+            if number % 2 == 0 {
+                evenHouses.append(house)
+            } else {
+                oddHouses.append(house)
+            }
+        }
+    }
+    if sort == .increasing {
+        oddHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 < Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+        evenHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 < Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+    } else {
+        oddHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 > Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+        evenHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 > Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+    }
+    return oddHouses + evenHouses
+}
+
+
+func sortOddEven(strings: [String]) -> ([String], [String]) {
+    let numbers = strings.map { Int($0.filter { "0"..."9" ~= $0 }) ?? 0 }
+    var oddStrings: [String] = []
+    var evenStrings: [String] = []
+
+    for (index, number) in numbers.enumerated() {
+        if number % 2 == 0 {
+            evenStrings.append(strings[index])
+        } else {
+            oddStrings.append(strings[index])
+        }
+    }
+
+    return (oddStrings.sorted(), evenStrings.sorted())
+}
+
+

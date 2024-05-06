@@ -9,12 +9,16 @@
 			<dict>
 				<key>location-parameters</key>
 				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>200</string>
+					<string>240</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>200</string>
+					<string>239</string>
 					<key>Timestamp</key>
-					<string>736281367.4350359</string>
+					<string>736694334.97953</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -30,13 +34,17 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string></string>
+				<string>
+</string>
 				<key>leading</key>
-				<string>    }
-}
+				<string>}
+
 </string>
 				<key>trailing</key>
-				<string></string>
+				<string>func sortOddEven(strings: [String]) -&gt; ([String], [String]) {
+    let numbers = strings.map { Int($0.filter { "0"..."9" ~= $0 }) ?? 0 }
+    var oddStrings: [String] = []
+</string>
 			</dict>
 			<key>title</key>
 			<string>Hello</string>
@@ -48,12 +56,16 @@
 			<dict>
 				<key>location-parameters</key>
 				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>200</string>
+					<string>240</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>200</string>
+					<string>239</string>
 					<key>Timestamp</key>
-					<string>736281367.434585</string>
+					<string>736694334.979521</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -69,13 +81,17 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string></string>
+				<string>
+</string>
 				<key>leading</key>
-				<string>    }
-}
+				<string>}
+
 </string>
 				<key>trailing</key>
-				<string></string>
+				<string>func sortOddEven(strings: [String]) -&gt; ([String], [String]) {
+    let numbers = strings.map { Int($0.filter { "0"..."9" ~= $0 }) ?? 0 }
+    var oddStrings: [String] = []
+</string>
 			</dict>
 			<key>type</key>
 			<string>bookmark</string>
@@ -104,12 +120,16 @@
 			<dict>
 				<key>location-parameters</key>
 				<dict>
+					<key>EndingColumnNumber</key>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>200</string>
+					<string>240</string>
+					<key>StartingColumnNumber</key>
+					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>200</string>
+					<string>239</string>
 					<key>Timestamp</key>
-					<string>736281367.434862</string>
+					<string>736694334.9795001</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -125,13 +145,17 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string></string>
+				<string>
+</string>
 				<key>leading</key>
-				<string>    }
-}
+				<string>}
+
 </string>
 				<key>trailing</key>
-				<string></string>
+				<string>func sortOddEven(strings: [String]) -&gt; ([String], [String]) {
+    let numbers = strings.map { Int($0.filter { "0"..."9" ~= $0 }) ?? 0 }
+    var oddStrings: [String] = []
+</string>
 			</dict>
 			<key>type</key>
 			<string>bookmark</string>

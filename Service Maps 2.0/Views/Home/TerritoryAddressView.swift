@@ -85,7 +85,7 @@ struct TerritoryAddressView: View {
                                 SwipeViewGroup {
                                     ForEach(viewModel.addressData!) { addressData in
                                         SwipeView {
-                                            NavigationLink(destination: HousesView(address: addressData.address)) {
+                                            NavigationLink(destination: NavigationLazyView( HousesView(address: addressData.address))) {
                                                 viewModel.addressCell(addressData: addressData)
                                                     .padding(.bottom, 2)
                                             }
@@ -184,15 +184,13 @@ struct TerritoryAddressView: View {
                 .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || animationProgressTime < 0.25)
             }
             .height(min: 180, max: 350.0)
-            //.allowsHeaderCollapse()
+            
             .allowsHeaderGrowth()
-            //.headerIsClipped()
-            //.scrollOffset($scrollOffset)
             .collapseProgress($viewModel.progress)
+            .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
+                synchronizationManager.startupProcess(synchronizing: true)
+            }
             .scrollIndicators(.hidden)
-            //            .navigationDestination(isPresented: $viewModel.presentSheet) {
-            //                
-            //            }
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()

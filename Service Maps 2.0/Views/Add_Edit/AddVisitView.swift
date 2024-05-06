@@ -35,11 +35,11 @@ struct AddVisitView: View {
             VStack {
                 HStack {
                     Text("\(title) Visit")
-                        .font(.title)
+                        .font(.title3)
                         .fontWeight(.bold)
                         .hSpacing(.leading)
                         .padding(.leading)
-                        .frame(maxWidth: UIScreen.screenWidth * 0.7, maxHeight: 100)
+                        .frame(maxWidth: UIScreen.screenWidth * 0.6, maxHeight: 100)
                     
                     HStack {
                         Text("Symbol: ")
@@ -56,7 +56,7 @@ struct AddVisitView: View {
                             }
                         }
                     }
-                    .frame(maxWidth: UIScreen.screenWidth * 0.3, maxHeight: 100)
+                    .frame(maxWidth: UIScreen.screenWidth * 0.4, maxHeight: 100)
                 }
                 CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Notes")
                     .padding(.bottom)

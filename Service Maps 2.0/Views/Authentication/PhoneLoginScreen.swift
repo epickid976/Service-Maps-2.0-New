@@ -32,6 +32,7 @@ struct PhoneLoginScreen: View {
     @State var loading = false
     @State var alwaysLoading = true
     
+    @Environment(\.sizeCategory) var sizeCategory
     
     //MARK: API
     let congregationApi = CongregationAPI()
@@ -59,7 +60,7 @@ struct PhoneLoginScreen: View {
                 
                 Text("Phone Book \nLogin")
                     .frame(alignment:.leading)
-                    .font(.largeTitle)
+                    .font(sizeCategory == .large || sizeCategory == .extraLarge ? .largeTitle : .title2)
                     .fontWeight(.black)
                     .multilineTextAlignment(.leading)
                     .hSpacing(.leading)
@@ -115,6 +116,9 @@ struct PhoneLoginScreen: View {
                         // Handle tap action
                         passwordFocus = true
                     })
+                
+                Spacer()
+                
                 
                 HStack {
                     if synchronizationManager.startupState != .AdminLogin {
@@ -207,6 +211,9 @@ struct PhoneLoginScreen: View {
                 }
                 .padding()
                 
+            }
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("\(alertTitle)"), message: Text("\(alertMessage)"), dismissButton: .default(Text("OK")))
             }
             .padding()
             

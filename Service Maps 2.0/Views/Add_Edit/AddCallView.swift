@@ -35,7 +35,7 @@ struct AddCallView: View {
             VStack {
                 HStack {
                     Text("\(title) Call")
-                        .font(.title)
+                        .font(.title3)
                         .fontWeight(.bold)
                         .hSpacing(.leading)
                         .padding(.leading)

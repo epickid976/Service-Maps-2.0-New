@@ -36,7 +36,7 @@ struct AddHouseView: View {
         ZStack {
             VStack {
                 Text("\(title) House")
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)

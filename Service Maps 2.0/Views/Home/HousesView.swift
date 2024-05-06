@@ -36,6 +36,8 @@ struct HousesView: View {
     let alertViewDeleted = AlertAppleMusic17View(title: "House Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     let alertViewAdded = AlertAppleMusic17View(title: "House Added", subtitle: nil, icon: .done)
     
+   
+    
     var body: some View {
         ScrollView {
             ZStack {
@@ -157,10 +159,36 @@ struct HousesView: View {
                     HStack {
                         Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })
                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                        if viewModel.isAdmin {
-                            Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-                                .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-                        }
+                        
+                            Menu {
+                                if viewModel.isAdmin {
+                                    Button {
+                                        viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle()
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "plus")
+                                            Text("Add House")
+                                        }
+                                    }
+                                }
+                                Picker("Sort", selection: $viewModel.sortPredicate) {
+                                    ForEach(HouseSortPredicate.allCases, id: \.self) { option in
+                                        Text(String(describing: option).capitalized)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                                
+                                Picker("Filter", selection: $viewModel.filterPredicate) {
+                                    ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
+                                        Text(option.rawValue)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                            } label: {
+                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                                    .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                            }
+                        
                     }
                 }
             }

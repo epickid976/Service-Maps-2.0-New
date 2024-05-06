@@ -85,8 +85,6 @@ struct CallsView: View {
                                         viewModel.callCellView(callData: callData)
                                     }
                                     .animation(.default, value: viewModel.callsData!)
-                                    
-                                    
                                 }
                             }.animation(.spring(), value: viewModel.callsData)
                                 .padding()

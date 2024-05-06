@@ -35,7 +35,7 @@ struct AddPhoneNumberScreen: View {
         ZStack {
             VStack {
                 Text("\(title) Phone Number")
-                    .font(.title)
+                    .font(.title3)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)

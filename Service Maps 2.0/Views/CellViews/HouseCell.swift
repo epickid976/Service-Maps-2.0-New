@@ -45,7 +45,7 @@ struct HouseCell: View {
                                     .font(.subheadline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
-                                    .fontWeight(.heavy)
+                                    .fontWeight(.bold)
                                     .hSpacing(.leading)
                             } else {
                                 Image(systemName: "tablecells.badge.ellipsis").imageScale(.large)
@@ -55,7 +55,7 @@ struct HouseCell: View {
                                     .font(.subheadline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
-                                    .fontWeight(.heavy)
+                                    .fontWeight(.bold)
                                     .hSpacing(.leading)
                             }
                         }
@@ -66,17 +66,13 @@ struct HouseCell: View {
                                 Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
                                     .fontWeight(.heavy)
                                     .foregroundColor(.primary)
-                                Text("Date: ")
-                                    .font(.subheadline)
-                                    .lineLimit(1)
-                                    .foregroundColor(.primary)
-                                    .fontWeight(.heavy)
                                 //.hSpacing(.leading)
                                 Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(visit.date) / 1000) ))")
                                     .font(.subheadline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
-                                    .fontWeight(.heavy)
+                                    .fontWeight(.bold)
+                                    .fixedSize(horizontal: false, vertical: true)
                                 // .hSpacing(.leading)
                             } else {
                                 Image(systemName: "calendar.badge.clock.rtl").imageScale(.large)
@@ -86,7 +82,7 @@ struct HouseCell: View {
                                     .font(.subheadline)
                                     .lineLimit(2)
                                     .foregroundColor(.primary)
-                                    .fontWeight(.heavy)
+                                    .fontWeight(.bold)
                                     .hSpacing(.leading)
                             }
                         }
@@ -113,6 +109,7 @@ struct HouseCell: View {
                                     .foregroundColor(.primary)
                                     .fontWeight(.bold)
                                     .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
                                     .hSpacing(.leading)
                             }
                         } else {
@@ -133,6 +130,7 @@ struct HouseCell: View {
                     .padding([.bottom, .horizontal], 3)
                     .padding(.top, 5)
                 }
+                .frame(maxWidth: UIScreen.screenWidth * 0.95, maxHeight: 100)
                 
                 
             }

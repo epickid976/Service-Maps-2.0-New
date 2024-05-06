@@ -100,7 +100,7 @@ class SettingsViewModel: ObservableObject {
     func phoneLoginInfoCell() -> some View {
         VStack {
             HStack {
-                if dataStore.phoneCongregationName != nil {
+                if AuthorizationLevelManager().existsPhoneCredentials() {
                     VStack {
                         HStack {
                             VStack {
@@ -119,14 +119,16 @@ class SettingsViewModel: ObservableObject {
                                         .foregroundColor(.primary)
                                         .fontWeight(.heavy)
                                         .hSpacing(.leading)
+                                    CustomBackButton(showImage: false, text: "Exit") {
+                                        self.exitPhoneLogin()
+                                        self.synchronizationManager.startupProcess(synchronizing: true)
+                                    }
+                                    .frame(maxWidth: 120)
+                                    .hSpacing(.trailing)
                                 }
+                                
                             }
-                            CustomBackButton(showImage: false, text: "Exit") {
-                                self.exitPhoneLogin()
-                                self.synchronizationManager.startupProcess(synchronizing: true)
-                            }
-                            .frame(maxWidth: 120)
-                            .hSpacing(.trailing)
+                            
                             
                         }
                     }
@@ -138,7 +140,7 @@ class SettingsViewModel: ObservableObject {
                                 .padding(.horizontal)
                             Text("Log into Phone Book")
                                 .font(.title3)
-                                .lineLimit(1)
+                                .lineLimit(2)
                                 .foregroundColor(.primary)
                                 .fontWeight(.heavy)
                         }
@@ -170,7 +172,7 @@ class SettingsViewModel: ObservableObject {
                             VStack {
                                 Text("Administrator")
                                     .font(.title3)
-                                    .lineLimit(4)
+                                    .lineLimit(2)
                                     .foregroundColor(.primary)
                                     .fontWeight(.heavy)
                                     .hSpacing(.leading)
@@ -179,18 +181,19 @@ class SettingsViewModel: ObservableObject {
                                     
                                     Text("\(dataStore.congregationName!)")
                                         .font(.headline)
-                                        .lineLimit(4)
+                                        .lineLimit(2)
                                         .foregroundColor(.primary)
                                         .fontWeight(.heavy)
                                         .hSpacing(.leading)
+                                    CustomBackButton(showImage: false, text: "Exit") {
+                                        self.exitAdministrator()
+                                        self.synchronizationManager.startupProcess(synchronizing: true)
+                                    }
+                                    .frame(maxWidth: 120)
+                                    .hSpacing(.trailing)
                                 }
                             }
-                            CustomBackButton(showImage: false, text: "Exit") {
-                                self.exitAdministrator()
-                                self.synchronizationManager.startupProcess(synchronizing: true)
-                            }
-                            .frame(maxWidth: 120)
-                            .hSpacing(.trailing)
+                            
                             
                         }
                     }
@@ -202,7 +205,7 @@ class SettingsViewModel: ObservableObject {
                                 .padding(.horizontal)
                             Text("Become Administrator")
                                 .font(.title3)
-                                .lineLimit(1)
+                                .lineLimit(2)
                                 .foregroundColor(.primary)
                                 .fontWeight(.heavy)
                         }
@@ -245,7 +248,7 @@ class SettingsViewModel: ObservableObject {
                             .padding(.horizontal)
                         Text("Share App")
                             .font(.title3)
-                            .lineLimit(1)
+                            .lineLimit(2)
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                     }
@@ -264,7 +267,7 @@ class SettingsViewModel: ObservableObject {
                             .padding(.horizontal)
                         Text("Privacy Policy")
                             .font(.title3)
-                            .lineLimit(1)
+                            .lineLimit(2)
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                     }
@@ -284,7 +287,7 @@ class SettingsViewModel: ObservableObject {
                             .padding(.horizontal)
                         Text("About App")
                             .font(.title3)
-                            .lineLimit(1)
+                            .lineLimit(2)
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                     }
@@ -359,21 +362,22 @@ class SettingsViewModel: ObservableObject {
     }
     
     @ViewBuilder
-    func aboutApp() -> some View {
+    func aboutApp(usingLargeText: Bool) -> some View {
         VStack {
             Text("About App")
-                .font(.title)
+                .font(.title3)
                 .lineLimit(1)
                 .foregroundColor(.primary)
                 .fontWeight(.heavy)
+            Spacer().frame(height: 10)
             Text("""
             Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.
             This tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps.
             """)
-            .font(.headline)
+            .font(usingLargeText ? .caption2 : .body)
             .lineLimit(10)
             .foregroundColor(.primary)
-            .fontWeight(.heavy)
+            .fontWeight(.bold)
             CustomBackButton(showImage: false, text: "Dismiss") {
                 withAnimation {
                     self.showAlert = false
@@ -388,7 +392,7 @@ class SettingsViewModel: ObservableObject {
     func accountDeletionAlertConfirmation() -> some View {
         VStack {
             Text("Are you sure you want to delete your account?")
-                .font(.title)
+                .font(.title3)
                 .lineLimit(2)
                 .foregroundColor(.primary)
                 .fontWeight(.heavy)
@@ -432,17 +436,18 @@ class SettingsViewModel: ObservableObject {
     }
     
     @ViewBuilder
-    func accountDeletionAlert() -> some View {
+    func accountDeletionAlert(usingLargeText: Bool) -> some View {
         VStack {
             Text("Delete Account")
-                .font(.title)
+                .font(.title3)
                 .lineLimit(1)
                 .foregroundColor(.primary)
                 .fontWeight(.heavy)
+            Spacer().frame(height: 10)
             Text("""
                 Are you sure about deleting your account? This action can not be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again.
                 """)
-            .font(.headline)
+            .font(usingLargeText ? .caption2 : .headline)
             .lineLimit(10)
             .foregroundColor(.primary)
             .fontWeight(.heavy)

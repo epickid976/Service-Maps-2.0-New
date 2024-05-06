@@ -20,30 +20,34 @@ struct NoDataView: View {
     @State var goToAdminLogin = false
     @State var goToPhoneLogin = false
     
+    @Environment(\.sizeCategory) var sizeCategory
+    
     var body: some View {
         NavigationStack {
             VStack {
                 Text("No Data")
                     .frame(alignment:.leading)
-                    .font(.largeTitle)
+                    .font(sizeCategory == .large || sizeCategory == .extraLarge ? .largeTitle : .title2)
                     .fontWeight(.black)
                     .multilineTextAlignment(.leading)
                     .hSpacing(.leading)
                     .padding(.bottom)
                     .padding(.horizontal, 5)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 Text("You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below.")
-                    .font(.title3)
+                    .font(sizeCategory == .large || sizeCategory == .extraLarge ? .headline : .system(size: 17))
                     .fontWeight(.bold)
                 //.padding(.bottom, -50)
                 
                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                     LottieAnimationUIView(animationName: "NoDataAnimation", shouldLoop: true, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
-                        .frame(width: 400, height: 400)
+                        .frame(width: 300, height: 250)
                     //.padding(.bottom, -50)
                 } else {
                     LottieAnimationUIView(animationName: "NoDataAnimation", shouldLoop: true, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
-                        .frame(width: 400, height: 400)
+                        .frame(width: 400, height: 300)
                     //.padding(.bottom, -50)
                 }
                 
@@ -55,6 +59,8 @@ struct NoDataView: View {
                     }label: {
                         Text("Phone Book Login")
                             .bold()
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     .buttonStyle(.automatic)
                     .buttonBorderShape(.capsule)
@@ -65,6 +71,8 @@ struct NoDataView: View {
                     }label: {
                         Text("Become Administrator")
                             .bold()
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     .buttonStyle(.automatic)
                     .buttonBorderShape(.capsule)

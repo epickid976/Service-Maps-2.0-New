@@ -102,6 +102,7 @@
 		826B76752A729FE1000A4BAA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826B76742A729FE1000A4BAA /* Preview Assets.xcassets */; };
 		826B76772A729FE1000A4BAA /* NSManagedObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B76762A729FE1000A4BAA /* NSManagedObjectExtension.swift */; };
 		826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 826B76802A729FF6000A4BAA /* Service_Maps.xcdatamodeld */; };
+		827E35C62BE4453200FC0C64 /* HouseSortPredicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827E35C52BE4453200FC0C64 /* HouseSortPredicate.swift */; };
 		827EF1A22AA7B7E3006C4631 /* VisitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827EF1A12AA7B7E3006C4631 /* VisitsView.swift */; };
 		827EF1A42AA7C2F0006C4631 /* DateFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827EF1A32AA7C2F0006C4631 /* DateFormat.swift */; };
 		827EF1A62AA8C628006C4631 /* ModelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827EF1A52AA8C628006C4631 /* ModelExtensions.swift */; };
@@ -250,6 +251,7 @@
 		826B76742A729FE1000A4BAA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		826B76762A729FE1000A4BAA /* NSManagedObjectExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSManagedObjectExtension.swift; sourceTree = "<group>"; };
 		826B76812A729FF6000A4BAA /* Service_Maps.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Service_Maps.xcdatamodel; sourceTree = "<group>"; };
+		827E35C52BE4453200FC0C64 /* HouseSortPredicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseSortPredicate.swift; sourceTree = "<group>"; };
 		827EF1A12AA7B7E3006C4631 /* VisitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitsView.swift; sourceTree = "<group>"; };
 		827EF1A32AA7C2F0006C4631 /* DateFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormat.swift; sourceTree = "<group>"; };
 		827EF1A52AA8C628006C4631 /* ModelExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelExtensions.swift; sourceTree = "<group>"; };
@@ -403,6 +405,7 @@
 				82BC0F202A9C249300B255BF /* ChangeAction.swift */,
 				82BC0F222A9C24AC00B255BF /* ChangeType.swift */,
 				82F913082BDAB27F00644A67 /* LinkScreens.swift */,
+				827E35C52BE4453200FC0C64 /* HouseSortPredicate.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -834,6 +837,7 @@
 				82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */,
 				82F75C362BE2A5C8002CCAB0 /* AddPhoneNumberScreen.swift in Sources */,
 				825645A92BCE11EE00F18AC9 /* VisitObject.swift in Sources */,
+				827E35C62BE4453200FC0C64 /* HouseSortPredicate.swift in Sources */,
 				820934002A7993E200AF3FF1 /* StructToModel.swift in Sources */,
 				82F75C302BE27919002CCAB0 /* PhoneCallData.swift in Sources */,
 				82F75C122BDC01AA002CCAB0 /* RegisterKeyView.swift in Sources */,
@@ -1070,6 +1074,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Service-Maps-2-0-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Service Maps";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1079,7 +1084,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5;
+				MARKETING_VERSION = 2.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1102,6 +1107,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Service-Maps-2-0-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Service Maps";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1111,7 +1117,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5;
+				MARKETING_VERSION = 2.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
