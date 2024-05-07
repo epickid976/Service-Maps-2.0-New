@@ -34,6 +34,10 @@ struct TerritoryAddressView: View {
     let alertViewDeleted = AlertAppleMusic17View(title: "Address Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!)) 
     let alertViewAdded = AlertAppleMusic17View(title: "Address Added", subtitle: nil, icon: .done)
     
+    @State private var hideFloatingButton = false
+    @State var previousViewOffset: CGFloat = 0
+    let minimumOffset: CGFloat = 40
+    
     var body: some View {
         ZStack {
             ScalingHeaderScrollView {
@@ -127,6 +131,7 @@ struct TerritoryAddressView: View {
                                         .swipeMinimumDistance(addressData.accessLevel != .User ? 25:1000)
                                     }
                                 }
+                                
                             }
                             .padding(.horizontal)
                             .padding(.top)
@@ -135,6 +140,20 @@ struct TerritoryAddressView: View {
                             
                         }
                     }
+                }.background(GeometryReader {
+                    Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                     let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                     if ( abs(offsetDifference) > minimumOffset) {
+                         if offsetDifference > 0 {
+                                 print("Is scrolling up toward top.")
+                             hideFloatingButton = false
+                          } else {
+                                  print("Is scrolling down toward bottom.")
+                              hideFloatingButton = true
+                          }
+                          self.previousViewOffset = currentOffset
+                     }
                 }
                 .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                 .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
@@ -189,8 +208,21 @@ struct TerritoryAddressView: View {
             .collapseProgress($viewModel.progress)
             .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
                 synchronizationManager.startupProcess(synchronizing: true)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    hideFloatingButton = false
+                }
             }
             .scrollIndicators(.hidden)
+            .coordinateSpace(name: "scroll")
+            if AuthorizationLevelManager().existsAdminCredentials() {
+                    MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
+                        self.viewModel.presentSheet = true
+                    }
+                    .offset(y: hideFloatingButton ? 100 : -25)
+                        .animation(.spring(), value: hideFloatingButton)
+                        .vSpacing(.bottom).hSpacing(.trailing)
+                        .padding()
+                }
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()
@@ -210,10 +242,10 @@ struct TerritoryAddressView: View {
                 HStack {
                     Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                    if viewModel.isAdmin {
-                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-                    }
+//                    if viewModel.isAdmin {
+//                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+//                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+//                    }
                 }
             }
         }

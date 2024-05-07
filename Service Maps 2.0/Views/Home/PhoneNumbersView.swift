@@ -35,14 +35,19 @@ struct PhoneNumbersView: View {
     let alertViewDeleted = AlertAppleMusic17View(title: "Number Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     let alertViewAdded = AlertAppleMusic17View(title: "Number Added", subtitle: nil, icon: .done)
     
+    @State private var hideFloatingButton = false
+    @State var previousViewOffset: CGFloat = 0
+    let minimumOffset: CGFloat = 40
+    
     var body: some View {
+        ZStack {
             ScalingHeaderScrollView {
                 ZStack {
                     Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
                     viewModel.largeHeader(progress: viewModel.progress)
                 }
             } content: {
-                LazyVStack {
+                VStack {
                     if viewModel.phoneNumbersData == nil || viewModel.dataStore.synchronized == false {
                         if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                             LottieView(animation: .named("loadsimple"))
@@ -57,23 +62,23 @@ struct PhoneNumbersView: View {
                         }
                     } else {
                         if viewModel.phoneNumbersData!.isEmpty {
-                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                    LottieView(animation: .named("nodatapreview"))
-                                        .playing()
-                                        .resizable()
-                                        .frame(width: 250, height: 250)
-                                } else {
-                                    LottieView(animation: .named("nodatapreview"))
-                                        .playing()
-                                        .resizable()
-                                        .frame(width: 350, height: 350)
-                                }
+                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                LottieView(animation: .named("nodatapreview"))
+                                    .playing()
+                                    .resizable()
+                                    .frame(width: 250, height: 250)
+                            } else {
+                                LottieView(animation: .named("nodatapreview"))
+                                    .playing()
+                                    .resizable()
+                                    .frame(width: 350, height: 350)
+                            }
                         } else {
                             LazyVStack {
                                 SwipeViewGroup {
                                     ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
-                                            viewModel.numbersCell(numbersData: numbersData)
-                                                    .padding(.bottom, 2)
+                                        viewModel.numbersCell(numbersData: numbersData)
+                                            .padding(.bottom, 2)
                                     }
                                     .animation(.default, value: viewModel.phoneNumbersData)
                                 }
@@ -85,6 +90,20 @@ struct PhoneNumbersView: View {
                             
                         }
                     }
+                }.background(GeometryReader {
+                    Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                     let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                     if ( abs(offsetDifference) > minimumOffset) {
+                         if offsetDifference > 0 {
+                                 print("Is scrolling up toward top.")
+                             hideFloatingButton = false
+                          } else {
+                                  print("Is scrolling down toward bottom.")
+                              hideFloatingButton = true
+                          }
+                          self.previousViewOffset = currentOffset
+                     }
                 }
                 .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                 .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
@@ -140,6 +159,17 @@ struct PhoneNumbersView: View {
                 synchronizationManager.startupProcess(synchronizing: true)
             }
             .scrollIndicators(.hidden)
+            .coordinateSpace(name: "scroll")
+            if AuthorizationLevelManager().existsAdminCredentials() {
+                    MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
+                        self.viewModel.presentSheet = true
+                    }
+                    .offset(y: hideFloatingButton ? 100 : -25)
+                        .animation(.spring(), value: hideFloatingButton)
+                        .vSpacing(.bottom).hSpacing(.trailing)
+                        .padding()
+                }
+        }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()
         .navigationBarTitle("Numbers", displayMode: .inline)
@@ -158,10 +188,10 @@ struct PhoneNumbersView: View {
                 HStack {
                     Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                    if viewModel.isAdmin {
-                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-                    }
+//                    if viewModel.isAdmin {
+//                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+//                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+//                    }
                 }
             }
         }

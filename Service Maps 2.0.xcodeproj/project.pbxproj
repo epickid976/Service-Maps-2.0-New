@@ -163,6 +163,7 @@
 		82F75C3A2BE2D1BA002CCAB0 /* CallsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C392BE2D1BA002CCAB0 /* CallsViewModel.swift */; };
 		82F75C3C2BE2D6D7002CCAB0 /* AddCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C3B2BE2D6D7002CCAB0 /* AddCallView.swift */; };
 		82F75C3E2BE2D6E3002CCAB0 /* AddCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C3D2BE2D6E3002CCAB0 /* AddCallViewModel.swift */; };
+		82F769002BE92FA2001FA3CF /* FloatingButton in Frameworks */ = {isa = PBXBuildFile; productRef = 82F768FF2BE92FA2001FA3CF /* FloatingButton */; };
 		82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */; };
 		82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913082BDAB27F00644A67 /* LinkScreens.swift */; };
 		82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9130B2BDAE7D000644A67 /* ValidationView.swift */; };
@@ -337,6 +338,7 @@
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
 				822FA07D2AA6B6320008FA61 /* Nuke in Frameworks */,
 				825645A02BCE0FC000F18AC9 /* Realm in Frameworks */,
+				82F769002BE92FA2001FA3CF /* FloatingButton in Frameworks */,
 				822FA07F2AA6B6320008FA61 /* NukeExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -721,6 +723,7 @@
 				8256459F2BCE0FC000F18AC9 /* Realm */,
 				825645A12BCE0FC000F18AC9 /* RealmSwift */,
 				82A5B45F2BD482EB00F52F2F /* AlertKit */,
+				82F768FF2BE92FA2001FA3CF /* FloatingButton */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -764,6 +767,7 @@
 				821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */,
 				8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */,
+				82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1084,7 +1088,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.2;
+				MARKETING_VERSION = 2.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1117,7 +1121,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.2;
+				MARKETING_VERSION = 2.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1238,6 +1242,14 @@
 				minimumVersion = 5.1.9;
 			};
 		};
+		82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/FloatingButton";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1315,6 +1327,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */;
 			productName = AlertKit;
+		};
+		82F768FF2BE92FA2001FA3CF /* FloatingButton */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */;
+			productName = FloatingButton;
 		};
 /* End XCSwiftPackageProductDependency section */
 

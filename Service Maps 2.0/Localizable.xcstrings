@@ -197,6 +197,7 @@
       }
     },
     "Add House" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
