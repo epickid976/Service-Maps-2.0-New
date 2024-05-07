@@ -420,7 +420,6 @@
 				82F9130A2BDAE79100644A67 /* LinkViews */,
 				8242136E2A82DACC00626DD5 /* Others */,
 				82D526032A9290D800B42916 /* Add_Edit */,
-				82DBEA982A8809DB002048DC /* Reset */,
 				822FA0A82AA77A490008FA61 /* CellViews */,
 			);
 			path = Views;
@@ -671,13 +670,6 @@
 				82DAEEDD2AAF597100465DA5 /* HomeView.swift */,
 			);
 			path = "New Group";
-			sourceTree = "<group>";
-		};
-		82DBEA982A8809DB002048DC /* Reset */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Reset;
 			sourceTree = "<group>";
 		};
 		82F9130A2BDAE79100644A67 /* LinkViews */ = {
