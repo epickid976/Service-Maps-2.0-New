@@ -10,7 +10,7 @@ import SwiftUI
 struct TokenCell: View {
     @ObservedObject var dataStore = StorageManager.shared
     var keyData: KeyData
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
@@ -58,7 +58,7 @@ struct TokenCell: View {
             
         }
         .padding(10)
-        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }

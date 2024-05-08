@@ -23,21 +23,21 @@ struct SettingsView: View {
     @Environment(\.sizeCategory) var sizeCategory
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Cache Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         ScrollView {
             VStack {
                 viewModel.profile()
                 Spacer().frame(height: 25)
                 if !AuthorizationLevelManager().existsAdminCredentials() {
-                    viewModel.phoneLoginInfoCell()
+                    viewModel.phoneLoginInfoCell(mainWindowSize: mainWindowSize)
                 }
-                viewModel.administratorInfoCell()
-                viewModel.infosView()
+                viewModel.administratorInfoCell(mainWindowSize: mainWindowSize)
+                viewModel.infosView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
-                viewModel.deleteCacheMenu()
+                viewModel.deleteCacheMenu(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
-                viewModel.deleteAccount()
+                viewModel.deleteAccount(mainWindowSize: mainWindowSize)
             }
             .padding(.vertical)
             .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
@@ -103,6 +103,7 @@ struct SettingsView: View {
                 }
             }
         }
+        .scrollIndicators(.hidden)
         .navigationBarTitle("Settings", displayMode: .automatic)
         .navigationBarBackButtonHidden(true)
         .toolbar {

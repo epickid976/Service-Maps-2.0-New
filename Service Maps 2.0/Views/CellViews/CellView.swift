@@ -13,6 +13,8 @@ struct CellView: View {
     var houseQuantity: Int
     var width: Double = 0.95
     
+    @Environment(\.mainWindowSize) var mainWindowSize
+    
     var body: some View {
         HStack(spacing: 10) {
             VStack {
@@ -32,10 +34,10 @@ struct CellView: View {
                             .foregroundColor(.white)
                         
                     }
-                    .frame(minWidth: UIScreen.main.bounds.width * 0.28)
+                    .frame(minWidth: mainWindowSize.width * 0.20)
                 }
                 .hSpacing(.leading)
-                .frame(width: 70, height: 70, alignment: .center)
+                .frame(width: mainWindowSize.width * 0.20, height: 70, alignment: .center)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(territory.description )
@@ -50,14 +52,14 @@ struct CellView: View {
                     .foregroundColor(.secondary)
                     .fontWeight(.bold)
             }
-            .frame(maxWidth: UIScreen.screenWidth * 0.72, alignment: .leading)
+            .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
             //Image("testTerritoryImage")
             
             
         }
         //.id(territory.id)
         .padding(5)
-        .frame(minWidth: UIScreen.main.bounds.width * width)
+        .frame(minWidth: mainWindowSize.width * width)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
@@ -68,6 +70,8 @@ struct PhoneTerritoryCellView: View {
     var territory: PhoneTerritoryModel
     var numbers: Int
     var width: Double = 0.95
+    
+    @Environment(\.mainWindowSize) var mainWindowSize
     
     var body: some View {
         HStack(spacing: 10) {
@@ -88,10 +92,10 @@ struct PhoneTerritoryCellView: View {
                             .foregroundColor(.white)
                         
                     }
-                    .frame(minWidth: UIScreen.main.bounds.width * 0.28)
+                    .frame(minWidth: mainWindowSize.width * 0.20)
                 }
                 .hSpacing(.leading)
-                .frame(width: 70, height: 70, alignment: .center)
+                .frame(width: mainWindowSize.width * 0.20, height: 70, alignment: .center)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(territory.description )
@@ -106,16 +110,20 @@ struct PhoneTerritoryCellView: View {
                     .foregroundColor(.secondary)
                     .fontWeight(.bold)
             }
-            .frame(maxWidth: UIScreen.screenWidth * 0.72, alignment: .leading)
+            .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
             //Image("testTerritoryImage")
             
             
         }
         //.id(territory.id)
         .padding(5)
-        .frame(minWidth: UIScreen.main.bounds.width * width)
+        .frame(minWidth: mainWindowSize.width * width)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
+}
+
+enum screenRatio {
+    case halfnhalf, thirdOrFourth
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 func formattedDate(date: Date) -> String {
     let formatter1 = DateFormatter()
     

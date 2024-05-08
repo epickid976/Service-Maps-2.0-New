@@ -15,7 +15,7 @@ struct AddKeyView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @StateObject var viewModel: AddKeyViewModel
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
     @FocusState private var nameFocus: Bool
     
     init(onDone: @escaping () -> Void) {

@@ -64,6 +64,7 @@ class PhoneScreenViewModel: ObservableObject {
     
     @ViewBuilder
     func territoryCell(phoneData: PhoneData) -> some View {
+        LazyVStack {
         SwipeView {
             NavigationLink(destination: PhoneNumbersView(territory: phoneData.territory)) {
                 PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity)
@@ -102,6 +103,7 @@ class PhoneScreenViewModel: ObservableObject {
         .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
         .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
         .swipeMinimumDistance(isAdmin ? 25:1000)
+        }.padding(.horizontal, 15)
     }
     
     @ViewBuilder

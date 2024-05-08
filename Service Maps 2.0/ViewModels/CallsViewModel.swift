@@ -202,7 +202,7 @@ extension CallsViewModel {
 
 struct CallCell: View {
     var call: PhoneCallData
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
@@ -215,7 +215,7 @@ struct CallCell: View {
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
-                    }.frame(maxWidth: UIScreen.screenWidth * 0.95, maxHeight: 100)
+                    }.frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 100)
                     
                 }
                 
@@ -238,7 +238,7 @@ struct CallCell: View {
             
         }
         .padding(10)
-        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }

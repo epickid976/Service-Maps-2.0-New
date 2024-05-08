@@ -28,7 +28,7 @@ struct AccessView: View {
     let alertViewAdded = AlertAppleMusic17View(title: "Key Added", subtitle: nil, icon: .done)
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 40
@@ -134,7 +134,7 @@ struct AccessView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             viewModel.showAddedToast = false
                         }
-                    }
+                    }.environment(\.mainWindowSize, mainWindowSize)
                 }
                 
                 //.scrollIndicators(.hidden)
@@ -155,7 +155,8 @@ struct AccessView: View {
                 .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                 .navigationViewStyle(StackNavigationViewStyle())
             }.coordinateSpace(name: "scroll")
-            .refreshable {
+                .scrollIndicators(.hidden)
+                .refreshable {
                 synchronizationManager.startupProcess(synchronizing: true)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     hideFloatingButton = false

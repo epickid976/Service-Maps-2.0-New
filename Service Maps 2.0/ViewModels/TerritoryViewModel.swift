@@ -84,51 +84,53 @@ class TerritoryViewModel: ObservableObject {
             }
         }
         // Loop through territoryData here (replace with your TerritoryItemView implementation)
-        
-        ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-            SwipeView {
-                NavigationLink(destination: TerritoryAddressView(territory: territoryData.territory)) {
-                    CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity)
-                        .padding(.bottom, 2)
-                }
-            } trailingActions: { context in
-                if territoryData.accessLevel == .Admin {
-                    SwipeAction(
-                        systemImage: "trash",
-                        backgroundColor: .red
-                    ) {
-                        DispatchQueue.main.async {
-                            self.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                            self.showAlert = true
+        LazyVStack {
+            ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+                SwipeView {
+                    NavigationLink(destination: TerritoryAddressView(territory: territoryData.territory)) {
+                        CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity)
+                            .padding(.bottom, 2)
+                        
+                    }
+                } trailingActions: { context in
+                    if territoryData.accessLevel == .Admin {
+                        SwipeAction(
+                            systemImage: "trash",
+                            backgroundColor: .red
+                        ) {
+                            DispatchQueue.main.async {
+                                self.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
+                                self.showAlert = true
+                            }
                         }
+                        .font(.title.weight(.semibold))
+                        .foregroundColor(.white)
+                        
+                        
                     }
-                    .font(.title.weight(.semibold))
-                    .foregroundColor(.white)
                     
-                    
-                }
-                
-                if territoryData.accessLevel == .Moderator || territoryData.accessLevel == .Admin {
-                    SwipeAction(
-                        systemImage: "pencil",
-                        backgroundColor: Color.teal
-                    ) {
-                        context.state.wrappedValue = .closed
-                        self.currentTerritory = territoryData.territory
-                        self.presentSheet = true
+                    if territoryData.accessLevel == .Moderator || territoryData.accessLevel == .Admin {
+                        SwipeAction(
+                            systemImage: "pencil",
+                            backgroundColor: Color.teal
+                        ) {
+                            context.state.wrappedValue = .closed
+                            self.currentTerritory = territoryData.territory
+                            self.presentSheet = true
+                        }
+                        .allowSwipeToTrigger()
+                        .font(.title.weight(.semibold))
+                        .foregroundColor(.white)
                     }
-                    .allowSwipeToTrigger()
-                    .font(.title.weight(.semibold))
-                    .foregroundColor(.white)
                 }
+                .swipeActionCornerRadius(16)
+                .swipeSpacing(5)
+                .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+                .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+                .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+                .swipeMinimumDistance(territoryData.accessLevel != .User ? 25:1000)
             }
-            .swipeActionCornerRadius(16)
-            .swipeSpacing(5)
-            .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
-            .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
-            .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
-            .swipeMinimumDistance(territoryData.accessLevel != .User ? 25:1000)
-        }
+        }.padding(.horizontal, 15)
         
     }
     

@@ -94,10 +94,11 @@ class SettingsViewModel: ObservableObject {
                 }
             }
         }.padding(.bottom)
+            .frame(maxWidth: .infinity)
     }
     
     @ViewBuilder
-    func phoneLoginInfoCell() -> some View {
+    func phoneLoginInfoCell(mainWindowSize: CGSize) -> some View {
         VStack {
             HStack {
                 if AuthorizationLevelManager().existsPhoneCredentials() {
@@ -156,14 +157,14 @@ class SettingsViewModel: ObservableObject {
                 }
             }
             .padding(10)
-            .frame(minWidth: UIScreen.main.bounds.width * 0.95, minHeight: 75)
+            .frame(minWidth: mainWindowSize.width * 0.95, minHeight: 75)
             .background(.thinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-        }.padding(.bottom)
+        }.padding(.bottom).frame(maxWidth: .infinity)
     }
     
     @ViewBuilder
-    func administratorInfoCell() -> some View {
+    func administratorInfoCell(mainWindowSize: CGSize) -> some View {
         VStack {
             HStack {
                 if dataStore.congregationName != nil {
@@ -221,14 +222,14 @@ class SettingsViewModel: ObservableObject {
                 }
             }
             .padding(10)
-            .frame(minWidth: UIScreen.main.bounds.width * 0.95, minHeight: 75)
+            .frame(minWidth: mainWindowSize.width * 0.95, minHeight: 75)
             .background(.thinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-        }.padding(.bottom)
+        }.padding(.bottom).frame(maxWidth: .infinity)
     }
     
     @ViewBuilder
-    func infosView() -> some View {
+    func infosView(mainWindowSize: CGSize) -> some View {
         VStack {
             Button {
                 let url = URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103?l=fr-FR")
@@ -297,13 +298,13 @@ class SettingsViewModel: ObservableObject {
             .frame(minHeight: 50)
         }
         .padding(10)
-        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
     @ViewBuilder
-    func deleteCacheMenu() -> some View {
+    func deleteCacheMenu(mainWindowSize: CGSize) -> some View {
         VStack {
             Button {
                 ImagePipeline.shared.cache.removeAll()
@@ -327,13 +328,13 @@ class SettingsViewModel: ObservableObject {
             .frame(minHeight: 50)
         }
         .padding(10)
-        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
     @ViewBuilder
-    func deleteAccount() -> some View {
+    func deleteAccount(mainWindowSize: CGSize) -> some View {
         VStack {
             Button {
                 self.showDeletionAlert = true
@@ -356,7 +357,7 @@ class SettingsViewModel: ObservableObject {
             .frame(minHeight: 50)
         }
         .padding(10)
-        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }

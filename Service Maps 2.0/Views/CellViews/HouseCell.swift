@@ -11,6 +11,8 @@ import NukeUI
 struct HouseCell: View {
     var house: HouseData
     
+    @State var mainWindowSize: CGSize
+    
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
@@ -33,7 +35,7 @@ struct HouseCell: View {
                     }
                     .hSpacing(.center)
                     //.vSpacing(.leading)
-                    .frame(maxWidth: UIScreen.screenWidth * 0.3, maxHeight: 100)
+                    .frame(minWidth: mainWindowSize.width * 0.20, maxHeight: 100)
                     
                     VStack {
                         HStack {
@@ -92,7 +94,7 @@ struct HouseCell: View {
                     }
                     //.vSpacing(.leading)
                     .hSpacing(.leading)
-                    .frame(maxWidth: UIScreen.screenWidth * 0.7, maxHeight: 100)
+                    .frame(maxWidth: mainWindowSize.width * 0.7, maxHeight: 100)
                     //.frame(maxWidth: UIScreen.screenWidth * 0.6)
                 }
                 Spacer()
@@ -130,7 +132,7 @@ struct HouseCell: View {
                     .padding([.bottom, .horizontal], 3)
                     .padding(.top, 5)
                 }
-                .frame(maxWidth: UIScreen.screenWidth * 0.95, maxHeight: 100)
+                .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 100)
                 
                 
             }
@@ -138,7 +140,7 @@ struct HouseCell: View {
             
         }
         .padding(10)
-        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }

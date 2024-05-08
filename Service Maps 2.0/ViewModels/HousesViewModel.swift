@@ -72,10 +72,10 @@ class HousesViewModel: ObservableObject {
         return await dataUploaderManager.deleteHouse(house: house)
     }
     
-    func houseCellView(houseData: HouseData) -> some View {
+    func houseCellView(houseData: HouseData, mainWindowSize: CGSize) -> some View {
         SwipeView {
             NavigationLink(destination: VisitsView(house: houseData.house)) {
-                HouseCell(house: houseData)
+                HouseCell(house: houseData, mainWindowSize: mainWindowSize)
                     .padding(.bottom, 2)
             }
         } trailingActions: { context in

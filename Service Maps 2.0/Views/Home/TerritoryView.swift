@@ -40,6 +40,7 @@ struct TerritoryView: View {
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 40
+    
     var body: some View {
         ZStack {
             ScrollView {
@@ -157,12 +158,14 @@ struct TerritoryView: View {
                 .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                 .navigationViewStyle(StackNavigationViewStyle())
             }.coordinateSpace(name: "scroll")
-            .refreshable {
+                .scrollIndicators(.hidden)
+                .refreshable {
                 synchronizationManager.startupProcess(synchronizing: true)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     hideFloatingButton = false
                 }
             }
+            
             if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
                         self.viewModel.presentSheet = true

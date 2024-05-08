@@ -61,6 +61,7 @@ class VisitsViewModel: ObservableObject {
         return await dataUploaderManager.deleteVisit(visit: visit)
     }
     
+    @ViewBuilder
     func visitCellView(visitData: VisitData) -> some View {
         SwipeView {
             VisitCell(visit: visitData)

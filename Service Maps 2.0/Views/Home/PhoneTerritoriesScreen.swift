@@ -30,7 +30,7 @@ struct PhoneTerritoriesScreen: View {
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 40
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         ZStack {
             ScrollView {
@@ -153,6 +153,7 @@ struct PhoneTerritoriesScreen: View {
                 .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                 .navigationViewStyle(StackNavigationViewStyle())
             }.coordinateSpace(name: "scroll")
+                .scrollIndicators(.hidden)
             .refreshable {
                 synchronizationManager.startupProcess(synchronizing: true)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

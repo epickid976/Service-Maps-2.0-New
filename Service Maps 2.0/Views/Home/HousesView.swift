@@ -21,7 +21,6 @@ struct HousesView: View {
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
-    
     @ObservedObject var viewModel: HousesViewModel
     
     @State var showFab = true
@@ -41,8 +40,9 @@ struct HousesView: View {
     let minimumOffset: CGFloat = 40
     
     var body: some View {
-        ZStack {
-            ScrollView {
+        GeometryReader { proxy in
+            ZStack {
+                ScrollView {
                     VStack {
                         if viewModel.houseData == nil || viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
@@ -84,7 +84,7 @@ struct HousesView: View {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.houseData!, id: \.self) { houseData in
-                                            viewModel.houseCellView(houseData: houseData)
+                                            viewModel.houseCellView(houseData: houseData, mainWindowSize: proxy.size)
                                         }
                                         .animation(.default, value: viewModel.houseData!)
                                         
@@ -99,17 +99,17 @@ struct HousesView: View {
                     }.background(GeometryReader {
                         Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                     }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                         let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                         if ( abs(offsetDifference) > minimumOffset) {
-                             if offsetDifference > 0 {
-                                     print("Is scrolling up toward top.")
-                                 hideFloatingButton = false
-                              } else {
-                                      print("Is scrolling down toward bottom.")
-                                  hideFloatingButton = true
-                              }
-                              self.previousViewOffset = currentOffset
-                         }
+                        let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                        if ( abs(offsetDifference) > minimumOffset) {
+                            if offsetDifference > 0 {
+                                print("Is scrolling up toward top.")
+                                hideFloatingButton = false
+                            } else {
+                                print("Is scrolling down toward bottom.")
+                                hideFloatingButton = true
+                            }
+                            self.previousViewOffset = currentOffset
+                        }
                     }
                     .animation(.easeInOut(duration: 0.25), value: viewModel.houseData == nil || animationProgressTime < 0.25)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
@@ -157,75 +157,77 @@ struct HousesView: View {
                             .closeOnTap(false)
                             .backgroundColor(.black.opacity(0.8))
                     }
-                
-                .navigationBarTitle("\(address.address)", displayMode: .automatic)
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItemGroup(placement: .topBarLeading) {
-                        HStack {
-                            Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    presentationMode.wrappedValue.dismiss()
-                                }
-                            })
-                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
-                        }
-                    }
-                    ToolbarItemGroup(placement: .topBarTrailing) {
-                        HStack {
-                            Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })
-                                .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                            
-                            Menu {
-                                //                                if viewModel.isAdmin {
-                                //                                    Button {
-                                //                                        viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle()
-                                //                                    } label: {
-                                //                                        HStack {
-                                //                                            Image(systemName: "plus")
-                                //                                            Text("Add House")
-                                //                                        }
-                                //                                    }
-                                //                                }
-                                Picker("Sort", selection: $viewModel.sortPredicate) {
-                                    ForEach(HouseSortPredicate.allCases, id: \.self) { option in
-                                        Text(String(describing: option).capitalized)
+                    
+                    .navigationBarTitle("\(address.address)", displayMode: .automatic)
+                    .navigationBarBackButtonHidden(true)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .topBarLeading) {
+                            HStack {
+                                Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        presentationMode.wrappedValue.dismiss()
                                     }
-                                }
-                                .pickerStyle(.menu)
-                                
-                                Picker("Filter", selection: $viewModel.filterPredicate) {
-                                    ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
-                                        Text(option.rawValue)
-                                    }
-                                }
-                                .pickerStyle(.menu)
-                            } label: {
-                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-                                    .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                                })
+                                .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                             }
-                            
+                        }
+                        ToolbarItemGroup(placement: .topBarTrailing) {
+                            HStack {
+                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })
+                                    .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                
+                                Menu {
+                                    //                                if viewModel.isAdmin {
+                                    //                                    Button {
+                                    //                                        viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle()
+                                    //                                    } label: {
+                                    //                                        HStack {
+                                    //                                            Image(systemName: "plus")
+                                    //                                            Text("Add House")
+                                    //                                        }
+                                    //                                    }
+                                    //                                }
+                                    Picker("Sort", selection: $viewModel.sortPredicate) {
+                                        ForEach(HouseSortPredicate.allCases, id: \.self) { option in
+                                            Text(String(describing: option).capitalized)
+                                        }
+                                    }
+                                    .pickerStyle(.menu)
+                                    
+                                    Picker("Filter", selection: $viewModel.filterPredicate) {
+                                        ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
+                                            Text(option.rawValue)
+                                        }
+                                    }
+                                    .pickerStyle(.menu)
+                                } label: {
+                                    Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                                        .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                                }
+                                
+                            }
                         }
                     }
-                }
-                .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-                .navigationViewStyle(StackNavigationViewStyle())
-            }.coordinateSpace(name: "scroll")
-            .refreshable {
-                viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    hideFloatingButton = false
-                }
-            }
-            if AuthorizationLevelManager().existsAdminCredentials() {
+                    .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                    .navigationViewStyle(StackNavigationViewStyle())
+                }.coordinateSpace(name: "scroll")
+                    .scrollIndicators(.hidden)
+                    .refreshable {
+                        viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            hideFloatingButton = false
+                        }
+                    }
+                if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
                         self.viewModel.presentSheet = true
                     }
                     .offset(y: hideFloatingButton ? 150 : 0)
-                        .animation(.spring(), value: hideFloatingButton)
-                        .vSpacing(.bottom).hSpacing(.trailing)
-                        .padding()
+                    .animation(.spring(), value: hideFloatingButton)
+                    .vSpacing(.bottom).hSpacing(.trailing)
+                    .padding()
                 }
+            }
         }
     }
     

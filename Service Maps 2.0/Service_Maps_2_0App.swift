@@ -34,61 +34,62 @@ struct Service_Maps_2_0App: App {
             var destination: DestinationEnum = instantiateDestination()
             
             
-            
-            NavigationStack {
-                switch destination {
-                case .SplashScreen:
-                    SplashScreenView()
-                case .HomeScreen:
-                    HomeTabView()
-                case .WelcomeScreen:
-                    WelcomeView() {
-                        synchronizationManager.startupProcess(synchronizing: true)
+            GeometryReader { proxy in
+                NavigationStack {
+                    switch destination {
+                    case .SplashScreen:
+                        SplashScreenView()
+                    case .HomeScreen:
+                        HomeTabView()
+                            .environment(\.mainWindowSize, proxy.size)
+                    case .WelcomeScreen:
+                        WelcomeView() {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    case .LoginScreen:
+                        LoginView() {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    case .AdministratorLoginScreen:
+                        AdminLoginView() {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                        
+                    case .PhoneLoginScreen:
+                        PhoneLoginScreen() {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                        
+                    case .ValidationScreen:
+                        VerificationView() {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    case .LoadingScreen:
+                        LoadingView()
+                    case .NoDataScreen:
+                        NoDataView()
+                    case .ActivateEmail:
+                        //TO DO ADD VIEWs
+                        ValidationView()
+                    case .RegisterKeyView:
+                        RegisterKeyView()
+                        
+                    case .ResetPasswordView:
+                        ResetPassword()
+                        
+                    case .PrivacyPolicyView:
+                        PrivacyPolicy()
+                        
                     }
-                case .LoginScreen:
-                    LoginView() {
-                        synchronizationManager.startupProcess(synchronizing: true)
-                    }
-                case .AdministratorLoginScreen:
-                    AdminLoginView() {
-                        synchronizationManager.startupProcess(synchronizing: true)
-                    }
-                    
-                case .PhoneLoginScreen:
-                    PhoneLoginScreen() {
-                        synchronizationManager.startupProcess(synchronizing: true)
-                    }
-                    
-                case .ValidationScreen:
-                    VerificationView() {
-                        synchronizationManager.startupProcess(synchronizing: true)
-                    }
-                case .LoadingScreen:
-                    LoadingView()
-                case .NoDataScreen:
-                    NoDataView()
-                case .ActivateEmail:
-                    //TO DO ADD VIEWs
-                    ValidationView()
-                case .RegisterKeyView:
-                    RegisterKeyView()
-                    
-                case .ResetPasswordView:
-                    ResetPassword()
-                    
-                case .PrivacyPolicyView:
-                    PrivacyPolicy() 
-                    
                 }
+                .onOpenURL(perform: { url in
+                    universalLinksManager.handleIncomingURL(url)
+                })
+                .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
+                .navigationTransition(
+                    .slide.combined(with: .fade(.in))
+                )
             }
-            .onOpenURL(perform: { url in
-                universalLinksManager.handleIncomingURL(url)
-            })
-            .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
-            .navigationTransition(
-                .slide.combined(with: .fade(.in))
-            )
-            
             
             
         }

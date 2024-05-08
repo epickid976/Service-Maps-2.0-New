@@ -63,71 +63,74 @@ class AddressViewModel: ObservableObject {
     @Published var showToast = false
     @Published var showAddedToast = false
     
-    func addressCell(addressData: AddressData) -> some View {
-        SwipeView {
-            NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address))) {
-                HStack(spacing: 10) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("\(addressData.address.address)")
-                            .font(.headline)
-                            .fontWeight(.heavy)
-                            .foregroundColor(.primary)
-                            .hSpacing(.leading)
-                        Text("Doors: \(addressData.houseQuantity)")
-                            .font(.body)
-                            .lineLimit(5)
-                            .foregroundColor(.primary)
-                            .fontWeight(.bold)
-                            .multilineTextAlignment(.leading)
-                            .hSpacing(.leading)
+    @ViewBuilder
+    func addressCell(addressData: AddressData, mainWindowSize: CGSize) -> some View {
+        LazyVStack {
+            SwipeView {
+                NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address))) {
+                    HStack(spacing: 10) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(addressData.address.address)")
+                                .font(.headline)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
+                                .hSpacing(.leading)
+                            Text("Doors: \(addressData.houseQuantity)")
+                                .font(.body)
+                                .lineLimit(5)
+                                .foregroundColor(.primary)
+                                .fontWeight(.bold)
+                                .multilineTextAlignment(.leading)
+                                .hSpacing(.leading)
+                        }
+                        .frame(maxWidth: mainWindowSize.width * 0.90)
                     }
-                    .frame(maxWidth: UIScreen.screenWidth * 0.90)
+                    //.id(territory.id)
+                    .padding(10)
+                    .frame(minWidth: mainWindowSize.width * 0.95)
+                    .background(.thinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
-                //.id(territory.id)
-                .padding(10)
-                .frame(minWidth: UIScreen.main.bounds.width * 0.95)
-                .background(.thinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-            }
-        } trailingActions: { context in
-            if addressData.accessLevel == .Admin {
-                SwipeAction(
-                    systemImage: "trash",
-                    backgroundColor: .red
-                ) {
-                    DispatchQueue.main.async {
-                        self.addressToDelete = (addressData.address.id, addressData.address.address)
-                        self.showAlert = true
+            } trailingActions: { context in
+                if addressData.accessLevel == .Admin {
+                    SwipeAction(
+                        systemImage: "trash",
+                        backgroundColor: .red
+                    ) {
+                        DispatchQueue.main.async {
+                            self.addressToDelete = (addressData.address.id, addressData.address.address)
+                            self.showAlert = true
+                        }
                     }
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
                 }
-                .font(.title.weight(.semibold))
-                .foregroundColor(.white)
-            }
-            
-            if addressData.accessLevel == .Moderator || addressData.accessLevel == .Admin {
-                SwipeAction(
-                    systemImage: "pencil",
-                    backgroundColor: Color.teal
-                ) {
-                    context.state.wrappedValue = .closed
-                    self.currentAddress = addressData.address
-                    self.presentSheet = true
+                
+                if addressData.accessLevel == .Moderator || addressData.accessLevel == .Admin {
+                    SwipeAction(
+                        systemImage: "pencil",
+                        backgroundColor: Color.teal
+                    ) {
+                        context.state.wrappedValue = .closed
+                        self.currentAddress = addressData.address
+                        self.presentSheet = true
+                    }
+                    .allowSwipeToTrigger()
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
                 }
-                .allowSwipeToTrigger()
-                .font(.title.weight(.semibold))
-                .foregroundColor(.white)
             }
+            .swipeActionCornerRadius(16)
+            .swipeSpacing(5)
+            .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
+            .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
+            .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
+            .swipeMinimumDistance(addressData.accessLevel != .User ? 50:1000)
         }
-        .swipeActionCornerRadius(16)
-        .swipeSpacing(5)
-        .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
-        .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
-        .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
-        .swipeMinimumDistance(addressData.accessLevel != .User ? 50:1000)
     }
     
     @ViewBuilder
-    func largeHeader(progress: CGFloat) -> some View  {
+    func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {
         VStack {
             ZStack {
                 VStack {
@@ -156,7 +159,7 @@ class AddressViewModel: ObservableObject {
                     .vSpacing(.bottom)
                     .cornerRadius(10)
                 }
-                .frame(width: UIScreen.screenSize.width, height: 350, alignment: .center)
+                .frame(width: mainWindowSize.width, height: 350, alignment: .center)
                 VStack {
                     smallHeader
                     
@@ -169,7 +172,7 @@ class AddressViewModel: ObservableObject {
                     )
                     .vSpacing(.bottom)
             }
-            .frame(width: UIScreen.screenWidth, height: 350)
+            .frame(width: mainWindowSize.width, height: 350)
         }
         
         .animation(.default, value: progress)
@@ -309,3 +312,4 @@ extension AddressViewModel {
             .store(in: &cancellables)
     }
 }
+

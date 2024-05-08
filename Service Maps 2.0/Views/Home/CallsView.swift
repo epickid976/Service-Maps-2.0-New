@@ -41,7 +41,7 @@ struct CallsView: View {
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 40
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         ZStack {
             ScrollView {
@@ -186,6 +186,7 @@ struct CallsView: View {
                 .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                 .navigationViewStyle(StackNavigationViewStyle())
             }.coordinateSpace(name: "scroll")
+                .scrollIndicators(.hidden)
             .refreshable {
                 viewModel.synchronizationManager.startupProcess(synchronizing: true)
             }

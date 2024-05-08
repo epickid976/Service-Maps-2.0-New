@@ -9,20 +9,19 @@ import SwiftUI
 
 struct VisitCell: View {
     var visit: VisitData
-    
+    @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                     HStack {
                         Text(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(visit.visit.date / 1000))))
-                        //.frame(maxWidth: .infinity)
                             .font(.title3)
                             .lineLimit(1)
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
-                    }.frame(maxWidth: UIScreen.screenWidth * 0.9, maxHeight: 100)
+                    }.frame(maxWidth: mainWindowSize.width * 0.9, maxHeight: 100)
                     
                     HStack {
                         Text(visit.visit.symbol.localizedUppercase)
@@ -32,7 +31,7 @@ struct VisitCell: View {
                             .fontWeight(.heavy)
                             .hSpacing(.trailing)
                     }
-                    .frame(maxWidth: UIScreen.screenWidth * 0.1, maxHeight: 100)
+                    .frame(maxWidth: mainWindowSize.width * 0.1, maxHeight: 100)
                 }
                 
                 Text(visit.visit.notes)
@@ -54,7 +53,7 @@ struct VisitCell: View {
             
         }
         .padding(10)
-        .frame(minWidth: UIScreen.main.bounds.width * 0.95)
+        .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
