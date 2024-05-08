@@ -100,7 +100,7 @@ struct CallCell: View {
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
-                    }.frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 100)
+                    }
                     
                 }
                 
@@ -120,6 +120,7 @@ struct CallCell: View {
                 
             }
             .frame(maxWidth: .infinity)
+            .padding(5)
             
         }
         .padding(10)

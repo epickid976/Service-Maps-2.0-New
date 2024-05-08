@@ -194,6 +194,7 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                 .foregroundColor(.primary)
                 .fontWeight(.heavy)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             Text("This is nonreversible")
                 .font(.headline)
                 .lineLimit(10)
