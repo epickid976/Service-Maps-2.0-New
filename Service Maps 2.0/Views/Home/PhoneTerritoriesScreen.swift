@@ -14,6 +14,7 @@ import Lottie
 import PopupView
 import AlertKit
 import Nuke
+import MijickPopupView
 
 struct PhoneTerritoriesScreen: View {
     @ObservedObject var viewModel = PhoneScreenViewModel()
@@ -75,7 +76,7 @@ struct PhoneTerritoriesScreen: View {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.phoneData!, id: \.self) { phoneData in
-                                            viewModel.territoryCell(phoneData: phoneData)
+                                            territoryCell(phoneData: phoneData)
                                         }
                                         .animation(.default, value: viewModel.phoneData!)
                                         
@@ -105,22 +106,22 @@ struct PhoneTerritoriesScreen: View {
                     .animation(.easeInOut(duration: 0.25), value: viewModel.phoneData == nil || animationProgressTime < 0.25)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .popup(isPresented: $viewModel.showAlert) {
-                        if viewModel.territoryToDelete.0 != nil && viewModel.territoryToDelete.1 != nil {
-                            viewModel.alert()
-                                .frame(width: 400, height: 230)
-                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                        }
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
-                    }
+//                    .popup(isPresented: $viewModel.showAlert) {
+//                        if viewModel.territoryToDelete.0 != nil && viewModel.territoryToDelete.1 != nil {
+//                            viewModel.alert()
+//                                .frame(width: 400, height: 230)
+//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                        }
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
                 
                 .navigationDestination(isPresented: $viewModel.presentSheet) {
                     AddPhoneTerritoryView(territory: viewModel.currentTerritory) {
@@ -170,5 +171,135 @@ struct PhoneTerritoriesScreen: View {
                         .padding()
                 }
         }
+    }
+    
+    @ViewBuilder
+    func territoryCell(phoneData: PhoneData) -> some View {
+        LazyVStack {
+        SwipeView {
+            NavigationLink(destination: PhoneNumbersView(territory: phoneData.territory).implementPopupView()) {
+                PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity)
+                    .padding(.bottom, 2)
+            }
+        } trailingActions: { context in
+            if self.viewModel.isAdmin {
+                SwipeAction(
+                    systemImage: "trash",
+                    backgroundColor: .red
+                ) {
+                    DispatchQueue.main.async {
+                        self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
+                        CentrePopup_DeletePhoneTerritory(viewModel: viewModel).showAndStack()
+                    }
+                }
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+                
+                SwipeAction(
+                    systemImage: "pencil",
+                    backgroundColor: Color.teal
+                ) {
+                    context.state.wrappedValue = .closed
+                    self.viewModel.currentTerritory = phoneData.territory
+                    self.viewModel.presentSheet = true
+                }
+                .allowSwipeToTrigger()
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+            }
+        }
+        .swipeActionCornerRadius(16)
+        .swipeSpacing(5)
+        .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+        .swipeMinimumDistance(viewModel.isAdmin ? 25:1000)
+        }.padding(.horizontal, 15)
+    }
+}
+struct CentrePopup_DeletePhoneTerritory: CentrePopup {
+    @ObservedObject var viewModel: PhoneScreenViewModel
+    
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack {
+                Text("Delete Territory \(viewModel.territoryToDelete.1 ?? "0")")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected territory?")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if viewModel.ifFailed {
+                    Text("Error deleting territory, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                //self.showAlert = false
+                                dismiss()
+                                self.viewModel.territoryToDelete = (nil,nil)
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.viewModel.loading = true
+                        }
+                        Task {
+                            if self.viewModel.territoryToDelete.0 != nil && self.viewModel.territoryToDelete.1 != nil {
+                                switch await self.viewModel.deleteTerritory(territory: self.viewModel.territoryToDelete.0 ?? "") {
+                                case .success(_):
+                                    withAnimation {
+                                        withAnimation {
+                                            self.viewModel.loading = false
+                                        }
+                                        dismiss()
+                                        self.viewModel.territoryToDelete = (nil,nil)
+                                        self.viewModel.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.viewModel.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                    }
+                                    self.viewModel.ifFailed = true
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }

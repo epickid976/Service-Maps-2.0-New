@@ -14,6 +14,7 @@ import UIKit
 import Lottie
 import AlertKit
 import PopupView
+import MijickPopupView
 
 struct CallsView: View {
     @StateObject var viewModel: CallsViewModel
@@ -86,7 +87,7 @@ struct CallsView: View {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.callsData!, id: \.self) { callData in
-                                            viewModel.callCellView(callData: callData)
+                                            callCellView(callData: callData)
                                         }
                                         .animation(.default, value: viewModel.callsData!)
                                     }
@@ -114,50 +115,54 @@ struct CallsView: View {
                     .animation(.easeInOut(duration: 0.25), value: viewModel.callsData == nil || animationProgressTime < 0.25)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .popup(isPresented: $viewModel.showAlert) {
-                        if viewModel.callToDelete != nil{
-                            viewModel.alert()
-                                .frame(width: 400, height: 260)
-                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                    .popup(isPresented: $viewModel.showAlert) {
+//                        if viewModel.callToDelete != nil{
+//                            viewModel.alert()
+//                                .frame(width: 400, height: 260)
+//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                        }
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
+//                    .popup(isPresented: $viewModel.presentSheet) {
+//                        AddCallView(call: viewModel.currentCall, phoneNumber: phoneNumber) {
+//                            DispatchQueue.main.async {
+//                                viewModel.presentSheet = false
+//                                viewModel.synchronizationManager.startupProcess(synchronizing: true)
+//                                viewModel.getCalls()
+//                                viewModel.showAddedToast = true
+//                                
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                                    viewModel.showAddedToast = false
+//                                }
+//                            }
+//                        } onDismiss: {
+//                            viewModel.presentSheet = false
+//                        }
+//                        .frame(width: 400, height: 300)
+//                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
+                    .onChange(of: viewModel.presentSheet) { value in
+                        if value {
+                            CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber).showAndStack()
                         }
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
                     }
-                    .popup(isPresented: $viewModel.presentSheet) {
-                        AddCallView(call: viewModel.currentCall, phoneNumber: phoneNumber) {
-                            DispatchQueue.main.async {
-                                viewModel.presentSheet = false
-                                viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                viewModel.getCalls()
-                                viewModel.showAddedToast = true
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    viewModel.showAddedToast = false
-                                }
-                            }
-                        } onDismiss: {
-                            viewModel.presentSheet = false
-                        }
-                        .frame(width: 400, height: 300)
-                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
-                    }
-                
                 //.scrollIndicators(.hidden)
                 .navigationBarTitle("Number: \(viewModel.phoneNumber.number)", displayMode: .automatic)
                 .navigationBarBackButtonHidden(true)
@@ -199,5 +204,173 @@ struct CallsView: View {
                         .padding()
                 
         }
+    }
+    
+    @ViewBuilder
+    func callCellView(callData: PhoneCallData) -> some View {
+        SwipeView {
+            CallCell(call: callData)
+                .padding(.bottom, 2)
+        } trailingActions: { context in
+            if callData.accessLevel == .Admin {
+                SwipeAction(
+                    systemImage: "trash",
+                    backgroundColor: .red
+                ) {
+                    DispatchQueue.main.async {
+                        self.viewModel.callToDelete = callData.phoneCall.id
+                        CentrePopup_DeleteCall(viewModel: viewModel).showAndStack()
+                    }
+                }
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+                
+                
+            }
+            
+            if callData.accessLevel == .Moderator || callData.accessLevel == .Admin {
+                SwipeAction(
+                    systemImage: "pencil",
+                    backgroundColor: Color.teal
+                ) {
+                    self.viewModel.currentCall = callData.phoneCall
+                    context.state.wrappedValue = .closed
+                    
+                    self.viewModel.presentSheet = true
+                }
+                .allowSwipeToTrigger()
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+            }
+        }
+        .swipeActionCornerRadius(16)
+        .swipeSpacing(5)
+        .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+        .swipeMinimumDistance(callData.accessLevel != .User ? 25:1000)
+        
+    }
+}
+
+struct CentrePopup_DeleteCall: CentrePopup {
+    @ObservedObject var viewModel: CallsViewModel
+    
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack {
+                Text("Delete Call")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected call?")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if viewModel.ifFailed {
+                    Text("Error deleting call, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                dismiss()
+                                self.viewModel.callToDelete = nil
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.viewModel.loading = true
+                        }
+                        Task {
+                            if self.viewModel.callToDelete != nil{
+                                switch await self.viewModel.deleteCall(call: self.viewModel.callToDelete!) {
+                                case .success(_):
+                                    withAnimation {
+                                        self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                                        self.viewModel.getCalls()
+                                        self.viewModel.loading = false
+                                        dismiss()
+                                        self.viewModel.ifFailed = false
+                                        self.viewModel.callToDelete = nil
+                                        self.viewModel.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.viewModel.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                        self.viewModel.ifFailed = true
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+struct CentrePopup_AddCall: CentrePopup {
+    @ObservedObject var viewModel: CallsViewModel
+    @State var phoneNumber: PhoneNumberModel
+    
+    
+    func createContent() -> some View {
+        AddCallView(call: viewModel.currentCall, phoneNumber: phoneNumber) {
+            DispatchQueue.main.async {
+                viewModel.presentSheet = false
+                dismiss()
+                viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                viewModel.getCalls()
+                viewModel.showAddedToast = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    viewModel.showAddedToast = false
+                }
+            }
+        } onDismiss: {
+            viewModel.presentSheet = false
+            dismiss()
+        }
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 import NavigationTransitions
 import BackgroundTasks
 import Nuke
+import MijickPopupView
 
 @main
 struct Service_Maps_2_0App: App {
@@ -40,7 +41,7 @@ struct Service_Maps_2_0App: App {
                     case .SplashScreen:
                         SplashScreenView()
                     case .HomeScreen:
-                        HomeTabView()
+                        HomeTabView().implementPopupView()
                             .environment(\.mainWindowSize, proxy.size)
                     case .WelcomeScreen:
                         WelcomeView() {
@@ -96,7 +97,9 @@ struct Service_Maps_2_0App: App {
         
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                synchronizationManager.startupProcess(synchronizing: true)
+                if isMoreThanAMinuteOld(date: StorageManager.shared.lastTime) {
+                    synchronizationManager.startupProcess(synchronizing: true)
+                }
             }
         }
     }

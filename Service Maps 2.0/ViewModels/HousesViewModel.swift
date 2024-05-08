@@ -11,6 +11,7 @@ import CoreData
 import NukeUI
 import Combine
 import SwipeActions
+import MijickPopupView
 
 @MainActor
 class HousesViewModel: ObservableObject {
@@ -72,109 +73,8 @@ class HousesViewModel: ObservableObject {
         return await dataUploaderManager.deleteHouse(house: house)
     }
     
-    func houseCellView(houseData: HouseData, mainWindowSize: CGSize) -> some View {
-        SwipeView {
-            NavigationLink(destination: VisitsView(house: houseData.house)) {
-                HouseCell(house: houseData, mainWindowSize: mainWindowSize)
-                    .padding(.bottom, 2)
-            }
-        } trailingActions: { context in
-            if houseData.accessLevel == .Admin {
-                SwipeAction(
-                    systemImage: "trash",
-                    backgroundColor: .red
-                ) {
-                    DispatchQueue.main.async {
-                        self.houseToDelete = (houseData.house.id, houseData.house.number)
-                        self.showAlert = true
-                    }
-                }
-                .font(.title.weight(.semibold))
-                .foregroundColor(.white)
-                
-                
-            }
-        }
-        .swipeActionCornerRadius(16)
-        .swipeSpacing(5)
-        .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
-        .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
-        .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
-        .swipeMinimumDistance(houseData.accessLevel != .User ? 25:1000)
-        
-    }
     
-    @ViewBuilder
-    func alert() -> some View {
-        ZStack {
-            VStack {
-                Text("Delete House \(houseToDelete.1 ?? "0")")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                Text("Are you sure you want to delete the selected house?")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                if ifFailed {
-                    Text("Error deleting house, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                //.vSpacing(.bottom)
-                
-                HStack {
-                    if !loading {
-                        CustomBackButton() {
-                            withAnimation {
-                                self.showAlert = false
-                                self.houseToDelete = (nil,nil)
-                            }
-                        }
-                    }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: loading, title: "Delete", color: .red) {
-                        withAnimation {
-                            self.loading = true
-                        }
-                        Task {
-                            if self.houseToDelete.0 != nil && self.houseToDelete.1 != nil {
-                                switch await self.deleteHouse(house: self.houseToDelete.0 ?? "") {
-                                case .success(_):
-                                    withAnimation {
-                                        self.synchronizationManager.startupProcess(synchronizing: true)
-                                        self.getHouses()
-                                        self.loading = false
-                                        self.showAlert = false
-                                        self.ifFailed = false
-                                        self.houseToDelete = (nil,nil)
-                                        self.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.showToast = false
-                                        }
-                                    }
-                                case .failure(_):
-                                    withAnimation {
-                                        self.loading = false
-                                        self.ifFailed = true
-                                    }
-                                }
-                            }
-                        }
-                        
-                    }
-                }
-                .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
-            }
-            .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-    }
+    
 }
 
 @MainActor

@@ -14,6 +14,7 @@ import SwipeActions
 import Lottie
 import PopupView
 import AlertKit
+import MijickPopupView
 
 struct TerritoryAddressView: View {
     var territory: TerritoryModel
@@ -88,10 +89,8 @@ struct TerritoryAddressView: View {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.addressData!) { addressData in
-                                            NavigationLink(destination: NavigationLazyView( HousesView(address: addressData.address))) {
-                                                viewModel.addressCell(addressData: addressData, mainWindowSize: proxy.size)
+                                                addressCell(addressData: addressData, mainWindowSize: proxy.size)
                                                     .padding(.bottom, 2)
-                                            }
                                         }
                                     }
                                 }
@@ -119,50 +118,43 @@ struct TerritoryAddressView: View {
                     }
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .popup(isPresented: $viewModel.showAlert) {
-                        if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-                            viewModel.alert()
-                                .frame(width: 400, height: 230)
-                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                        }
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
-                    }
-                    .popup(isPresented: $viewModel.presentSheet) {
-                        AddAddressView(territory: territory, address: viewModel.currentAddress, onDone: {
-                            DispatchQueue.main.async {
-                                viewModel.presentSheet = false
-                                synchronizationManager.startupProcess(synchronizing: true)
-                                viewModel.getAddresses()
-                                viewModel.showAddedToast = true
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    viewModel.showAddedToast = false
-                                }
-                            }
-                        }, onDismiss: {
-                            viewModel.presentSheet = false
-                        })
-                        .frame(width: 400, height: 230)
-                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
-                    }
+//                    .popup(isPresented: $viewModel.showAlert) {
+//                        if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
+//                            viewModel.alert()
+//                                .frame(width: 400, height: 230)
+//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                        }
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                            
+//                    }
+//                    .popup(isPresented: $viewModel.presentSheet) {
+//                        
+//                        .frame(width: 400, height: 230)
+//                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
                     .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || animationProgressTime < 0.25)
+                    .onChange(of: viewModel.presentSheet) { value in
+                        if value {
+                            CentrePopup_AddAddress(viewModel: viewModel, territory: territory).showAndStack()
+                        }
+                    }
                 }
                 .height(min: 180, max: 350.0)
                 
@@ -215,5 +207,196 @@ struct TerritoryAddressView: View {
         }
     }
     
+    @ViewBuilder
+    func addressCell(addressData: AddressData, mainWindowSize: CGSize) -> some View {
+        LazyVStack {
+            SwipeView {
+                NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address).implementPopupView()).implementPopupView()) {
+                    HStack(spacing: 10) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(addressData.address.address)")
+                                .font(.headline)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
+                                .hSpacing(.leading)
+                            Text("Doors: \(addressData.houseQuantity)")
+                                .font(.body)
+                                .lineLimit(5)
+                                .foregroundColor(.primary)
+                                .fontWeight(.bold)
+                                .multilineTextAlignment(.leading)
+                                .hSpacing(.leading)
+                        }
+                        .frame(maxWidth: mainWindowSize.width * 0.90)
+                    }
+                    //.id(territory.id)
+                    .padding(10)
+                    .frame(minWidth: mainWindowSize.width * 0.95)
+                    .background(.thinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
+            } trailingActions: { context in
+                if addressData.accessLevel == .Admin {
+                    SwipeAction(
+                        systemImage: "trash",
+                        backgroundColor: .red
+                    ) {
+                        DispatchQueue.main.async {
+                            self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
+                            //self.showAlert = true
+                            if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
+                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).showAndStack()
+                            }
+                        }
+                    }
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
+                }
+                
+                if addressData.accessLevel == .Moderator || addressData.accessLevel == .Admin {
+                    SwipeAction(
+                        systemImage: "pencil",
+                        backgroundColor: Color.teal
+                    ) {
+                        context.state.wrappedValue = .closed
+                        self.viewModel.currentAddress = addressData.address
+                        self.viewModel.presentSheet = true
+                    }
+                    .allowSwipeToTrigger()
+                    .font(.title.weight(.semibold))
+                    .foregroundColor(.white)
+                }
+            }
+            .swipeActionCornerRadius(16)
+            .swipeSpacing(5)
+            .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
+            .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
+            .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
+            .swipeMinimumDistance(addressData.accessLevel != .User ? 50:1000)
+        }
+    }
+}
+
+struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
+    @ObservedObject var viewModel: AddressViewModel
     
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack {
+                Text("Delete Address: \(viewModel.addressToDelete.1 ?? "0")")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected address?")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if viewModel.ifFailed {
+                    Text("Error deleting address, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                //self.showAlert = false
+                                dismiss()
+                                self.viewModel.ifFailed = false
+                                self.viewModel.addressToDelete = (nil,nil)
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.viewModel.loading = true
+                        }
+                        Task {
+                            if self.viewModel.addressToDelete.0 != nil && self.viewModel.addressToDelete.1 != nil {
+                                switch await self.viewModel.deleteAddress(address: self.viewModel.addressToDelete.0 ?? "") {
+                                case .success(_):
+                                    withAnimation {
+                                        self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                                        self.viewModel.getAddresses()
+                                        self.viewModel.loading = false
+                                        //self.viewModel.showAlert = false
+                                        dismiss()
+                                        self.viewModel.ifFailed = false
+                                        self.viewModel.addressToDelete = (nil,nil)
+                                        self.viewModel.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.viewModel.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                    }
+                                    self.viewModel.ifFailed = true
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+            }
+            .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+
+struct CentrePopup_AddAddress: CentrePopup {
+    @ObservedObject var viewModel: AddressViewModel
+    @State var territory: TerritoryModel
+    
+    
+    func createContent() -> some View {
+        AddAddressView(territory: territory, address: viewModel.currentAddress, onDone: {
+            DispatchQueue.main.async {
+                viewModel.presentSheet = false
+                dismiss()
+                viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                viewModel.getAddresses()
+                viewModel.showAddedToast = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    viewModel.showAddedToast = false
+                }
+            }
+        }, onDismiss: {
+            viewModel.presentSheet = false
+            dismiss()
+        })
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
 }

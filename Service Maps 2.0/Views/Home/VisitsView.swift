@@ -13,7 +13,7 @@ import UIKit
 import Lottie
 import AlertKit
 import PopupView
-
+import MijickPopupView
 
 struct VisitsView: View {
     
@@ -87,7 +87,7 @@ struct VisitsView: View {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.visitData!, id: \.self) { visitData in
-                                            viewModel.visitCellView(visitData: visitData)
+                                            visitCellView(visitData: visitData)
                                         }
                                         .animation(.default, value: viewModel.visitData!)
                                         
@@ -117,50 +117,41 @@ struct VisitsView: View {
                     .animation(.easeInOut(duration: 0.25), value: viewModel.visitData == nil || animationProgressTime < 0.25)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .popup(isPresented: $viewModel.showAlert) {
-                        if viewModel.visitToDelete != nil{
-                            viewModel.alert()
-                                .frame(width: 400, height: 260)
-                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                    .popup(isPresented: $viewModel.showAlert) {
+//                        if viewModel.visitToDelete != nil{
+//                            viewModel.alert()
+//                                .frame(width: 400, height: 260)
+//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                        }
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
+//                    .popup(isPresented: $viewModel.presentSheet) {
+//
+//                        .frame(width: 400, height: 300)
+//                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
+                    .onChange(of: viewModel.presentSheet) { value in
+                        if value {
+                            CentrePopup_AddVisit(viewModel: viewModel, house: house).showAndStack()
                         }
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
                     }
-                    .popup(isPresented: $viewModel.presentSheet) {
-                        AddVisitView(visit: viewModel.currentVisit, house: house) {
-                            DispatchQueue.main.async {
-                                viewModel.presentSheet = false
-                                viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                viewModel.getVisits()
-                                viewModel.showAddedToast = true
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    viewModel.showAddedToast = false
-                                }
-                            }
-                        } onDismiss: {
-                            viewModel.presentSheet = false
-                        }
-                        .frame(width: 400, height: 300)
-                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
-                    }
-                
                 //.scrollIndicators(.hidden)
                 .navigationBarTitle("House: \(viewModel.house.number)", displayMode: .automatic)
                 .navigationBarBackButtonHidden(true)
@@ -203,9 +194,178 @@ struct VisitsView: View {
         }
     }
     
+    @ViewBuilder
+    func visitCellView(visitData: VisitData) -> some View {
+        SwipeView {
+            VisitCell(visit: visitData)
+                .padding(.bottom, 2)
+        } trailingActions: { context in
+            if visitData.accessLevel == .Admin {
+                SwipeAction(
+                    systemImage: "trash",
+                    backgroundColor: .red
+                ) {
+                    DispatchQueue.main.async {
+                        self.viewModel.visitToDelete = visitData.visit.id
+                        //self.viewModel.showAlert = true
+                        CentrePopup_DeleteVisit(viewModel: viewModel).showAndStack()
+                    }
+                }
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+                
+                
+            }
+            
+            if visitData.accessLevel == .Moderator || visitData.accessLevel == .Admin {
+                SwipeAction(
+                    systemImage: "pencil",
+                    backgroundColor: Color.teal
+                ) {
+                    self.viewModel.currentVisit = visitData.visit
+                    context.state.wrappedValue = .closed
+                    
+                    self.viewModel.presentSheet = true
+                }
+                .allowSwipeToTrigger()
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+            }
+        }
+        .swipeActionCornerRadius(16)
+        .swipeSpacing(5)
+        .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+        .swipeMinimumDistance(visitData.accessLevel != .User ? 25:1000)
+        
+    }
 }
 
+struct CentrePopup_DeleteVisit: CentrePopup {
+    @ObservedObject var viewModel: VisitsViewModel
+    
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack {
+                Text("Delete Visit")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected visit?")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if viewModel.ifFailed {
+                    Text("Error deleting visit, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                //self.viewModel.showAlert = false
+                                dismiss()
+                                self.viewModel.visitToDelete = nil
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.viewModel.loading = true
+                        }
+                        Task {
+                            if self.viewModel.visitToDelete != nil{
+                                switch await self.viewModel.deleteVisit(visit: self.viewModel.visitToDelete ?? "") {
+                                case .success(_):
+                                    withAnimation {
+                                        self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                                        self.viewModel.getVisits()
+                                        self.viewModel.loading = false
+                                        //self.showAlert = false
+                                        dismiss()
+                                        self.viewModel.ifFailed = false
+                                        self.viewModel.visitToDelete = nil
+                                        self.viewModel.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.viewModel.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                        self.viewModel.ifFailed = true
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
 
+struct CentrePopup_AddVisit: CentrePopup {
+    @ObservedObject var viewModel: VisitsViewModel
+    @State var house: HouseModel
+    
+    
+    func createContent() -> some View {
+        AddVisitView(visit: viewModel.currentVisit, house: house) {
+            DispatchQueue.main.async {
+                viewModel.presentSheet = false
+                dismiss()
+                viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                viewModel.getVisits()
+                viewModel.showAddedToast = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    viewModel.showAddedToast = false
+                }
+            }
+        } onDismiss: {
+            viewModel.presentSheet = false
+            dismiss()
+        }
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
 
 //#Preview {
 //    VisitsView()

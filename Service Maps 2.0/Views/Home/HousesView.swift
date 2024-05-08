@@ -14,6 +14,7 @@ import UIKit
 import Lottie
 import PopupView
 import AlertKit
+import MijickPopupView
 
 struct HousesView: View {
     var address: TerritoryAddressModel
@@ -27,9 +28,11 @@ struct HousesView: View {
     @State var scrollOffset: CGFloat = 0.00
     
     init(address: TerritoryAddressModel) {
+        
         self.address = address
         let initialViewModel = HousesViewModel(territoryAddress: address)
         _viewModel = ObservedObject(wrappedValue: initialViewModel)
+        
     }
     
     let alertViewDeleted = AlertAppleMusic17View(title: "House Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
@@ -84,7 +87,7 @@ struct HousesView: View {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.houseData!, id: \.self) { houseData in
-                                            viewModel.houseCellView(houseData: houseData, mainWindowSize: proxy.size)
+                                            houseCellView(houseData: houseData, mainWindowSize: proxy.size)
                                         }
                                         .animation(.default, value: viewModel.houseData!)
                                         
@@ -114,50 +117,41 @@ struct HousesView: View {
                     .animation(.easeInOut(duration: 0.25), value: viewModel.houseData == nil || animationProgressTime < 0.25)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .popup(isPresented: $viewModel.showAlert) {
-                        if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-                            viewModel.alert()
-                                .frame(width: 400, height: 260)
-                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                    .popup(isPresented: $viewModel.showAlert) {
+//                        if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
+//                            viewModel.alert()
+//                                .frame(width: 400, height: 260)
+//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                        }
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
+//                    .popup(isPresented: $viewModel.presentSheet) {
+//
+//                        .frame(width: 400, height: 260)
+//                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
+                    .onChange(of: viewModel.presentSheet) { value in
+                        if value {
+                            CentrePopup_AddHouse(viewModel: viewModel, address: address).showAndStack()
                         }
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
                     }
-                    .popup(isPresented: $viewModel.presentSheet) {
-                        AddHouseView(house: viewModel.currentHouse, address: address, onDone: {
-                            DispatchQueue.main.async {
-                                viewModel.presentSheet = false
-                                viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                viewModel.getHouses()
-                                viewModel.showAddedToast = true
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    viewModel.showAddedToast = false
-                                }
-                            }
-                        }, onDismiss: {
-                            viewModel.presentSheet = false
-                        })
-                        .frame(width: 400, height: 260)
-                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
-                    }
-                    
                     .navigationBarTitle("\(address.address)", displayMode: .automatic)
                     .navigationBarBackButtonHidden(true)
                     .toolbar {
@@ -231,6 +225,165 @@ struct HousesView: View {
         }
     }
     
+    @ViewBuilder
+    func houseCellView(houseData: HouseData, mainWindowSize: CGSize) -> some View {
+        SwipeView {
+            NavigationLink(destination: VisitsView(house: houseData.house).implementPopupView()) {
+                HouseCell(house: houseData, mainWindowSize: mainWindowSize)
+                    .padding(.bottom, 2)
+            }
+        } trailingActions: { context in
+            if houseData.accessLevel == .Admin {
+                SwipeAction(
+                    systemImage: "trash",
+                    backgroundColor: .red
+                ) {
+                    DispatchQueue.main.async {
+                        self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
+                        //self.showAlert = true
+                        if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
+                            CentrePopup_DeleteHouse(viewModel: viewModel).showAndStack()
+                        }
+                    }
+                }
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+                
+                
+            }
+        }
+        .swipeActionCornerRadius(16)
+        .swipeSpacing(5)
+        .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+        .swipeMinimumDistance(houseData.accessLevel != .User ? 25:1000)
+        
+    }
 }
 
 
+struct CentrePopup_DeleteHouse: CentrePopup {
+    @ObservedObject var viewModel: HousesViewModel
+    
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack {
+                Text("Delete House \(viewModel.houseToDelete.1 ?? "0")")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected house?")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if viewModel.ifFailed {
+                    Text("Error deleting house, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                //self.viewModel.showAlert = false
+                                dismiss()
+                                self.viewModel.houseToDelete = (nil,nil)
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.viewModel.loading = true
+                        }
+                        Task {
+                            if self.viewModel.houseToDelete.0 != nil && self.viewModel.houseToDelete.1 != nil {
+                                switch await self.viewModel.deleteHouse(house: self.viewModel.houseToDelete.0 ?? "") {
+                                case .success(_):
+                                    withAnimation {
+                                        self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                                        self.viewModel.getHouses()
+                                        self.viewModel.loading = false
+                                        //self.showAlert = false
+                                        dismiss()
+                                        self.viewModel.ifFailed = false
+                                        self.viewModel.houseToDelete = (nil,nil)
+                                        self.viewModel.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.viewModel.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                        self.viewModel.ifFailed = true
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+
+struct CentrePopup_AddHouse: CentrePopup {
+    @ObservedObject var viewModel: HousesViewModel
+    @State var address: TerritoryAddressModel
+    
+    
+    func createContent() -> some View {
+        AddHouseView(house: viewModel.currentHouse, address: address, onDone: {
+            DispatchQueue.main.async {
+                viewModel.presentSheet = false
+                dismiss()
+                viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                viewModel.getHouses()
+                viewModel.showAddedToast = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    viewModel.showAddedToast = false
+                }
+            }
+        }, onDismiss: {
+            viewModel.presentSheet = false
+            dismiss()
+        })
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}

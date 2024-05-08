@@ -13,6 +13,7 @@ import UIKit
 import Lottie
 import PopupView
 import AlertKit
+import MijickPopupView
 
 struct AccessView: View {
     @ObservedObject var viewModel = AccessViewModel()
@@ -77,7 +78,7 @@ struct AccessView: View {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.keyData!, id: \.self) { keyData in
-                                            viewModel.keyCell(keyData: keyData)
+                                            keyCell(keyData: keyData)
                                         }
                                         .animation(.default, value: viewModel.keyData!)
                                     }
@@ -107,22 +108,22 @@ struct AccessView: View {
                     .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || animationProgressTime < 0.25)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .popup(isPresented: $viewModel.showAlert) {
-                        if viewModel.keyToDelete.0 != nil && viewModel.keyToDelete.1 != nil {
-                            viewModel.alert()
-                                .frame(width: 400, height: 230)
-                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                        }
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
-                    }
+//                    .popup(isPresented: $viewModel.showAlert) {
+//                        if viewModel.keyToDelete.0 != nil && viewModel.keyToDelete.1 != nil {
+//                            viewModel.alert()
+//                                .frame(width: 400, height: 230)
+//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+//                        }
+//                    } customize: {
+//                        $0
+//                            .type(.default)
+//                            .closeOnTapOutside(false)
+//                            .dragToDismiss(false)
+//                            .isOpaque(true)
+//                            .animation(.spring())
+//                            .closeOnTap(false)
+//                            .backgroundColor(.black.opacity(0.8))
+//                    }
                 
                 .navigationDestination(isPresented: $viewModel.presentSheet) {
                     AddKeyView {
@@ -172,5 +173,139 @@ struct AccessView: View {
                         .padding()
                 }
         }
+    }
+    @ViewBuilder
+    func keyCell(keyData: KeyData) -> some View {
+        SwipeView {
+            TokenCell(keyData: keyData)
+                .padding(.bottom, 2)
+        } trailingActions: { context in
+            SwipeAction(
+                systemImage: "trash",
+                backgroundColor: .red
+            ) {
+                DispatchQueue.main.async {
+                    self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
+                    //self.showAlert = true
+                    CentrePopup_DeleteKey(viewModel: viewModel).showAndStack()
+                }
+            }
+            .font(.title.weight(.semibold))
+            .foregroundColor(.white)
+            
+            SwipeAction(
+                systemImage: "square.and.arrow.up",
+                backgroundColor: Color.green
+            ) {
+                context.state.wrappedValue = .closed
+                let url = URL(string: getShareLink(id: keyData.key.id))
+                let av = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
+                
+                UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
+                
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
+                    av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                }
+                
+            }
+            .allowSwipeToTrigger()
+            .font(.title.weight(.semibold))
+            .foregroundColor(.white)
+        }
+        .swipeActionCornerRadius(16)
+        .swipeSpacing(5)
+        .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+        .swipeMinimumDistance(25)
+    }
+}
+
+struct CentrePopup_DeleteKey: CentrePopup {
+    @ObservedObject var viewModel: AccessViewModel
+    
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack {
+                Text("Delete Key: \(viewModel.keyToDelete.1 ?? "0")")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected key?")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if viewModel.ifFailed {
+                    Text("Error deleting key, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                dismiss()
+                                self.viewModel.keyToDelete = (nil,nil)
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.viewModel.loading = true
+                        }
+                        Task {
+                            if self.viewModel.keyToDelete.0 != nil && self.viewModel.keyToDelete.1 != nil {
+                                switch await self.viewModel.deleteKey(key: self.viewModel.keyToDelete.0 ?? "") {
+                                case .success(_):
+                                    withAnimation {
+                                        withAnimation {
+                                            self.viewModel.loading = false
+                                            self.viewModel.getKeys()
+                                        }
+                                        //self.viewModel.showAlert = false
+                                        dismiss()
+                                        self.viewModel.keyToDelete = (nil,nil)
+                                        self.viewModel.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.viewModel.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                    }
+                                    self.viewModel.ifFailed = true
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }

@@ -15,6 +15,7 @@ import PopupView
 import AlertKit
 import Nuke
 import FloatingButton
+import MijickPopupView
 
 struct TerritoryView: View {
     
@@ -41,92 +42,96 @@ struct TerritoryView: View {
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 40
     
+    @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         ZStack {
             ScrollView {
-                    VStack {
-                        if viewModel.territoryData == nil || viewModel.dataStore.synchronized == false {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
-                                    .frame(width: 350, height: 350)
-                            }
+                VStack {
+                    if viewModel.territoryData == nil || viewModel.dataStore.synchronized == false {
+                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                            LottieView(animation: .named("loadsimple"))
+                                .playing(loopMode: .loop)
+                                .resizable()
+                                .animationDidFinish { completed in
+                                    self.animationDone = completed
+                                }
+                                .getRealtimeAnimationProgress($animationProgressTime)
+                                .frame(width: 250, height: 250)
                         } else {
-                            if viewModel.territoryData!.isEmpty {
-                                VStack {
-                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 250, height: 250)
-                                    } else {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 350, height: 350)
-                                    }
+                            LottieView(animation: .named("loadsimple"))
+                                .playing(loopMode: .loop)
+                                .resizable()
+                                .animationDidFinish { completed in
+                                    self.animationDone = completed
                                 }
-                                
-                            } else {
-                                LazyVStack {
-                                    SwipeViewGroup {
-                                        ForEach(viewModel.territoryData!, id: \.self) { dataWithKeys in
-                                            viewModel.territoryCell(dataWithKeys: dataWithKeys)
-                                        }
-                                        .animation(.default, value: viewModel.territoryData!)
-                                    }
-                                
+                                .getRealtimeAnimationProgress($animationProgressTime)
+                                .frame(width: 350, height: 350)
+                        }
+                    } else {
+                        if viewModel.territoryData!.isEmpty {
+                            VStack {
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("nodatapreview"))
+                                        .playing()
+                                        .resizable()
+                                        .frame(width: 250, height: 250)
+                                } else {
+                                    LottieView(animation: .named("nodatapreview"))
+                                        .playing()
+                                        .resizable()
+                                        .frame(width: 350, height: 350)
                                 }
                             }
+                            
+                        } else {
+                            LazyVStack {
+                                SwipeViewGroup {
+                                    ForEach(viewModel.territoryData!, id: \.self) { dataWithKeys in
+                                        territoryCell(dataWithKeys: dataWithKeys)
+                                    }
+                                    .animation(.default, value: viewModel.territoryData!)
+                                }
+                                
+                            }
                         }
-                    }.background(GeometryReader {
-                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                    }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                         let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                         if ( abs(offsetDifference) > minimumOffset) {
-                             if offsetDifference > 0 {
-                                     print("Is scrolling up toward top.")
-                                 hideFloatingButton = false
-                              } else {
-                                      print("Is scrolling down toward bottom.")
-                                  hideFloatingButton = true
-                              }
-                              self.previousViewOffset = currentOffset
-                         }
                     }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.territoryData == nil)
-                    .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                    .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .popup(isPresented: $viewModel.showAlert) {
-                        if viewModel.territoryToDelete.0 != nil && viewModel.territoryToDelete.1 != nil {
-                            viewModel.alert()
-                                .frame(width: 400, height: 230)
-                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+                }
+                .background(GeometryReader {
+                    Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                    let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                    if ( abs(offsetDifference) > minimumOffset) {
+                        if offsetDifference > 0 {
+                            print("Is scrolling up toward top.")
+                            hideFloatingButton = false
+                        } else {
+                            print("Is scrolling down toward bottom.")
+                            hideFloatingButton = true
                         }
-                    } customize: {
-                        $0
-                            .type(.default)
-                            .closeOnTapOutside(false)
-                            .dragToDismiss(false)
-                            .isOpaque(true)
-                            .animation(.spring())
-                            .closeOnTap(false)
-                            .backgroundColor(.black.opacity(0.8))
+                        self.previousViewOffset = currentOffset
                     }
+                }
+                .animation(.easeInOut(duration: 0.25), value: viewModel.territoryData == nil)
+                .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
+                .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
+                //                    .popup(isPresented: $viewModel.showAlert) {
+                //                        if viewModel.territoryToDelete.0 != nil && viewModel.territoryToDelete.1 != nil {
+                //                            viewModel.alert()
+                //                                .frame(width: 400, height: 230)
+                //                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+                //                        }
+                //                    } customize: {
+                //                        $0
+                //                            .type(.default, screenSize: mainWindowSize)
+                //                            .closeOnTapOutside(false)
+                //                            .dragToDismiss(false)
+                //                            .isOpaque(true)
+                //                            .animation(.spring())
+                //                            .closeOnTap(false)
+                //                            .backgroundColor(.black.opacity(0.8))
+                //                            .position(.center)
+                //                    }
+                
                 .navigationDestination(isPresented: $viewModel.presentSheet) {
                     AddTerritoryView(territory: viewModel.currentTerritory) {
                         synchronizationManager.startupProcess(synchronizing: true)
@@ -148,10 +153,10 @@ struct TerritoryView: View {
                         HStack {
                             Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
                                 .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-//                            if viewModel.isAdmin {
-//                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-//                                    .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-//                            }
+                            //                            if viewModel.isAdmin {
+                            //                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                            //                                    .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                            //                            }
                         }
                     }
                 }
@@ -160,22 +165,92 @@ struct TerritoryView: View {
             }.coordinateSpace(name: "scroll")
                 .scrollIndicators(.hidden)
                 .refreshable {
-                synchronizationManager.startupProcess(synchronizing: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    hideFloatingButton = false
+                    synchronizationManager.startupProcess(synchronizing: true)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        hideFloatingButton = false
+                    }
                 }
-            }
             
             if AuthorizationLevelManager().existsAdminCredentials() {
-                    MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
-                        self.viewModel.presentSheet = true
-                    }
-                    .offset(y: hideFloatingButton ? 100 : 0)
-                        .animation(.spring(), value: hideFloatingButton)
-                        .vSpacing(.bottom).hSpacing(.trailing)
-                        .padding()
+                MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
+                    self.viewModel.presentSheet = true
                 }
+                .offset(y: hideFloatingButton ? 100 : 0)
+                .animation(.spring(), value: hideFloatingButton)
+                .vSpacing(.bottom).hSpacing(.trailing)
+                .padding()
+            }
         }
+    }
+    
+    @ViewBuilder
+    func territoryCell(dataWithKeys: TerritoryDataWithKeys) -> some View {
+        
+        LazyVStack {
+            if !dataWithKeys.keys.isEmpty {
+                Text(self.viewModel.processData(dataWithKeys: dataWithKeys))
+                    .font(.title2)
+                    .lineLimit(1)
+                    .foregroundColor(.primary)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(5)
+                    .padding(.horizontal, 10)
+            } else {
+                Spacer()
+                    .frame(height: 20)
+            }
+        }
+        // Loop through territoryData here (replace with your TerritoryItemView implementation)
+        LazyVStack {
+            ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+                SwipeView {
+                    NavigationLink(destination: TerritoryAddressView(territory: territoryData.territory).implementPopupView()) {
+                        CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity)
+                            .padding(.bottom, 2)
+                        
+                    }
+                } trailingActions: { context in
+                    if territoryData.accessLevel == .Admin {
+                        SwipeAction(
+                            systemImage: "trash",
+                            backgroundColor: .red
+                        ) {
+                            DispatchQueue.main.async {
+                                self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
+                                //self.showAlert = true
+                                CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).showAndStack()
+                            }
+                        }
+                        .font(.title.weight(.semibold))
+                        .foregroundColor(.white)
+                        
+                        
+                    }
+                    
+                    if territoryData.accessLevel == .Moderator || territoryData.accessLevel == .Admin {
+                        SwipeAction(
+                            systemImage: "pencil",
+                            backgroundColor: Color.teal
+                        ) {
+                            context.state.wrappedValue = .closed
+                            self.viewModel.currentTerritory = territoryData.territory
+                            self.viewModel.presentSheet = true
+                        }
+                        .allowSwipeToTrigger()
+                        .font(.title.weight(.semibold))
+                        .foregroundColor(.white)
+                    }
+                }
+                .swipeActionCornerRadius(16)
+                .swipeSpacing(5)
+                .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+                .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+                .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+                .swipeMinimumDistance(territoryData.accessLevel != .User ? 25:1000)
+            }
+        }.padding(.horizontal, 15)
+        
     }
 }
 
@@ -234,5 +309,93 @@ struct ViewOffsetKey: PreferenceKey {
     static var defaultValue = CGFloat.zero
     static func reduce(value: inout Value, nextValue: () -> Value) {
         value += nextValue()
+    }
+}
+
+struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
+    @ObservedObject var viewModel: TerritoryViewModel
+    
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack {
+                Text("Delete Territory \(viewModel.territoryToDelete.1 ?? "0")")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected territory?")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if viewModel.ifFailed {
+                    Text("Error deleting territory, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                //self.viewModel.showAlert = false
+                                dismiss()
+                                self.viewModel.territoryToDelete = (nil,nil)
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.viewModel.loading = true
+                        }
+                        Task {
+                            if self.viewModel.territoryToDelete.0 != nil && self.viewModel.territoryToDelete.1 != nil {
+                                switch await self.viewModel.deleteTerritory(territory: self.viewModel.territoryToDelete.0 ?? "") {
+                                case .success(_):
+                                    withAnimation {
+                                        withAnimation {
+                                            self.viewModel.loading = false
+                                        }
+                                        //self.showAlert = false
+                                        dismiss()
+                                        self.viewModel.territoryToDelete = (nil,nil)
+                                        self.viewModel.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.viewModel.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                    }
+                                    self.viewModel.ifFailed = true
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }

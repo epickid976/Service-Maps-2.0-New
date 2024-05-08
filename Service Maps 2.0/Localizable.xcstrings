@@ -389,6 +389,9 @@
         }
       }
     },
+    "Are you sure you want to delete the selected visit?" : {
+
+    },
     "Are you sure you want to delete your account?" : {
       "localizations" : {
         "es" : {
@@ -821,6 +824,9 @@
           }
         }
       }
+    },
+    "Error deleting visit, please try again later" : {
+
     },
     "Everything at the palm of your hand" : {
       "localizations" : {

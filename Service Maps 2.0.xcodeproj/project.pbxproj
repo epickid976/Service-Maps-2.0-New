@@ -44,7 +44,6 @@
 		821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12772A7811CD0050D106 /* AdminAPI.swift */; };
 		821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74C2BD9EA46001D092D /* AppDelegate.swift */; };
 		821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74E2BD9EB66001D092D /* apple-app-site-association */; };
-		821F090F2AA965FE00D6B6E6 /* GRDBQuery in Frameworks */ = {isa = PBXBuildFile; productRef = 821F090E2AA965FE00D6B6E6 /* GRDBQuery */; };
 		822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0732AA6B61C0008FA61 /* Lottie */; };
 		822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0762AA6B6230008FA61 /* Alamofire */; };
 		822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0792AA6B62B0008FA61 /* ScalingHeaderScrollView */; };
@@ -55,7 +54,6 @@
 		822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0852AA6B6440008FA61 /* ActivityIndicatorView */; };
 		822FA0972AA6B6650008FA61 /* SwipeActions in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0962AA6B6650008FA61 /* SwipeActions */; };
 		822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA09F2AA6B7800008FA61 /* NavigationTransitions */; };
-		822FA0A32AA6B7C00008FA61 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0A22AA6B7C00008FA61 /* PopupView */; };
 		822FA0A52AA7798A0008FA61 /* HousesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A42AA7798A0008FA61 /* HousesViewModel.swift */; };
 		822FA0A72AA77A200008FA61 /* CirlceButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */; };
 		822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A92AA77C8F0008FA61 /* HouseCell.swift */; };
@@ -78,6 +76,9 @@
 		824213792A83335B00626DD5 /* CustomBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213782A83335B00626DD5 /* CustomBackButton.swift */; };
 		8242137B2A83357600626DD5 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242137A2A83357600626DD5 /* CustomButton.swift */; };
 		8242137D2A84810300626DD5 /* SignupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242137C2A84810300626DD5 /* SignupViewModel.swift */; };
+		8244B79D2BEBDFC7005BA9FE /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 8244B79C2BEBDFC7005BA9FE /* PopupView */; };
+		8244B7A32BEBE396005BA9FE /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 8244B7A22BEBE396005BA9FE /* PopupView */; };
+		8244B7A62BEBF782005BA9FE /* MijickPopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 8244B7A52BEBF782005BA9FE /* MijickPopupView */; };
 		824E5CEE2BC37962001DE348 /* VisitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CED2BC37962001DE348 /* VisitsViewModel.swift */; };
 		824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CEF2BC43012001DE348 /* VisitCell.swift */; };
 		824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */; };
@@ -328,12 +329,13 @@
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
 				82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */,
 				825645A22BCE0FC000F18AC9 /* RealmSwift in Frameworks */,
-				821F090F2AA965FE00D6B6E6 /* GRDBQuery in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
-				822FA0A32AA6B7C00008FA61 /* PopupView in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
 				822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */,
+				8244B79D2BEBDFC7005BA9FE /* PopupView in Frameworks */,
+				8244B7A32BEBE396005BA9FE /* PopupView in Frameworks */,
 				822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */,
+				8244B7A62BEBF782005BA9FE /* MijickPopupView in Frameworks */,
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
 				822FA07D2AA6B6320008FA61 /* Nuke in Frameworks */,
@@ -710,12 +712,13 @@
 				822FA0852AA6B6440008FA61 /* ActivityIndicatorView */,
 				822FA0962AA6B6650008FA61 /* SwipeActions */,
 				822FA09F2AA6B7800008FA61 /* NavigationTransitions */,
-				822FA0A22AA6B7C00008FA61 /* PopupView */,
-				821F090E2AA965FE00D6B6E6 /* GRDBQuery */,
 				8256459F2BCE0FC000F18AC9 /* Realm */,
 				825645A12BCE0FC000F18AC9 /* RealmSwift */,
 				82A5B45F2BD482EB00F52F2F /* AlertKit */,
 				82F768FF2BE92FA2001FA3CF /* FloatingButton */,
+				8244B79C2BEBDFC7005BA9FE /* PopupView */,
+				8244B7A22BEBE396005BA9FE /* PopupView */,
+				8244B7A52BEBF782005BA9FE /* MijickPopupView */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -755,11 +758,11 @@
 				822FA0842AA6B6440008FA61 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
 				822FA0952AA6B6650008FA61 /* XCRemoteSwiftPackageReference "SwipeActions" */,
 				822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
-				822FA0A12AA6B7C00008FA61 /* XCRemoteSwiftPackageReference "PopupView" */,
-				821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */,
 				8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */,
 				82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */,
+				8244B7A12BEBE396005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */,
+				8244B7A42BEBF782005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1080,7 +1083,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.4;
+				MARKETING_VERSION = 2.5.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1113,7 +1116,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.4;
+				MARKETING_VERSION = 2.5.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1146,14 +1149,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/groue/GRDBQuery";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.7.0;
-			};
-		};
 		822FA0722AA6B61C0008FA61 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -1210,12 +1205,20 @@
 				minimumVersion = 0.11.0;
 			};
 		};
-		822FA0A12AA6B7C00008FA61 /* XCRemoteSwiftPackageReference "PopupView" */ = {
+		8244B7A12BEBE396005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/exyte/PopupView.git";
+			repositoryURL = "https://github.com/epickid976/PopupView";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		8244B7A42BEBF782005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Mijick/PopupView?tab=readme-ov-file";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.6.2;
+				minimumVersion = 2.4.0;
 			};
 		};
 		8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
@@ -1245,11 +1248,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		821F090E2AA965FE00D6B6E6 /* GRDBQuery */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 821F090D2AA965FE00D6B6E6 /* XCRemoteSwiftPackageReference "GRDBQuery" */;
-			productName = GRDBQuery;
-		};
 		822FA0732AA6B61C0008FA61 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 822FA0722AA6B61C0008FA61 /* XCRemoteSwiftPackageReference "lottie-ios" */;
@@ -1300,10 +1298,19 @@
 			package = 822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
 			productName = NavigationTransitions;
 		};
-		822FA0A22AA6B7C00008FA61 /* PopupView */ = {
+		8244B79C2BEBDFC7005BA9FE /* PopupView */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 822FA0A12AA6B7C00008FA61 /* XCRemoteSwiftPackageReference "PopupView" */;
 			productName = PopupView;
+		};
+		8244B7A22BEBE396005BA9FE /* PopupView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8244B7A12BEBE396005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = PopupView;
+		};
+		8244B7A52BEBF782005BA9FE /* MijickPopupView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8244B7A42BEBF782005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = MijickPopupView;
 		};
 		8256459F2BCE0FC000F18AC9 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
