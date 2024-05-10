@@ -50,7 +50,7 @@ struct HousesView: View {
                         if viewModel.houseData == nil || viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
-                                    .playing()
+                                    .playing(loopMode: .loop)
                                     .resizable()
                                     .animationDidFinish { completed in
                                         self.animationDone = completed
@@ -59,7 +59,7 @@ struct HousesView: View {
                                     .frame(width: 250, height: 250)
                             } else {
                                 LottieView(animation: .named("loadsimple"))
-                                    .playing()
+                                    .playing(loopMode: .loop)
                                     .resizable()
                                     .animationDidFinish { completed in
                                         self.animationDone = completed
@@ -114,7 +114,7 @@ struct HousesView: View {
                             self.previousViewOffset = currentOffset
                         }
                     }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.houseData == nil || animationProgressTime < 0.25)
+                    .animation(.easeInOut(duration: 0.25), value: viewModel.houseData == nil || viewModel.houseData != nil)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
 //                    .popup(isPresented: $viewModel.showAlert) {
@@ -213,7 +213,7 @@ struct HousesView: View {
                         }
                     }
                 if AuthorizationLevelManager().existsAdminCredentials() {
-                    MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
+                    MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
                     }
                     .offset(y: hideFloatingButton ? 150 : 0)
@@ -378,6 +378,17 @@ struct CentrePopup_AddHouse: CentrePopup {
             .padding(.bottom, 10)
             .padding(.horizontal, 10)
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
+            .simultaneousGesture(
+                // Hide the keyboard on scroll
+                DragGesture().onChanged { _ in
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil,
+                        from: nil,
+                        for: nil
+                    )
+                }
+            )
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {

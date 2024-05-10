@@ -50,7 +50,7 @@ struct CallsView: View {
                         if viewModel.callsData == nil || viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
-                                    .playing()
+                                    .playing(loopMode: .loop)
                                     .resizable()
                                     .animationDidFinish { completed in
                                         self.animationDone = completed
@@ -59,7 +59,7 @@ struct CallsView: View {
                                     .frame(width: 250, height: 250)
                             } else {
                                 LottieView(animation: .named("loadsimple"))
-                                    .playing()
+                                    .playing(loopMode: .loop)
                                     .resizable()
                                     .animationDidFinish { completed in
                                         self.animationDone = completed
@@ -112,7 +112,7 @@ struct CallsView: View {
                               self.previousViewOffset = currentOffset
                          }
                     }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.callsData == nil || animationProgressTime < 0.25)
+                    .animation(.easeInOut(duration: 0.25), value: viewModel.callsData == nil || viewModel.callsData != nil)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
 //                    .popup(isPresented: $viewModel.showAlert) {
@@ -195,7 +195,7 @@ struct CallsView: View {
             .refreshable {
                 viewModel.synchronizationManager.startupProcess(synchronizing: true)
             }
-                    MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
+                    MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
                     }
                     .offset(y: hideFloatingButton ? 100 : -25)
@@ -365,6 +365,17 @@ struct CentrePopup_AddCall: CentrePopup {
             .padding(.bottom, 10)
             .padding(.horizontal, 10)
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
+            .simultaneousGesture(
+                // Hide the keyboard on scroll
+                DragGesture().onChanged { _ in
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil,
+                        from: nil,
+                        for: nil
+                    )
+                }
+            )
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {

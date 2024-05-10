@@ -13,19 +13,19 @@ struct CellView: View {
     var houseQuantity: Int
     var width: Double = 0.95
     
-    @Environment(\.mainWindowSize) var mainWindowSize
+    @State var mainWindowSize: CGSize
     
     var body: some View {
         HStack(spacing: 10) {
             VStack {
                 ZStack {
-                    Circle()
+                    RoundedRectangle(cornerRadius: 16)
                         .fill(
                             LinearGradient(
                                 gradient: Gradient(colors: [.blue, .teal]),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
-                            )
+                            ).opacity(0.6)
                         )
                     
                     VStack {
@@ -71,19 +71,19 @@ struct PhoneTerritoryCellView: View {
     var numbers: Int
     var width: Double = 0.95
     
-    @Environment(\.mainWindowSize) var mainWindowSize
+    @State var mainWindowSize: CGSize
     
     var body: some View {
         HStack(spacing: 10) {
             VStack {
                 ZStack {
-                    Circle()
+                    RoundedRectangle(cornerRadius: 16)
                         .fill(
                             LinearGradient(
                                 gradient: Gradient(colors: [.blue, .teal]),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
-                            )
+                            ).opacity(0.6)
                         )
                     
                     VStack {

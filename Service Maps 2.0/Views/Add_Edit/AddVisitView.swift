@@ -39,7 +39,6 @@ struct AddVisitView: View {
                         .fontWeight(.bold)
                         .hSpacing(.leading)
                         .padding(.leading)
-                        .frame(maxWidth: UIScreen.screenWidth * 0.6, maxHeight: 100)
                     
                     HStack {
                         Text("Symbol: ")

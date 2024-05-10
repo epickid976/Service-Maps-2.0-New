@@ -28,6 +28,7 @@ class TerritoryViewModel: ObservableObject {
     @Published var currentTerritory: TerritoryModel?
     @Published var presentSheet = false {
         didSet {
+            print("Present Sheet = \(presentSheet)")
             if presentSheet == false {
                 currentTerritory = nil
             }

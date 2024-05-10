@@ -53,7 +53,7 @@ struct TerritoryAddressView: View {
                         if viewModel.addressData == nil || viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
-                                    .playing()
+                                    .playing(loopMode: .loop)
                                     .resizable()
                                     .animationDidFinish { completed in
                                         self.animationDone = completed
@@ -62,7 +62,7 @@ struct TerritoryAddressView: View {
                                     .frame(width: 250, height: 250)
                             } else {
                                 LottieView(animation: .named("loadsimple"))
-                                    .playing()
+                                    .playing(loopMode: .loop)
                                     .resizable()
                                     .animationDidFinish { completed in
                                         self.animationDone = completed
@@ -149,7 +149,7 @@ struct TerritoryAddressView: View {
 //                            .closeOnTap(false)
 //                            .backgroundColor(.black.opacity(0.8))
 //                    }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || animationProgressTime < 0.25)
+                    .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || viewModel.addressData != nil)
                     .onChange(of: viewModel.presentSheet) { value in
                         if value {
                             CentrePopup_AddAddress(viewModel: viewModel, territory: territory).showAndStack()
@@ -169,7 +169,7 @@ struct TerritoryAddressView: View {
                 .scrollIndicators(.hidden)
                 .coordinateSpace(name: "scroll")
                 if AuthorizationLevelManager().existsAdminCredentials() {
-                    MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
+                    MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
                     }
                     .offset(y: hideFloatingButton ? 100 : -25)
@@ -391,6 +391,17 @@ struct CentrePopup_AddAddress: CentrePopup {
             .padding(.bottom, 10)
             .padding(.horizontal, 10)
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
+            .simultaneousGesture(
+                // Hide the keyboard on scroll
+                DragGesture().onChanged { _ in
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil,
+                        from: nil,
+                        for: nil
+                    )
+                }
+            )
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {

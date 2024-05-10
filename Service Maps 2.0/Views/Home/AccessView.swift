@@ -35,13 +35,14 @@ struct AccessView: View {
     let minimumOffset: CGFloat = 40
     
     var body: some View {
-        ZStack {
-            ScrollView {
+        GeometryReader { proxy in
+            ZStack {
+                ScrollView {
                     VStack {
                         if viewModel.keyData == nil || viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
-                                    .playing()
+                                    .playing(loopMode: .loop)
                                     .resizable()
                                     .animationDidFinish { completed in
                                         self.animationDone = completed
@@ -50,7 +51,7 @@ struct AccessView: View {
                                     .frame(width: 250, height: 250)
                             } else {
                                 LottieView(animation: .named("loadsimple"))
-                                    .playing()
+                                    .playing(loopMode: .loop)
                                     .resizable()
                                     .animationDidFinish { completed in
                                         self.animationDone = completed
@@ -93,85 +94,97 @@ struct AccessView: View {
                     .background(GeometryReader {
                         Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                     }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                         let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                         if ( abs(offsetDifference) > minimumOffset) {
-                             if offsetDifference > 0 {
-                                     print("Is scrolling up toward top.")
-                                 hideFloatingButton = false
-                              } else {
-                                      print("Is scrolling down toward bottom.")
-                                  hideFloatingButton = true
-                              }
-                              self.previousViewOffset = currentOffset
-                         }
+                        let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                        if ( abs(offsetDifference) > minimumOffset) {
+                            if offsetDifference > 0 {
+                                print("Is scrolling up toward top.")
+                                hideFloatingButton = false
+                            } else {
+                                print("Is scrolling down toward bottom.")
+                                hideFloatingButton = true
+                            }
+                            self.previousViewOffset = currentOffset
+                        }
                     }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || animationProgressTime < 0.25)
+                    .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-//                    .popup(isPresented: $viewModel.showAlert) {
-//                        if viewModel.keyToDelete.0 != nil && viewModel.keyToDelete.1 != nil {
-//                            viewModel.alert()
-//                                .frame(width: 400, height: 230)
-//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                        }
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                    }
-                
-                .navigationDestination(isPresented: $viewModel.presentSheet) {
-                    AddKeyView {
-                        synchronizationManager.startupProcess(synchronizing: true)
-                        DispatchQueue.main.async {
-                            viewModel.showAddedToast = true
-                        }
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            viewModel.showAddedToast = false
-                        }
-                    }.environment(\.mainWindowSize, mainWindowSize)
-                }
-                
-                //.scrollIndicators(.hidden)
-                .navigationBarTitle("Keys", displayMode: .automatic)
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItemGroup(placement: .topBarTrailing) {
-                        HStack {
-                            Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
-                                .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-//                            if viewModel.isAdmin {
-//                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-//                                    .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-//                            }
+                    //                    .popup(isPresented: $viewModel.showAlert) {
+                    //                        if viewModel.keyToDelete.0 != nil && viewModel.keyToDelete.1 != nil {
+                    //                            viewModel.alert()
+                    //                                .frame(width: 400, height: 230)
+                    //                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
+                    //                        }
+                    //                    } customize: {
+                    //                        $0
+                    //                            .type(.default)
+                    //                            .closeOnTapOutside(false)
+                    //                            .dragToDismiss(false)
+                    //                            .isOpaque(true)
+                    //                            .animation(.spring())
+                    //                            .closeOnTap(false)
+                    //                            .backgroundColor(.black.opacity(0.8))
+                    //                    }
+                    
+                    .navigationDestination(isPresented: $viewModel.presentSheet) {
+                        AddKeyView {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                            DispatchQueue.main.async {
+                                viewModel.showAddedToast = true
+                            }
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                viewModel.showAddedToast = false
+                            }
+                        }.environment(\.mainWindowSize, mainWindowSize)
+                            .simultaneousGesture(
+                                // Hide the keyboard on scroll
+                                DragGesture().onChanged { _ in
+                                    UIApplication.shared.sendAction(
+                                        #selector(UIResponder.resignFirstResponder),
+                                        to: nil,
+                                        from: nil,
+                                        for: nil
+                                    )
+                                }
+                            )
+                    }
+                    
+                    //.scrollIndicators(.hidden)
+                    .navigationBarTitle("Keys", displayMode: .automatic)
+                    .navigationBarBackButtonHidden(true)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .topBarTrailing) {
+                            HStack {
+                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                                    .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                //                            if viewModel.isAdmin {
+                                //                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                                //                                    .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                                //                            }
+                            }
                         }
                     }
-                }
-                .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-                .navigationViewStyle(StackNavigationViewStyle())
-            }.coordinateSpace(name: "scroll")
-                .scrollIndicators(.hidden)
-                .refreshable {
-                synchronizationManager.startupProcess(synchronizing: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    hideFloatingButton = false
-                }
-            }
-            if AuthorizationLevelManager().existsAdminCredentials() {
-                    MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
+                    .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                    .navigationViewStyle(StackNavigationViewStyle())
+                }.coordinateSpace(name: "scroll")
+                    .scrollIndicators(.hidden)
+                    .refreshable {
+                        synchronizationManager.startupProcess(synchronizing: true)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            hideFloatingButton = false
+                        }
+                    }
+                if AuthorizationLevelManager().existsAdminCredentials() {
+                    MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
                     }
                     .offset(y: hideFloatingButton ? 150 : 0)
-                        .animation(.spring(), value: hideFloatingButton)
-                        .vSpacing(.bottom).hSpacing(.trailing)
-                        .padding()
+                    .animation(.spring(), value: hideFloatingButton)
+                    .vSpacing(.bottom).hSpacing(.trailing)
+                    .padding()
                 }
+            }
         }
     }
     @ViewBuilder

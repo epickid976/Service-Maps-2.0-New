@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+
 struct CustomField: View {
     @Binding var text: String
     var isFocused: FocusState<Bool>.Binding // Use FocusState for focus state
@@ -17,6 +18,7 @@ struct CustomField: View {
     var textfieldAxis: Axis?
     var disabled: Bool?
     var formatAsPhone: Bool?
+    var disableAutocorrect: Bool?
     
     let placeholder: String
     
@@ -24,6 +26,7 @@ struct CustomField: View {
         if textfield {
             TextField(placeholder, text: $text, axis: textfieldAxis ?? .horizontal)
                 .disabled(disabled ?? false)
+                .autocorrectionDisabled(disableAutocorrect ?? false)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)

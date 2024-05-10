@@ -122,7 +122,7 @@ struct AddPhoneTerritoryView: View {
                         }
                         
                     }
-                    .frame(minWidth: 250, maxWidth: 300, minHeight: 10, maxHeight: 300)
+                    .frame(minWidth: 250, maxWidth: 270, minHeight: 10, maxHeight: 270)
                     
                     Text(viewModel.error)
                         .fontWeight(.bold)

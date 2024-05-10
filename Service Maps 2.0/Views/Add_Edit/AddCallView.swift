@@ -39,7 +39,6 @@ struct AddCallView: View {
                         .fontWeight(.bold)
                         .hSpacing(.leading)
                         .padding(.leading)
-                        .frame(maxWidth: UIScreen.screenWidth * 0.95, maxHeight: 100)
                 }
                 CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Notes")
                     .padding(.bottom)

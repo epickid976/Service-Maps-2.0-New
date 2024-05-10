@@ -12,7 +12,7 @@ struct HouseCell: View {
     var house: HouseData
     
     @State var mainWindowSize: CGSize
-    
+      
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {

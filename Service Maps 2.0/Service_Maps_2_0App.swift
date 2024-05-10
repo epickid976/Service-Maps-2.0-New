@@ -11,6 +11,8 @@ import BackgroundTasks
 import Nuke
 import MijickPopupView
 
+//ORIGINAL NEW
+
 @main
 struct Service_Maps_2_0App: App {
     
@@ -35,14 +37,13 @@ struct Service_Maps_2_0App: App {
             var destination: DestinationEnum = instantiateDestination()
             
             
-            GeometryReader { proxy in
+            //GeometryReader { proxy in
                 NavigationStack {
                     switch destination {
                     case .SplashScreen:
                         SplashScreenView()
                     case .HomeScreen:
                         HomeTabView().implementPopupView()
-                            .environment(\.mainWindowSize, proxy.size)
                     case .WelcomeScreen:
                         WelcomeView() {
                             synchronizationManager.startupProcess(synchronizing: true)
@@ -90,7 +91,7 @@ struct Service_Maps_2_0App: App {
                 .navigationTransition(
                     .slide.combined(with: .fade(.in))
                 )
-            }
+            //}
             
             
         }

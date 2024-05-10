@@ -157,7 +157,7 @@ struct PhoneNumbersView: View {
                             CentrePopup_AddNumber(viewModel: viewModel, territory: territory).showAndStack()
                         }
                     }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil)
+                    .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil || viewModel.phoneNumbersData != nil)
                 }
                 .height(min: 180, max: 350.0)
                 .allowsHeaderGrowth()
@@ -168,7 +168,7 @@ struct PhoneNumbersView: View {
                 .scrollIndicators(.hidden)
                 .coordinateSpace(name: "scroll")
                 if AuthorizationLevelManager().existsAdminCredentials() {
-                    MainButton(imageName: "plus", colorHex: "#00b2f6", width: 60) {
+                    MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
                     }
                     .offset(y: hideFloatingButton ? 100 : -25)
@@ -624,6 +624,17 @@ struct CentrePopup_AddNumber: CentrePopup {
             .padding(.bottom, 10)
             .padding(.horizontal, 10)
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
+            .simultaneousGesture(
+                // Hide the keyboard on scroll
+                DragGesture().onChanged { _ in
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil,
+                        from: nil,
+                        for: nil
+                    )
+                }
+            )
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {

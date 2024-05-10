@@ -109,7 +109,7 @@ struct AddAddressView: View {
                 }
             }
             
-        }.ignoresSafeArea(.keyboard)
+        }//.ignoresSafeArea(.keyboard)
             .onAppear {
                 if address != nil {
                     //withAnimation {

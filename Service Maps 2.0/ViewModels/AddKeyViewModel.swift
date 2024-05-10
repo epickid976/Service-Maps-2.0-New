@@ -50,7 +50,7 @@ class AddKeyViewModel: ObservableObject {
     
     
     @ViewBuilder
-    func showSelectableTerritoriesList(dataWithKeys: TerritoryDataWithKeys) -> some View {
+    func showSelectableTerritoriesList(dataWithKeys: TerritoryDataWithKeys, mainWindowSize: CGSize) -> some View {
         LazyVStack {
             if !dataWithKeys.keys.isEmpty {
                 Text(self.processData(dataWithKeys: dataWithKeys))
@@ -68,12 +68,12 @@ class AddKeyViewModel: ObservableObject {
         }
         
         ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-            self.SelectableTerritoryItem(territoryData: territoryData)
+            self.SelectableTerritoryItem(territoryData: territoryData, mainWindowSize: mainWindowSize)
         }
     }
     
     @ViewBuilder
-    func SelectableTerritoryItem(territoryData: TerritoryData) -> some View {
+    func SelectableTerritoryItem(territoryData: TerritoryData, mainWindowSize: CGSize) -> some View {
         
         HStack {
             Image(systemName: selectedTerritories.contains(territoryData) ? "checkmark.circle.fill" : "circle")
@@ -96,7 +96,7 @@ class AddKeyViewModel: ObservableObject {
                         self.selectedTerritories.append(territoryData)
                     }
                 }
-            CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, width: 0.8)
+            CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, width: 0.8, mainWindowSize: mainWindowSize)
                 .padding(2)
                 .onTapGesture {
                     if self.selectedTerritories.contains(territoryData) {

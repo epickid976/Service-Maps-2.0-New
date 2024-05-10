@@ -30,108 +30,109 @@ struct AddKeyView: View {
     @State var animationProgressTime: AnimationProgressTime = 0
     
     var body: some View {
-        VStack {
-            if viewModel.territoryData == nil || dataStore.synchronized == false {
-                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                    LottieView(animation: .named("loadsimple"))
-                        .playing()
-                        .resizable()
-                        .animationDidFinish { completed in
-                            self.animationDone = completed
-                        }
-                        .getRealtimeAnimationProgress($animationProgressTime)
-                        .frame(width: 250, height: 250)
-                } else {
-                    LottieView(animation: .named("loadsimple"))
-                        .playing()
-                        .resizable()
-                        .animationDidFinish { completed in
-                            self.animationDone = completed
-                        }
-                        .getRealtimeAnimationProgress($animationProgressTime)
-                        .frame(width: 350, height: 350)
-                }
-            } else {
-                if viewModel.territoryData!.isEmpty {
-                    VStack {
-                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                            LottieView(animation: .named("nodatapreview"))
-                                .playing()
-                                .resizable()
-                                .frame(width: 250, height: 250)
-                        } else {
-                            LottieView(animation: .named("nodatapreview"))
-                                .playing()
-                                .resizable()
-                                .frame(width: 350, height: 350)
-                        }
+        GeometryReader { proxy in
+            VStack {
+                if viewModel.territoryData == nil || dataStore.synchronized == false {
+                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                        LottieView(animation: .named("loadsimple"))
+                            .playing()
+                            .resizable()
+                            .animationDidFinish { completed in
+                                self.animationDone = completed
+                            }
+                            .getRealtimeAnimationProgress($animationProgressTime)
+                            .frame(width: 250, height: 250)
+                    } else {
+                        LottieView(animation: .named("loadsimple"))
+                            .playing()
+                            .resizable()
+                            .animationDidFinish { completed in
+                                self.animationDone = completed
+                            }
+                            .getRealtimeAnimationProgress($animationProgressTime)
+                            .frame(width: 350, height: 350)
                     }
-                    
                 } else {
-                    Text(viewModel.error)
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                    HStack {
-                        Text("Name")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .hSpacing(.leading)
-                            .padding(.leading)
-                        
+                    if viewModel.territoryData!.isEmpty {
                         VStack {
-                            Toggle(isOn: $viewModel.servant) {
-                                Text("Servant")
-                                    .font(.headline)
-                                    .fontWeight(.bold)
-                                    .hSpacing(.trailing)
-                            }
-                            .toggleStyle(CheckmarkToggleStyle())
-                            //.padding()
-                        }
-                    }
-                    CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Key Name")
-                    
-                    ScrollView {
-                        LazyVStack {
-                            ForEach(viewModel.territoryData!) { dataWithKey in
-                                viewModel.showSelectableTerritoriesList(dataWithKeys: dataWithKey)
+                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                LottieView(animation: .named("nodatapreview"))
+                                    .playing()
+                                    .resizable()
+                                    .frame(width: 250, height: 250)
+                            } else {
+                                LottieView(animation: .named("nodatapreview"))
+                                    .playing()
+                                    .resizable()
+                                    .frame(width: 350, height: 350)
                             }
                         }
-                    }
-                    
-                    HStack {
-                        if !viewModel.loading {
-                            CustomBackButton() { presentationMode.wrappedValue.dismiss() }
-                        }
-                        //.padding([.top])
                         
-                        CustomButton(loading: viewModel.loading, title: "Add") {
-                            if viewModel.checkInfo() {
-                                Task {
-                                    withAnimation {
-                                        viewModel.loading = true
-                                    }
-                                    let result = await viewModel.addToken()
-                                    switch result {
-                                    case .success(_):
-                                        onDone()
-                                        presentationMode.wrappedValue.dismiss()
-                                    case .failure(_):
-                                        viewModel.error = "Error adding key."
-                                        viewModel.loading = false
-                                    }
+                    } else {
+                        Text(viewModel.error)
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                        HStack {
+                            Text("Name")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .hSpacing(.leading)
+                                .padding(.leading)
+                            
+                            VStack {
+                                Toggle(isOn: $viewModel.servant) {
+                                    Text("Servant")
+                                        .font(.headline)
+                                        .fontWeight(.bold)
+                                        .hSpacing(.trailing)
                                 }
-                                
+                                .toggleStyle(CheckmarkToggleStyle())
+                                //.padding()
                             }
                         }
+                        CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Key Name")
+                        
+                        ScrollView {
+                            LazyVStack {
+                                ForEach(viewModel.territoryData!) { dataWithKey in
+                                    viewModel.showSelectableTerritoriesList(dataWithKeys: dataWithKey, mainWindowSize: proxy.size)
+                                }
+                            }
+                        }
+                        
+                        HStack {
+                            if !viewModel.loading {
+                                CustomBackButton() { presentationMode.wrappedValue.dismiss() }
+                            }
+                            //.padding([.top])
+                            
+                            CustomButton(loading: viewModel.loading, title: "Add") {
+                                if viewModel.checkInfo() {
+                                    Task {
+                                        withAnimation {
+                                            viewModel.loading = true
+                                        }
+                                        let result = await viewModel.addToken()
+                                        switch result {
+                                        case .success(_):
+                                            onDone()
+                                            presentationMode.wrappedValue.dismiss()
+                                        case .failure(_):
+                                            viewModel.error = "Error adding key."
+                                            viewModel.loading = false
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                        }
+                        .padding([.horizontal, .bottom])
                     }
-                    .padding([.horizontal, .bottom])
                 }
             }
+            .navigationBarTitle("Add Key", displayMode: .automatic)
+            .navigationBarBackButtonHidden(true)
         }
-        .navigationBarTitle("Add Key", displayMode: .automatic)
-        .navigationBarBackButtonHidden(true)
-        
     }
 }
 

@@ -9,7 +9,7 @@ import SwiftUI
 import CoreData
 import UIKit
 import NavigationTransitions
-
+import MijickPopupView
 
 struct HomeTabView: View {
     
@@ -108,6 +108,7 @@ struct HomeTabView: View {
                 .background(colorScheme == .dark ? .black : .white)
             }
             .navigationBarBackButtonHidden(true)
+            .navigationViewStyle(StackNavigationViewStyle())
         }
         .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
         .navigationTransition(
