@@ -255,7 +255,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }
+            }.keyboardShortcut("j", modifiers: .command)
             .frame(minHeight: 50)
             
             Button {
@@ -274,7 +274,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }
+            }.keyboardShortcut("p", modifiers: .command)
             .frame(minHeight: 50)
             
             Button {
@@ -294,7 +294,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }
+            }.keyboardShortcut("a", modifiers: [.command, .shift])
             .frame(minHeight: 50)
         }
         .padding(10)

@@ -89,7 +89,7 @@ struct HousesView: View {
                                         ForEach(viewModel.houseData!, id: \.self) { houseData in
                                             houseCellView(houseData: houseData, mainWindowSize: proxy.size)
                                         }
-                                        .animation(.default, value: viewModel.houseData!)
+                                        //.animation(.default, value: viewModel.houseData!)
                                         
                                         
                                     }
@@ -152,7 +152,7 @@ struct HousesView: View {
                             CentrePopup_AddHouse(viewModel: viewModel, address: address).showAndStack()
                         }
                     }
-                    .navigationBarTitle("\(address.address)", displayMode: .automatic)
+                    .navigationBarTitle("\(address.address)", displayMode: .large)
                     .navigationBarBackButtonHidden(true)
                     .toolbar {
                         ToolbarItemGroup(placement: .topBarLeading) {
@@ -161,13 +161,13 @@ struct HousesView: View {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                         presentationMode.wrappedValue.dismiss()
                                     }
-                                })
+                                }).keyboardShortcut(.delete, modifiers: .command)
                                 .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                             }
                         }
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             HStack {
-                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })
+                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                     .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 
                                 Menu {
@@ -195,7 +195,7 @@ struct HousesView: View {
                                     }
                                     .pickerStyle(.menu)
                                 } label: {
-                                    Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                                    Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() }).keyboardShortcut(";", modifiers: .command)
                                         .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                                 }
                                 
@@ -212,6 +212,7 @@ struct HousesView: View {
                             hideFloatingButton = false
                         }
                     }
+                    .searchable(text: $viewModel.search, placement: .navigationBarDrawer(displayMode: .automatic))
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
@@ -220,6 +221,8 @@ struct HousesView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
+                    .hoverEffect()
+                    .keyboardShortcut("+", modifiers: .command)
                 }
             }
         }
@@ -231,6 +234,23 @@ struct HousesView: View {
             NavigationLink(destination: VisitsView(house: houseData.house).implementPopupView()) {
                 HouseCell(house: houseData, mainWindowSize: mainWindowSize)
                     .padding(.bottom, 2)
+                    .contextMenu {
+                        Button {
+                            DispatchQueue.main.async {
+                                self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
+                                //self.showAlert = true
+                                if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
+                                    CentrePopup_DeleteHouse(viewModel: viewModel).showAndStack()
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "trash")
+                                Text("Delete House")
+                            }
+                        }
+                        //TODO Trash and Pencil only if admin
+                    }
             }
         } trailingActions: { context in
             if houseData.accessLevel == .Admin {

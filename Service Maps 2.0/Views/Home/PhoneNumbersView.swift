@@ -50,6 +50,7 @@ struct PhoneNumbersView: View {
                     }
                 } content: {
                     VStack {
+                        SearchBar(searchText: $viewModel.search).padding([.top, .horizontal])
                         if viewModel.phoneNumbersData == nil || viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
@@ -175,8 +176,20 @@ struct PhoneNumbersView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
+                    .hoverEffect()
+                    .keyboardShortcut("+", modifiers: .command)
                 }
-            }
+            }.simultaneousGesture(
+                // Hide the keyboard on scroll
+                DragGesture().onChanged { _ in
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil,
+                        from: nil,
+                        for: nil
+                    )
+                }
+            )
             .ignoresSafeArea()
             .navigationBarBackButtonHidden()
             .navigationBarTitle("Numbers", displayMode: .inline)
@@ -187,13 +200,13 @@ struct PhoneNumbersView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 presentationMode.wrappedValue.dismiss()
                             }
-                        })
+                        }).keyboardShortcut(.delete, modifiers: .command)
                         .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     HStack {
-                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         //                    if viewModel.isAdmin {
                         //                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
@@ -258,6 +271,31 @@ struct PhoneNumbersView: View {
                     .frame(minWidth: mainWindowSize.width * 0.95)
                     .background(.thinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .contextMenu {
+                        Button {
+                            DispatchQueue.main.async {
+                                self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
+                                
+                                CentrePopup_DeletePhoneNumber(viewModel: viewModel).showAndStack()
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "trash")
+                                Text("Delete Visit")
+                            }
+                        }
+                        
+                        Button {
+                            self.viewModel.currentNumber = numbersData.phoneNumber
+                            self.viewModel.presentSheet = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "pencil")
+                                Text("Edit Visit")
+                            }
+                        }
+                        //TODO Trash and Pencil only if admin
+                    }
                 }
             } trailingActions: { context in
                 if self.viewModel.isAdmin {
@@ -346,7 +384,11 @@ class NumbersViewModel: ObservableObject {
     @Published var showToast = false
     @Published var showAddedToast = false
     
-    
+    @Published var search: String = "" {
+        didSet {
+            getNumbers()
+        }
+    }
     
     @ViewBuilder
     func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {

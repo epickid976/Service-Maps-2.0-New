@@ -173,13 +173,13 @@ struct CallsView: View {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     presentationMode.wrappedValue.dismiss()
                                 }
-                            })
+                            }).keyboardShortcut(.delete, modifiers: .command)
                             .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                         }
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         HStack {
-                            Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })
+                            Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                 .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                             
 //                            Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
@@ -202,6 +202,8 @@ struct CallsView: View {
                         .animation(.spring(), value: hideFloatingButton)
                         .vSpacing(.bottom).hSpacing(.trailing)
                         .padding()
+                        .hoverEffect()
+                        .keyboardShortcut("+", modifiers: .command)
                 
         }
     }
@@ -211,6 +213,30 @@ struct CallsView: View {
         SwipeView {
             CallCell(call: callData)
                 .padding(.bottom, 2)
+                .contextMenu {
+                    Button {
+                        DispatchQueue.main.async {
+                            self.viewModel.callToDelete = callData.phoneCall.id
+                            CentrePopup_DeleteCall(viewModel: viewModel).showAndStack()
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text("Delete Visit")
+                        }
+                    }
+                    
+                    Button {
+                        self.viewModel.currentCall = callData.phoneCall
+                        self.viewModel.presentSheet = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "pencil")
+                            Text("Edit Visit")
+                        }
+                    }
+                    //TODO Trash and Pencil only if admin
+                }
         } trailingActions: { context in
             if callData.accessLevel == .Admin {
                 SwipeAction(

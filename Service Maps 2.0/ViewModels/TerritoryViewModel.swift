@@ -55,6 +55,12 @@ class TerritoryViewModel: ObservableObject {
     @Published var showToast = false
     @Published var showAddedToast = false
     
+    @Published var search: String = "" {
+        didSet {
+            getTerritories()
+        }
+    }
+    
     
     func deleteTerritory(territory: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteTerritory(territory: territory)
@@ -107,8 +113,27 @@ extension TerritoryViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { territoryData in
-                DispatchQueue.main.async {
-                    self.territoryData = territoryData
+                if self.search.isEmpty {
+                    DispatchQueue.main.async {
+                        self.territoryData = territoryData
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.territoryData = territoryData.filter { territoryData in
+                            // Check for matches in key names
+                            territoryData.keys.contains { key in
+                                key.name.lowercased().contains(self.search.lowercased())
+                            } ||
+                            // Check for matches in territory number (converted to string for case-insensitive comparison)
+                            territoryData.territoriesData.contains { territory in
+                                String(territory.territory.number).lowercased().contains(self.search.lowercased())
+                            } ||
+                            // Check for matches in territory description
+                            territoryData.territoriesData.contains { territory in
+                                territory.territory.description.lowercased().contains(self.search.lowercased())
+                            }
+                        }
+                    }
                 }
             })
             .store(in: &cancellables)

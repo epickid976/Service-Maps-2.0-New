@@ -62,6 +62,7 @@ struct WelcomeView: View {
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
                 .tint(colorScheme == .dark ? .black : .white)
+                .keyboardShortcut("s", modifiers: .command)
                 //.padding([.bottom])
                 
                 NavigationLink(destination: LoginView(onDone: onDone)) {
@@ -73,7 +74,7 @@ struct WelcomeView: View {
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
-                
+                .keyboardShortcut("l", modifiers: .command)
                 
                 
             }

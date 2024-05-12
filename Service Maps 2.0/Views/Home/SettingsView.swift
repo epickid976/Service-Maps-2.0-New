@@ -126,7 +126,7 @@ struct SettingsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 HStack {
-                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                 }
             }
@@ -161,7 +161,7 @@ struct CentrePopup_AboutApp: CentrePopup {
                     self.viewModel.showAlert = false
                     dismiss()
                 }
-            }.hSpacing(.trailing)
+            }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
             //.frame(width: 100)
         }
         .padding()
@@ -212,7 +212,7 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                         self.viewModel.showDeletionConfirmationAlert = false
                         PopupManager.dismissAll()
                     }
-                }.hSpacing(.trailing)
+                }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
                     withAnimation { self.viewModel.loading = true }
                     Task {
@@ -271,7 +271,7 @@ struct CentrePopup_Deletion: CentrePopup {
                 CustomBackButton(showImage: true, text: "Cancel") {
                     self.viewModel.showDeletionAlert = false
                     dismiss()
-                }.hSpacing(.trailing)
+                }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
                     self.viewModel.showDeletionAlert = false
                         self.viewModel.showDeletionConfirmationAlert = true

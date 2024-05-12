@@ -65,7 +65,7 @@ struct AddPhoneNumberScreen: View {
                 
                 HStack {
                     if !viewModel.loading {
-                        CustomBackButton() { onDismiss() }
+                        CustomBackButton() { onDismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     //.padding([.top])
                     
@@ -101,7 +101,7 @@ struct AddPhoneNumberScreen: View {
                                 }
                             }
                         }
-                    }
+                    }.keyboardShortcut("\r", modifiers: .command)
                 }
                 .padding([.horizontal, .bottom])
                 //.vSpacing(.bottom)

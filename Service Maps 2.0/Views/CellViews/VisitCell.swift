@@ -21,7 +21,7 @@ struct VisitCell: View {
                                 .foregroundColor(.primary)
                                 .fontWeight(.heavy)
                                 .hSpacing(.leading)
-                            Spacer()
+                            Spacer().frame(width: 5)
                             Text(visit.visit.symbol.localizedUppercase)
                                 .font(.title3)
                                 .lineLimit(1)
@@ -29,6 +29,7 @@ struct VisitCell: View {
                                 .fontWeight(.heavy)
                                 .hSpacing(.trailing)
                                 .gridColumnAlignment(.trailing)
+                                .frame(maxWidth: 40)
                         }
                     }
                     //.frame(maxWidth: mainWindowSize.width * 0.9, maxHeight: 100)

@@ -46,25 +46,34 @@ struct Service_Maps_2_0App: App {
                         HomeTabView().implementPopupView()
                     case .WelcomeScreen:
                         WelcomeView() {
-                            synchronizationManager.startupProcess(synchronizing: true)
+                            DispatchQueue.main.async {
+                                synchronizationManager.startupProcess(synchronizing: true)
+                            }
                         }
                     case .LoginScreen:
                         LoginView() {
-                            synchronizationManager.startupProcess(synchronizing: true)
+                            DispatchQueue.main.async {
+                                synchronizationManager.startupProcess(synchronizing: true)
+                            }
                         }
                     case .AdministratorLoginScreen:
                         AdminLoginView() {
-                            synchronizationManager.startupProcess(synchronizing: true)
+                            DispatchQueue.main.async {
+                                synchronizationManager.startupProcess(synchronizing: true)
+                            }
                         }
-                        
                     case .PhoneLoginScreen:
                         PhoneLoginScreen() {
-                            synchronizationManager.startupProcess(synchronizing: true)
+                            DispatchQueue.main.async {
+                                synchronizationManager.startupProcess(synchronizing: true)
+                            }
                         }
                         
                     case .ValidationScreen:
                         VerificationView() {
-                            synchronizationManager.startupProcess(synchronizing: true)
+                            DispatchQueue.main.async {
+                                synchronizationManager.startupProcess(synchronizing: true)
+                            }
                         }
                     case .LoadingScreen:
                         LoadingView()

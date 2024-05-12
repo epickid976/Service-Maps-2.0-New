@@ -142,7 +142,7 @@ struct PhoneTerritoriesScreen: View {
                     .toolbar {
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             HStack {
-                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                     .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 //                            if viewModel.isAdmin {
                                 //                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
@@ -169,6 +169,8 @@ struct PhoneTerritoriesScreen: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
+                    .hoverEffect()
+                    .keyboardShortcut("+", modifiers: .command)
                 }
             }
         }
@@ -181,6 +183,30 @@ struct PhoneTerritoriesScreen: View {
             NavigationLink(destination: PhoneNumbersView(territory: phoneData.territory).implementPopupView()) {
                 PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity, mainWindowSize: mainViewSize)
                     .padding(.bottom, 2)
+                    .contextMenu {
+                        Button {
+                            DispatchQueue.main.async {
+                                self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
+                                CentrePopup_DeletePhoneTerritory(viewModel: viewModel).showAndStack()
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "trash")
+                                Text("Delete Visit")
+                            }
+                        }
+                        
+                        Button {
+                            self.viewModel.currentTerritory = phoneData.territory
+                            self.viewModel.presentSheet = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "pencil")
+                                Text("Edit Visit")
+                            }
+                        }
+                        //TODO Trash and Pencil only if admin
+                    }
             }
         } trailingActions: { context in
             if self.viewModel.isAdmin {

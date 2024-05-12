@@ -115,6 +115,7 @@
 		82916C192A994298005133DE /* AddVisitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82916C182A994298005133DE /* AddVisitView.swift */; };
 		82916C1B2A994387005133DE /* AddVisitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82916C1A2A994387005133DE /* AddVisitViewModel.swift */; };
 		82916C1D2A9944B3005133DE /* Symbols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82916C1C2A9944B3005133DE /* Symbols.swift */; };
+		82A07E622BF0663000A2E0F6 /* CustomSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A07E612BF0663000A2E0F6 /* CustomSearchBar.swift */; };
 		82A399C52BBEFAD200ECA5E6 /* AddHouseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */; };
 		82A5B4592BD1A48500F52F2F /* TerritoryDataWithKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4582BD1A48500F52F2F /* TerritoryDataWithKeys.swift */; };
 		82A5B45B2BD2F64800F52F2F /* AddAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B45A2BD2F64800F52F2F /* AddAddressView.swift */; };
@@ -266,6 +267,7 @@
 		82916C182A994298005133DE /* AddVisitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddVisitView.swift; sourceTree = "<group>"; };
 		82916C1A2A994387005133DE /* AddVisitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddVisitViewModel.swift; sourceTree = "<group>"; };
 		82916C1C2A9944B3005133DE /* Symbols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbols.swift; sourceTree = "<group>"; };
+		82A07E612BF0663000A2E0F6 /* CustomSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchBar.swift; sourceTree = "<group>"; };
 		82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHouseViewModel.swift; sourceTree = "<group>"; };
 		82A5B4582BD1A48500F52F2F /* TerritoryDataWithKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryDataWithKeys.swift; sourceTree = "<group>"; };
 		82A5B45A2BD2F64800F52F2F /* AddAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAddressView.swift; sourceTree = "<group>"; };
@@ -437,6 +439,7 @@
 				8242137A2A83357600626DD5 /* CustomButton.swift */,
 				82916C162A990955005133DE /* ImagePickerView.swift */,
 				822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */,
+				82A07E612BF0663000A2E0F6 /* CustomSearchBar.swift */,
 			);
 			path = Subviews;
 			sourceTree = "<group>";
@@ -851,6 +854,7 @@
 				821C12662A77F37F0050D106 /* ApiRequestAsync.swift in Sources */,
 				823FD4CB2A7BE3DA0036A1DD /* AdminLoginView.swift in Sources */,
 				827EF1AA2AA8D0CD006C4631 /* NavigationAnimation.swift in Sources */,
+				82A07E622BF0663000A2E0F6 /* CustomSearchBar.swift in Sources */,
 				8209340F2A7ADB4000AF3FF1 /* LoginView.swift in Sources */,
 				821C126C2A78081D0050D106 /* SignUpForm.swift in Sources */,
 				823FD4DA2A8165230036A1DD /* AccessView.swift in Sources */,

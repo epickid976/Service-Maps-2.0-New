@@ -55,7 +55,7 @@ struct AddVisitView: View {
                             }
                         }
                     }
-                    .frame(maxWidth: UIScreen.screenWidth * 0.4, maxHeight: 100)
+                    .frame(maxWidth: UIScreen.screenWidth * 0.4)
                 }
                 CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Notes")
                     .padding(.bottom)
@@ -67,7 +67,7 @@ struct AddVisitView: View {
                 
                 HStack {
                     if !viewModel.loading {
-                        CustomBackButton() { onDismiss() }
+                        CustomBackButton() { onDismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     //.padding([.top])
                     
@@ -103,7 +103,7 @@ struct AddVisitView: View {
                                 }
                             }
                         }
-                    }
+                    }.keyboardShortcut("\r", modifiers: .command)
                 }
                 .padding([.horizontal, .bottom])
                 //.vSpacing(.bottom)

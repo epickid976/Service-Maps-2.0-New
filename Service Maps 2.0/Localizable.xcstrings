@@ -537,6 +537,9 @@
         }
       }
     },
+    "Delete Address" : {
+
+    },
     "Delete Address: %@" : {
       "localizations" : {
         "es" : {
@@ -585,6 +588,9 @@
         }
       }
     },
+    "Delete House" : {
+
+    },
     "Delete House %@" : {
       "localizations" : {
         "es" : {
@@ -600,6 +606,9 @@
           }
         }
       }
+    },
+    "Delete Key" : {
+
     },
     "Delete Key: %@" : {
       "localizations" : {
@@ -632,6 +641,9 @@
           }
         }
       }
+    },
+    "Delete Territory" : {
+
     },
     "Delete Territory %@" : {
       "localizations" : {
@@ -712,6 +724,15 @@
           }
         }
       }
+    },
+    "Edit Address" : {
+
+    },
+    "Edit Territory" : {
+
+    },
+    "Edit Visit" : {
+
     },
     "Email" : {
       "localizations" : {
@@ -1482,6 +1503,9 @@
         }
       }
     },
+    "Search..." : {
+
+    },
     "Select Symbol" : {
       "localizations" : {
         "es" : {
@@ -1571,6 +1595,9 @@
           }
         }
       }
+    },
+    "Share Key" : {
+
     },
     "Sign up" : {
       "localizations" : {

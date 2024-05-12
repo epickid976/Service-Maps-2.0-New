@@ -63,7 +63,12 @@ class AddressViewModel: ObservableObject {
     @Published var showToast = false
     @Published var showAddedToast = false
     
-    
+    @Published var search: String = "" {
+        didSet {
+            getAddresses()
+        }
+    }
+    @Published var isShowingSearch = false
     
     @ViewBuilder
     func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {
@@ -172,8 +177,17 @@ extension AddressViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { addressData in
-                DispatchQueue.main.async {
-                    self.addressData = addressData.sorted { $0.address.address < $1.address.address }
+                
+                if self.search.isEmpty {
+                    DispatchQueue.main.async {
+                        self.addressData = addressData.sorted { $0.address.address < $1.address.address }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.addressData = addressData.filter { addressData in
+                            addressData.address.address.lowercased().contains(self.search.lowercased())
+                        }
+                    }
                 }
             })
             .store(in: &cancellables)

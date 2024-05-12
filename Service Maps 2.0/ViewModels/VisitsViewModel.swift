@@ -57,6 +57,12 @@ class VisitsViewModel: ObservableObject {
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     
+    @Published var search: String = "" {
+        didSet {
+            getVisits()
+        }
+    }
+    
     func deleteVisit(visit: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteVisit(visit: visit)
     }
@@ -77,8 +83,17 @@ extension VisitsViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { visitData in
-                DispatchQueue.main.async {
-                    self.visitData = visitData
+                if self.search.isEmpty {
+                    DispatchQueue.main.async {
+                        self.visitData = visitData
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.visitData = visitData.filter { visitData in
+                            visitData.visit.notes.lowercased().contains(self.search.lowercased()) ||
+                            visitData.visit.user.lowercased().contains(self.search.lowercased())
+                        }
+                    }
                 }
             })
             .store(in: &cancellables)

@@ -63,7 +63,9 @@ struct HomeTabView: View {
                             .foregroundColor(selectedTab == 0 ? .blue : .gray)
                             .scaleEffect(selectedTab == 0 ? 1.2 : 1.0) // Add scale effect
                     }
+                    .keyboardShortcut("1", modifiers: .command)
                     .frame(maxWidth: .infinity)
+                    .hoverEffect()
                     
                     if authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials() {
                         Button(action: {
@@ -77,6 +79,14 @@ struct HomeTabView: View {
                                 .scaleEffect(selectedTab == 1 ? 1.2 : 1.0) // Add scale effect
                         }
                         .frame(maxWidth: .infinity)
+                        .optionalViewModifier { content in
+                            if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
+                                content
+                                    .keyboardShortcut("2", modifiers: .command)
+                            }
+                        }
+                        .hoverEffect()
+                        
                     }
                    
                         Button(action: {
@@ -90,7 +100,16 @@ struct HomeTabView: View {
                                 .scaleEffect(selectedTab == 2 ? 1.2 : 1.0) // Add scale effect
                         }
                         .frame(maxWidth: .infinity)
-                    
+                        .optionalViewModifier { content in
+                            if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
+                                content
+                                    .keyboardShortcut("3", modifiers: .command)
+                            } else {
+                                content
+                                    .keyboardShortcut("2", modifiers: .command)
+                            }
+                        }
+                        .hoverEffect()
                     
                     Button(action: {
                         withAnimation(.default) {
@@ -103,6 +122,17 @@ struct HomeTabView: View {
                             .foregroundColor(selectedTab == 3 ? .blue : .gray)
                     }
                     .frame(maxWidth: .infinity)
+                    .optionalViewModifier { content in
+                        if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
+                            content
+                                .keyboardShortcut("4", modifiers: .command)
+                        } else {
+                            content
+                                .keyboardShortcut("3", modifiers: .command)
+                        }
+                    }
+                    .hoverEffect()
+                    
                 }
                 .padding(.vertical, 8)
                 .background(colorScheme == .dark ? .black : .white)

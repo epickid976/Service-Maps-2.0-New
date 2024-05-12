@@ -123,7 +123,7 @@ struct PhoneLoginScreen: View {
                 HStack {
                     if synchronizationManager.startupState != .AdminLogin {
                         if !loading {
-                            CustomBackButton() { dismiss() }
+                            CustomBackButton() { dismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
                         }
                     }
                     
@@ -207,6 +207,7 @@ struct PhoneLoginScreen: View {
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
                     .controlSize(.large)
+                    .keyboardShortcut("\r", modifiers: .command)
                     //.padding([.bottom])
                 }
                 .padding()

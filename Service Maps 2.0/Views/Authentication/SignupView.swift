@@ -103,7 +103,7 @@ struct SignupView: View {
                             viewModel.username = ""
                             viewModel.password = ""
                             viewModel.passwordConfirmation = ""
-                        }
+                        }.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     
                     CustomButton(loading: loading, title: "Sign up") {
@@ -126,7 +126,7 @@ struct SignupView: View {
                             withAnimation { viewModel.loginError = true }
                             withAnimation { loading = false }
                         }
-                    }
+                    }.keyboardShortcut("\r", modifiers: .command)
                 }
                 .padding()
             }

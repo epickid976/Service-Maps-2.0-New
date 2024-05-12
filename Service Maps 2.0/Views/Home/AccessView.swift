@@ -156,7 +156,7 @@ struct AccessView: View {
                     .toolbar {
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             HStack {
-                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                     .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 //                            if viewModel.isAdmin {
                                 //                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
@@ -183,6 +183,8 @@ struct AccessView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
+                    .hoverEffect()
+                    .keyboardShortcut("+", modifiers: .command)
                 }
             }
         }
@@ -192,6 +194,38 @@ struct AccessView: View {
         SwipeView {
             TokenCell(keyData: keyData)
                 .padding(.bottom, 2)
+                .contextMenu {
+                    Button {
+                        DispatchQueue.main.async {
+                            self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
+                            //self.showAlert = true
+                            CentrePopup_DeleteKey(viewModel: viewModel).showAndStack()
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text("Delete Key")
+                        }
+                    }
+                    
+                    Button {
+                        let url = URL(string: getShareLink(id: keyData.key.id))
+                        let av = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
+                        
+                        UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
+                        
+                        if UIDevice.current.userInterfaceIdiom == .pad {
+                            av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
+                            av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "square.and.arrow.up")
+                            Text("Share Key")
+                        }
+                    }
+                    //TODO Trash and Pencil only if admin
+                }
         } trailingActions: { context in
             SwipeAction(
                 systemImage: "trash",

@@ -162,13 +162,13 @@ struct VisitsView: View {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     presentationMode.wrappedValue.dismiss()
                                 }
-                            })
+                            }).keyboardShortcut(.delete, modifiers: .command)
                             .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                         }
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         HStack {
-                            Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })
+                            Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                 .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                             //                            Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
                             //                                .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
@@ -178,7 +178,7 @@ struct VisitsView: View {
                 }
                 .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                 .navigationViewStyle(StackNavigationViewStyle())
-            }.coordinateSpace(name: "scroll")
+            }.coordinateSpace(name: "scroll").searchable(text: $viewModel.search)
                 .scrollIndicators(.hidden)
                 .refreshable {
                 viewModel.synchronizationManager.startupProcess(synchronizing: true)
@@ -190,6 +190,8 @@ struct VisitsView: View {
                         .animation(.spring(), value: hideFloatingButton)
                         .vSpacing(.bottom).hSpacing(.trailing)
                         .padding()
+                        .hoverEffect()
+                        .keyboardShortcut("+", modifiers: .command)
                 
         }
     }
@@ -199,6 +201,31 @@ struct VisitsView: View {
         SwipeView {
             VisitCell(visit: visitData)
                 .padding(.bottom, 2)
+                .contextMenu {
+                    Button {
+                        DispatchQueue.main.async {
+                            self.viewModel.visitToDelete = visitData.visit.id
+                            //self.viewModel.showAlert = true
+                            CentrePopup_DeleteVisit(viewModel: viewModel).showAndStack()
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text("Delete Visit")
+                        }
+                    }
+                    
+                    Button {
+                        self.viewModel.currentVisit = visitData.visit
+                        self.viewModel.presentSheet = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "pencil")
+                            Text("Edit Visit")
+                        }
+                    }
+                    //TODO Trash and Pencil only if admin
+                }
         } trailingActions: { context in
             if visitData.accessLevel == .Admin {
                 SwipeAction(

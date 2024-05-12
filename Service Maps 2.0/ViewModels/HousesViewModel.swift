@@ -69,12 +69,16 @@ class HousesViewModel: ObservableObject {
         }
     }
     
-    func deleteHouse(house: String) async -> Result<Bool, Error> {
-        return await dataUploaderManager.deleteHouse(house: house)
+    @Published var search: String = "" {
+        didSet {
+            getHouses()
+        }
     }
     
     
-    
+    func deleteHouse(house: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteHouse(house: house)
+    }
 }
 
 @MainActor
@@ -91,20 +95,31 @@ extension HousesViewModel {
                 DispatchQueue.main.async {
                     var data = [HouseData]()
                     
+                    
+                    
+                    if !self.search.isEmpty {
+                        data =  houseData.filter { houseData in
+                            houseData.house.number.lowercased().contains(self.search.lowercased()) ||
+                            houseData.visit?.notes.lowercased().contains(self.search.lowercased()) ?? false
+                            }
+                    } else {
+                        data = houseData
+                    }
+                    
                     if self.sortPredicate == .decreasing {
-                        data = houseData.sorted { $0.house.number > $1.house.number }
+                        data = data.sorted { $0.house.number > $1.house.number }
                     } else if self.sortPredicate == .increasing {
-                        data = houseData.sorted { $0.house.number < $1.house.number }
+                        data = data.sorted { $0.house.number < $1.house.number }
                     }
                     
                     if self.filterPredicate == .normal {
                         if self.sortPredicate == .decreasing {
-                            data = houseData.sorted { $0.house.number > $1.house.number }
+                            data = data.sorted { $0.house.number > $1.house.number }
                         } else if self.sortPredicate == .increasing {
-                            data = houseData.sorted { $0.house.number < $1.house.number }
+                            data = data.sorted { $0.house.number < $1.house.number }
                         }
                     } else if self.filterPredicate == .oddEven {
-                        data = sortHousesByNumber(houses: houseData, sort: self.sortPredicate)
+                        data = sortHousesByNumber(houses: data, sort: self.sortPredicate)
                     }
                     
                     self.houseData = data

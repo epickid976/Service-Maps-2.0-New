@@ -44,10 +44,11 @@ struct TerritoryAddressView: View {
         GeometryReader { proxy in
             ZStack {
                 ScalingHeaderScrollView {
-                    ZStack {
-                        Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
-                        viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
-                    }
+                        ZStack {
+                            Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
+                            viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
+                        }
+                        
                 } content: {
                     VStack {
                         if viewModel.addressData == nil || viewModel.dataStore.synchronized == false {
@@ -87,6 +88,7 @@ struct TerritoryAddressView: View {
                                 }
                             } else {
                                 LazyVStack {
+                                    
                                     SwipeViewGroup {
                                         ForEach(viewModel.addressData!) { addressData in
                                                 addressCell(addressData: addressData, mainWindowSize: proxy.size)
@@ -168,6 +170,7 @@ struct TerritoryAddressView: View {
                 }
                 .scrollIndicators(.hidden)
                 .coordinateSpace(name: "scroll")
+                
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
@@ -176,8 +179,11 @@ struct TerritoryAddressView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
+                    .hoverEffect()
+                    .keyboardShortcut("+", modifiers: .command)
                 }
             }
+            
             .ignoresSafeArea()
             .navigationBarBackButtonHidden()
             .navigationBarTitle("Addresses", displayMode: .inline)
@@ -188,13 +194,13 @@ struct TerritoryAddressView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 presentationMode.wrappedValue.dismiss()
                             }
-                        })
+                        }).keyboardShortcut(.delete, modifiers: .command)
                         .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     HStack {
-                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         //                    if viewModel.isAdmin {
                         //                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
@@ -234,7 +240,35 @@ struct TerritoryAddressView: View {
                     .frame(minWidth: mainWindowSize.width * 0.95)
                     .background(.thinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .contextMenu {
+                        Button {
+                            DispatchQueue.main.async {
+                                self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
+                                //self.showAlert = true
+                                if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
+                                    CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).showAndStack()
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "trash")
+                                Text("Delete Address")
+                            }
+                        }
+                        
+                        Button {
+                            self.viewModel.currentAddress = addressData.address
+                            self.viewModel.presentSheet = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "pencil")
+                                Text("Edit Address")
+                            }
+                        }
+                        //TODO Trash and Pencil only if admin
+                    }
                 }
+                
             } trailingActions: { context in
                 if addressData.accessLevel == .Admin {
                     SwipeAction(
@@ -411,3 +445,5 @@ struct CentrePopup_AddAddress: CentrePopup {
             .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }
+
+

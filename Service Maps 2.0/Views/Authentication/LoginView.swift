@@ -10,6 +10,7 @@ import SwiftUI
 import NavigationTransitions
 import ActivityIndicatorView
 import PopupView
+import AlertKit
 
 
 struct LoginView: View {
@@ -35,7 +36,7 @@ struct LoginView: View {
         self.onDone = onDone
     }
     
-    
+    let alertViewAdded = AlertAppleMusic17View(title: "Password Reset Email Sent", subtitle: nil, icon: .done)
     
     var body: some View {
         ZStack {
@@ -121,7 +122,7 @@ struct LoginView: View {
                                     dismiss()
                                     viewModel.username = ""
                                     viewModel.password = ""
-                                }
+                                }.keyboardShortcut("\r", modifiers: [.command, .shift])
                             }
                         }
                         CustomButton(loading: loading, title: "Login") {
@@ -149,7 +150,7 @@ struct LoginView: View {
                             }
                             
                             //withAnimation { loading = false }
-                        }
+                        }.keyboardShortcut("\r", modifiers: .command)
                     }
                     .padding()
                     
@@ -159,38 +160,7 @@ struct LoginView: View {
                 .alert(isPresented: $viewModel.showAlert) {
                     Alert(title: Text(viewModel.alertTitle), message: Text(viewModel.alertMessage), dismissButton: .default(Text("OK")))
                 }
-                .popup(isPresented: $viewModel.resetFeedback) {
-                    
-                    HStack {
-                        VStack {
-                            HStack {
-                                Text(viewModel.resetFeedbackText)
-                                    .lineLimit(2)
-                                    .bold()
-                                Image(systemName: viewModel.resetFeedbackText == "Please type email above" ? "x.circle.fill" : "checkmark.seal.fill")
-                                    .foregroundColor(viewModel.resetFeedbackText == "Please type email above" ? .red : .green)
-                                    .imageScale(.large)
-                                
-                            }
-                            .frame(width: 300, height: 32)
-                        }
-                        .padding()
-                    }
-                    .background(Color(UIColor.systemGray4).cornerRadius(15))
-                    .padding(16)
-                    .shadowedStyle()
-                    
-                    .padding(.horizontal, 16)
-                } customize: {
-                    $0
-                        .type(.floater())
-                        .animation(.spring())
-                        .closeOnTapOutside(true)
-                        .position(.bottom)
-                        .dragToDismiss(true)
-                    //.backgroundColor(.black.opacity(0.5))
-                    
-                }
+                .alert(isPresent: $viewModel.resetFeedback, view: alertViewAdded)
             }
             .simultaneousGesture(
                 // Hide the keyboard on scroll

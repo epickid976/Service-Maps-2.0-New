@@ -131,7 +131,7 @@ struct AddPhoneTerritoryView: View {
                     
                     HStack {
                         if !viewModel.loading {
-                            CustomBackButton() { dismiss() }
+                            CustomBackButton() { dismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
                         }
                         //.padding([.top])
                         
@@ -170,7 +170,7 @@ struct AddPhoneTerritoryView: View {
                                     }
                                 }
                             }
-                        }
+                        }.keyboardShortcut("\r", modifiers: .command)
                     }
                     .padding([.horizontal, .bottom])
                     .vSpacing(.bottom)

@@ -42,6 +42,8 @@ struct TerritoryView: View {
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 40
     
+    
+    
     //@Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         GeometryReader { proxy in
@@ -90,10 +92,8 @@ struct TerritoryView: View {
                                         ForEach(viewModel.territoryData!, id: \.self) { dataWithKeys in
                                             territoryCell(dataWithKeys: dataWithKeys, mainViewSize: proxy.size)
                                         }
-                                        .animation(.default, value: viewModel.territoryData!)
                                     }
-                                    
-                                }
+                                }.animation(.default, value: viewModel.territoryData!)
                             }
                         }
                     }.background(GeometryReader {
@@ -124,17 +124,7 @@ struct TerritoryView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                 viewModel.showAddedToast = false
                             }
-                        }.simultaneousGesture(
-                            // Hide the keyboard on scroll
-                            DragGesture().onChanged { _ in
-                                UIApplication.shared.sendAction(
-                                    #selector(UIResponder.resignFirstResponder),
-                                    to: nil,
-                                    from: nil,
-                                    for: nil
-                                )
-                            }
-                        )
+                        }
                     }
                     //                    .popup(isPresented: $viewModel.showAlert) {
                     //                        if viewModel.territoryToDelete.0 != nil && viewModel.territoryToDelete.1 != nil {
@@ -159,7 +149,7 @@ struct TerritoryView: View {
                     .toolbar {
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             HStack {
-                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                     .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 //                            if viewModel.isAdmin {
                                 //                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
@@ -178,6 +168,7 @@ struct TerritoryView: View {
                             hideFloatingButton = false
                         }
                     }
+                    .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
                 
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
@@ -187,7 +178,10 @@ struct TerritoryView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
+                    .hoverEffect()
+                    .keyboardShortcut("+", modifiers: .command)
                 }
+                
             }
         }
     }
@@ -216,7 +210,31 @@ struct TerritoryView: View {
                 SwipeView {
                     NavigationLink(destination: NavigationLazyView( TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
                         CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize)
-                            .padding(.bottom, 2)
+                            .padding(.bottom, 2).contextMenu {
+                                Button {
+                                    DispatchQueue.main.async {
+                                        self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
+                                        //self.showAlert = true
+                                        CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).showAndStack()
+                                    }
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "trash")
+                                        Text("Delete Territory")
+                                    }
+                                }
+                                
+                                Button {
+                                    self.viewModel.currentTerritory = territoryData.territory
+                                    self.viewModel.presentSheet = true
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "pencil")
+                                        Text("Edit Territory")
+                                    }
+                                }
+                                //TODO Trash and Pencil only if admin
+                            }
                         
                     }
                 } trailingActions: { context in
