@@ -8,21 +8,35 @@
 import Foundation
 
 @MainActor
-func formattedDate(date: Date) -> String {
+func formattedDate(date: Date, withTime: Bool = true) -> String {
     let formatter1 = DateFormatter()
     
-    if  Calendar.current.isDateInToday(date) {
-        formatter1.dateFormat = "HH:mm"
-        return "Today \(formatter1.string(from: date))"
-    } else if Calendar.current.isDateInYesterday(date){
-        formatter1.dateFormat = "HH:mm"
-        return "Yesterday \(formatter1.string(from: date))"
-    } else if Calendar.current.isDateInThisWeek(date) {
-        formatter1.dateFormat = "EEEE HH:mm"
-        return  formatter1.string(from: date)
+    if withTime {
+        if  Calendar.current.isDateInToday(date) {
+            formatter1.dateFormat = "HH:mm"
+            return "Today \(formatter1.string(from: date))"
+        } else if Calendar.current.isDateInYesterday(date){
+            formatter1.dateFormat = "HH:mm"
+            return "Yesterday \(formatter1.string(from: date))"
+        } else if Calendar.current.isDateInThisWeek(date) {
+            formatter1.dateFormat = "EEEE HH:mm"
+            return  formatter1.string(from: date)
+        } else {
+            formatter1.dateFormat = "MM-dd-yyyy HH:mm"
+            return  formatter1.string(from: date)
+        }
     } else {
-        formatter1.dateFormat = "MM-dd-yyyy HH:mm"
-        return  formatter1.string(from: date)
+        if  Calendar.current.isDateInToday(date) {
+            return "Today"
+        } else if Calendar.current.isDateInYesterday(date){
+            return "Yesterday"
+        } else if Calendar.current.isDateInThisWeek(date) {
+            formatter1.dateFormat = "EEEE"
+            return  formatter1.string(from: date)
+        } else {
+            formatter1.dateFormat = "MM-dd-yyyy"
+            return  formatter1.string(from: date)
+        }
     }
 }
 

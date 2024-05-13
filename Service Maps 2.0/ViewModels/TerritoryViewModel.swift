@@ -20,8 +20,14 @@ class TerritoryViewModel: ObservableObject {
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
     private var cancellables = Set<AnyCancellable>()
+    private var recentCancellables = Set<AnyCancellable>()
     
     @Published var territoryData: Optional<[TerritoryDataWithKeys]> = nil
+    @Published var recentTerritoryData: Optional<[RecentTerritoryData]> = nil {
+        didSet {
+            print(recentTerritoryData)
+        }
+    }
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     // Boolean state variable to track the sorting order
@@ -57,6 +63,7 @@ class TerritoryViewModel: ObservableObject {
     
     @Published var search: String = "" {
         didSet {
+            getRecentTerritories()
             getTerritories()
         }
     }
@@ -79,6 +86,7 @@ class TerritoryViewModel: ObservableObject {
     
     init() {
         getTerritories()
+        getRecentTerritories()
     }
     
     
@@ -136,6 +144,29 @@ extension TerritoryViewModel {
                 }
             })
             .store(in: &cancellables)
+    }
+    
+    func getRecentTerritories() {
+        RealmManager.shared.getRecentTerritoryData()
+            .receive(on: DispatchQueue.main) // Update on main thread
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    // Handle errors here
+                    print("Error retrieving territory data: \(error)")
+                }
+            }, receiveValue: { territoryData in
+                if self.search.isEmpty {
+                    self.recentTerritoryData = territoryData.sorted(by: { $0.lastVisit.date > $1.lastVisit.date
+                    })
+                } else {
+                    self.recentTerritoryData = territoryData.filter { territoryData in
+                        // Check for matches in territory number (converted to string for case-insensitive comparison)
+                            String(territoryData.territory.number).lowercased().contains(self.search.lowercased()) ||
+                            territoryData.territory.description.lowercased().contains(self.search.lowercased())
+                    }
+                }
+            })
+            .store(in: &recentCancellables)
     }
 }
 

@@ -89,6 +89,31 @@ struct TerritoryView: View {
                                 
                             } else {
                                 LazyVStack {
+                                    
+                                    if !(viewModel.recentTerritoryData == nil) {
+                                        LazyVStack {
+                                            Text("Recent Territories")
+                                                .font(.title2)
+                                                .lineLimit(1)
+                                                .foregroundColor(.primary)
+                                                .fontWeight(.bold)
+                                                .hSpacing(.leading)
+                                                .padding(5)
+                                                .padding(.horizontal, 10)
+                                            ScrollView(.horizontal, showsIndicators: false) {
+                                                LazyHStack {
+                                                    ForEach(viewModel.recentTerritoryData!, id: \.self) { territoryData in
+                                                        NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                            recentCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                                        }
+                                                    }
+                                                }
+                                            }.animation(.smooth, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                                .padding(.leading)
+                                        }
+                                    }
+                                    
+                                    
                                     SwipeViewGroup {
                                         ForEach(viewModel.territoryData!, id: \.self) { dataWithKeys in
                                             territoryCell(dataWithKeys: dataWithKeys, mainViewSize: proxy.size)
@@ -113,9 +138,6 @@ struct TerritoryView: View {
                             }
                             self.previousViewOffset = currentOffset
                         }
-                    }
-                    .doneToolbar {
-                        hideKeyboard()
                     }
                     .animation(.easeInOut(duration: 0.25), value: viewModel.territoryData == nil || viewModel.territoryData != nil)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
@@ -187,8 +209,8 @@ struct TerritoryView: View {
                         }
                         
                     }
-                    
-                    
+                
+                
                 
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
@@ -228,7 +250,7 @@ struct TerritoryView: View {
         LazyVStack {
             ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
                 SwipeView {
-                    NavigationLink(destination: NavigationLazyView( TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                    NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
                         CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize)
                             .padding(.bottom, 2).contextMenu {
                                 Button {
@@ -446,29 +468,4 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
             .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }
-struct DoneToolbar: ViewModifier {
-   let doneAction: () -> Void
 
-    @ViewBuilder
-    func body(content: Content) -> some View {
-      content
-      .toolbar {
-          ToolbarItem(placement: .keyboard) {
-             HStack {
-               Spacer()
-               Button(action: doneAction) {
-                 Text("Done")
-                 .fontWeight(.semibold)
-                 .foregroundColor(.blue)
-         }
-       }
-     }
-   }
- }
-}
-
-extension View {
-  func doneToolbar(action: @escaping () -> Void) -> some View {
-     modifier(DoneToolbar(doneAction: action))
-   }
-}

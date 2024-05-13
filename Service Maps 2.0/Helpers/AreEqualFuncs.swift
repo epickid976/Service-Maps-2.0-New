@@ -58,3 +58,8 @@ extension String {
 
 
 
+func isInLastTwoWeeks(_ visitDate: Date) -> Bool {
+  let today = Calendar.current.startOfDay(for: Date())
+  let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -30, to: today)!
+  return twoWeeksAgo <= visitDate && visitDate <= today
+}

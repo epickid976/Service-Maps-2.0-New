@@ -717,6 +717,55 @@ class RealmManager: ObservableObject {
             }
             .eraseToAnyPublisher()
     }
+   
+    @MainActor
+    func getRecentTerritoryData() -> AnyPublisher<[RecentTerritoryData], Never> {
+      let flow = Publishers.CombineLatest4(
+        $territoriesFlow.share(),
+        $addressesFlow.share(),
+        $housesFlow.share(),
+        $visitsFlow.share()
+      )
+      .flatMap { recentData -> AnyPublisher<[RecentTerritoryData], Never> in
+          var recentVisits = [VisitObject]()
+         // print(recentData.3)
+          for visit in recentData.3 {
+              if isInLastTwoWeeks(Date(timeIntervalSince1970: TimeInterval(visit.date) / 1000)) {
+                  recentVisits.append(visit)
+              }
+          }
+          
+          print(recentVisits.count)
+          
+        var data = [RecentTerritoryData]()
+        for address in recentData.1 {
+          let territoryVisits = recentVisits.filter { visit in
+            recentData.2.contains { house in // access houses using recentData.2
+              house.id == visit.house && house.territory_address == address.id
+            }
+          }
+            
+            
+          
+          if territoryVisits.count >= 5 {
+            guard let territory = recentData.0.first(where: { $0.id == address.territory }) else { continue }
+            let mostRecentVisit = territoryVisits.sorted(by: { $0.date > $1.date }).first! // Sort by date descending and get first (most recent)
+              let recentData = RecentTerritoryData(id: UUID(), territory: convertTerritoryToTerritoryModel(model: territory), lastVisit: convertVisitToVisitModel(model: mostRecentVisit))
+            data.append(recentData)
+          }
+        }
+          
+        let uniqueData = data.unique { $0.territory.id }
+          
+        return Just(uniqueData)
+          .eraseToAnyPublisher()  // Use Just to emit a single value (the data array)
+      }.eraseToAnyPublisher()
+        
+        return flow
+    }
+    
+    
+
     
     func phoneCallAccessLevel(call: PhoneCallObject, email: String) -> AccessLevel {
         if AuthorizationLevelManager().existsAdminCredentials() {
@@ -740,5 +789,20 @@ class RealmManager: ObservableObject {
         }
         
         return true
+    }
+}
+
+extension Array {
+    func unique<T:Hashable>(map: ((Element) -> (T)))  -> [Element] {
+        var set = Set<T>() //the unique list kept in a Set for fast retrieval
+        var arrayOrdered = [Element]() //keeping the unique list of elements but ordered
+        for value in self {
+            if !set.contains(map(value)) {
+                set.insert(map(value))
+                arrayOrdered.append(value)
+            }
+        }
+
+        return arrayOrdered
     }
 }

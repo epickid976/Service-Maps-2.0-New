@@ -124,12 +124,8 @@ struct PhoneTerritoryCellView: View {
     
 }
 
-enum screenRatio {
-    case halfnhalf, thirdOrFourth
-}
-
 struct recentCell: View {
-    var territory: TerritoryModel
+    var territoryData: RecentTerritoryData
     
     @State var mainWindowSize: CGSize
     
@@ -144,18 +140,25 @@ struct recentCell: View {
                             endPoint: .bottomTrailing
                         ).opacity(0.6)
                     )
-                
                 VStack {
-                    Text("\(territory.number)")
+                    Text("\(territoryData.territory.number)")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.white)
-                    
                 }
                 .frame(minWidth: mainWindowSize.width * 0.20)
+                
+                
             }
             .hSpacing(.leading)
-            .frame(width: mainWindowSize.width * 0.20, height: 70, alignment: .center)
+            .frame(width: mainWindowSize.width * 0.20, height: 50, alignment: .center)
             
+            Text("\(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(territoryData.lastVisit.date) / 1000), withTime: false))")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(.secondary)
+                .frame(width: mainWindowSize.width * 0.20, alignment: .center)
+                .lineLimit(2)
         }
     }
 }
+
+

@@ -170,6 +170,7 @@
 		82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913082BDAB27F00644A67 /* LinkScreens.swift */; };
 		82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9130B2BDAE7D000644A67 /* ValidationView.swift */; };
 		82FB3C212BF17E830066B0B9 /* AppVersionHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FB3C202BF17E830066B0B9 /* AppVersionHelpers.swift */; };
+		82FB3C232BF257990066B0B9 /* RecentData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FB3C222BF257990066B0B9 /* RecentData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -322,6 +323,7 @@
 		82F913082BDAB27F00644A67 /* LinkScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkScreens.swift; sourceTree = "<group>"; };
 		82F9130B2BDAE7D000644A67 /* ValidationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationView.swift; sourceTree = "<group>"; };
 		82FB3C202BF17E830066B0B9 /* AppVersionHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersionHelpers.swift; sourceTree = "<group>"; };
+		82FB3C222BF257990066B0B9 /* RecentData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,6 +376,7 @@
 				82F75C272BE15E5D002CCAB0 /* PhoneData.swift */,
 				82F75C2D2BE27698002CCAB0 /* PhoneNumbersData.swift */,
 				82F75C2F2BE27919002CCAB0 /* PhoneCallData.swift */,
+				82FB3C222BF257990066B0B9 /* RecentData.swift */,
 			);
 			path = Structs;
 			sourceTree = "<group>";
@@ -819,6 +822,7 @@
 				825645AD2BCE128E00F18AC9 /* TokenTerritoryObject.swift in Sources */,
 				82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */,
 				82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */,
+				82FB3C232BF257990066B0B9 /* RecentData.swift in Sources */,
 				824213752A82E7D000626DD5 /* LoginViewModel.swift in Sources */,
 				823FD4D52A7D6F2D0036A1DD /* TerritoryView.swift in Sources */,
 				82916C172A990955005133DE /* ImagePickerView.swift in Sources */,
