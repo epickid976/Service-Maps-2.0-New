@@ -38,7 +38,7 @@ struct PhoneNumbersView: View {
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 40
+    let minimumOffset: CGFloat = 60
     @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         GeometryReader { proxy in
@@ -83,13 +83,13 @@ struct PhoneNumbersView: View {
                                             numbersCell(numbersData: numbersData, mainWindowSize: proxy.size)
                                                 .padding(.bottom, 2)
                                         }
-                                        .animation(.default, value: viewModel.phoneNumbersData)
+                                        
                                     }
                                 }
                                 .padding(.horizontal)
                                 .padding(.top)
                                 .padding(.bottom)
-                                
+                                .animation(.default, value: viewModel.phoneNumbersData)
                                 
                             }
                         }
@@ -497,8 +497,18 @@ extension NumbersViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { phoneNumbersData in
-                DispatchQueue.main.async {
-                    self.phoneNumbersData = phoneNumbersData.sorted { $0.phoneNumber.number < $1.phoneNumber.number }
+                if self.search.isEmpty {
+                    DispatchQueue.main.async {
+                        self.phoneNumbersData = phoneNumbersData.sorted { $0.phoneNumber.number < $1.phoneNumber.number }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.phoneNumbersData = phoneNumbersData.filter { numberData in
+                            numberData.phoneNumber.number.lowercased().contains(self.search.lowercased()) ||
+                            numberData.phoneNumber.house?.lowercased().contains(self.search.lowercased()) ?? false ||
+                            numberData.phoneCall?.notes.lowercased().contains(self.search.lowercased()) ?? false
+                        }
+                    }
                 }
             })
             .store(in: &cancellables)

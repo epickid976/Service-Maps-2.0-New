@@ -75,6 +75,7 @@ class HousesViewModel: ObservableObject {
         }
     }
     
+    @Published var searchActive = false
     
     func deleteHouse(house: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteHouse(house: house)

@@ -41,7 +41,7 @@ struct CallsView: View {
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 40
+    let minimumOffset: CGFloat = 60
     @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         ZStack {
@@ -89,9 +89,9 @@ struct CallsView: View {
                                         ForEach(viewModel.callsData!, id: \.self) { callData in
                                             callCellView(callData: callData)
                                         }
-                                        .animation(.default, value: viewModel.callsData!)
+                                        //.animation(.default, value: viewModel.callsData!)
                                     }
-                                }.animation(.spring(), value: viewModel.callsData)
+                                }.animation(.default, value: viewModel.callsData)
                                     .padding()
                                 
                                 
@@ -164,7 +164,7 @@ struct CallsView: View {
                         }
                     }
                 //.scrollIndicators(.hidden)
-                .navigationBarTitle("Number: \(viewModel.phoneNumber.number)", displayMode: .automatic)
+                .navigationBarTitle("Number: \(viewModel.phoneNumber.number)", displayMode: .large)
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarLeading) {
@@ -190,7 +190,7 @@ struct CallsView: View {
                 }
                 .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                 .navigationViewStyle(StackNavigationViewStyle())
-            }.coordinateSpace(name: "scroll")
+            }.coordinateSpace(name: "scroll").searchable(text: $viewModel.search)
                 .scrollIndicators(.hidden)
             .refreshable {
                 viewModel.synchronizationManager.startupProcess(synchronizing: true)

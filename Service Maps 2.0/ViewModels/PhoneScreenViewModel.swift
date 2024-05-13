@@ -62,7 +62,13 @@ class PhoneScreenViewModel: ObservableObject {
         return await dataUploaderManager.deleteTerritory(phoneTerritory: territory)
     }
     
+    @Published var search: String = "" {
+        didSet {
+            getTeritories()
+        }
+    }
     
+    @Published var searchActive = false
   
 }
 
@@ -77,8 +83,18 @@ extension PhoneScreenViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { phoneData in
-                DispatchQueue.main.async {
-                    self.phoneData = phoneData
+                if self.search.isEmpty {
+                    DispatchQueue.main.async {
+                        self.phoneData = phoneData
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.phoneData = phoneData.filter { phoneData in
+                            // Check for matches in key names
+                            String(phoneData.territory.number).lowercased().contains(self.search.lowercased()) ||
+                            phoneData.territory.description.lowercased().contains(self.search.lowercased())
+                        }
+                    }
                 }
             })
             .store(in: &cancellables)

@@ -24,8 +24,10 @@ struct SettingsView: View {
     @Environment(\.sizeCategory) var sizeCategory
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Cache Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
+    
     @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
+        let alertUpdate = AlertAppleMusic17View(title: viewModel.showUpdateToastMessage, subtitle: nil, icon: .custom(UIImage(systemName: "arrow.triangle.2.circlepath.circle")!))
         ScrollView {
             VStack {
                 viewModel.profile()
@@ -47,6 +49,7 @@ struct SettingsView: View {
                     CentrePopup_AboutApp(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).showAndStack()
                 }
             }
+            .alert(isPresent: $viewModel.showUpdateToast, view: alertUpdate)
 //            .popup(isPresented: $viewModel.showAlert) {
 //                viewModel.aboutApp(usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true)
 //                    .frame(width: 400, height: 400)

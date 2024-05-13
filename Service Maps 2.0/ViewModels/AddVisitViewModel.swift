@@ -28,6 +28,7 @@ class AddVisitViewModel: ObservableObject {
     
     @Published var loading = false
     
+    @MainActor
     func addVisit() async -> Result<Bool, Error> {
         withAnimation {
             loading = true

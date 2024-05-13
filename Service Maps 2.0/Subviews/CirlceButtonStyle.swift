@@ -78,14 +78,14 @@ struct PillButtonStyle: ButtonStyle {
                 VStack {
                     if synced {
                         if isMoreThanAMinuteOld(date: lastTime) {
-                            displayText("Last Synced", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
-                            displayText("\(getElapsedMinutes()) minute(s)", fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
+                            displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                            displayText(NSLocalizedString("\(getElapsedMinutes()) minute(s)", comment: ""), fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
                         } else {
-                            displayText("Last Synced", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
-                            displayText("Now", fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
+                            displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                            displayText(NSLocalizedString("Now", comment: ""), fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
                         }
                     } else {
-                        displayText("Syncing", fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                        displayText(NSLocalizedString("Syncing", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
                     }
                 }
             )

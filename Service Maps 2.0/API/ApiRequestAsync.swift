@@ -106,7 +106,7 @@ class ApiRequestAsync {
         
         
         if let authorizationToken = authorizationProvider.authorizationToken {
-            headers.add(name: "Authorization", value: "Bearer  \(authorizationToken)")
+            headers.add(name: "Authorization", value: "Bearer \(authorizationToken)")
             }
         
         if let token = authorizationProvider.token {

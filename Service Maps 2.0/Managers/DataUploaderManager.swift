@@ -114,14 +114,20 @@ class DataUploaderManager: ObservableObject {
         
         return result ?? Result.failure(CustomErrors.ErrorUploading)
     }
-    
+   
     func addVisit(visit: VisitObject) async -> Result<Bool, Error> {
         
         var result: Result<Bool, Error>?
         
         do {
-            try await adminApi.addVisit(visit: convertVisitToVisitModel(model: visit))
-            result = Result.success(true)
+            if authorizationLevelManager.existsAdminCredentials() {
+                try await adminApi.addVisit(visit: convertVisitToVisitModel(model: visit))
+                result = Result.success(true)
+            } else {
+                await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
+                try await userApi.addVisit(visit: convertVisitToVisitModel(model: visit))
+                result = Result.success(true)
+            }
         } catch {
             result = Result.failure(error)
         }

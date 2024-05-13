@@ -55,6 +55,7 @@ class RealmManager: ObservableObject {
     
     @Published var dataStore = StorageManager.shared
     
+    
     func addModel<T: Object>(_ object: T) -> Result<Bool, Error> {
         do {
             let realmDatabase = try Realm()

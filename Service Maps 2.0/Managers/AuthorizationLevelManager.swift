@@ -39,7 +39,7 @@ class AuthorizationLevelManager: ObservableObject {
         }
         return false
     }
-    
+    @MainActor
     func getAccessLevel<T>(model: T) -> AccessLevel?  where T: Object{
         if existsAdminCredentials() {
             return .Admin
@@ -56,8 +56,9 @@ class AuthorizationLevelManager: ObservableObject {
         return nil
     }
     
+    @MainActor
     func setAuthorizationTokenFor<T>(model: T) async  where T: Object {
-        if let token = findToken(model: model) {
+        if let token =  findToken(model: model) {
             authorizationProvider.token = token.id
         }
     }
@@ -70,7 +71,7 @@ class AuthorizationLevelManager: ObservableObject {
         authorizationProvider.congregationId = Int64(congregationResponse.id)
         authorizationProvider.congregationPass = password
     }
-    
+    @MainActor
     func findToken<T>(model: T) -> TokenObject? where T: Object {
       switch model {
       case let territory as TerritoryObject:
@@ -121,8 +122,10 @@ class AuthorizationLevelManager: ObservableObject {
         let tokensDb = Array(realmManager.tokensFlow)
         let tokenTerritories = Array(realmManager.tokenTerritoriesFlow)
         
+        
+        
         tokenTerritories.filter { tokenTerritory in
-            return tokenTerritory.territory == territory.id
+            tokenTerritory.territory == territory.id
         }.forEach { tokenTerritory in
             do {
                 if let token = tokensDb.first(where: { $0.id == tokenTerritory.token }) {
@@ -131,11 +134,11 @@ class AuthorizationLevelManager: ObservableObject {
             }
         }
         
-        if let moderatorToken = tokens.first(where: { $0.user == dataStore.userEmail }) {
+        if let moderatorToken = tokens.first(where: { $0.moderator }) {
             return moderatorToken
         }
-        
-        return tokens.first(where: { $0.expire ?? 0 > Int64(Date().timeIntervalSince1970 * 1000) })
+        print(tokens.first(where: { $0.expire ?? Int64(Date().timeIntervalSince1970 * 1000) >= Int64(Date().timeIntervalSince1970 * 1000) }))
+        return tokens.first(where: { $0.expire ?? Int64(Date().timeIntervalSince1970 * 1000) >= Int64(Date().timeIntervalSince1970 * 1000) })
     }
     
     func findToken(territoryAddress: TerritoryAddressObject) -> TokenObject? {
@@ -158,6 +161,7 @@ class AuthorizationLevelManager: ObservableObject {
         return nil
     }
     
+    @MainActor
     func findToken(visit: VisitObject) -> TokenObject? {
         let houses = Array(realmManager.housesFlow)
         

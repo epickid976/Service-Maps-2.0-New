@@ -63,6 +63,8 @@ class VisitsViewModel: ObservableObject {
         }
     }
     
+    @Published var searchActive = false
+    
     func deleteVisit(visit: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteVisit(visit: visit)
     }

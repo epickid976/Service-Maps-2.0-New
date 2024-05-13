@@ -90,7 +90,7 @@ struct AddKeyView: View {
                                 //.padding()
                             }
                         }
-                        CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Key Name")
+                        CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Key Name", comment: ""))
                         
                         ScrollView {
                             LazyVStack {
@@ -106,7 +106,7 @@ struct AddKeyView: View {
                             }
                             //.padding([.top])
                             
-                            CustomButton(loading: viewModel.loading, title: "Add") {
+                            CustomButton(loading: viewModel.loading, title: NSLocalizedString("Add", comment: "")) {
                                 if viewModel.checkInfo() {
                                     Task {
                                         withAnimation {

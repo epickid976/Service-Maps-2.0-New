@@ -40,7 +40,7 @@ struct AddHouseView: View {
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
-                CustomField(text: $viewModel.number, isFocused: $numberFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Number")
+                CustomField(text: $viewModel.number, isFocused: $numberFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Number", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -54,7 +54,7 @@ struct AddHouseView: View {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Save") {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
                         if viewModel.checkInfo() {
                             if house != nil {
                                 Task {
@@ -115,12 +115,12 @@ struct AddHouseView: View {
             .onAppear {
                 if house != nil {
                     //withAnimation {
-                    title = "Edit"
+                    title = NSLocalizedString("Edit", comment: "")
                     self.viewModel.number = house!.number
                     //}
                 } else {
                     //withAnimation {
-                    title = "Add"
+                    title = NSLocalizedString("Add", comment: "")
                     //}
                 }
             }

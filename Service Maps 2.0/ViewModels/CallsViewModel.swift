@@ -61,7 +61,13 @@ class CallsViewModel: ObservableObject {
         return await dataUploaderManager.deleteCall(call: call)
     }
     
+    @Published var search: String = "" {
+        didSet {
+            getCalls()
+        }
+    }
     
+    @Published var searchActive = false
     
 }
 
@@ -76,9 +82,18 @@ extension CallsViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { callData in
-                DispatchQueue.main.async {
-                    self.callsData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date}
+                if self.search.isEmpty {
+                    DispatchQueue.main.async {
+                        self.callsData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date}
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.callsData = callData.filter { callData in
+                            callData.phoneCall.notes.lowercased().contains(self.search.lowercased())
+                        }
+                    }
                 }
+                
             })
             .store(in: &cancellables)
     }

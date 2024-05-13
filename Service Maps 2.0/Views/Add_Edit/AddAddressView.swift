@@ -38,7 +38,7 @@ struct AddAddressView: View {
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
-                CustomField(text: $viewModel.addressText, isFocused: $addressTextFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Address")
+                CustomField(text: $viewModel.addressText, isFocused: $addressTextFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Address", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -52,7 +52,7 @@ struct AddAddressView: View {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Save") {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
                         if viewModel.checkInfo() {
                             if address != nil {
                                 Task {
@@ -113,12 +113,12 @@ struct AddAddressView: View {
             .onAppear {
                 if address != nil {
                     //withAnimation {
-                    title = "Edit"
+                    title = NSLocalizedString("Edit", comment: "")
                     self.viewModel.addressText = address!.address
                     //}
                 } else {
                     //withAnimation {
-                    title = "Add"
+                    title = NSLocalizedString("Add", comment: "")
                     //}
                 } 
             }

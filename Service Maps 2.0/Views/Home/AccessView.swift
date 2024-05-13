@@ -32,7 +32,9 @@ struct AccessView: View {
     @Environment(\.mainWindowSize) var mainWindowSize
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 40
+    let minimumOffset: CGFloat = 60
+    
+    
     
     var body: some View {
         GeometryReader { proxy in
@@ -167,7 +169,7 @@ struct AccessView: View {
                     }
                     .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                     .navigationViewStyle(StackNavigationViewStyle())
-                }.coordinateSpace(name: "scroll")
+                }.coordinateSpace(name: "scroll").searchable(text: $viewModel.search)
                     .scrollIndicators(.hidden)
                     .refreshable {
                         synchronizationManager.startupProcess(synchronizing: true)

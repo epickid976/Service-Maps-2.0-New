@@ -11,7 +11,7 @@ import SwiftUI
 
 struct CustomBackButton: View {
     var showImage: Bool = true
-    var text: String = "Back"
+    var text: String = NSLocalizedString("Back", comment: "")
     @Environment(\.colorScheme) var colorScheme
     var action: () -> Void
     

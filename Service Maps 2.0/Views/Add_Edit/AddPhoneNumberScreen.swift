@@ -55,7 +55,7 @@ struct AddPhoneNumberScreen: View {
                 //.frame(alignment: .leading)
                 //.hSpacing(.center)
                     .padding(.leading)
-                CustomField(text: $viewModel.houseText, isFocused: $houseTextFocus, textfield: true, textfieldAxis: .vertical, placeholder: "House")
+                CustomField(text: $viewModel.houseText, isFocused: $houseTextFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("House", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -69,7 +69,7 @@ struct AddPhoneNumberScreen: View {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Save") {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
                         if viewModel.checkInfo() {
                             if number != nil {
                                 Task {
@@ -130,7 +130,7 @@ struct AddPhoneNumberScreen: View {
             .onAppear {
                 if number != nil {
                     //withAnimation {
-                    title = "Edit"
+                    title = NSLocalizedString("Edit", comment: "")
                     self.viewModel.numberText = number!.number
                     self.viewModel.houseText = number!.house ?? ""
                     //}

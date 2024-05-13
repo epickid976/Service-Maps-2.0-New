@@ -48,7 +48,8 @@ class SettingsViewModel: ObservableObject {
     
     @Published var showToast = false
     
-    
+    @Published var showUpdateToast = false
+    @Published var showUpdateToastMessage = ""
     
     @ViewBuilder
     func profile() -> some View {
@@ -80,7 +81,7 @@ class SettingsViewModel: ObservableObject {
                 .vSpacing(.bottom)
             
             
-            CustomButton(loading: loading, title: "Logout") {
+            CustomButton(loading: loading, title: NSLocalizedString("Logout", comment: "")) {
                 Task {
                     let result = await self.authenticationManager.logout()
                     switch result {
@@ -120,7 +121,7 @@ class SettingsViewModel: ObservableObject {
                                         .foregroundColor(.primary)
                                         .fontWeight(.heavy)
                                         .hSpacing(.leading)
-                                    CustomBackButton(showImage: false, text: "Exit") {
+                                    CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
                                         self.exitPhoneLogin()
                                         self.synchronizationManager.startupProcess(synchronizing: true)
                                     }
@@ -186,7 +187,7 @@ class SettingsViewModel: ObservableObject {
                                         .foregroundColor(.primary)
                                         .fontWeight(.heavy)
                                         .hSpacing(.leading)
-                                    CustomBackButton(showImage: false, text: "Exit") {
+                                    CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
                                         self.exitAdministrator()
                                         self.synchronizationManager.startupProcess(synchronizing: true)
                                     }
@@ -293,6 +294,65 @@ class SettingsViewModel: ObservableObject {
                             .fontWeight(.heavy)
                     }
                     .hSpacing(.leading)
+                }
+            }.keyboardShortcut("a", modifiers: [.command, .shift])
+            .frame(minHeight: 50)
+            
+            Button {
+                do {
+                    try isUpdateAvailable { [self] (update, error) in
+                        if let update {
+                            if update {
+                                self.showUpdateToastMessage = "Update available. Redirecting to App Store..."
+                                self.showUpdateToast = true
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103")!)
+                                }
+                            } else {
+                                self.showUpdateToastMessage = "App is up to date!"
+                                self.showUpdateToast = true
+                            }
+                        }
+                       
+                       if let error {
+                           if error.localizedDescription == "The operation couldn’t be completed. (NSURLErrorDomain error -1009.)" {
+                               self.showUpdateToastMessage = "No internet connection"
+                               self.showUpdateToast = true
+                           } else {
+                               self.showUpdateToastMessage = error.localizedDescription
+                               self.showUpdateToast = true
+                           }
+                       }
+                    }
+                } catch {
+                        self.showUpdateToastMessage = error.localizedDescription
+                        self.showUpdateToast = true
+                }
+                
+            } label: {
+                HStack {
+                    HStack {
+                        Image(systemName: "app")
+                            .imageScale(.large)
+                            .padding(.horizontal)
+                        Text("App Version")
+                            .font(.title3)
+                            .lineLimit(2)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                    }
+                    .hSpacing(.leading)
+                    
+                    HStack {
+                        Text("\(getAppVersion())")
+                            .font(.headline)
+                            .lineLimit(2)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                            .padding(.trailing)
+                    }
+                    .hSpacing(.trailing)
                 }
             }.keyboardShortcut("a", modifiers: [.command, .shift])
             .frame(minHeight: 50)

@@ -40,7 +40,7 @@ struct AddCallView: View {
                         .hSpacing(.leading)
                         .padding(.leading)
                 }
-                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Notes")
+                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Notes", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -54,7 +54,7 @@ struct AddCallView: View {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Save") {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
                         if viewModel.checkInfo() {
                             if call != nil {
                                 Task {
@@ -115,11 +115,11 @@ struct AddCallView: View {
             .onAppear {
                 if call != nil {
                     //withAnimation {
-                    title = "Edit"
-                    self.viewModel.notes = call!.notes  
+                    title = NSLocalizedString("Edit", comment: "")
+                    self.viewModel.notes = call!.notes
                 } else {
                     //withAnimation {
-                    title = "Add"
+                    title = NSLocalizedString("Add", comment: "")
                     //}
                 }
             }

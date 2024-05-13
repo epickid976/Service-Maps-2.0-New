@@ -40,7 +40,7 @@ struct HousesView: View {
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 40
+    let minimumOffset: CGFloat = 60
     
     var body: some View {
         GeometryReader { proxy in

@@ -86,7 +86,7 @@ struct AddPhoneTerritoryView: View {
                     // .frame(alignment: .center)
                         .hSpacing(.leading)
                         .padding(.leading)
-                    CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Description")
+                    CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Description", comment: ""))
                         .animation(.spring, value: viewModel.description)
                         .padding(.bottom)
                     
@@ -135,7 +135,7 @@ struct AddPhoneTerritoryView: View {
                         }
                         //.padding([.top])
                         
-                        CustomButton(loading: viewModel.loading, title: "Save") {
+                        CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
                             if viewModel.checkInfo() {
                                 withAnimation { viewModel.loading = true }
                                 if territory != nil {
@@ -203,14 +203,14 @@ struct AddPhoneTerritoryView: View {
             .onAppear {
                 if territory != nil {
                     withAnimation {
-                        title = "Edit"
+                        title = NSLocalizedString("Edit", comment: "")
                         
                     }
                     self.viewModel.description = territory!.description
                     self.viewModel.number = Int(territory!.number)
                 } else {
                     withAnimation {
-                        title = "Add"
+                        title = NSLocalizedString("Add", comment: "")
                     }
                 }
             }

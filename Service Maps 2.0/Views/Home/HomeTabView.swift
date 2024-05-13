@@ -136,9 +136,25 @@ struct HomeTabView: View {
                 }
                 .padding(.vertical, 8)
                 .background(colorScheme == .dark ? .black : .white)
-            }
+            }.ignoresSafeArea(.keyboard)
+                .onAppear {
+                    do {
+                         try isUpdateAvailable(completion: { [self] (update, error) in
+                            if let update {
+                                if update {
+                                    DispatchQueue.main.async {
+                                        CentrePopup_Update().showAndStack()
+                                    }
+                                }
+                            }
+                        })
+                    } catch {
+                        print("Error checking for updates: \(error)")
+                    }
+                }
             .navigationBarBackButtonHidden(true)
             .navigationViewStyle(StackNavigationViewStyle())
+            
         }
         .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
         .navigationTransition(
@@ -147,4 +163,56 @@ struct HomeTabView: View {
     }
 }
 
+struct CentrePopup_Update: CentrePopup {
+    @State var loading = false
+    
+    func createContent() -> some View {
+        VStack {
+            Text("A new update for the app is available!")
+                .font(.title3)
+                .fontWeight(.heavy)
+                .hSpacing(.leading)
+                .padding(.leading)
+                .padding(.bottom, 3)
+            Text("Please update the app as soon as possible to access the latest features and improvements. \nWould you like to update now?")
+                .font(.subheadline)
+                .fontWeight(.heavy)
+                .hSpacing(.leading)
+                .padding(.leading)
+            
+            HStack {
+                if !loading {
+                    CustomBackButton(text: "Later") {
+                        withAnimation {
+                            //self.viewModel.showAlert = false
+                            dismiss()
+                        }
+                    }
+                }
+                //.padding([.top])
+                
+                CustomButton(loading: loading, title: "Update Now") {
+                    withAnimation {
+                        loading = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103")!)
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        dismiss()
+                    }
+                    
+                }
+            }
+            .padding([.horizontal, .bottom])
+        }.padding()
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
 

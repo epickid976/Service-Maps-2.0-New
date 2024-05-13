@@ -41,7 +41,7 @@ struct VisitsView: View {
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 40
+    let minimumOffset: CGFloat = 60
     @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         ZStack {

@@ -57,7 +57,7 @@ struct AddVisitView: View {
                     }
                     .frame(maxWidth: UIScreen.screenWidth * 0.4)
                 }
-                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: "Notes")
+                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Notes", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -71,7 +71,7 @@ struct AddVisitView: View {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Save") {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
                         if viewModel.checkInfo() {
                             if visit != nil {
                                 Task {
@@ -132,12 +132,12 @@ struct AddVisitView: View {
             .onAppear {
                 if visit != nil {
                     //withAnimation {
-                    title = "Edit"
+                    title = NSLocalizedString("Edit", comment: "")
                     self.viewModel.notes = visit!.notes                    //}
                     self.viewModel.selectedOption = Symbols(rawValue: visit!.symbol.uppercased()) ?? .none
                 } else {
                     //withAnimation {
-                    title = "Add"
+                    title = NSLocalizedString("Add", comment: "")
                     //}
                 }
             }

@@ -127,3 +127,35 @@ struct PhoneTerritoryCellView: View {
 enum screenRatio {
     case halfnhalf, thirdOrFourth
 }
+
+struct recentCell: View {
+    var territory: TerritoryModel
+    
+    @State var mainWindowSize: CGSize
+    
+    var body: some View {
+        VStack {
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [.blue, .teal]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ).opacity(0.6)
+                    )
+                
+                VStack {
+                    Text("\(territory.number)")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.white)
+                    
+                }
+                .frame(minWidth: mainWindowSize.width * 0.20)
+            }
+            .hSpacing(.leading)
+            .frame(width: mainWindowSize.width * 0.20, height: 70, alignment: .center)
+            
+        }
+    }
+}

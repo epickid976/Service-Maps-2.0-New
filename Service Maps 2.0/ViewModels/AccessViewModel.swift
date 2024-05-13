@@ -80,7 +80,13 @@ class AccessViewModel: ObservableObject {
     }
     
     
+    @Published var search: String = "" {
+        didSet {
+            getKeys()
+        }
+    }
     
+    @Published var searchActive = false
     
     @MainActor
     func registerKey() async -> Result<Bool, Error> {
@@ -100,7 +106,22 @@ extension AccessViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { keyData in
-                self.keyData = keyData
+                if self.search.isEmpty {
+                    DispatchQueue.main.async {
+                        self.keyData = keyData
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.keyData = keyData.filter { keyData in
+                            keyData.key.name.lowercased().contains(self.search.lowercased()) ||
+                              keyData.territories.contains { territory in
+                                  String(territory.number).lowercased().contains(self.search.lowercased())
+                              } ||
+                            keyData.key.owner.lowercased().contains(self.search.lowercased())
+                          }
+                    }
+                }
+               
             })
             .store(in: &cancellables)
     }

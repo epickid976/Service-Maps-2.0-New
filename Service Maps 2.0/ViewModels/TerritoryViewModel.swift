@@ -61,6 +61,8 @@ class TerritoryViewModel: ObservableObject {
         }
     }
     
+    @Published var searchActive = false
+    
     
     func deleteTerritory(territory: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteTerritory(territory: territory)
@@ -126,10 +128,7 @@ extension TerritoryViewModel {
                             } ||
                             // Check for matches in territory number (converted to string for case-insensitive comparison)
                             territoryData.territoriesData.contains { territory in
-                                String(territory.territory.number).lowercased().contains(self.search.lowercased())
-                            } ||
-                            // Check for matches in territory description
-                            territoryData.territoriesData.contains { territory in
+                                String(territory.territory.number).lowercased().contains(self.search.lowercased()) ||
                                 territory.territory.description.lowercased().contains(self.search.lowercased())
                             }
                         }

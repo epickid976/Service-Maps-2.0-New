@@ -19,6 +19,7 @@ import MijickPopupView
 
 struct TerritoryView: View {
     
+    @Environment(\.dismissSearch) private var dismissSearch
     
     @ObservedObject var viewModel = TerritoryViewModel()
     
@@ -40,7 +41,7 @@ struct TerritoryView: View {
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 40
+    let minimumOffset: CGFloat = 60
     
     
     
@@ -103,13 +104,18 @@ struct TerritoryView: View {
                         if ( abs(offsetDifference) > minimumOffset) {
                             if offsetDifference > 0 {
                                 print("Is scrolling up toward top.")
-                                hideFloatingButton = false
+                                DispatchQueue.main.async {
+                                    hideFloatingButton = false
+                                }
                             } else {
                                 print("Is scrolling down toward bottom.")
                                 hideFloatingButton = true
                             }
                             self.previousViewOffset = currentOffset
                         }
+                    }
+                    .doneToolbar {
+                        hideKeyboard()
                     }
                     .animation(.easeInOut(duration: 0.25), value: viewModel.territoryData == nil || viewModel.territoryData != nil)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
@@ -157,9 +163,12 @@ struct TerritoryView: View {
                                 //                            }
                             }
                         }
+                        
+                        
                     }
                     .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                     .navigationViewStyle(StackNavigationViewStyle())
+                    
                 }.coordinateSpace(name: "scroll")
                     .scrollIndicators(.hidden)
                     .refreshable {
@@ -168,7 +177,18 @@ struct TerritoryView: View {
                             hideFloatingButton = false
                         }
                     }
-                    .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
+                    .optionalViewModifier { content in
+                        if #available(iOS 17, *) {
+                            content
+                                .searchable(text: $viewModel.search, isPresented: $viewModel.searchActive, placement: .navigationBarDrawer)
+                        } else {
+                            content
+                                .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
+                        }
+                        
+                    }
+                    
+                    
                 
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
@@ -425,4 +445,30 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
             .cornerRadius(15)
             .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
+}
+struct DoneToolbar: ViewModifier {
+   let doneAction: () -> Void
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+      content
+      .toolbar {
+          ToolbarItem(placement: .keyboard) {
+             HStack {
+               Spacer()
+               Button(action: doneAction) {
+                 Text("Done")
+                 .fontWeight(.semibold)
+                 .foregroundColor(.blue)
+         }
+       }
+     }
+   }
+ }
+}
+
+extension View {
+  func doneToolbar(action: @escaping () -> Void) -> some View {
+     modifier(DoneToolbar(doneAction: action))
+   }
 }

@@ -64,7 +64,7 @@ struct SignupView: View {
                     .hSpacing(.leading)
                     .padding(.leading)
                 
-                CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, placeholder: "name")
+                CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, placeholder: NSLocalizedString("name", comment: ""))
                 
                 
                 Text("Email")
@@ -180,3 +180,4 @@ extension View {
     }
 }
 #endif
+

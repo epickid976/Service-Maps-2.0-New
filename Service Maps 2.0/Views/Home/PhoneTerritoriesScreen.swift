@@ -30,7 +30,7 @@ struct PhoneTerritoriesScreen: View {
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 40
+    let minimumOffset: CGFloat = 60
     var body: some View {
         GeometryReader { proxy in
             ZStack {
@@ -78,7 +78,7 @@ struct PhoneTerritoriesScreen: View {
                                         ForEach(viewModel.phoneData!, id: \.self) { phoneData in
                                             territoryCell(phoneData: phoneData, mainViewSize: proxy.size)
                                         }
-                                        .animation(.default, value: viewModel.phoneData!)
+                                        //.animation(.default, value: viewModel.phoneData!)
                                         
                                         
                                     }
@@ -153,7 +153,7 @@ struct PhoneTerritoriesScreen: View {
                     }
                     .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                     .navigationViewStyle(StackNavigationViewStyle())
-                }.coordinateSpace(name: "scroll")
+                }.coordinateSpace(name: "scroll").searchable(text: $viewModel.search, placement: .navigationBarDrawer)
                     .scrollIndicators(.hidden)
                     .refreshable {
                         synchronizationManager.startupProcess(synchronizing: true)
