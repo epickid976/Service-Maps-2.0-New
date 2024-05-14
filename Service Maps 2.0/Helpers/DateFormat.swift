@@ -14,10 +14,10 @@ func formattedDate(date: Date, withTime: Bool = true) -> String {
     if withTime {
         if  Calendar.current.isDateInToday(date) {
             formatter1.dateFormat = "HH:mm"
-            return "Today \(formatter1.string(from: date))"
+            return NSLocalizedString("Today ", comment: "") + formatter1.string(from: date)
         } else if Calendar.current.isDateInYesterday(date){
             formatter1.dateFormat = "HH:mm"
-            return "Yesterday \(formatter1.string(from: date))"
+            return NSLocalizedString("Yesterday ", comment: "") + formatter1.string(from: date)
         } else if Calendar.current.isDateInThisWeek(date) {
             formatter1.dateFormat = "EEEE HH:mm"
             return  formatter1.string(from: date)

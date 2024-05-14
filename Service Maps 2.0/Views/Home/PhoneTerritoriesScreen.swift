@@ -74,15 +74,39 @@ struct PhoneTerritoriesScreen: View {
                                 
                             } else {
                                 LazyVStack {
-                                    SwipeViewGroup {
-                                        ForEach(viewModel.phoneData!, id: \.self) { phoneData in
-                                            territoryCell(phoneData: phoneData, mainViewSize: proxy.size)
-                                        }
-                                        //.animation(.default, value: viewModel.phoneData!)
-                                        
-                                        
+                                    if !(viewModel.recentPhoneData == nil) {
+                                        LazyVStack {
+                                            Text("Recent Territories")
+                                                .font(.title2)
+                                                .lineLimit(1)
+                                                .foregroundColor(.primary)
+                                                .fontWeight(.bold)
+                                                .hSpacing(.leading)
+                                                .padding(5)
+                                                .padding(.horizontal, 10)
+                                            ScrollView(.horizontal, showsIndicators: false) {
+                                                LazyHStack {
+                                                    ForEach(viewModel.recentPhoneData!, id: \.self) { territoryData in
+                                                        NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                            recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                                .padding(.leading)
+                                        }.animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
                                     }
-                                }.animation(.spring(), value: viewModel.phoneData)
+                                    LazyVStack {
+                                        SwipeViewGroup {
+                                            ForEach(viewModel.phoneData!, id: \.self) { phoneData in
+                                                territoryCell(phoneData: phoneData, mainViewSize: proxy.size)
+                                            }
+                                            //.animation(.default, value: viewModel.phoneData!)
+                                            
+                                            
+                                        }
+                                    }.animation(.spring(), value: viewModel.phoneData)
+                                }
                                 
                                 
                                 

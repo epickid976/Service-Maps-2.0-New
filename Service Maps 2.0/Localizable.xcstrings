@@ -336,6 +336,22 @@
         }
       }
     },
+    "App is up to date!" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La aplicación esta actualizada!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'appli est à jour!"
+          }
+        }
+      }
+    },
     "App Version" : {
       "localizations" : {
         "es" : {
@@ -1477,6 +1493,22 @@
         }
       }
     },
+    "No internet connection" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay conexión a internet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de connection internet"
+          }
+        }
+      }
+    },
     "Note: %@" : {
       "localizations" : {
         "es" : {
@@ -1810,7 +1842,20 @@
       }
     },
     "Recent Territories" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territorios Recientes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territoires Récents"
+          }
+        }
+      }
     },
     "Registering Key" : {
       "localizations" : {
@@ -2138,6 +2183,12 @@
     },
     "Tap to add an image" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque para añadir imagen"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2194,6 +2245,22 @@
         }
       }
     },
+    "The operation couldn’t be completed. (NSURLErrorDomain error -1009.)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Operación error -1009"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opération erreur -1009"
+          }
+        }
+      }
+    },
     "The server returned an invalid response." : {
       "localizations" : {
         "es" : {
@@ -2226,6 +2293,38 @@
         }
       }
     },
+    "Today " : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aujourd'hui"
+          }
+        }
+      }
+    },
+    "Update available. Redirecting to App Store..." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualización disponible..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une mise à jour est disponible..."
+          }
+        }
+      }
+    },
     "Verification" : {
       "localizations" : {
         "es" : {
@@ -2254,6 +2353,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bienvenue à Service Maps!"
+          }
+        }
+      }
+    },
+    "Yesterday " : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier"
           }
         }
       }

@@ -303,21 +303,21 @@ class SettingsViewModel: ObservableObject {
                     try isUpdateAvailable { [self] (update, error) in
                         if let update {
                             if update {
-                                self.showUpdateToastMessage = "Update available. Redirecting to App Store..."
+                                self.showUpdateToastMessage = NSLocalizedString("Update available. Redirecting to App Store...", comment: "")
                                 self.showUpdateToast = true
                                 
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                     UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103")!)
                                 }
                             } else {
-                                self.showUpdateToastMessage = "App is up to date!"
+                                self.showUpdateToastMessage = NSLocalizedString("App is up to date!", comment: "")
                                 self.showUpdateToast = true
                             }
                         }
                        
                        if let error {
-                           if error.localizedDescription == "The operation couldn’t be completed. (NSURLErrorDomain error -1009.)" {
-                               self.showUpdateToastMessage = "No internet connection"
+                           if error.localizedDescription == NSLocalizedString("The operation couldn’t be completed. (NSURLErrorDomain error -1009.)", comment: "") {
+                               self.showUpdateToastMessage = NSLocalizedString("No internet connection", comment: "")
                                self.showUpdateToast = true
                            } else {
                                self.showUpdateToastMessage = error.localizedDescription
@@ -344,6 +344,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                     
+                    
                     HStack {
                         Text("\(getAppVersion())")
                             .font(.headline)
@@ -353,8 +354,9 @@ class SettingsViewModel: ObservableObject {
                             .padding(.trailing)
                     }
                     .hSpacing(.trailing)
+                    .frame(maxWidth: 70)
                 }
-            }.keyboardShortcut("a", modifiers: [.command, .shift])
+            }.keyboardShortcut("u", modifiers: [.command, .shift])
             .frame(minHeight: 50)
         }
         .padding(10)

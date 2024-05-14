@@ -203,19 +203,6 @@ struct VisitsView: View {
                 .padding(.bottom, 2)
                 .contextMenu {
                     Button {
-                        DispatchQueue.main.async {
-                            self.viewModel.visitToDelete = visitData.visit.id
-                            //self.viewModel.showAlert = true
-                            CentrePopup_DeleteVisit(viewModel: viewModel).showAndStack()
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "trash")
-                            Text("Delete Visit")
-                        }
-                    }
-                    
-                    Button {
                         self.viewModel.currentVisit = visitData.visit
                         self.viewModel.presentSheet = true
                     } label: {

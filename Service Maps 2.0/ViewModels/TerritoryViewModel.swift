@@ -19,15 +19,11 @@ class TerritoryViewModel: ObservableObject {
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
-    private var cancellables = Set<AnyCancellable>()
-    private var recentCancellables = Set<AnyCancellable>()
+    @Published private var cancellables = Set<AnyCancellable>()
+    @Published private var recentCancellables = Set<AnyCancellable>()
     
     @Published var territoryData: Optional<[TerritoryDataWithKeys]> = nil
-    @Published var recentTerritoryData: Optional<[RecentTerritoryData]> = nil {
-        didSet {
-            print(recentTerritoryData)
-        }
-    }
+    @Published var recentTerritoryData: Optional<[RecentTerritoryData]> = nil
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     // Boolean state variable to track the sorting order
@@ -47,11 +43,7 @@ class TerritoryViewModel: ObservableObject {
     @Published var syncAnimationprogress: CGFloat = 0.0
     
     @Published var restartAnimation = false
-    @Published var animationProgress: Bool = false {
-        didSet {
-            print(animationProgress)
-        }
-    }
+    @Published var animationProgress: Bool = false
     
     @Published var showAlert = false
     @Published var ifFailed = false
@@ -63,8 +55,8 @@ class TerritoryViewModel: ObservableObject {
     
     @Published var search: String = "" {
         didSet {
-            getRecentTerritories()
             getTerritories()
+            getRecentTerritories()
         }
     }
     
@@ -145,7 +137,10 @@ extension TerritoryViewModel {
             })
             .store(in: &cancellables)
     }
-    
+}
+
+@MainActor
+extension TerritoryViewModel {
     func getRecentTerritories() {
         RealmManager.shared.getRecentTerritoryData()
             .receive(on: DispatchQueue.main) // Update on main thread
@@ -156,13 +151,17 @@ extension TerritoryViewModel {
                 }
             }, receiveValue: { territoryData in
                 if self.search.isEmpty {
-                    self.recentTerritoryData = territoryData.sorted(by: { $0.lastVisit.date > $1.lastVisit.date
-                    })
+                    DispatchQueue.main.async {
+                        self.recentTerritoryData = territoryData.sorted(by: { $0.lastVisit.date > $1.lastVisit.date
+                        })
+                    }
                 } else {
-                    self.recentTerritoryData = territoryData.filter { territoryData in
-                        // Check for matches in territory number (converted to string for case-insensitive comparison)
+                    DispatchQueue.main.async {
+                        self.recentTerritoryData = territoryData.filter { territoryData in
+                            // Check for matches in territory number (converted to string for case-insensitive comparison)
                             String(territoryData.territory.number).lowercased().contains(self.search.lowercased()) ||
                             territoryData.territory.description.lowercased().contains(self.search.lowercased())
+                        }
                     }
                 }
             })

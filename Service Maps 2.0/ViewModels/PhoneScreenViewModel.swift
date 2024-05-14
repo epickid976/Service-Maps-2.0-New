@@ -17,6 +17,7 @@ class PhoneScreenViewModel: ObservableObject {
     
     init() {
         getTeritories()
+        getRecentTerritoryData()
     }
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
@@ -24,8 +25,10 @@ class PhoneScreenViewModel: ObservableObject {
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
     private var cancellables = Set<AnyCancellable>()
+    private var recentCancellables = Set<AnyCancellable>()
     
     @Published var phoneData: Optional<[PhoneData]> = nil
+    @Published var recentPhoneData: Optional<[RecentPhoneData]> = nil
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     // Boolean state variable to track the sorting order
@@ -65,6 +68,7 @@ class PhoneScreenViewModel: ObservableObject {
     @Published var search: String = "" {
         didSet {
             getTeritories()
+            getRecentTerritoryData()
         }
     }
     
@@ -98,5 +102,34 @@ extension PhoneScreenViewModel {
                 }
             })
             .store(in: &cancellables)
+    }
+    
+    func getRecentTerritoryData() {
+        RealmManager.shared.getRecentPhoneTerritoryData()
+            .receive(on: DispatchQueue.main) // Update on main thread
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    // Handle errors here
+                    print("Error retrieving territory data: \(error)")
+                }
+            }, receiveValue: { recentPhoneData in
+                
+                if self.search.isEmpty {
+                    DispatchQueue.main.async {
+                        self.recentPhoneData = recentPhoneData.sorted(by: { $0.lastCall.date > $1.lastCall.date
+                        })
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.recentPhoneData = recentPhoneData.filter { territoryData in
+                            // Check for matches in territory number (converted to string for case-insensitive comparison)
+                            String(territoryData.territory.number).lowercased().contains(self.search.lowercased()) ||
+                            territoryData.territory.description.lowercased().contains(self.search.lowercased())
+                        }.sorted(by: { $0.lastCall.date > $1.lastCall.date
+                        })
+                    }
+                }
+            })
+            .store(in: &recentCancellables)
     }
 }

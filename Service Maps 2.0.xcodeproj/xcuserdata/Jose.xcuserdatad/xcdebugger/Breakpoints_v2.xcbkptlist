@@ -114,6 +114,36 @@
             endingLineNumber = "141"
             landmarkName = "findToken(territory:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "32FA480A-E2D2-4FBF-A280-5A8EA298D224 - 5aa3bf163d687a71"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Service_Maps_2_0.AuthorizationLevelManager.findToken(territory: Service_Maps_2_0.TerritoryObject) -&gt; Swift.Optional&lt;Service_Maps_2_0.TokenObject&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Documents/Service-Maps-2.0-NewFixed/Service%20Maps%202.0/Managers/AuthorizationLevelManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "141"
+                  endingLineNumber = "141">
+               </Location>
+               <Location
+                  uuid = "32FA480A-E2D2-4FBF-A280-5A8EA298D224 - fabccb2e7d65a3e5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #5 (Service_Maps_2_0.TokenObject) -&gt; Swift.Bool in Service_Maps_2_0.AuthorizationLevelManager.findToken(territory: Service_Maps_2_0.TerritoryObject) -&gt; Swift.Optional&lt;Service_Maps_2_0.TokenObject&gt;"
+                  moduleName = "Service Maps 2.0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Documents/Service-Maps-2.0-NewFixed/Service%20Maps%202.0/Managers/AuthorizationLevelManager.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "141"
+                  endingLineNumber = "141">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -145,38 +175,6 @@
             startingLineNumber = "131"
             endingLineNumber = "131"
             landmarkName = "findToken(territory:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "78AC524F-05F1-43EA-AF12-F460C1795F85"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/CoreData/RealmManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "739"
-            endingLineNumber = "739"
-            landmarkName = "getRecentTerritoryData()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "44C893DE-ECBB-4DFE-AC5A-B3C96B547E45"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Service Maps 2.0/CoreData/RealmManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "760"
-            endingLineNumber = "760"
-            landmarkName = "getRecentTerritoryData()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

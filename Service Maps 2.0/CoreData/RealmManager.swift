@@ -40,6 +40,12 @@ class RealmManager: ObservableObject {
         
         let phoneCallsEntities = realmDatabase.objects(PhoneCallObject.self)
         phoneCallsFlow = phoneCallsEntities
+        
+        let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date())!
+        
+        
+        let visitsPastTwoWeeksEntities = realmDatabase.objects(VisitObject.self).filter("date >= %@", Int64(twoWeeksAgo.timeIntervalSince1970 * 1000))
+        visitsPastTwoWeeks = visitsPastTwoWeeksEntities
     }
     
     @Published var territoriesFlow: Results<TerritoryObject>
@@ -54,6 +60,9 @@ class RealmManager: ObservableObject {
     @Published var phoneCallsFlow: Results<PhoneCallObject>
     
     @Published var dataStore = StorageManager.shared
+    
+    @Published var visitsPastTwoWeeks: Results<VisitObject>
+    
     
     
     func addModel<T: Object>(_ object: T) -> Result<Bool, Error> {
@@ -717,6 +726,7 @@ class RealmManager: ObservableObject {
             }
             .eraseToAnyPublisher()
     }
+    
    
     @MainActor
     func getRecentTerritoryData() -> AnyPublisher<[RecentTerritoryData], Never> {
@@ -724,36 +734,53 @@ class RealmManager: ObservableObject {
         $territoriesFlow.share(),
         $addressesFlow.share(),
         $housesFlow.share(),
-        $visitsFlow.share()
+        $visitsPastTwoWeeks.share()
       )
       .flatMap { recentData -> AnyPublisher<[RecentTerritoryData], Never> in
-          var recentVisits = [VisitObject]()
+          let recentVisits = recentData.3
          // print(recentData.3)
-          for visit in recentData.3 {
-              if isInLastTwoWeeks(Date(timeIntervalSince1970: TimeInterval(visit.date) / 1000)) {
-                  recentVisits.append(visit)
+        
+        var data = [RecentTerritoryData]()
+          
+        var recentAddresses = [TerritoryAddressObject]()
+          var recentHouses = [HouseObject]()
+          var recentTerritories = [TerritoryObject]()
+          
+          for house in recentData.2 {
+              recentVisits.forEach { visit in
+                  if house.id == visit.house {
+                      recentHouses.append(house)
+                  }
               }
           }
           
-          print(recentVisits.count)
-          
-        var data = [RecentTerritoryData]()
-        for address in recentData.1 {
-          let territoryVisits = recentVisits.filter { visit in
-            recentData.2.contains { house in // access houses using recentData.2
-              house.id == visit.house && house.territory_address == address.id
-            }
+          for address in recentData.1 {
+              recentHouses.forEach { house in
+                  if address.id == house.territory_address {
+                      recentAddresses.append(address)
+                  }
+              }
           }
-            
-            
           
-          if territoryVisits.count >= 5 {
-            guard let territory = recentData.0.first(where: { $0.id == address.territory }) else { continue }
-            let mostRecentVisit = territoryVisits.sorted(by: { $0.date > $1.date }).first! // Sort by date descending and get first (most recent)
-              let recentData = RecentTerritoryData(id: UUID(), territory: convertTerritoryToTerritoryModel(model: territory), lastVisit: convertVisitToVisitModel(model: mostRecentVisit))
-            data.append(recentData)
+          for territory in recentData.0 {
+              recentAddresses.forEach { address in
+                  if territory.id == address.territory {
+                      recentTerritories.append(territory)
+                  }
+              }
           }
-        }
+          
+          for visit in recentVisits {
+              for house in recentHouses {
+                  for address in recentAddresses {
+                      for territory in recentTerritories {
+                          if visit.house == house.id && house.territory_address == address.id && address.territory == territory.id {
+                              data.append(RecentTerritoryData(id: UUID(), territory: convertTerritoryToTerritoryModel(model: territory), lastVisit: convertVisitToVisitModel(model: visit)))
+                          }
+                      }
+                  }
+              }
+          }
           
         let uniqueData = data.unique { $0.territory.id }
           
@@ -764,6 +791,62 @@ class RealmManager: ObservableObject {
         return flow
     }
     
+    @MainActor
+    func getRecentPhoneTerritoryData() -> AnyPublisher<[RecentPhoneData], Never> {
+        let flow = Publishers.CombineLatest3(
+            $phoneTerritoriesFlow.share(),
+            $phoneNumbersFlow.share(),
+            $phoneCallsFlow.share()
+        )
+        .flatMap { recentData -> AnyPublisher<[RecentPhoneData], Never> in
+            var recentCalls = [PhoneCallObject]()
+            for call in recentData.2 {
+                if isInLastTwoWeeks(Date(timeIntervalSince1970: TimeInterval(call.date) / 1000)) {
+                    recentCalls.append(call)
+                }
+            }
+            
+            var data = [RecentPhoneData]()
+            var recentNumbers = [PhoneNumberObject]()
+            var recentTerritories = [PhoneTerritoryObject]()
+            
+            for number in recentData.1 {
+                recentCalls.forEach { call in
+                    if number.id == call.phoneNumber {
+                        recentNumbers.append(number)
+                    }
+                }
+            }
+            
+            for territory in recentData.0 {
+                recentNumbers.forEach { number in
+                    if territory.id == number.territory {
+                        recentTerritories.append(territory)
+                    }
+                }
+            }
+            
+            for call in recentCalls {
+                for number in recentNumbers {
+                    for territory in recentTerritories {
+                        if call.phoneNumber == number.id && number.territory == territory.id {
+                            let recentData = RecentPhoneData(id: UUID(), territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory), lastCall: convertPhoneCallModelToPhoneCallModel(model: call))
+                            data.append(recentData)
+                        }
+                    }
+                }
+            }
+            
+            let uniqueData = data.unique { $0.territory.id }
+            
+            return Just(uniqueData)
+                .eraseToAnyPublisher()  // Use Just to emit a single value (the data array)
+        }.eraseToAnyPublisher()
+        
+        return flow
+    }
+
+
     
 
     

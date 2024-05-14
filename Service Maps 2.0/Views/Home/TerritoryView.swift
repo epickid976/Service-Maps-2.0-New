@@ -108,18 +108,19 @@ struct TerritoryView: View {
                                                         }
                                                     }
                                                 }
-                                            }.animation(.smooth, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
-                                                .padding(.leading)
-                                        }
+                                            }.padding(.leading)
+                                        }.animation(.smooth, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                            
                                     }
                                     
-                                    
-                                    SwipeViewGroup {
-                                        ForEach(viewModel.territoryData!, id: \.self) { dataWithKeys in
-                                            territoryCell(dataWithKeys: dataWithKeys, mainViewSize: proxy.size)
+                                    LazyVStack {
+                                        SwipeViewGroup {
+                                            ForEach(viewModel.territoryData!, id: \.self) { dataWithKeys in
+                                                territoryCell(dataWithKeys: dataWithKeys, mainViewSize: proxy.size)
+                                            }
                                         }
-                                    }
-                                }.animation(.default, value: viewModel.territoryData!)
+                                    }.animation(.default, value: viewModel.territoryData!)
+                                }
                             }
                         }
                     }.background(GeometryReader {
@@ -202,7 +203,7 @@ struct TerritoryView: View {
                     .optionalViewModifier { content in
                         if #available(iOS 17, *) {
                             content
-                                .searchable(text: $viewModel.search, isPresented: $viewModel.searchActive, placement: .navigationBarDrawer)
+                                .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
                         } else {
                             content
                                 .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
