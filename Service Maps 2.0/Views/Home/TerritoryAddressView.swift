@@ -179,7 +179,6 @@ struct TerritoryAddressView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .hoverEffect()
                     .keyboardShortcut("+", modifiers: .command)
                 }
             }
@@ -240,33 +239,41 @@ struct TerritoryAddressView: View {
                     .frame(minWidth: mainWindowSize.width * 0.95)
                     .background(.thinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .contextMenu {
-                        Button {
-                            DispatchQueue.main.async {
-                                self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
-                                //self.showAlert = true
-                                if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-                                    CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).showAndStack()
+                    .optionalViewModifier { content in
+                        if AuthorizationLevelManager().existsAdminCredentials() {
+                            content
+                                .contextMenu {
+                                    Button {
+                                        DispatchQueue.main.async {
+                                            self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
+                                            //self.showAlert = true
+                                            if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
+                                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).showAndStack()
+                                            }
+                                        }
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "trash")
+                                            Text("Delete Address")
+                                        }
+                                    }
+                                    
+                                    Button {
+                                        self.viewModel.currentAddress = addressData.address
+                                        self.viewModel.presentSheet = true
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "pencil")
+                                            Text("Edit Address")
+                                        }
+                                    }
+                                    //TODO Trash and Pencil only if admin
                                 }
-                            }
-                        } label: {
-                            HStack {
-                                Image(systemName: "trash")
-                                Text("Delete Address")
-                            }
+                        } else {
+                            content
                         }
-                        
-                        Button {
-                            self.viewModel.currentAddress = addressData.address
-                            self.viewModel.presentSheet = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "pencil")
-                                Text("Edit Address")
-                            }
-                        }
-                        //TODO Trash and Pencil only if admin
                     }
+                    
                 }
                 
             } trailingActions: { context in

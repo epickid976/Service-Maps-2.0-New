@@ -90,27 +90,30 @@ struct TerritoryView: View {
                             } else {
                                 LazyVStack {
                                     
-                                    if !(viewModel.recentTerritoryData == nil) {
+                                    if viewModel.recentTerritoryData != nil {
+                                        if viewModel.recentTerritoryData!.count > 0 {
                                         LazyVStack {
-                                            Text("Recent Territories")
-                                                .font(.title2)
-                                                .lineLimit(1)
-                                                .foregroundColor(.primary)
-                                                .fontWeight(.bold)
-                                                .hSpacing(.leading)
-                                                .padding(5)
-                                                .padding(.horizontal, 10)
-                                            ScrollView(.horizontal, showsIndicators: false) {
-                                                LazyHStack {
-                                                    ForEach(viewModel.recentTerritoryData!, id: \.self) { territoryData in
-                                                        NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
-                                                            recentCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                            
+                                                Text("Recent Territories")
+                                                    .font(.title2)
+                                                    .lineLimit(1)
+                                                    .foregroundColor(.primary)
+                                                    .fontWeight(.bold)
+                                                    .hSpacing(.leading)
+                                                    .padding(5)
+                                                    .padding(.horizontal, 10)
+                                                ScrollView(.horizontal, showsIndicators: false) {
+                                                    LazyHStack {
+                                                        ForEach(viewModel.recentTerritoryData!, id: \.self) { territoryData in
+                                                            NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                                recentCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                                            }
                                                         }
                                                     }
-                                                }
-                                            }.padding(.leading)
-                                        }.animation(.smooth, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
-                                            
+                                                }.padding(.leading)
+                                                
+                                            }.animation(.smooth, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                        }
                                     }
                                     
                                     LazyVStack {
@@ -221,7 +224,6 @@ struct TerritoryView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .hoverEffect()
                     .keyboardShortcut("+", modifiers: .command)
                 }
                 
@@ -253,31 +255,40 @@ struct TerritoryView: View {
                 SwipeView {
                     NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
                         CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize)
-                            .padding(.bottom, 2).contextMenu {
-                                Button {
-                                    DispatchQueue.main.async {
-                                        self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                                        //self.showAlert = true
-                                        CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).showAndStack()
-                                    }
-                                } label: {
-                                    HStack {
-                                        Image(systemName: "trash")
-                                        Text("Delete Territory")
-                                    }
+                            .padding(.bottom, 2)
+                            .optionalViewModifier { content in
+                                if AuthorizationLevelManager().existsAdminCredentials() {
+                                    content
+                                        .contextMenu {
+                                            Button {
+                                                DispatchQueue.main.async {
+                                                    self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
+                                                    //self.showAlert = true
+                                                    CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).showAndStack()
+                                                }
+                                            } label: {
+                                                HStack {
+                                                    Image(systemName: "trash")
+                                                    Text("Delete Territory")
+                                                }
+                                            }
+                                            
+                                            Button {
+                                                self.viewModel.currentTerritory = territoryData.territory
+                                                self.viewModel.presentSheet = true
+                                            } label: {
+                                                HStack {
+                                                    Image(systemName: "pencil")
+                                                    Text("Edit Territory")
+                                                }
+                                            }
+                                            //TODO Trash and Pencil only if admin
+                                        }
+                                } else {
+                                    content
                                 }
-                                
-                                Button {
-                                    self.viewModel.currentTerritory = territoryData.territory
-                                    self.viewModel.presentSheet = true
-                                } label: {
-                                    HStack {
-                                        Image(systemName: "pencil")
-                                        Text("Edit Territory")
-                                    }
-                                }
-                                //TODO Trash and Pencil only if admin
                             }
+                            
                         
                     }
                 } trailingActions: { context in

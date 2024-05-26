@@ -13,7 +13,7 @@ struct CellView: View {
     var houseQuantity: Int
     var width: Double = 0.95
     
-    @State var mainWindowSize: CGSize
+    var mainWindowSize: CGSize
     
     var body: some View {
         HStack(spacing: 10) {
@@ -71,7 +71,7 @@ struct PhoneTerritoryCellView: View {
     var numbers: Int
     var width: Double = 0.95
     
-    @State var mainWindowSize: CGSize
+    var mainWindowSize: CGSize
     
     var body: some View {
         HStack(spacing: 10) {
@@ -127,7 +127,7 @@ struct PhoneTerritoryCellView: View {
 struct recentCell: View {
     var territoryData: RecentTerritoryData
     
-    @State var mainWindowSize: CGSize
+    var mainWindowSize: CGSize
     
     var body: some View {
         VStack {
@@ -164,7 +164,7 @@ struct recentCell: View {
 struct recentPhoneCell: View {
     var territoryData: RecentPhoneData
     
-    @State var mainWindowSize: CGSize
+    var mainWindowSize: CGSize
     
     var body: some View {
         VStack {

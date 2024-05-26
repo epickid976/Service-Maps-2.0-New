@@ -75,26 +75,29 @@ struct PhoneTerritoriesScreen: View {
                             } else {
                                 LazyVStack {
                                     if !(viewModel.recentPhoneData == nil) {
+                                        if viewModel.recentPhoneData!.count > 0 {
                                         LazyVStack {
-                                            Text("Recent Territories")
-                                                .font(.title2)
-                                                .lineLimit(1)
-                                                .foregroundColor(.primary)
-                                                .fontWeight(.bold)
-                                                .hSpacing(.leading)
-                                                .padding(5)
-                                                .padding(.horizontal, 10)
-                                            ScrollView(.horizontal, showsIndicators: false) {
-                                                LazyHStack {
-                                                    ForEach(viewModel.recentPhoneData!, id: \.self) { territoryData in
-                                                        NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
-                                                            recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                                Text("Recent Territories")
+                                                    .font(.title2)
+                                                    .lineLimit(1)
+                                                    .foregroundColor(.primary)
+                                                    .fontWeight(.bold)
+                                                    .hSpacing(.leading)
+                                                    .padding(5)
+                                                    .padding(.horizontal, 10)
+                                                ScrollView(.horizontal, showsIndicators: false) {
+                                                    LazyHStack {
+                                                        ForEach(viewModel.recentPhoneData!, id: \.self) { territoryData in
+                                                            NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                                recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                                            }
                                                         }
                                                     }
                                                 }
-                                            }
                                                 .padding(.leading)
-                                        }.animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
+                                                
+                                            }.animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
+                                        }
                                     }
                                     LazyVStack {
                                         SwipeViewGroup {
@@ -193,7 +196,6 @@ struct PhoneTerritoriesScreen: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .hoverEffect()
                     .keyboardShortcut("+", modifiers: .command)
                 }
             }
@@ -207,30 +209,52 @@ struct PhoneTerritoriesScreen: View {
             NavigationLink(destination: PhoneNumbersView(territory: phoneData.territory).implementPopupView()) {
                 PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity, mainWindowSize: mainViewSize)
                     .padding(.bottom, 2)
-                    .contextMenu {
-                        Button {
-                            DispatchQueue.main.async {
-                                self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
-                                CentrePopup_DeletePhoneTerritory(viewModel: viewModel).showAndStack()
-                            }
-                        } label: {
-                            HStack {
-                                Image(systemName: "trash")
-                                Text("Delete Visit")
-                            }
+                    .optionalViewModifier { content in
+                        if AuthorizationLevelManager().existsAdminCredentials() {
+                            content
+                                .contextMenu {
+                                    Button {
+                                        DispatchQueue.main.async {
+                                            self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
+                                            CentrePopup_DeletePhoneTerritory(viewModel: viewModel).showAndStack()
+                                        }
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "trash")
+                                            Text("Delete Territory")
+                                        }
+                                    }
+                                    
+                                    Button {
+                                        self.viewModel.currentTerritory = phoneData.territory
+                                        self.viewModel.presentSheet = true
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "pencil")
+                                            Text("Edit Territory")
+                                        }
+                                    }
+                                    //TODO Trash and Pencil only if admin
+                                }
+                        } else if AuthorizationLevelManager().existsPhoneCredentials() {
+                            content
+                                .contextMenu {
+                                    Button {
+                                        self.viewModel.currentTerritory = phoneData.territory
+                                        self.viewModel.presentSheet = true
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "pencil")
+                                            Text("Edit Territory")
+                                        }
+                                    }
+                                    //TODO Trash and Pencil only if admin
+                                }
+                        } else {
+                            content
                         }
-                        
-                        Button {
-                            self.viewModel.currentTerritory = phoneData.territory
-                            self.viewModel.presentSheet = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "pencil")
-                                Text("Edit Visit")
-                            }
-                        }
-                        //TODO Trash and Pencil only if admin
                     }
+                    
             }
         } trailingActions: { context in
             if self.viewModel.isAdmin {

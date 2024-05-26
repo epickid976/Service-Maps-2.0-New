@@ -190,7 +190,6 @@ struct VisitsView: View {
                         .animation(.spring(), value: hideFloatingButton)
                         .vSpacing(.bottom).hSpacing(.trailing)
                         .padding()
-                        .hoverEffect()
                         .keyboardShortcut("+", modifiers: .command)
                 
         }
@@ -201,18 +200,26 @@ struct VisitsView: View {
         SwipeView {
             VisitCell(visit: visitData)
                 .padding(.bottom, 2)
-                .contextMenu {
-                    Button {
-                        self.viewModel.currentVisit = visitData.visit
-                        self.viewModel.presentSheet = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "pencil")
-                            Text("Edit Visit")
-                        }
+                .optionalViewModifier { content in
+                    if AuthorizationLevelManager().existsAdminCredentials() {
+                       content
+                            .contextMenu {
+                                Button {
+                                    self.viewModel.currentVisit = visitData.visit
+                                    self.viewModel.presentSheet = true
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "pencil")
+                                        Text("Edit Visit")
+                                    }
+                                }
+                                //TODO Trash and Pencil only if admin
+                            }
+                    } else {
+                        content
                     }
-                    //TODO Trash and Pencil only if admin
                 }
+                
         } trailingActions: { context in
             if visitData.accessLevel == .Admin {
                 SwipeAction(

@@ -185,7 +185,6 @@ struct AccessView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .hoverEffect()
                     .keyboardShortcut("+", modifiers: .command)
                 }
             }

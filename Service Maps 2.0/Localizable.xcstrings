@@ -786,6 +786,9 @@
         }
       }
     },
+    "Delete Number" : {
+
+    },
     "Delete Number: %@" : {
       "localizations" : {
         "es" : {
@@ -946,6 +949,9 @@
           }
         }
       }
+    },
+    "Edit Number" : {
+
     },
     "Edit Territory" : {
       "localizations" : {

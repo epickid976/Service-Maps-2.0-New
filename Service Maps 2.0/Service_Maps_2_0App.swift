@@ -20,7 +20,7 @@ struct Service_Maps_2_0App: App {
     @StateObject var synchronizationManager = SynchronizationManager.shared
     @StateObject var territoryViewModel = TerritoryViewModel()
     
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     
     @StateObject var universalLinksManager = UniversalLinksManager.shared
     

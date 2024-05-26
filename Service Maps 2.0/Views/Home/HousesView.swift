@@ -89,9 +89,6 @@ struct HousesView: View {
                                         ForEach(viewModel.houseData!, id: \.self) { houseData in
                                             houseCellView(houseData: houseData, mainWindowSize: proxy.size)
                                         }
-                                        //.animation(.default, value: viewModel.houseData!)
-                                        
-                                        
                                     }
                                 }.animation(.spring(), value: viewModel.houseData)
                                     .padding()
@@ -212,7 +209,7 @@ struct HousesView: View {
                             hideFloatingButton = false
                         }
                     }
-                    .searchable(text: $viewModel.search, placement: .navigationBarDrawer(displayMode: .automatic))
+                    .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
@@ -221,7 +218,6 @@ struct HousesView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .hoverEffect()
                     .keyboardShortcut("+", modifiers: .command)
                 }
             }
@@ -231,26 +227,34 @@ struct HousesView: View {
     @ViewBuilder
     func houseCellView(houseData: HouseData, mainWindowSize: CGSize) -> some View {
         SwipeView {
-            NavigationLink(destination: VisitsView(house: houseData.house).implementPopupView()) {
+            NavigationLink(destination: NavigationLazyView(VisitsView(house: houseData.house).implementPopupView()).implementPopupView()) {
                 HouseCell(house: houseData, mainWindowSize: mainWindowSize)
                     .padding(.bottom, 2)
-                    .contextMenu {
-                        Button {
-                            DispatchQueue.main.async {
-                                self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
-                                //self.showAlert = true
-                                if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-                                    CentrePopup_DeleteHouse(viewModel: viewModel).showAndStack()
+                    .optionalViewModifier { content in
+                        if AuthorizationLevelManager().existsAdminCredentials() {
+                            content
+                                .contextMenu {
+                                    Button {
+                                        DispatchQueue.main.async {
+                                            self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
+                                            //self.showAlert = true
+                                            if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
+                                                CentrePopup_DeleteHouse(viewModel: viewModel).showAndStack()
+                                            }
+                                        }
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "trash")
+                                            Text("Delete House")
+                                        }
+                                    }
+                                    //TODO Trash and Pencil only if admin
                                 }
-                            }
-                        } label: {
-                            HStack {
-                                Image(systemName: "trash")
-                                Text("Delete House")
-                            }
+                        } else {
+                            content
                         }
-                        //TODO Trash and Pencil only if admin
                     }
+                    
             }
         } trailingActions: { context in
             if houseData.accessLevel == .Admin {

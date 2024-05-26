@@ -176,7 +176,6 @@ struct PhoneNumbersView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .hoverEffect()
                     .keyboardShortcut("+", modifiers: .command)
                 }
             }.simultaneousGesture(
@@ -271,31 +270,53 @@ struct PhoneNumbersView: View {
                     .frame(minWidth: mainWindowSize.width * 0.95)
                     .background(.thinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .contextMenu {
-                        Button {
-                            DispatchQueue.main.async {
-                                self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
-                                
-                                CentrePopup_DeletePhoneNumber(viewModel: viewModel).showAndStack()
-                            }
-                        } label: {
-                            HStack {
-                                Image(systemName: "trash")
-                                Text("Delete Visit")
-                            }
+                    .optionalViewModifier { content in
+                        if AuthorizationLevelManager().existsAdminCredentials() {
+                            content
+                                .contextMenu {
+                                    Button {
+                                        DispatchQueue.main.async {
+                                            self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
+                                            
+                                            CentrePopup_DeletePhoneNumber(viewModel: viewModel).showAndStack()
+                                        }
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "trash")
+                                            Text("Delete Number")
+                                        }
+                                    }
+                                    
+                                    Button {
+                                        self.viewModel.currentNumber = numbersData.phoneNumber
+                                        self.viewModel.presentSheet = true
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "pencil")
+                                            Text("Edit Number")
+                                        }
+                                    }
+                                    //TODO Trash and Pencil only if admin
+                                }
+                        } else if AuthorizationLevelManager().existsPhoneCredentials() {
+                            content
+                                .contextMenu {
+                                    Button {
+                                        self.viewModel.currentNumber = numbersData.phoneNumber
+                                        self.viewModel.presentSheet = true
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "pencil")
+                                            Text("Edit Number")
+                                        }
+                                    }
+                                    //TODO Trash and Pencil only if admin
+                                }
+                        } else {
+                            content
                         }
-                        
-                        Button {
-                            self.viewModel.currentNumber = numbersData.phoneNumber
-                            self.viewModel.presentSheet = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "pencil")
-                                Text("Edit Visit")
-                            }
-                        }
-                        //TODO Trash and Pencil only if admin
                     }
+                    
                 }
             } trailingActions: { context in
                 if self.viewModel.isAdmin {
