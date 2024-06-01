@@ -64,7 +64,7 @@ struct AddAddressView: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error updating address."
+                                        viewModel.error = NSLocalizedString("Error updating address.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }
@@ -78,7 +78,7 @@ struct AddAddressView: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error adding address."
+                                        viewModel.error = NSLocalizedString("Error adding address.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }

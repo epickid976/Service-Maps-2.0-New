@@ -81,7 +81,7 @@ struct AddPhoneNumberScreen: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error updating phone number."
+                                        viewModel.error = NSLocalizedString("Error updating phone number.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }
@@ -95,7 +95,7 @@ struct AddPhoneNumberScreen: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error adding phone number."
+                                        viewModel.error = NSLocalizedString("Error adding phone number.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }

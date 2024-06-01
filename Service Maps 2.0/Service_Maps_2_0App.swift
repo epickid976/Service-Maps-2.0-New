@@ -25,7 +25,6 @@ struct Service_Maps_2_0App: App {
     @StateObject var universalLinksManager = UniversalLinksManager.shared
     
     init() {
-        
         //        BGTaskScheduler.shared.register(forTaskWithIdentifier: "￼com.serviceMaps.uploadPendingTasks", using: nil) { task in
         //            ReuploaderWorker.shared.handleReupload(task: task as! BGProcessingTask)
         //        }

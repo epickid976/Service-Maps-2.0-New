@@ -57,13 +57,14 @@ struct AddVisitView: View {
                     }
                     .frame(maxWidth: UIScreen.screenWidth * 0.4)
                 }
-                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Notes", comment: ""))
+                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, expanded: true, placeholder: NSLocalizedString("Notes", comment: ""))
                     .padding(.bottom)
                 
-                Text(viewModel.error)
-                    .fontWeight(.bold)
-                    .foregroundColor(.red)
-                //.vSpacing(.bottom)
+                if viewModel.error != "" {
+                    Text(viewModel.error)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
                 
                 HStack {
                     if !viewModel.loading {
@@ -83,7 +84,7 @@ struct AddVisitView: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error updating Visit."
+                                        viewModel.error = NSLocalizedString("Error updating Visit.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }
@@ -97,7 +98,7 @@ struct AddVisitView: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error adding Visit."
+                                        viewModel.error = NSLocalizedString("Error adding Visit.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }

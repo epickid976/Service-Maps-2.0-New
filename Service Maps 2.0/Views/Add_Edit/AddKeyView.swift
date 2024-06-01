@@ -118,7 +118,7 @@ struct AddKeyView: View {
                                             onDone()
                                             presentationMode.wrappedValue.dismiss()
                                         case .failure(_):
-                                            viewModel.error = "Error adding key."
+                                            viewModel.error = NSLocalizedString("Error adding key.", comment: "")
                                             viewModel.loading = false
                                         }
                                     }

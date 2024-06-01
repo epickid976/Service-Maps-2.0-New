@@ -19,8 +19,10 @@ struct CustomField: View {
     var disabled: Bool?
     var formatAsPhone: Bool?
     var disableAutocorrect: Bool?
+    var expanded: Bool?
     
     let placeholder: String
+    
     
     var body: some View {
         if textfield {
@@ -40,7 +42,7 @@ struct CustomField: View {
                 })
                 .keyboardType(keyboardType ?? .default)
                 .multilineTextAlignment(textAlignment ?? .leading)
-                .frame(minHeight: 40)
+                .frame(minHeight: 60)
                 .optionalViewModifier { content in
                     if formatAsPhone != nil {
                         if formatAsPhone! {
@@ -53,6 +55,18 @@ struct CustomField: View {
                         content
                     }
                 }
+                .optionalViewModifier { content in
+                    if expanded != nil {
+                        if expanded! {
+                            content.lineLimit(5, reservesSpace: true)
+                        } else {
+                            content
+                        }
+                    } else {
+                        content
+                    }
+                }
+                
         } else {
             SecureField(placeholder, text: $text)
                 .padding()

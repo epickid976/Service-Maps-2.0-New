@@ -66,7 +66,7 @@ struct AddCallView: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error updating call."
+                                        viewModel.error = NSLocalizedString("Error updating call.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }
@@ -80,7 +80,7 @@ struct AddCallView: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error adding call."
+                                        viewModel.error = NSLocalizedString("Error adding call.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }

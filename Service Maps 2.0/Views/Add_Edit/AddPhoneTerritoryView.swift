@@ -149,7 +149,7 @@ struct AddPhoneTerritoryView: View {
                                             dismiss()
                                             onDone()
                                         case .failure(_):
-                                            viewModel.error = "Error updating territory."
+                                            viewModel.error = NSLocalizedString("Error updating territory.", comment: "")
                                             viewModel.loading = false
                                         }
                                     }
@@ -164,7 +164,7 @@ struct AddPhoneTerritoryView: View {
                                             dismiss()
                                             onDone()
                                         case .failure(_):
-                                            viewModel.error = "Error adding territory."
+                                            viewModel.error = NSLocalizedString("Error adding territory.", comment: "")
                                             viewModel.loading = false
                                         }
                                     }

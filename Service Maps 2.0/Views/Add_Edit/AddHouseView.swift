@@ -66,7 +66,7 @@ struct AddHouseView: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error updating house."
+                                        viewModel.error = NSLocalizedString("Error updating house.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }
@@ -80,7 +80,7 @@ struct AddHouseView: View {
                                     case .success(_):
                                         onDone()
                                     case .failure(_):
-                                        viewModel.error = "Error adding house."
+                                        viewModel.error = NSLocalizedString("Error adding house.", comment: "")
                                         viewModel.loading = false
                                     }
                                 }

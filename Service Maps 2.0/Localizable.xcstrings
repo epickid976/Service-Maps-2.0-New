@@ -787,7 +787,20 @@
       }
     },
     "Delete Number" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar número"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suprimmer le Numéro"
+          }
+        }
+      }
     },
     "Delete Number: %@" : {
       "localizations" : {
@@ -951,7 +964,14 @@
       }
     },
     "Edit Number" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier le Numéro"
+          }
+        }
+      }
     },
     "Edit Territory" : {
       "localizations" : {
@@ -997,6 +1017,118 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Email"
+          }
+        }
+      }
+    },
+    "Error adding address." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir dirección"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant l'adresse"
+          }
+        }
+      }
+    },
+    "Error adding call." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir llamada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant l'appel"
+          }
+        }
+      }
+    },
+    "Error adding house." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir casa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant la maison"
+          }
+        }
+      }
+    },
+    "Error adding key." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir llave"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant la clé"
+          }
+        }
+      }
+    },
+    "Error adding phone number." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir número"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant le numéro"
+          }
+        }
+      }
+    },
+    "Error adding territory." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir territorio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant le territoire"
+          }
+        }
+      }
+    },
+    "Error adding Visit." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir visita"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant la visite"
           }
         }
       }
@@ -1109,6 +1241,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une erreur est survenu en supprimant la visite, essayez plus tard."
+          }
+        }
+      }
+    },
+    "Error updating address." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir dirección"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant l'adresse"
+          }
+        }
+      }
+    },
+    "Error updating call." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir llamada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant l'appel"
+          }
+        }
+      }
+    },
+    "Error updating house." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir casa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant la maison"
+          }
+        }
+      }
+    },
+    "Error updating phone number." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir número"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant le numéro"
+          }
+        }
+      }
+    },
+    "Error updating territory." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir territorio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant le territoire"
+          }
+        }
+      }
+    },
+    "Error updating Visit." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir visita"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant la visite"
           }
         }
       }
