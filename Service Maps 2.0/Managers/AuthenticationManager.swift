@@ -183,4 +183,19 @@ class AuthenticationManager: ObservableObject {
         }
         
     }
+    
+    func editUserName(userName: String) async -> Result<Bool, Error> {
+            let result = await authenticationApi.editUserName(userName: userName)
+            
+            switch result {
+            case .success(true):
+                dataStore.userName = userName
+            case .failure(let error):
+                return Result.failure(error)
+            default:
+                return Result.failure(CustomErrors.GenericError)
+            }
+        
+        return Result.failure(CustomErrors.NotFound)
+    }
 }

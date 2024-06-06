@@ -81,7 +81,10 @@ struct AccessView: View {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.keyData!, id: \.self) { keyData in
-                                            keyCell(keyData: keyData)
+                                            
+                                            NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).implementPopupView()).implementPopupView()) {
+                                                keyCell(keyData: keyData)
+                                            }
                                         }
                                         .animation(.default, value: viewModel.keyData!)
                                     }
@@ -169,7 +172,7 @@ struct AccessView: View {
                     }
                     .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                     .navigationViewStyle(StackNavigationViewStyle())
-                }.coordinateSpace(name: "scroll").searchable(text: $viewModel.search)
+                }.coordinateSpace(name: "scroll")
                     .scrollIndicators(.hidden)
                     .refreshable {
                         synchronizationManager.startupProcess(synchronizing: true)
@@ -270,6 +273,192 @@ struct AccessView: View {
     }
 }
 
+struct AccessViewUsersView: View {
+    
+    @ObservedObject var viewModel = AccessViewModel()
+    
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.presentationMode) var presentationMode
+    @ObservedObject var databaseManager = RealmManager.shared
+    
+    @State var animationDone = false
+    @State var animationProgressTime: AnimationProgressTime = 0
+    
+    let alertViewDeleted = AlertAppleMusic17View(title: "User Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
+    
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @Environment(\.mainWindowSize) var mainWindowSize
+    @State private var hideFloatingButton = false
+    @State var previousViewOffset: CGFloat = 0
+    let minimumOffset: CGFloat = 60
+    @State var currentKey: MyTokenModel
+    
+    init(viewModel: AccessViewModel, currentKey: MyTokenModel) {
+        self.currentKey = currentKey
+        _viewModel = ObservedObject(wrappedValue: viewModel)
+    }
+    
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack {
+                ScrollView {
+                    VStack {
+                        if viewModel.keyUsers == nil || viewModel.dataStore.synchronized == false {
+                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                LottieView(animation: .named("loadsimple"))
+                                    .playing(loopMode: .loop)
+                                    .resizable()
+                                    .animationDidFinish { completed in
+                                        self.animationDone = completed
+                                    }
+                                    .frame(width: 250, height: 250)
+                            } else {
+                                LottieView(animation: .named("loadsimple"))
+                                    .playing(loopMode: .loop)
+                                    .resizable()
+                                    .animationDidFinish { completed in
+                                        self.animationDone = completed
+                                    }
+                                    .frame(width: 350, height: 350)
+                            }
+                        } else {
+                            if viewModel.keyUsers!.isEmpty {
+                                VStack {
+                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                        LottieView(animation: .named("nodatapreview"))
+                                            .playing()
+                                            .resizable()
+                                            .frame(width: 250, height: 250)
+                                    } else {
+                                        LottieView(animation: .named("nodatapreview"))
+                                            .playing()
+                                            .resizable()
+                                            .frame(width: 350, height: 350)
+                                    }
+                                }
+                                
+                            } else {
+                                LazyVStack {
+                                    SwipeViewGroup {
+                                        ForEach(viewModel.keyUsers!, id: \.self) { keyData in
+                                            SwipeView {
+                                                UserTokenCell(userKeyData: keyData)
+                                                    .contextMenu {
+                                                        Button {
+                                                            DispatchQueue.main.async {
+                                                                self.viewModel.userToDelete = (keyData.id, keyData.name)
+                                                                //self.showAlert = true
+                                                                CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                                                            }
+                                                        } label: {
+                                                            HStack {
+                                                                Image(systemName: "trash")
+                                                                Text("Delete User")
+                                                            }
+                                                        }
+                                                    }
+                                            } trailingActions: { context in
+                                                if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
+                                                    SwipeAction(
+                                                        systemImage: "trash",
+                                                        backgroundColor: .red
+                                                    ) {
+                                                        DispatchQueue.main.async {
+                                                            self.viewModel.userToDelete = (keyData.id, keyData.name)
+                                                            //self.showAlert = true
+                                                            CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                                                        }
+                                                    }
+                                                    .font(.title.weight(.semibold))
+                                                    .foregroundColor(.white)
+                                                }
+                                            }
+                                        }
+                                        .animation(.default, value: viewModel.keyUsers!)
+                                    }
+                                }
+                                .animation(.spring(), value: viewModel.keyUsers)
+                                .padding()
+                                
+                                
+                            }
+                        }
+                    }.hSpacing(.center)
+                    .animation(.easeInOut(duration: 0.25), value: viewModel.keyUsers == nil || viewModel.keyUsers != nil)
+                    .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
+                    .navigationBarTitle("Users", displayMode: .automatic)
+                    .navigationBarBackButtonHidden(true)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .topBarLeading) {
+                            HStack {
+                                Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        presentationMode.wrappedValue.dismiss()
+                                    }
+                                }).keyboardShortcut(.delete, modifiers: .command)
+                                    .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                            }
+                        }
+                    }
+                    .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                    .navigationViewStyle(StackNavigationViewStyle())
+                }
+                .scrollIndicators(.hidden)
+            }
+        }
+        .onAppear {
+            viewModel.currentKey = currentKey
+        }
+        .onDisappear {
+            viewModel.currentKey = nil
+            viewModel.keyUsers = nil
+        }
+    }
+    
+    @ViewBuilder
+    func keyCell(keyData: UserTokenModel) -> some View {
+        SwipeView {
+            UserTokenCell(userKeyData: keyData)
+                .padding(.bottom, 2)
+                .contextMenu {
+                    Button {
+                        DispatchQueue.main.async {
+                            self.viewModel.userToDelete = (keyData.id, keyData.name)
+                            //self.showAlert = true
+                            CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "trash")
+                            Text("Delete User")
+                        }
+                    }
+                }
+        } trailingActions: { context in
+            if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
+                SwipeAction(
+                    systemImage: "trash",
+                    backgroundColor: .red
+                ) {
+                    DispatchQueue.main.async {
+                        self.viewModel.userToDelete = (keyData.id, keyData.name)
+                        //self.showAlert = true
+                        CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                    }
+                }
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+            }
+        }
+        .swipeActionCornerRadius(16)
+        .swipeSpacing(5)
+        .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+        .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+        .swipeMinimumDistance(25)
+    }
+}
+
 struct CentrePopup_DeleteKey: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
     
@@ -321,6 +510,94 @@ struct CentrePopup_DeleteKey: CentrePopup {
                                         //self.viewModel.showAlert = false
                                         dismiss()
                                         self.viewModel.keyToDelete = (nil,nil)
+                                        self.viewModel.showToast = true
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            self.viewModel.showToast = false
+                                        }
+                                    }
+                                case .failure(_):
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                    }
+                                    self.viewModel.ifFailed = true
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                .padding([.horizontal, .bottom])
+                //.vSpacing(.bottom)
+                
+            }
+            .ignoresSafeArea(.keyboard)
+            
+        }.ignoresSafeArea(.keyboard)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .padding(.horizontal, 10)
+            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+
+struct CentrePopup_DeleteUser: CentrePopup {
+    @ObservedObject var viewModel: AccessViewModel
+    
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack {
+                Text("Delete User: \(viewModel.userToDelete.1 ?? "0")")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                Text("Are you sure you want to delete the selected user?")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                if viewModel.ifFailed {
+                    Text("Error deleting user, please try again later")
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
+                //.vSpacing(.bottom)
+                
+                HStack {
+                    if !viewModel.loading {
+                        CustomBackButton() {
+                            withAnimation {
+                                dismiss()
+                                self.viewModel.userToDelete = (nil,nil)
+                            }
+                        }
+                    }
+                    //.padding([.top])
+                    
+                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        withAnimation {
+                            self.viewModel.loading = true
+                        }
+                        Task {
+                            if self.viewModel.userToDelete.0 != nil && self.viewModel.userToDelete.1 != nil {
+                                switch await self.viewModel.deleteUser(user: self.viewModel.userToDelete.0 ?? "") {
+                                case .success(_):
+                                    withAnimation {
+                                        withAnimation {
+                                            self.viewModel.loading = false
+                                            self.viewModel.getKeyUsers()
+                                        }
+                                        //self.viewModel.showAlert = false
+                                        dismiss()
+                                        self.viewModel.userToDelete = (nil,nil)
                                         self.viewModel.showToast = true
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                             self.viewModel.showToast = false

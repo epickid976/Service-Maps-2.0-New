@@ -118,6 +118,22 @@ struct AdminLoginView: View {
                         passwordFocus = true
                     })
                 
+                Spacer()
+                
+                VStack {
+                    Button {
+                        openMail(emailTo: "epickid976@gmail.com",
+                                     subject: "Congregation Login Creation Request",
+                                     body: "")
+                    } label: {
+                        Text("Need account? Contact me")
+                            .bold()
+                    }
+                }
+                
+                
+                Spacer()
+                
                 HStack {
                     if synchronizationManager.startupState != .AdminLogin {
                         if !loading {

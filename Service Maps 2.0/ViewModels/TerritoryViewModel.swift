@@ -23,11 +23,7 @@ class TerritoryViewModel: ObservableObject {
     @Published private var recentCancellables = Set<AnyCancellable>()
     
     @Published var territoryData: Optional<[TerritoryDataWithKeys]> = nil
-    @Published var recentTerritoryData: Optional<[RecentTerritoryData]> = nil {
-        didSet {
-            print("Recent Territory Data: \(recentTerritoryData)")
-        }
-    }
+    @Published var recentTerritoryData: Optional<[RecentTerritoryData]> = nil
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     // Boolean state variable to track the sorting order

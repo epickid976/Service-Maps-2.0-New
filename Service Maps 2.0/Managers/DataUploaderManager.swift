@@ -27,6 +27,7 @@ class DataUploaderManager: ObservableObject {
             visitsEntities = realm.objects(VisitObject.self)
             tokensEntities = realm.objects(TokenObject.self)
             tokenTerritoryEntities = realm.objects(TokenTerritoryObject.self)
+            userTokenEntities = realm.objects(UserTokenObject.self)
     }
     
     let territoryEntities: Results<TerritoryObject>
@@ -35,6 +36,7 @@ class DataUploaderManager: ObservableObject {
     let visitsEntities: Results<VisitObject>
     let tokensEntities: Results<TokenObject>
     let tokenTerritoryEntities: Results<TokenTerritoryObject>
+    let userTokenEntities: Results<UserTokenObject>
     
     private var adminApi = AdminAPI()
     private var userApi = UserAPI()
@@ -644,6 +646,21 @@ class DataUploaderManager: ObservableObject {
            //return realmManager.deleteTerritory(territory: territory)
         } catch {
             print("THIS IS THE ERROR FROM DELETE TERRITORY \(error)")
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func deleteUserFromToken(userToken: String) async -> Result<Bool, Error> {
+        do {
+            let realm = try! await Realm()
+            if let userToDelete = realm.objects(UserTokenObject.self).filter("id == %d", userToken).first {
+                try await tokenApi.removeUserFromToken(token: userToDelete.token, userId: userToDelete.userId)
+                return realmManager.deleteUserToken(userToken: userToDelete)
+            }
+            
+            return Result.failure(CustomErrors.NotFound)
+        } catch {
             return Result.failure(error)
         }
     }

@@ -18,6 +18,9 @@ class SettingsViewModel: ObservableObject {
     @ObservedObject var authorizationProvider = AuthorizationProvider.shared
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
+    @Published var backAnimation = false
+    @Published var progress: CGFloat = 0.0
+    
     @State var loading = false
     @State var alwaysLoading = true
     
@@ -52,7 +55,7 @@ class SettingsViewModel: ObservableObject {
     @Published var showUpdateToastMessage = ""
     
     @ViewBuilder
-    func profile() -> some View {
+    func profile(showBack: Bool, onDone: @escaping () -> Void?) -> some View {
         VStack {
             HStack {
                 Image(systemName: "person.crop.circle.fill")
@@ -87,7 +90,12 @@ class SettingsViewModel: ObservableObject {
                     switch result {
                     case .success(_):
                         self.exitAdministrator()
+                        if showBack {
+                            onDone()
+                        }
                         SynchronizationManager.shared.startupProcess(synchronizing: false)
+                        
+                        
                     case .failure(let error):
                         print("logout failed")
                         self.errorText = error.asAFError?.localizedDescription ?? ""
@@ -99,7 +107,7 @@ class SettingsViewModel: ObservableObject {
     }
     
     @ViewBuilder
-    func phoneLoginInfoCell(mainWindowSize: CGSize) -> some View {
+    func phoneLoginInfoCell(mainWindowSize: CGSize, showBack: Bool, onDone: @escaping () -> Void?) -> some View {
         VStack {
             HStack {
                 if AuthorizationLevelManager().existsPhoneCredentials() {
@@ -123,6 +131,9 @@ class SettingsViewModel: ObservableObject {
                                         .hSpacing(.leading)
                                     CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
                                         self.exitPhoneLogin()
+                                        if showBack {
+                                            onDone()
+                                        }
                                         self.synchronizationManager.startupProcess(synchronizing: true)
                                     }
                                     .frame(maxWidth: 120)
@@ -165,7 +176,7 @@ class SettingsViewModel: ObservableObject {
     }
     
     @ViewBuilder
-    func administratorInfoCell(mainWindowSize: CGSize) -> some View {
+    func administratorInfoCell(mainWindowSize: CGSize, showBack: Bool, onDone: @escaping () -> Void?) -> some View {
         VStack {
             HStack {
                 if dataStore.congregationName != nil {
@@ -190,6 +201,9 @@ class SettingsViewModel: ObservableObject {
                                     CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
                                         self.exitAdministrator()
                                         self.synchronizationManager.startupProcess(synchronizing: true)
+                                        if showBack {
+                                            onDone()
+                                        }
                                     }
                                     .frame(maxWidth: 120)
                                     .hSpacing(.trailing)

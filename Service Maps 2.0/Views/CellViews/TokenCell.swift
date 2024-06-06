@@ -81,3 +81,31 @@ struct TokenCell: View {
 }
 
 
+struct UserTokenCell: View {
+    @ObservedObject var dataStore = StorageManager.shared
+    var userKeyData: UserTokenModel
+    @Environment(\.mainWindowSize) var mainWindowSize
+    var body: some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                HStack {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                    Text("\(userKeyData.name )")
+                        .font(.title3)
+                        .lineLimit(2)
+                        .foregroundColor(.primary)
+                        .fontWeight(.heavy)
+                        .hSpacing(.leading)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            
+        }
+        .padding(10)
+        .frame(minWidth: mainWindowSize.width * 0.95)
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+}

@@ -109,7 +109,7 @@ class AuthorizationLevelManager: ObservableObject {
     
     func existsModeratorAccess() -> Bool {
         for token in Array(realmManager.tokensFlow) {
-            if token.moderator {
+            if token.user == dataStore.userEmail {
                 return true
             }
         }

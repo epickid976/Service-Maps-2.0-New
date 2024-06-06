@@ -480,6 +480,9 @@
         }
       }
     },
+    "Are you sure you want to delete the selected user?" : {
+
+    },
     "Are you sure you want to delete the selected visit?" : {
       "localizations" : {
         "es" : {
@@ -849,6 +852,12 @@
           }
         }
       }
+    },
+    "Delete User" : {
+
+    },
+    "Delete User: %@" : {
+
     },
     "Delete Visit" : {
       "localizations" : {
@@ -1228,6 +1237,9 @@
           }
         }
       }
+    },
+    "Error deleting user, please try again later" : {
+
     },
     "Error deleting visit, please try again later" : {
       "localizations" : {
@@ -1711,6 +1723,9 @@
         }
       }
     },
+    "Need account? Contact me" : {
+
+    },
     "No Data" : {
       "localizations" : {
         "es" : {
@@ -1996,6 +2011,7 @@
       }
     },
     "Phone Book Login" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2558,6 +2574,9 @@
           }
         }
       }
+    },
+    "Users" : {
+
     },
     "Verification" : {
       "localizations" : {

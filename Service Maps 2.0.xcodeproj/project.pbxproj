@@ -136,6 +136,12 @@
 		82BC0F252A9C2C1D00B255BF /* PendingChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F242A9C2C1D00B255BF /* PendingChange.swift */; };
 		82BC0F272A9CD94500B255BF /* AddHouseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F262A9CD94500B255BF /* AddHouseView.swift */; };
 		82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */; };
+		82CEA0292C114DB200F52DE9 /* SingleTokenForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CEA0282C114DB200F52DE9 /* SingleTokenForm.swift */; };
+		82CEA02B2C114DE500F52DE9 /* UserSimpleResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CEA02A2C114DE500F52DE9 /* UserSimpleResponse.swift */; };
+		82CEA02D2C114E2900F52DE9 /* TokenAndUserIdForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CEA02C2C114E2900F52DE9 /* TokenAndUserIdForm.swift */; };
+		82CEA02F2C114FC000F52DE9 /* UserTokenModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CEA02E2C114FC000F52DE9 /* UserTokenModel.swift */; };
+		82CEA0312C11504000F52DE9 /* UserTokenObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CEA0302C11504000F52DE9 /* UserTokenObject.swift */; };
+		82CEA0332C11568700F52DE9 /* NewUserNameForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CEA0322C11568700F52DE9 /* NewUserNameForm.swift */; };
 		82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526042A9290EE00B42916 /* AddTerritoryView.swift */; };
 		82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */; };
 		82DAEEDE2AAF597100465DA5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DAEEDD2AAF597100465DA5 /* HomeView.swift */; };
@@ -289,6 +295,12 @@
 		82BC0F242A9C2C1D00B255BF /* PendingChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingChange.swift; sourceTree = "<group>"; };
 		82BC0F262A9CD94500B255BF /* AddHouseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHouseView.swift; sourceTree = "<group>"; };
 		82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryAddressView.swift; sourceTree = "<group>"; };
+		82CEA0282C114DB200F52DE9 /* SingleTokenForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleTokenForm.swift; sourceTree = "<group>"; };
+		82CEA02A2C114DE500F52DE9 /* UserSimpleResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSimpleResponse.swift; sourceTree = "<group>"; };
+		82CEA02C2C114E2900F52DE9 /* TokenAndUserIdForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenAndUserIdForm.swift; sourceTree = "<group>"; };
+		82CEA02E2C114FC000F52DE9 /* UserTokenModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTokenModel.swift; sourceTree = "<group>"; };
+		82CEA0302C11504000F52DE9 /* UserTokenObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTokenObject.swift; sourceTree = "<group>"; };
+		82CEA0322C11568700F52DE9 /* NewUserNameForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUserNameForm.swift; sourceTree = "<group>"; };
 		82D526042A9290EE00B42916 /* AddTerritoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryView.swift; sourceTree = "<group>"; };
 		82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryViewModel.swift; sourceTree = "<group>"; };
 		82DAEEDD2AAF597100465DA5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -377,6 +389,7 @@
 				82F75C2D2BE27698002CCAB0 /* PhoneNumbersData.swift */,
 				82F75C2F2BE27919002CCAB0 /* PhoneCallData.swift */,
 				82FB3C222BF257990066B0B9 /* RecentData.swift */,
+				82CEA02E2C114FC000F52DE9 /* UserTokenModel.swift */,
 			);
 			path = Structs;
 			sourceTree = "<group>";
@@ -488,6 +501,10 @@
 				820933F42A78608C00AF3FF1 /* NewTokenForm.swift */,
 				820933F62A78631500AF3FF1 /* DeleteTokenForm.swift */,
 				82F75C152BE132D3002CCAB0 /* AllPhoneDataResponse.swift */,
+				82CEA0282C114DB200F52DE9 /* SingleTokenForm.swift */,
+				82CEA02A2C114DE500F52DE9 /* UserSimpleResponse.swift */,
+				82CEA02C2C114E2900F52DE9 /* TokenAndUserIdForm.swift */,
+				82CEA0322C11568700F52DE9 /* NewUserNameForm.swift */,
 			);
 			path = APIStructs;
 			sourceTree = "<group>";
@@ -607,6 +624,7 @@
 				82F75C1D2BE13710002CCAB0 /* PhoneTerritoryObject.swift */,
 				82F75C1F2BE13885002CCAB0 /* PhoneNumberObject.swift */,
 				82F75C212BE138FC002CCAB0 /* PhoneCallObject.swift */,
+				82CEA0302C11504000F52DE9 /* UserTokenObject.swift */,
 			);
 			path = RealmObjects;
 			sourceTree = "<group>";
@@ -827,6 +845,7 @@
 				823FD4D52A7D6F2D0036A1DD /* TerritoryView.swift in Sources */,
 				82916C172A990955005133DE /* ImagePickerView.swift in Sources */,
 				82FB3C212BF17E830066B0B9 /* AppVersionHelpers.swift in Sources */,
+				82CEA0292C114DB200F52DE9 /* SingleTokenForm.swift in Sources */,
 				822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */,
 				82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */,
 				82F75C342BE29886002CCAB0 /* PhoneNumbersView.swift in Sources */,
@@ -857,6 +876,7 @@
 				824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */,
 				827EF1A22AA7B7E3006C4631 /* VisitsView.swift in Sources */,
 				820934182A7AF35800AF3FF1 /* ViewExtension.swift in Sources */,
+				82CEA02D2C114E2900F52DE9 /* TokenAndUserIdForm.swift in Sources */,
 				821C12722A780EE40050D106 /* PasswordResetAPI.swift in Sources */,
 				8242137B2A83357600626DD5 /* CustomButton.swift in Sources */,
 				821C12662A77F37F0050D106 /* ApiRequestAsync.swift in Sources */,
@@ -878,6 +898,7 @@
 				821C125F2A77EE810050D106 /* API_Requests.swift in Sources */,
 				82A967B72AAABE890043946F /* RoundedCornerExtension.swift in Sources */,
 				82A399C52BBEFAD200ECA5E6 /* AddHouseViewModel.swift in Sources */,
+				82CEA02F2C114FC000F52DE9 /* UserTokenModel.swift in Sources */,
 				825645B12BCE13BD00F18AC9 /* RealmManager.swift in Sources */,
 				8242136B2A82C5C800626DD5 /* StorageManager.swift in Sources */,
 				82F75C242BE1552D002CCAB0 /* PhoneLoginScreen.swift in Sources */,
@@ -901,9 +922,11 @@
 				821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */,
 				82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */,
 				82F75C2E2BE27698002CCAB0 /* PhoneNumbersData.swift in Sources */,
+				82CEA0332C11568700F52DE9 /* NewUserNameForm.swift in Sources */,
 				826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */,
 				82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */,
 				82A5B4622BD5B31600F52F2F /* HouseData.swift in Sources */,
+				82CEA0312C11504000F52DE9 /* UserTokenObject.swift in Sources */,
 				82BC0F232A9C24AC00B255BF /* ChangeType.swift in Sources */,
 				82F75C1A2BE1343A002CCAB0 /* PhoneNumberModel.swift in Sources */,
 				82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */,
@@ -944,6 +967,7 @@
 				820933F72A78631500AF3FF1 /* DeleteTokenForm.swift in Sources */,
 				822FA0A52AA7798A0008FA61 /* HousesViewModel.swift in Sources */,
 				825645B32BCE283500F18AC9 /* AreEqualFuncs.swift in Sources */,
+				82CEA02B2C114DE500F52DE9 /* UserSimpleResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1095,7 +1119,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.2;
+				MARKETING_VERSION = 2.7.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1128,7 +1152,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.2;
+				MARKETING_VERSION = 2.7.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

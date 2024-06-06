@@ -15,12 +15,15 @@ struct SettingsView: View {
     @State var loading = false
     @State var alwaysLoading = true
     
+    init(showBackButton: Bool = false) {
+        self.showBackButton = showBackButton
+    }
     //MARK: API
     let authenticationManager = AuthenticationManager()
-    
+    @Environment(\.presentationMode) var presentationMode
     @ObservedObject var viewModel = SettingsViewModel()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    
+    var showBackButton = false
     @Environment(\.sizeCategory) var sizeCategory
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Cache Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
@@ -30,17 +33,23 @@ struct SettingsView: View {
         let alertUpdate = AlertAppleMusic17View(title: viewModel.showUpdateToastMessage, subtitle: nil, icon: .custom(UIImage(systemName: "arrow.triangle.2.circlepath.circle")!))
         ScrollView {
             VStack {
-                viewModel.profile()
+                viewModel.profile(showBack: showBackButton) {
+                    presentationMode.wrappedValue.dismiss()
+                }
                 Spacer().frame(height: 25)
                 if !AuthorizationLevelManager().existsAdminCredentials() {
-                    viewModel.phoneLoginInfoCell(mainWindowSize: mainWindowSize)
+                    viewModel.phoneLoginInfoCell(mainWindowSize: mainWindowSize, showBack: showBackButton) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
-                viewModel.administratorInfoCell(mainWindowSize: mainWindowSize)
+                viewModel.administratorInfoCell(mainWindowSize: mainWindowSize, showBack: showBackButton) {
+                    presentationMode.wrappedValue.dismiss()
+                }
                 viewModel.infosView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
                 viewModel.deleteCacheMenu(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
-                viewModel.deleteAccount(mainWindowSize: mainWindowSize)
+                viewModel.deleteAccount(mainWindowSize: mainWindowSize) 
             }
             .padding(.vertical)
             .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
@@ -50,52 +59,9 @@ struct SettingsView: View {
                 }
             }
             .alert(isPresent: $viewModel.showUpdateToast, view: alertUpdate)
-//            .popup(isPresented: $viewModel.showAlert) {
-//                viewModel.aboutApp(usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true)
-//                    .frame(width: 400, height: 400)
-//                    .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//            } customize: {
-//                $0
-//                    .type(.default)
-//                    .closeOnTapOutside(false)
-//                    .dragToDismiss(false)
-//                    .isOpaque(true)
-//                    .animation(.spring())
-//                    .closeOnTap(false)
-//                    .backgroundColor(.black.opacity(0.8))
-//            }
-//            .popup(isPresented: $viewModel.showDeletionConfirmationAlert) {
-//                viewModel.accountDeletionAlertConfirmation()
-//                    .frame(width: 400, height: 250)
-//                    .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//            } customize: {
-//                $0
-//                    .type(.default)
-//                    .closeOnTapOutside(false)
-//                    .dragToDismiss(false)
-//                    .isOpaque(true)
-//                    .animation(.spring())
-//                    .closeOnTap(false)
-//                    .backgroundColor(.black.opacity(0.8))
-//            }
-//            .popup(isPresented: $viewModel.showDeletionAlert) {
-//                viewModel.accountDeletionAlert(usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true)
-//                    .frame(width: 400, height: 400)
-//                    .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//            } customize: {
-//                $0
-//                    .type(.default)
-//                    .closeOnTapOutside(false)
-//                    .dragToDismiss(false)
-//                    .isOpaque(true)
-//                    .animation(.spring())
-//                    .closeOnTap(false)
-//                    .backgroundColor(.black.opacity(0.8))
-//            }
-            
             .onChange(of: viewModel.showDeletionConfirmationAlert) { value in
                 if value {
-                    CentrePopup_DeletionConfirmation(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).showAndReplace()
+                    CentrePopup_DeletionConfirmation(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true, showBack: showBackButton, onDone: { presentationMode.wrappedValue.dismiss() }).showAndReplace()
                 }
             }
             .onChange(of: viewModel.showDeletionAlert) { value in
@@ -105,8 +71,12 @@ struct SettingsView: View {
             }
             .fullScreenCover(isPresented: $viewModel.presentSheet) {
                 AdminLoginView {
+                    if showBackButton {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                     synchronizationManager.startupProcess(synchronizing: true)
                     viewModel.presentSheet = false
+                    
                 }
             }
             
@@ -118,8 +88,12 @@ struct SettingsView: View {
             }
             .fullScreenCover(isPresented: $viewModel.phoneBookLogin) {
                 PhoneLoginScreen {
+                    if showBackButton {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                     synchronizationManager.startupProcess(synchronizing: true)
                     viewModel.phoneBookLogin = false
+                    
                 }
             }
         }
@@ -127,6 +101,19 @@ struct SettingsView: View {
         .navigationBarTitle("Settings", displayMode: .automatic)
         .navigationBarBackButtonHidden(true)
         .toolbar {
+            ToolbarItemGroup(placement: .topBarLeading) {
+                if showBackButton {
+                    HStack {
+                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                        }).keyboardShortcut(.delete, modifiers: .command)
+                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                    }
+                }
+            }
+            
             ToolbarItemGroup(placement: .topBarTrailing) {
                 HStack {
                     Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
@@ -168,10 +155,10 @@ struct CentrePopup_AboutApp: CentrePopup {
             //.frame(width: 100)
         }
         .padding()
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
@@ -188,6 +175,8 @@ struct CentrePopup_AboutApp: CentrePopup {
 struct CentrePopup_DeletionConfirmation: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
     var usingLargeText: Bool
+    var showBack: Bool
+    var onDone: () -> Void
     
     func createContent() -> some View {
         VStack {
@@ -225,6 +214,9 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                             
                             self.viewModel.showDeletionConfirmationAlert = false
                             dismiss()
+                            if showBack {
+                                onDone()
+                            }
                         case .failure(_):
                             withAnimation { self.viewModel.loading = true }
                             self.viewModel.deletionError = "Error deleting account"
@@ -235,10 +227,10 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                 //.frame(width: 100)
             }
         }
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
@@ -277,17 +269,17 @@ struct CentrePopup_Deletion: CentrePopup {
                 }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
                     self.viewModel.showDeletionAlert = false
-                        self.viewModel.showDeletionConfirmationAlert = true
+                    self.viewModel.showDeletionConfirmationAlert = true
                     
                 })
                 .hSpacing(.trailing)
                 //.frame(width: 100)
             }
         }
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {

@@ -91,4 +91,14 @@ class AuthenticationAPI {
             return Result.failure(error)
         }
     }
+    
+    func editUserName(userName: String) async -> Result<Bool, Error> {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "editusername", body: NewUserNameForm(username: userName))
+            
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
 }

@@ -108,6 +108,30 @@ class TokenAPI {
         }
     }
     
+    func usersOfToken(token: String) async throws -> [UserSimpleResponse] {
+        do {
+            let response = try await ApiRequestAsync().postRequest(url: baseURL + "tokenusers", body: SingleTokenForm(token: token))
+            
+            let decoder = JSONDecoder()
+            
+            let jsonData = response.data(using: .utf8)!
+            
+            let reply = try decoder.decode([UserSimpleResponse].self, from: jsonData)
+            
+            return reply
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func removeUserFromToken(token: String, userId: String) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "tokenuserremove", body: TokenAndUserIdForm(token: token, userid: userId))
+        } catch {
+            throw error.self
+        }
+    }
+    
     func createTokenManually(from jsonData: Data) throws -> MyTokenModel {
       guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
           throw CustomErrors.NotFound // Define an error type

@@ -18,7 +18,7 @@ class AccessViewModel: ObservableObject {
     
     init() {
         getKeys()
-        
+        getKeyUsers()
     }
     
     @ObservedObject var universalLinksManager = UniversalLinksManager.shared
@@ -30,9 +30,19 @@ class AccessViewModel: ObservableObject {
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
     private var cancellables = Set<AnyCancellable>()
+    private var cancellablesTwo = Set<AnyCancellable>()
     
     @Published var keyData: Optional<[KeyData]> = nil
+    @Published var keyUsers: Optional<[UserTokenModel]> = nil
     
+    @Published var currentKey: MyTokenModel? = nil {
+        didSet {
+            if currentKey != nil {
+                getKeyUsers()
+            }
+        }
+    }
+    @Published var backAnimation = false
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     
     @Published var currentToken: MyTokenModel?
@@ -61,9 +71,11 @@ class AccessViewModel: ObservableObject {
     @Published var ifFailed = false
     @Published var loading = false
     @Published var keyToDelete: (String?,String?)
+    @Published var userToDelete: (String?,String?)
     
     @Published var showToast = false
     @Published var showAddedToast = false
+    @Published var showUserDeleteToast = false
     
     func deleteKey(key: String) async -> Result<Bool, Error> {
         if !isAdmin {
@@ -77,6 +89,10 @@ class AccessViewModel: ObservableObject {
         } else {
             return await dataUploaderManager.deleteToken(myToken: key)
         }
+    }
+    
+    func deleteUser(user: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteUserFromToken(userToken: user)
     }
     
     
@@ -124,5 +140,23 @@ extension AccessViewModel {
                
             })
             .store(in: &cancellables)
+    }
+    
+    func getKeyUsers() {
+        if currentKey != nil {
+            RealmManager.shared.getKeyUsers(token: currentKey!)
+                .receive(on: DispatchQueue.main) // Update on main thread
+                .sink(receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        // Handle errors here
+                        print("Error retrieving territory data: \(error)")
+                    }
+                }, receiveValue: { keyUsers in
+                    DispatchQueue.main.async {
+                        self.keyUsers = keyUsers
+                    }
+                })
+                .store(in: &cancellablesTwo)
+        }
     }
 }

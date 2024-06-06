@@ -119,6 +119,7 @@ class SynchronizationManager: ObservableObject {
         let phoneTerritoriesEntities = realmDatabase.objects(PhoneTerritoryObject.self)
         let phoneNumberEntities = realmDatabase.objects(PhoneNumberObject.self)
         let phoneCallEntities = realmDatabase.objects(PhoneCallObject.self)
+        let userTokenEntities = realmDatabase.objects(UserTokenObject.self)
         
         //Server Data
         var tokensApi = [MyTokenModel]()
@@ -130,6 +131,7 @@ class SynchronizationManager: ObservableObject {
         var phoneTerritoriesApi = [PhoneTerritoryModel]()
         var phoneNumbersApi = [PhoneNumberModel]()
         var phoneCallsApi = [PhoneCallModel]()
+        var userTokensApi = [UserTokenModel]()
         
         //Database Data
         var tokensDb = [TokenObject]()
@@ -141,6 +143,7 @@ class SynchronizationManager: ObservableObject {
         var phoneTerritoriesDb = [PhoneTerritoryObject]()
         var phoneNumbersDb = [PhoneNumberObject]()
         var phoneCallsDb = [PhoneCallObject]()
+        var userTokensDb = [UserTokenObject]()
         
         //MARK: Fetching data from server
         let tokenApi = TokenAPI()
@@ -154,6 +157,15 @@ class SynchronizationManager: ObservableObject {
             for token in userTokens {
                 if !tokensApi.contains(token) {
                     tokensApi.append(token)
+                }
+            }
+            
+            for token in tokensApi {
+                do {
+                    let response = try await tokenApi.usersOfToken(token: token.id)
+                    for user in response {
+                        userTokensApi.append(UserTokenModel(id: UUID().uuidString, token: token.id, userId: String(user.id), name: user.name))
+                    }
                 }
             }
             
@@ -226,6 +238,7 @@ class SynchronizationManager: ObservableObject {
         phoneTerritoriesDb = Array(phoneTerritoriesEntities)
         phoneCallsDb = Array(phoneCallEntities)
         phoneNumbersDb = Array(phoneNumberEntities)
+        userTokensDb = Array(userTokenEntities)
         
         //Comparing and Updating, adding or deleting data in database by server data
         await comparingAndSynchronizeTokens(apiList: tokensApi, dbList: tokensDb)
@@ -237,6 +250,7 @@ class SynchronizationManager: ObservableObject {
         await comparingAndSynchronizePhoneTerritories(apiList: phoneTerritoriesApi, dbList: phoneTerritoriesDb)
         await comparingAndSynchronizePhoneNumbers(apiList: phoneNumbersApi, dbList: phoneNumbersDb)
         await comparingAndSynchronizePhoneCalls(apiList: phoneCallsApi, dbList: phoneCallsDb)
+        await comparingAndSynchronizeUserTokens(apiList: userTokensApi, dbList: userTokensDb)
         
         
         startupProcess(synchronizing: false)
@@ -636,6 +650,48 @@ class SynchronizationManager: ObservableObject {
         
         for callDb in callsDb {
             switch  realmManager.deletePhoneCall(phoneCall: callDb) {
+            case .success(let success):
+                print("Success Deleting Visit \(success)")
+            case .failure(let error):
+                print("There was an error deleting Visit \(error)")
+            }
+        }
+    }
+    
+    @MainActor
+    private func comparingAndSynchronizeUserTokens(apiList: [UserTokenModel], dbList: [UserTokenObject]) async{
+        let userTokensApi = apiList
+        var userTokensDb = dbList
+        
+        for userTokenApi in userTokensApi {
+            let userTokenDb = userTokensDb.first { $0.id == userTokenApi.id }
+            
+            if userTokenDb != nil {
+                if (userTokenDb! == userTokenApi) == false {
+                    switch  realmManager.updateUserToken(userToken: userTokenApi){
+                    case .success(let success):
+                        print(success)
+                    case .failure(let error):
+                        //check what to do here becasuse I don't know. ELIER what should I do here??
+                        print("I Don't know what to do if couldn't update \(error)") //<--
+                    }
+                }
+                
+                if let index = userTokensDb.firstIndex(of: userTokenDb!) {
+                    userTokensDb.remove(at: index)
+                }
+            } else {
+                switch  realmManager.addModel(UserTokenObject().createUserTokenObject(from: userTokenApi)) {
+                case .success(let success):
+                    print("Success Adding Visit \(success)")
+                case .failure(let error):
+                    print("There was an error adding Visit \(error)")
+                }
+            }
+        }
+        
+        for userTokenDb in userTokensDb {
+            switch  realmManager.deleteUserToken(userToken: userTokenDb) {
             case .success(let success):
                 print("Success Deleting Visit \(success)")
             case .failure(let error):

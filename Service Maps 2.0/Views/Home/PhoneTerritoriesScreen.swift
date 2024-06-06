@@ -206,7 +206,7 @@ struct PhoneTerritoriesScreen: View {
     func territoryCell(phoneData: PhoneData, mainViewSize: CGSize) -> some View {
         LazyVStack {
         SwipeView {
-            NavigationLink(destination: PhoneNumbersView(territory: phoneData.territory).implementPopupView()) {
+            NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: phoneData.territory).implementPopupView()).implementPopupView()) {
                 PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity, mainWindowSize: mainViewSize)
                     .padding(.bottom, 2)
                     .optionalViewModifier { content in
