@@ -288,6 +288,22 @@
         }
       }
     },
+    "Address is required." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una dirección es obligatoria"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une adresse est obligatoire"
+          }
+        }
+      }
+    },
     "Addresses" : {
       "localizations" : {
         "es" : {
@@ -481,7 +497,20 @@
       }
     },
     "Are you sure you want to delete the selected user?" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Esta seguro de que quiere borrar este usuario?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sur de vouloir supprimer cet utilisateur ?"
+          }
+        }
+      }
     },
     "Are you sure you want to delete the selected visit?" : {
       "localizations" : {
@@ -854,10 +883,36 @@
       }
     },
     "Delete User" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar Usuario"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l'utilisateur"
+          }
+        }
+      }
     },
     "Delete User: %@" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar Usuario: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l'utilisateur: %@"
+          }
+        }
+      }
     },
     "Delete Visit" : {
       "localizations" : {
@@ -974,6 +1029,12 @@
     },
     "Edit Number" : {
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar número"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -994,6 +1055,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modifier le Territoire"
+          }
+        }
+      }
+    },
+    "Edit Username" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar Nombre"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier le nom"
           }
         }
       }
@@ -1026,6 +1103,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Email"
+          }
+        }
+      }
+    },
+    "Email cannot contain spaces." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo no puede contener espacios."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'email ne peux pas contenir d'espaces"
+          }
+        }
+      }
+    },
+    "Email or Password is incorrect. Please try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El correo y la contraseña son incorrectos. "
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'email et le mot de passe sont incorrect"
+          }
+        }
+      }
+    },
+    "Email Taken" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correo ya utilisado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'email est déjà en utilisation"
+          }
+        }
+      }
+    },
+    "Error" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur"
           }
         }
       }
@@ -1239,7 +1380,20 @@
       }
     },
     "Error deleting user, please try again later" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al borrar usuario, por favor intente más tarde"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une erreur est survenu en supprimant l'utilisateur, essayez plus tard."
+          }
+        }
+      }
     },
     "Error deleting visit, please try again later" : {
       "localizations" : {
@@ -1253,6 +1407,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une erreur est survenu en supprimant la visite, essayez plus tard."
+          }
+        }
+      }
+    },
+    "Error logging in. \nPlease try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error iniciando sesión. Intente otra vez."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur pour se connecter. Réessayez"
+          }
+        }
+      }
+    },
+    "Error Resetting Password. Please try again later" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error reiniciando la contravene. Intense de nuevo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur pour changer le mot de passes. Réessayez"
           }
         }
       }
@@ -1337,6 +1523,22 @@
         }
       }
     },
+    "Error updating username" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error actualizando el nombre."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en changeant le nom"
+          }
+        }
+      }
+    },
     "Error updating Visit." : {
       "localizations" : {
         "es" : {
@@ -1385,6 +1587,22 @@
         }
       }
     },
+    "Fields cannot be empty" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los campos no pueden estar vacíos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les champs ne peuvent pas être vide"
+          }
+        }
+      }
+    },
     "Filter" : {
       "localizations" : {
         "es" : {
@@ -1397,6 +1615,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Filtrer"
+          }
+        }
+      }
+    },
+    "first name" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "primer nombre"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "prénom"
+          }
+        }
+      }
+    },
+    "First Name" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primer nombre"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prénom"
           }
         }
       }
@@ -1503,6 +1753,38 @@
         }
       }
     },
+    "Invalid Credentials" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credenciales incorrectos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les informations d'identification sont incorrects"
+          }
+        }
+      }
+    },
+    "It seems this email is taken. Try logging in." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al parecer ya existe este correo. Intente iniciando sesión."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il parait que cet email est en utilisation. Essayez de se connecter."
+          }
+        }
+      }
+    },
     "Key Name" : {
       "localizations" : {
         "es" : {
@@ -1531,6 +1813,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clés"
+          }
+        }
+      }
+    },
+    "last name" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "apellido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nom"
+          }
+        }
+      }
+    },
+    "Last Name" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apellido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom"
           }
         }
       }
@@ -1670,6 +1984,7 @@
       }
     },
     "name" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1724,7 +2039,20 @@
       }
     },
     "Need account? Contact me" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Necesita una cuenta? Contacteme"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Besoin d'une compte? Contactez-moi"
+          }
+        }
+      }
     },
     "No Data" : {
       "localizations" : {
@@ -1754,6 +2082,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pas de connection internet"
+          }
+        }
+      }
+    },
+    "No Internet Connection" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta de conexión de internet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de connexion à internet"
+          }
+        }
+      }
+    },
+    "No Internet Connection. Please try again later." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta de conexión de internet. Intente más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de connexion à internet. Réessayez plus tard."
+          }
+        }
+      }
+    },
+    "Not a valid email." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No es un correo valido."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas un email valide"
           }
         }
       }
@@ -1802,6 +2178,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Notes"
+          }
+        }
+      }
+    },
+    "Notes and Symbol are required." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las notas y el símbolo son obligatorios"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une note et une symbole sont obligatoire"
+          }
+        }
+      }
+    },
+    "Notes are required." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las notas son requeridas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les notes sont obligatoire"
           }
         }
       }
@@ -1856,6 +2264,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Numéro"
+          }
+        }
+      }
+    },
+    "Number and Description are required." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El número y la descripción son obligatorias"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le numéro et la description sont obligatoire"
+          }
+        }
+      }
+    },
+    "Number is required." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El número es requerido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le numéro est obligatoire"
           }
         }
       }
@@ -1978,6 +2418,38 @@
         }
       }
     },
+    "Password must be more than 8 characters." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña tiene que ser más de 8 caracteres."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le mot de passe doit être plus de 8 caractères."
+          }
+        }
+      }
+    },
+    "Passwords must match." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las contraseñas tienen que ser iguales."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mots de passe ne sont pas les mêmes"
+          }
+        }
+      }
+    },
     "Phone Book" : {
       "localizations" : {
         "es" : {
@@ -2027,6 +2499,22 @@
         }
       }
     },
+    "Phone Number is required." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El número es requerido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le numéro de téléphone est obligatoire"
+          }
+        }
+      }
+    },
     "Phone Numbers: %lld" : {
       "localizations" : {
         "es" : {
@@ -2055,6 +2543,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Territoires Téléphoniques"
+          }
+        }
+      }
+    },
+    "Please fill out all the required fields." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor rellene todos los campos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remplissez tous les champs obligatoires"
           }
         }
       }
@@ -2205,6 +2709,7 @@
       }
     },
     "Select Symbol" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2479,6 +2984,22 @@
         }
       }
     },
+    "That is not a valid phone number." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este no es un número valido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce n'est pas un numéro valide."
+          }
+        }
+      }
+    },
     "The bundle info could not be parsed." : {
       "localizations" : {
         "es" : {
@@ -2523,6 +3044,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le serveur réponse invalide"
+          }
+        }
+      }
+    },
+    "There was a problem with the internet connection. \nPlease check your internet connection and try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un problema con la conexión a internet. Intente más tard."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il y a eu un problème avec la connexion à internet. Vérifiez-la."
           }
         }
       }
@@ -2576,7 +3113,20 @@
       }
     },
     "Users" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " Usuarios"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisateurs"
+          }
+        }
+      }
     },
     "Verification" : {
       "localizations" : {

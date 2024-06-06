@@ -188,14 +188,12 @@ class AuthenticationManager: ObservableObject {
             let result = await authenticationApi.editUserName(userName: userName)
             
             switch result {
-            case .success(true):
+            case .success(_):
                 dataStore.userName = userName
             case .failure(let error):
                 return Result.failure(error)
-            default:
-                return Result.failure(CustomErrors.GenericError)
             }
         
-        return Result.failure(CustomErrors.NotFound)
+        return result
     }
 }

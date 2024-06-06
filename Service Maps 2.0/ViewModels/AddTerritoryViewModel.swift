@@ -71,7 +71,7 @@ class AddTerritoryViewModel: ObservableObject {
     
     func checkInfo() -> Bool {
         if number == nil || description == "" {
-            error = "Number and Description are required."
+            error = NSLocalizedString("Number and Description are required.", comment: "")
             return false
         } else {
             return true

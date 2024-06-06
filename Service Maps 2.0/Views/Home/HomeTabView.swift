@@ -156,7 +156,6 @@ struct HomeTabView: View {
             .navigationViewStyle(StackNavigationViewStyle())
             
         }
-        .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
         .navigationTransition(
             .slide.combined(with: .fade(.in))
         )

@@ -136,7 +136,7 @@ struct AddPhoneNumberScreen: View {
                     //}
                 } else {
                     //withAnimation {
-                    title = "Add"
+                    title = NSLocalizedString("Add", comment: "")
                     //}
                 }
             }
@@ -187,10 +187,10 @@ class AddPhoneNumberViewModel: ObservableObject {
     
     func checkInfo() -> Bool {
         if numberText == "" {
-            error = "Phone Number is required."
+            error = NSLocalizedString("Phone Number is required.", comment: "")
             return false
         } else if !numberText.isValidPhoneNumber() {
-            error = "That is not a valid phone number."
+            error = NSLocalizedString("That is not a valid phone number.", comment: "")
             return false
         } else {
             return true

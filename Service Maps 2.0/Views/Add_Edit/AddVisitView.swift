@@ -40,23 +40,45 @@ struct AddVisitView: View {
                         .hSpacing(.leading)
                         .padding(.leading)
                     
-                    HStack {
-                        Text("Symbol: ")
-                            .font(.subheadline)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                            .hSpacing(.leading)
-                        Spacer().frame(width: 4)
-                        Picker("Select Symbol", selection: $viewModel.selectedOption) {
-                            ForEach(Symbols.allCases) { symbol in
-                                Text(symbol.rawValue)
-                                    .tag(symbol)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: UIScreen.screenWidth * 0.4)
+                   
                 }
+                
+                HStack {
+                    
+                    Text("Symbol: ")
+                        .font(.subheadline)
+                        .lineLimit(2)
+                        .foregroundColor(.primary)
+                        .fontWeight(.heavy)
+                    Menu { // Use a Menu instead of a Button
+                        ForEach(Symbols.allCases, id: \.self) { option in
+                                    Button(action: {
+                                        viewModel.selectedOption = option
+                                    }) {
+                                        HStack {
+                                            Text(option.rawValue)
+                                            if viewModel.selectedOption == option {
+                                                Spacer()
+                                                Image(systemName: "checkmark") // Add a checkmark for the selected option
+                                            }
+                                        }
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Text(viewModel.selectedOption.rawValue)
+                                        .foregroundColor(.primary)
+                                        .padding(10)
+                                    
+                                }
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color.gray.opacity(0.2))
+                                )
+                            }
+                }.hSpacing(.leading).padding(.leading, 16)
+                
+                
                 CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, expanded: true, placeholder: NSLocalizedString("Notes", comment: ""))
                     .padding(.bottom)
                 

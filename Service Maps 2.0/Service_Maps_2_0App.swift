@@ -18,9 +18,8 @@ struct Service_Maps_2_0App: App {
     
     @Environment(\.scenePhase) var scenePhase
     @StateObject var synchronizationManager = SynchronizationManager.shared
-    @StateObject var territoryViewModel = TerritoryViewModel()
     
-    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     @StateObject var universalLinksManager = UniversalLinksManager.shared
     
@@ -95,7 +94,6 @@ struct Service_Maps_2_0App: App {
                 .onOpenURL(perform: { url in
                     universalLinksManager.handleIncomingURL(url)
                 })
-                .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
                 .animation(.easeIn(duration: 0.25), value: destination)
                 .navigationTransition(
                     .fade(.in)
@@ -110,6 +108,7 @@ struct Service_Maps_2_0App: App {
                 if isMoreThanAMinuteOld(date: StorageManager.shared.lastTime) {
                     synchronizationManager.startupProcess(synchronizing: true)
                 }
+                        
             }
         }
     }

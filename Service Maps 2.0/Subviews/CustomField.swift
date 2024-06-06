@@ -66,7 +66,7 @@ struct CustomField: View {
                         content
                     }
                 }
-                
+                .textContentType(.username)
         } else {
             SecureField(placeholder, text: $text)
                 .padding()
@@ -83,6 +83,7 @@ struct CustomField: View {
                 .keyboardType(keyboardType ?? .default)
                 .multilineTextAlignment(textAlignment ?? .leading)
                 .frame(minHeight: 40)
+                .textContentType(.none)
         }
         
     }

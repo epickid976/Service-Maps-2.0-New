@@ -54,6 +54,20 @@ class SettingsViewModel: ObservableObject {
     @Published var showUpdateToast = false
     @Published var showUpdateToastMessage = ""
     
+    @Published var showEditNamePopup = false
+    
+    func editUserName(name: String) async -> Result<Bool, Error> {
+        let result = await authenticationManager.editUserName(userName: name)
+        
+        switch result {
+        case .success(let success):
+            dataStore.userName = name
+            return Result.success(true)
+        case .failure(let failure):
+            return Result.failure(failure)
+        }
+    }
+    
     @ViewBuilder
     func profile(showBack: Bool, onDone: @escaping () -> Void?) -> some View {
         VStack {
@@ -75,6 +89,22 @@ class SettingsViewModel: ObservableObject {
                         .foregroundColor(.primary)
                         .fontWeight(.heavy)
                         .hSpacing(.leading)
+                }
+                
+                VStack {
+                    Button {
+                        self.showEditNamePopup = true
+                    } label: {
+                        Circle()
+                            .fill(Material.ultraThin)
+                            .overlay(Image(systemName: "pencil")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.primary)
+                                .padding(12)
+                            )
+                            .frame(width: 40, height: 40)
+                    }
                 }
             }
             

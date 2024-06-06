@@ -104,13 +104,14 @@ class TokenAPI {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "register", body: DeleteTokenForm(token: token))
         } catch {
+            print(error)
             throw error.self
         }
     }
     
     func usersOfToken(token: String) async throws -> [UserSimpleResponse] {
         do {
-            let response = try await ApiRequestAsync().postRequest(url: baseURL + "tokenusers", body: SingleTokenForm(token: token))
+            let response = try await ApiRequestAsync().postRequest(url: baseURL + "tokenusers", body: DeleteTokenForm(token: token))
             
             let decoder = JSONDecoder()
             

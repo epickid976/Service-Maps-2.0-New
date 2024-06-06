@@ -16,7 +16,7 @@ import AlertKit
 import MijickPopupView
 
 struct AccessView: View {
-    @ObservedObject var viewModel = AccessViewModel()
+    @StateObject var viewModel = AccessViewModel()
     
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode

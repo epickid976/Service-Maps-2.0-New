@@ -17,7 +17,7 @@ import Nuke
 import MijickPopupView
 
 struct PhoneTerritoriesScreen: View {
-    @ObservedObject var viewModel = PhoneScreenViewModel()
+    @StateObject var viewModel = PhoneScreenViewModel()
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     

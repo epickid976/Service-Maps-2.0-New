@@ -23,7 +23,8 @@ struct SignupView: View {
     @State var alwaysLoading = true
     @State var loading = false
     //Focus
-    @FocusState private var nameFocus: Bool
+    @FocusState private var firstNameFocus: Bool
+    @FocusState private var lastNameFocus: Bool
     @FocusState private var emailFocus: Bool
     @FocusState private var passwordFocus: Bool
     @FocusState private var confirmPasswordFocus: Bool
@@ -57,14 +58,23 @@ struct SignupView: View {
                         .padding(.bottom, -50)
                 }
                 
-                Text("Name")
+                Text("First Name")
                     .font(.headline)
                     .fontWeight(.semibold)
                     .frame(alignment: .leading)
                     .hSpacing(.leading)
                     .padding(.leading)
                 
-                CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, placeholder: NSLocalizedString("name", comment: ""))
+                CustomField(text: $viewModel.name, isFocused: $firstNameFocus, textfield: true, placeholder: NSLocalizedString("first name", comment: ""))
+                
+                Text("Last Name")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .frame(alignment: .leading)
+                    .hSpacing(.leading)
+                    .padding(.leading)
+                
+                CustomField(text: $viewModel.lastName, isFocused: $lastNameFocus, textfield: true, placeholder: NSLocalizedString("last name", comment: ""))
                 
                 
                 Text("Email")
@@ -100,6 +110,7 @@ struct SignupView: View {
                         CustomBackButton() {
                             dismiss()
                             viewModel.name = ""
+                            viewModel.lastName = ""
                             viewModel.username = ""
                             viewModel.password = ""
                             viewModel.passwordConfirmation = ""
@@ -156,7 +167,8 @@ struct SignupView: View {
                 Spacer()
                 Button("Done"){
                     DispatchQueue.main.async {
-                        nameFocus = false
+                        firstNameFocus = false
+                        lastNameFocus = false
                         emailFocus = false
                         confirmPasswordFocus = false
                         passwordFocus = false

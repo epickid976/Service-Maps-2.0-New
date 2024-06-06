@@ -21,7 +21,7 @@ struct TerritoryView: View {
     
     @Environment(\.dismissSearch) private var dismissSearch
     
-    @ObservedObject var viewModel = TerritoryViewModel()
+    @StateObject var viewModel = TerritoryViewModel()
     
     //@Environment(\.managedObjectContext) private var viewContext
     
@@ -112,7 +112,7 @@ struct TerritoryView: View {
                                                     }
                                                 }.padding(.leading)
                                                 
-                                            }.animation(.smooth, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                            }.animation(.default, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
                                         }
                                     }
                                     
@@ -158,24 +158,6 @@ struct TerritoryView: View {
                             }
                         }
                     }
-                    //                    .popup(isPresented: $viewModel.showAlert) {
-                    //                        if viewModel.territoryToDelete.0 != nil && viewModel.territoryToDelete.1 != nil {
-                    //                            viewModel.alert()
-                    //                                .frame(width: 400, height: 230)
-                    //                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                    //                        }
-                    //                    } customize: {
-                    //                        $0
-                    //                            .type(.default, screenSize: mainWindowSize)
-                    //                            .closeOnTapOutside(false)
-                    //                            .dragToDismiss(false)
-                    //                            .isOpaque(true)
-                    //                            .animation(.spring())
-                    //                            .closeOnTap(false)
-                    //                            .backgroundColor(.black.opacity(0.8))
-                    //                            .position(.center)
-                    //                    }
-                    
                     .navigationBarTitle("Territories", displayMode: .automatic)
                     .navigationBarBackButtonHidden(true)
                     .toolbar {
@@ -183,10 +165,6 @@ struct TerritoryView: View {
                             HStack {
                                 Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                     .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                                //                            if viewModel.isAdmin {
-                                //                                Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-                                //                                    .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-                                //                            }
                             }
                         }
                         

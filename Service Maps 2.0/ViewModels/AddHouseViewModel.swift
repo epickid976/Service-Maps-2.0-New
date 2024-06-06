@@ -49,7 +49,7 @@ class AddHouseViewModel: ObservableObject {
     
     func checkInfo() -> Bool {
         if number == "" {
-            error = "Number is required."
+            error = NSLocalizedString("Number is required.", comment: "")
             return false
         } else {
             return true

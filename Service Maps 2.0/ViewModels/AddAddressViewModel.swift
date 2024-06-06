@@ -47,7 +47,7 @@ class AddAddressViewModel: ObservableObject {
     
     func checkInfo() -> Bool {
         if addressText == "" {
-            error = "Address is required."
+            error = NSLocalizedString("Address is required.", comment: "")
             return false
         } else {
             return true

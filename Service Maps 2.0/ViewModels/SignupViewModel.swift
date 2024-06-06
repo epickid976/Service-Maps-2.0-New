@@ -21,6 +21,7 @@ class SignupViewModel: ObservableObject {
     
     // Input properties
     @Published var name: String = ""
+    @Published var lastName: String = ""
     @Published var username: String = ""
     @Published var password: String = ""
     @Published var passwordConfirmation: String = ""
@@ -49,10 +50,10 @@ class SignupViewModel: ObservableObject {
     
     func validate() -> Bool {
         
-        if self.username.isEmpty || self.password.isEmpty || self.name.isEmpty || self.passwordConfirmation.isEmpty {
+        if self.username.isEmpty || self.password.isEmpty || self.name.isEmpty || self.lastName.isEmpty || self.passwordConfirmation.isEmpty {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.loginErrorText = "Fields cannot be empty"
+                    self.loginErrorText = NSLocalizedString("Fields cannot be empty", comment: "")
                     self.loginError = true
                 }
             }
@@ -62,7 +63,7 @@ class SignupViewModel: ObservableObject {
         if self.password != self.passwordConfirmation {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.loginErrorText = "Passwords must match."
+                    self.loginErrorText =  NSLocalizedString("Passwords must match.", comment: "")
                     self.loginError = true
                 }
             }
@@ -72,7 +73,7 @@ class SignupViewModel: ObservableObject {
         if self.password.count < 8 {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.loginErrorText = "Password must be more than 8 characters."
+                    self.loginErrorText =  NSLocalizedString("Password must be more than 8 characters.", comment: "")
                     self.loginError = true
                 }
             }
@@ -84,7 +85,7 @@ class SignupViewModel: ObservableObject {
         if !self.isValidEmail(self.username) {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.loginErrorText = "Not a valid email."
+                    self.loginErrorText =  NSLocalizedString("Not a valid email.", comment: "")
                     self.loginError = true
                 }
             }
@@ -94,7 +95,7 @@ class SignupViewModel: ObservableObject {
         if self.username.contains(" ") {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.loginErrorText = "Email cannot contain spaces."
+                    self.loginErrorText =  NSLocalizedString("Email cannot contain spaces.", comment: "")
                     self.loginError = true
                 }
             }
@@ -113,7 +114,7 @@ class SignupViewModel: ObservableObject {
     // Signup function
     func signUp(completion: @escaping (Result<Bool, Error>) -> Void) async {
         Task {
-            let result = await authenticationManager.signUp(signUpForm: SignUpForm(name: name, email: username, password: password, password_confirmation: password))
+            let result = await authenticationManager.signUp(signUpForm: SignUpForm(name: "\(name) \(lastName)", email: username, password: password, password_confirmation: password))
             
             
             switch result {
@@ -127,32 +128,32 @@ class SignupViewModel: ObservableObject {
             case .failure(let error):
                 if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
                     DispatchQueue.main.async {
-                        self.alertTitle = "No Internet Connection"
-                        self.alertMessage = "There was a problem with the internet connection. \nPlease check your internet connection and try again."
+                        self.alertTitle =  NSLocalizedString("No Internet Connection", comment: "")
+                        self.alertMessage =  NSLocalizedString("There was a problem with the internet connection. \nPlease check your internet connection and try again.", comment: "")
                         self.loading = false
                         self.showAlert = true
                     }
                     completion(Result.failure(error))
                 } else if error.asAFError?.responseCode == 401 {
                     DispatchQueue.main.async {
-                        self.alertTitle = "Invalid Credentials"
-                        self.alertMessage = "Email or Password is incorrect. Please try again."
+                        self.alertTitle =  NSLocalizedString("Invalid Credentials", comment: "")
+                        self.alertMessage =  NSLocalizedString("Email or Password is incorrect. Please try again.", comment: "")
                         self.loading = false
                         self.showAlert = true
                     }
                     completion(Result.failure(error))
                 } else if error.asAFError?.responseCode == 422 {
                     DispatchQueue.main.async {
-                        self.alertTitle = "Email Taken"
-                        self.alertMessage = "It seems this email is taken. Try logging in."
+                        self.alertTitle =  NSLocalizedString("Email Taken", comment: "")
+                        self.alertMessage =  NSLocalizedString("It seems this email is taken. Try logging in.", comment: "")
                         self.loading = false
                         self.showAlert = true
                     }
                     completion(Result.failure(error))
                 } else {
                     DispatchQueue.main.async {
-                        self.alertTitle = "Error"
-                        self.alertMessage = "Error logging in. \nPlease try again."
+                        self.alertTitle =  NSLocalizedString("Error", comment: "")
+                        self.alertMessage =  NSLocalizedString("Error logging in. \nPlease try again.", comment: "")
                         self.loading = false
                         self.showAlert = true
                     }

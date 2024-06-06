@@ -43,7 +43,7 @@ class LoginViewModel: ObservableObject {
             if !self.isValidEmail(self.username) {
                 DispatchQueue.main.async {
                     withAnimation {
-                        self.loginErrorText = "Not a valid email."
+                        self.loginErrorText =  NSLocalizedString("Not a valid email.", comment: "")
                         self.loginError = true
                     }
                 }
@@ -53,7 +53,7 @@ class LoginViewModel: ObservableObject {
             if self.username.contains(" ") {
                 DispatchQueue.main.async {
                     withAnimation {
-                        self.loginErrorText = "Email cannot contain spaces."
+                        self.loginErrorText =  NSLocalizedString("Email cannot contain spaces.", comment: "")
                         self.loginError = true
                     }
                 }
@@ -65,7 +65,7 @@ class LoginViewModel: ObservableObject {
             if self.password.count < 8 {
                 DispatchQueue.main.async {
                     withAnimation {
-                        self.loginErrorText = "Password must be more than 8 characters."
+                        self.loginErrorText =  NSLocalizedString("Password must be more than 8 characters.", comment: "")
                         self.loginError = true
                     }
                 }
@@ -75,7 +75,7 @@ class LoginViewModel: ObservableObject {
             if self.password != self.username {
                 DispatchQueue.main.async {
                     withAnimation {
-                        self.loginErrorText = "Passwords must match."
+                        self.loginErrorText =  NSLocalizedString("Passwords must match.", comment: "")
                         self.loginError = true
                     }
                 }
@@ -86,7 +86,7 @@ class LoginViewModel: ObservableObject {
         if self.username.isEmpty || self.password.isEmpty {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.loginErrorText = "Fields cannot be empty"
+                    self.loginErrorText =  NSLocalizedString("Fields cannot be empty", comment: "")
                     self.loginError = true
                 }
             }
@@ -128,24 +128,24 @@ class LoginViewModel: ObservableObject {
                 print(error.localizedDescription)
                 if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
                     DispatchQueue.main.async {
-                        self.alertTitle = "No Internet Connection"
-                        self.alertMessage = "There was a problem with the internet connection. \nPlease check your internet connection and try again."
+                        self.alertTitle =  NSLocalizedString("No Internet Connection", comment: "")
+                        self.alertMessage =  NSLocalizedString("There was a problem with the internet connection. \nPlease check your internet connection and try again.", comment: "")
                         self.loading = false
                         self.showAlert = true
                     }
                     completion(Result.failure(error))
                 } else if error.asAFError?.responseCode == 401 {
                     DispatchQueue.main.async {
-                        self.alertTitle = "Invalid Credentials"
-                        self.alertMessage = "Email or Password is incorrect. Please try again."
+                        self.alertTitle =  NSLocalizedString("Invalid Credentials", comment: "")
+                        self.alertMessage =  NSLocalizedString("Email or Password is incorrect. Please try again.", comment: "")
                         self.loading = false
                         self.showAlert = true
                     }
                     completion(Result.failure(error))
                 } else {
                     DispatchQueue.main.async {
-                        self.alertTitle = "Error"
-                        self.alertMessage = "Error logging in. \nPlease try again."
+                        self.alertTitle =  NSLocalizedString("Error", comment: "")
+                        self.alertMessage =  NSLocalizedString("Error logging in. \nPlease try again.", comment: "")
                         self.loading = false
                         self.showAlert = true
                     }
@@ -166,11 +166,11 @@ class LoginViewModel: ObservableObject {
         case .failure(let error):
             if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
                 DispatchQueue.main.async {
-                    self.loginErrorText = "No Internet Connection. Please try again later."
+                    self.loginErrorText =  NSLocalizedString("No Internet Connection. Please try again later.", comment: "")
                 }
             } else {
                 DispatchQueue.main.async {
-                    self.loginErrorText = "Error Resetting Password. Please try again later"
+                    self.loginErrorText =  NSLocalizedString("Error Resetting Password. Please try again later", comment: "")
                 }
             }
             self.loginError = true

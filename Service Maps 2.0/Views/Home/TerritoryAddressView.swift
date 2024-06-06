@@ -120,37 +120,6 @@ struct TerritoryAddressView: View {
                     }
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-//                    .popup(isPresented: $viewModel.showAlert) {
-//                        if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-//                            viewModel.alert()
-//                                .frame(width: 400, height: 230)
-//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                        }
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                            
-//                    }
-//                    .popup(isPresented: $viewModel.presentSheet) {
-//                        
-//                        .frame(width: 400, height: 230)
-//                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                    }
                     .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || viewModel.addressData != nil)
                     .onChange(of: viewModel.presentSheet) { value in
                         if value {

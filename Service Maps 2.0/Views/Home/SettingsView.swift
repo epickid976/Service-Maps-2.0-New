@@ -49,7 +49,7 @@ struct SettingsView: View {
                 Spacer().frame(height: 25)
                 viewModel.deleteCacheMenu(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
-                viewModel.deleteAccount(mainWindowSize: mainWindowSize) 
+                viewModel.deleteAccount(mainWindowSize: mainWindowSize)
             }
             .padding(.vertical)
             .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
@@ -69,6 +69,13 @@ struct SettingsView: View {
                     CentrePopup_Deletion(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).showAndReplace()
                 }
             }
+            
+            .onChange(of: viewModel.showEditNamePopup) { value in
+                if value {
+                    CentrePopup_EditUsername(viewModel: viewModel).showAndReplace()
+                }
+            }
+            
             .fullScreenCover(isPresented: $viewModel.presentSheet) {
                 AdminLoginView {
                     if showBackButton {
@@ -289,3 +296,85 @@ struct CentrePopup_Deletion: CentrePopup {
             .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }
+
+struct CentrePopup_EditUsername: CentrePopup {
+    @ObservedObject var viewModel: SettingsViewModel
+    @FocusState private var usernameFocus: Bool
+    @State var username = StorageManager.shared.userName ?? ""
+    
+    @State var error = ""
+    @State var loading = false
+    func createContent() -> some View {
+        VStack {
+            Text("Edit Username")
+                .font(.title3)
+                .fontWeight(.bold)
+                .padding()
+            
+            CustomField(text: $username, isFocused: $usernameFocus, textfield: true, textfieldAxis: .vertical, placeholder: "New Username")
+                .padding(.bottom)
+            
+            Text(error)
+                .fontWeight(.bold)
+                .foregroundColor(.red)
+            
+            HStack {
+                if !loading {
+                    CustomBackButton() {
+                        dismiss()
+                        self.viewModel.showEditNamePopup = false
+                    }
+                }
+                
+                CustomButton(loading: loading, title: "Edit") {
+                    if !username.isEmpty {
+                        withAnimation { loading = true }
+                        
+                        Task {
+                            let result = await viewModel.editUserName(name: username)
+                            
+                            switch result {
+                            case .success(_):
+                                withAnimation { loading = false }
+                                dismiss()
+                                self.viewModel.showEditNamePopup = false
+                            case .failure(let error):
+                                withAnimation {
+                                    loading = false
+                                    self.error = NSLocalizedString("Error updating username", comment: "")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+        .padding()
+        .onAppear {
+            usernameFocus = true // Focus on the text field when the view appears
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    usernameFocus = false // Dismiss the keyboard when "Done" is tapped
+                }
+                .tint(.primary)
+                .fontWeight(.bold)
+            }
+        }
+        .padding(.top, 5)
+        .padding(.bottom, 5)
+        .padding(.horizontal, 5)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+

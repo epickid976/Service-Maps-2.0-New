@@ -14,6 +14,9 @@ class RealmManager: ObservableObject {
     static let shared = RealmManager()
     
     var realmDatabase: Realm
+    
+    
+    
     //var dataUploaderManager = DataUploaderManager()
     
     init() {
@@ -73,8 +76,9 @@ class RealmManager: ObservableObject {
     func addModel<T: Object>(_ object: T) -> Result<Bool, Error> {
         do {
             let realmDatabase = try Realm()
+
             try realmDatabase.write {
-                realmDatabase.add(object)
+                realmDatabase.add(object, update: .all)
             }
             return Result.success(true)
         } catch {

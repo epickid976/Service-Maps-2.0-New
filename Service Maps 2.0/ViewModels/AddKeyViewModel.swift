@@ -142,7 +142,7 @@ class AddKeyViewModel: ObservableObject {
     
     func checkInfo() -> Bool {
         if name == "" || selectedTerritories.isEmpty {
-            error = "Please fill out all the required fields."
+            error = NSLocalizedString("Please fill out all the required fields.", comment: "")
             return false
         } else {
             return true

@@ -166,6 +166,8 @@ class SynchronizationManager: ObservableObject {
                     for user in response {
                         userTokensApi.append(UserTokenModel(id: UUID().uuidString, token: token.id, userId: String(user.id), name: user.name))
                     }
+                } catch {
+                    print("not authorized")
                 }
             }
             

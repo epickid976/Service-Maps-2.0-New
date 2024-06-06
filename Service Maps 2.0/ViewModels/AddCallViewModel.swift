@@ -54,7 +54,7 @@ class AddCallViewModel: ObservableObject {
     
     func checkInfo() -> Bool {
         if notes.isEmpty {
-            error = "Notes are required."
+            error = NSLocalizedString("Notes are required.", comment: "")
             return false
         } else {
             return true
