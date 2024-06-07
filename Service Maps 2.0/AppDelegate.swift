@@ -11,21 +11,21 @@ import SwiftUI
 import Combine
 import RealmSwift
 
+
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-        let config = Realm.Configuration(
-            schemaVersion: 1,
-            migrationBlock: { migration, oldSchemaVersion in
-                if oldSchemaVersion < 1 {
+        func migrationVersion() {
+            let config = Realm.Configuration(
+                schemaVersion: 5) { migration, oldSchemaVersion in
                     migration.enumerateObjects(ofType: TokenTerritoryObject.className()) { oldObject, newObject in
-                        newObject!["_id"] = "\(oldObject!["token"]!):\(oldObject!["territory"]!)"
-                    }
+                            newObject!["_id"] = ObjectId.generate()
+                        }
                 }
-            }
-        )
-        Realm.Configuration.defaultConfiguration = config
-
+            Realm.Configuration.defaultConfiguration = config
+        }
+        
+        migrationVersion()
         return true
     }
 }

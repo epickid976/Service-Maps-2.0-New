@@ -95,6 +95,7 @@ struct Service_Maps_2_0App: App {
                     universalLinksManager.handleIncomingURL(url)
                 })
                 .animation(.easeIn(duration: 0.25), value: destination)
+                .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
                 .navigationTransition(
                     .fade(.in)
                 )

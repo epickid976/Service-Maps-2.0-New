@@ -51,7 +51,7 @@ struct TerritoryView: View {
             ZStack {
                 ScrollView {
                     LazyVStack {
-                        if viewModel.territoryData == nil || viewModel.dataStore.synchronized == false {
+                        if viewModel.territoryData == nil || !viewModel.dataStore.synchronized {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
                                     .playing(loopMode: .loop)
@@ -89,7 +89,6 @@ struct TerritoryView: View {
                                 
                             } else {
                                 LazyVStack {
-                                    
                                     if viewModel.recentTerritoryData != nil {
                                         if viewModel.recentTerritoryData!.count > 0 {
                                         LazyVStack {
