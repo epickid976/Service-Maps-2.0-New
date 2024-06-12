@@ -31,6 +31,7 @@ struct TerritoryView: View {
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
     
+    @State var searchViewDestination = false
     
     init() {
         
@@ -157,11 +158,20 @@ struct TerritoryView: View {
                             }
                         }
                     }
+                    .navigationDestination(isPresented: $searchViewDestination) {
+                        NavigationLazyView(SearchView(searchMode: .Territories))
+                    }
                     .navigationBarTitle("Territories", displayMode: .automatic)
                     .navigationBarBackButtonHidden(true)
                     .toolbar {
                         ToolbarItemGroup(placement: .topBarTrailing) {
                             HStack {
+                                Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        searchViewDestination = true
+                                    }
+                                }).keyboardShortcut(.delete, modifiers: .command)
+                                .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                 Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                     .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                             }

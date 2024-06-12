@@ -41,6 +41,8 @@ class TerritoryViewModel: ObservableObject {
     @Published var optionsAnimation = false
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
+    @Published var backAnimation = false
+    
     
     @Published var restartAnimation = false
     @Published var animationProgress: Bool = false

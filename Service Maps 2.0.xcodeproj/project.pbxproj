@@ -64,7 +64,6 @@
 		823FD4D52A7D6F2D0036A1DD /* TerritoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4D42A7D6F2D0036A1DD /* TerritoryView.swift */; };
 		823FD4D72A7E78DA0036A1DD /* CellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4D62A7E78DA0036A1DD /* CellView.swift */; };
 		823FD4DA2A8165230036A1DD /* AccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4D92A8165230036A1DD /* AccessView.swift */; };
-		823FD4DC2A8165300036A1DD /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4DB2A8165300036A1DD /* SettingsView.swift */; };
 		824213662A82BF0200626DD5 /* StartupState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213652A82BF0200626DD5 /* StartupState.swift */; };
 		824213692A82C4CB00626DD5 /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213682A82C4CB00626DD5 /* AuthenticationManager.swift */; };
 		8242136B2A82C5C800626DD5 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242136A2A82C5C800626DD5 /* StorageManager.swift */; };
@@ -85,6 +84,8 @@
 		824E5CF42BC57F73001DE348 /* TokenCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF32BC57F73001DE348 /* TokenCell.swift */; };
 		824E5CF62BC5ABF4001DE348 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF52BC5ABF4001DE348 /* DatabaseManager.swift */; };
 		8250B1A92A8A826800A7B70E /* TerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */; };
+		8255F1922C1944D000445A82 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1912C1944D000445A82 /* SearchView.swift */; };
+		8255F1942C19465200445A82 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1932C19465200445A82 /* SettingsView.swift */; };
 		825645A02BCE0FC000F18AC9 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 8256459F2BCE0FC000F18AC9 /* Realm */; };
 		825645A22BCE0FC000F18AC9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 825645A12BCE0FC000F18AC9 /* RealmSwift */; };
 		825645A52BCE104300F18AC9 /* HouseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645A42BCE104300F18AC9 /* HouseObject.swift */; };
@@ -146,6 +147,7 @@
 		82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */; };
 		82DAEEDE2AAF597100465DA5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DAEEDD2AAF597100465DA5 /* HomeView.swift */; };
 		82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBEA992A880B9E002048DC /* ResetPassword.swift */; };
+		82DDE2CD2C193BD4003B65A5 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */; };
 		82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EC3E922A9CFF68000E2926 /* HousesView.swift */; };
 		82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F288862A86C21100930849 /* VerificationViewModel.swift */; };
 		82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */; };
@@ -227,7 +229,6 @@
 		823FD4D42A7D6F2D0036A1DD /* TerritoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryView.swift; sourceTree = "<group>"; };
 		823FD4D62A7E78DA0036A1DD /* CellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellView.swift; sourceTree = "<group>"; };
 		823FD4D92A8165230036A1DD /* AccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessView.swift; sourceTree = "<group>"; };
-		823FD4DB2A8165300036A1DD /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		824213652A82BF0200626DD5 /* StartupState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupState.swift; sourceTree = "<group>"; };
 		824213682A82C4CB00626DD5 /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		8242136A2A82C5C800626DD5 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
@@ -245,6 +246,8 @@
 		824E5CF32BC57F73001DE348 /* TokenCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenCell.swift; sourceTree = "<group>"; };
 		824E5CF52BC5ABF4001DE348 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryViewModel.swift; sourceTree = "<group>"; };
+		8255F1912C1944D000445A82 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		8255F1932C19465200445A82 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		825645A42BCE104300F18AC9 /* HouseObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseObject.swift; sourceTree = "<group>"; };
 		825645A62BCE117500F18AC9 /* TerritoryObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryObject.swift; sourceTree = "<group>"; };
 		825645A82BCE11EE00F18AC9 /* VisitObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitObject.swift; sourceTree = "<group>"; };
@@ -305,6 +308,7 @@
 		82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryViewModel.swift; sourceTree = "<group>"; };
 		82DAEEDD2AAF597100465DA5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		82DBEA992A880B9E002048DC /* ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPassword.swift; sourceTree = "<group>"; };
+		82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		82EC3E922A9CFF68000E2926 /* HousesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesView.swift; sourceTree = "<group>"; };
 		82F288862A86C21100930849 /* VerificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationViewModel.swift; sourceTree = "<group>"; };
 		82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicy.swift; sourceTree = "<group>"; };
@@ -556,10 +560,11 @@
 				82EC3E922A9CFF68000E2926 /* HousesView.swift */,
 				827EF1A12AA7B7E3006C4631 /* VisitsView.swift */,
 				823FD4D92A8165230036A1DD /* AccessView.swift */,
-				823FD4DB2A8165300036A1DD /* SettingsView.swift */,
+				8255F1932C19465200445A82 /* SettingsView.swift */,
 				82F75C252BE15A2E002CCAB0 /* PhoneTerritoriesScreen.swift */,
 				82F75C332BE29886002CCAB0 /* PhoneNumbersView.swift */,
 				82F75C372BE2D1A8002CCAB0 /* CallsView.swift */,
+				8255F1912C1944D000445A82 /* SearchView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -608,6 +613,7 @@
 				82F75C292BE15F04002CCAB0 /* PhoneScreenViewModel.swift */,
 				82F75C392BE2D1BA002CCAB0 /* CallsViewModel.swift */,
 				82F75C3D2BE2D6E3002CCAB0 /* AddCallViewModel.swift */,
+				82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -838,6 +844,7 @@
 				820933F32A785DD500AF3FF1 /* TokenTerritory.swift in Sources */,
 				823FD4C92A7B52560036A1DD /* UIDeviceExtension.swift in Sources */,
 				825645AD2BCE128E00F18AC9 /* TokenTerritoryObject.swift in Sources */,
+				8255F1922C1944D000445A82 /* SearchView.swift in Sources */,
 				82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */,
 				82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */,
 				82FB3C232BF257990066B0B9 /* RecentData.swift in Sources */,
@@ -912,7 +919,6 @@
 				82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */,
 				82F75C162BE132D3002CCAB0 /* AllPhoneDataResponse.swift in Sources */,
 				826B76772A729FE1000A4BAA /* NSManagedObjectExtension.swift in Sources */,
-				823FD4DC2A8165300036A1DD /* SettingsView.swift in Sources */,
 				823FD4D72A7E78DA0036A1DD /* CellView.swift in Sources */,
 				821C12762A78111C0050D106 /* ResetPasswordForm.swift in Sources */,
 				824E5CF42BC57F73001DE348 /* TokenCell.swift in Sources */,
@@ -926,10 +932,12 @@
 				826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */,
 				82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */,
 				82A5B4622BD5B31600F52F2F /* HouseData.swift in Sources */,
+				82DDE2CD2C193BD4003B65A5 /* SearchViewModel.swift in Sources */,
 				82CEA0312C11504000F52DE9 /* UserTokenObject.swift in Sources */,
 				82BC0F232A9C24AC00B255BF /* ChangeType.swift in Sources */,
 				82F75C1A2BE1343A002CCAB0 /* PhoneNumberModel.swift in Sources */,
 				82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */,
+				8255F1942C19465200445A82 /* SettingsView.swift in Sources */,
 				821111B62A7315B600F94662 /* AuthenticationAPI.swift in Sources */,
 				826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */,
 				821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */,
