@@ -164,7 +164,7 @@ struct MySearchResultItem: View {
         VStack {
             switch data.type {
             case .Territory:
-                NavigationLink(destination: NavigationLazyView(TerritoryView().implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(TerritoryView(territoryIdToScrollTo: data.territory!.id).implementPopupView()).implementPopupView()) {
                     CellView(territory: data.territory!, houseQuantity: 0, mainWindowSize: mainWindowSize)
                 }
             case .Address:

@@ -15,6 +15,7 @@ struct CellView: View {
     
     var mainWindowSize: CGSize
     
+    
     var body: some View {
         HStack(spacing: 10) {
             VStack {
@@ -57,7 +58,7 @@ struct CellView: View {
             
             
         }
-        //.id(territory.id)
+        .id(territory.id)
         .padding(5)
         .frame(minWidth: mainWindowSize.width * width)
         .background(.thinMaterial)

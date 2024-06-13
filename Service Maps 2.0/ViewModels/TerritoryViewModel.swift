@@ -75,11 +75,11 @@ class TerritoryViewModel: ObservableObject {
     
     
     
+    @Published var territoryIdToScrollTo: String?
     
     
-    
-    init() {
-        getTerritories()
+    init(territoryIdToScrollTo: String? = nil) {
+        getTerritories(territoryIdToScrollTo: territoryIdToScrollTo)
         getRecentTerritories()
     }
     
@@ -108,7 +108,7 @@ class TerritoryViewModel: ObservableObject {
 
 @MainActor
 extension TerritoryViewModel {
-    func getTerritories() {
+    func getTerritories(territoryIdToScrollTo: String? = nil) {
         RealmManager.shared.getTerritoryData()
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -120,6 +120,13 @@ extension TerritoryViewModel {
                 if self.search.isEmpty {
                     DispatchQueue.main.async {
                         self.territoryData = territoryData
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if let territoryIdToScrollTo = territoryIdToScrollTo {
+                                self.territoryIdToScrollTo = territoryIdToScrollTo
+                            }
+                        }
+                        
                     }
                 } else {
                     DispatchQueue.main.async {
@@ -134,6 +141,7 @@ extension TerritoryViewModel {
                                 territory.territory.description.lowercased().contains(self.search.lowercased())
                             }
                         }
+                        
                     }
                 }
             })
