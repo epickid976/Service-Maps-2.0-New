@@ -209,7 +209,13 @@ struct HousesView: View {
                             hideFloatingButton = false
                         }
                     }
-                    .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
+                    .onChange(of: viewModel.dataStore.synchronized) { value in
+                        if value {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                viewModel.getHouses()
+                            }
+                        }
+                    }
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
@@ -220,6 +226,7 @@ struct HousesView: View {
                     .padding()
                     .keyboardShortcut("+", modifiers: .command)
                 }
+                
             }
         }
     }

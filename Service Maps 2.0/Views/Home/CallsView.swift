@@ -190,10 +190,17 @@ struct CallsView: View {
                 }
                 .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                 .navigationViewStyle(StackNavigationViewStyle())
-            }.coordinateSpace(name: "scroll").searchable(text: $viewModel.search)
+            }.coordinateSpace(name: "scroll")
                 .scrollIndicators(.hidden)
             .refreshable {
                 viewModel.synchronizationManager.startupProcess(synchronizing: true)
+            }
+            .onChange(of: viewModel.dataStore.synchronized) { value in
+                if value {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        viewModel.getCalls()
+                    }
+                }
             }
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true

@@ -282,6 +282,7 @@ class RealmManager: ObservableObject {
                     entity.token = userToken.token
                     entity.userId = userToken.userId
                     entity.name = userToken.name
+                    entity.blocked = userToken.blocked
                 }
             } else {
                 return .failure(CustomErrors.NotFound)
@@ -874,48 +875,14 @@ class RealmManager: ObservableObject {
     
     @MainActor
     func searchEverywhere(query: String, searchMode: SearchMode) -> AnyPublisher<[MySearchResult], Never> {
-        let territoriesPublisher = $territoriesFlow
-            .map { territories -> [TerritoryObject] in
-                return territories.filter { String($0.number).range(of: query, options: .caseInsensitive) != nil || $0.description.range(of: query, options: .caseInsensitive) != nil }
-            }
-            .eraseToAnyPublisher()
-        
-        let addressesPublisher = $addressesFlow
-            .map { addresses -> [TerritoryAddressObject] in
-                return addresses.filter { $0.address.range(of: query, options: .caseInsensitive) != nil }
-            }
-            .eraseToAnyPublisher()
-        
-        let housesPublisher = $housesFlow
-            .map { houses -> [HouseObject] in
-                return houses.filter { $0.number.range(of: query, options: .caseInsensitive) != nil }
-            }
-            .eraseToAnyPublisher()
-        
-        let visitsPublisher = $visitsFlow
-            .map { visits -> [VisitObject] in
-                return visits.filter { $0.notes.range(of: query, options: .caseInsensitive) != nil || $0.user.range(of: query, options: .caseInsensitive) != nil }
-            }
-            .eraseToAnyPublisher()
-        
-        let phoneTerritoriesPublisher = $phoneTerritoriesFlow
-            .map { phoneTerritories -> [PhoneTerritoryObject] in
-                return phoneTerritories.filter { String($0.number).range(of: query, options: .caseInsensitive) != nil || $0.description.range(of: query, options: .caseInsensitive) != nil }
-            }
-            .eraseToAnyPublisher()
-        
-        let numbersPublisher = $phoneNumbersFlow
-            .map { numbers -> [PhoneNumberObject] in
-                return numbers.filter { $0.number.range(of: query, options: .caseInsensitive) != nil }
-            }
-            .eraseToAnyPublisher()
-        
-        let callsPublisher = $phoneCallsFlow
-            .map { calls -> [PhoneCallObject] in
-                return calls.filter { $0.notes.range(of: query, options: .caseInsensitive) != nil || $0.user.range(of: query, options: .caseInsensitive) != nil }
-            }
-            .eraseToAnyPublisher()
-        
+        let territoriesPublisher = $territoriesFlow.eraseToAnyPublisher()
+        let addressesPublisher = $addressesFlow.eraseToAnyPublisher()
+        let housesPublisher = $housesFlow.eraseToAnyPublisher()
+        let visitsPublisher = $visitsFlow.eraseToAnyPublisher()
+        let phoneTerritoriesPublisher = $phoneTerritoriesFlow.eraseToAnyPublisher()
+        let numbersPublisher = $phoneNumbersFlow.eraseToAnyPublisher()
+        let callsPublisher = $phoneCallsFlow.eraseToAnyPublisher()
+
         let combinedPublisher: AnyPublisher<[MySearchResult], Never>
         
         switch searchMode {
@@ -926,78 +893,81 @@ class RealmManager: ObservableObject {
                 housesPublisher,
                 visitsPublisher
             )
-            .map { territories, addresses, houses, visits -> [MySearchResult] in
+            .map { (territories, addresses, houses, visits) -> [MySearchResult] in
                 var results: [MySearchResult] = []
-                
-                // Add territories
+
                 territories.forEach { territory in
-                    results.append(MySearchResult(type: .Territory, territory: convertTerritoryToTerritoryModel(model: territory)))
+                    if String(territory.number).localizedCaseInsensitiveContains(query) || territory.territoryDescription.localizedCaseInsensitiveContains(query) {
+                        results.append(MySearchResult(type: .Territory, territory: convertTerritoryToTerritoryModel(model: territory)))
+                    }
                 }
                 
-                // Add addresses
                 addresses.forEach { address in
-                    if let territory = territories.first(where: { $0.id == address.territory }) {
+                    if address.address.localizedCaseInsensitiveContains(query),
+                       let territory = territories.first(where: { $0.id == address.territory }) {
                         results.append(MySearchResult(type: .Address, territory: convertTerritoryToTerritoryModel(model: territory), address: convertTerritoryToTerritoryAddressModel(model: address)))
                     }
                 }
                 
-                // Add houses
                 houses.forEach { house in
-                    if let address = addresses.first(where: { $0.id == house.territory_address }),
+                    if house.number.localizedCaseInsensitiveContains(query),
+                       let address = addresses.first(where: { $0.id == house.territory_address }),
                        let territory = territories.first(where: { $0.id == address.territory }) {
                         results.append(MySearchResult(type: .House, territory: convertTerritoryToTerritoryModel(model: territory), address: convertTerritoryToTerritoryAddressModel(model: address), house: convertHouseToHouseModel(model: house)))
                     }
                 }
                 
-                // Add visits
                 visits.forEach { visit in
-                    if let house = houses.first(where: { $0.id == visit.house }),
+                    if visit.notes.localizedCaseInsensitiveContains(query) || visit.user.localizedCaseInsensitiveContains(query),
+                       let house = houses.first(where: { $0.id == visit.house }),
                        let address = addresses.first(where: { $0.id == house.territory_address }),
                        let territory = territories.first(where: { $0.id == address.territory }) {
                         results.append(MySearchResult(type: .Visit, territory: convertTerritoryToTerritoryModel(model: territory), address: convertTerritoryToTerritoryAddressModel(model: address), house: convertHouseToHouseModel(model: house), visit: convertVisitToVisitModel(model: visit)))
                     }
                 }
-                
+
                 return results
             }
             .eraseToAnyPublisher()
-            
+
         case .PhoneTerritories:
             combinedPublisher = Publishers.CombineLatest3(
                 phoneTerritoriesPublisher,
                 numbersPublisher,
                 callsPublisher
             )
-            .map { phoneTerritories, numbers, calls -> [MySearchResult] in
+            .map { (phoneTerritories, numbers, calls) -> [MySearchResult] in
                 var results: [MySearchResult] = []
-                
-                // Add phone territories
+
                 phoneTerritories.forEach { phoneTerritory in
-                    results.append(MySearchResult(type: .PhoneTerritory, phoneTerritory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: phoneTerritory)))
+                    if String(phoneTerritory.number).localizedCaseInsensitiveContains(query) || phoneTerritory.description.localizedCaseInsensitiveContains(query) {
+                        results.append(MySearchResult(type: .PhoneTerritory, phoneTerritory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: phoneTerritory)))
+                    }
                 }
-                
-                // Add numbers
+
                 numbers.forEach { number in
-                    if let phoneTerritory = phoneTerritories.first(where: { $0.id == number.territory }) {
+                    if number.number.localizedCaseInsensitiveContains(query),
+                       let phoneTerritory = phoneTerritories.first(where: { $0.id == number.territory }) {
                         results.append(MySearchResult(type: .Number, phoneTerritory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: phoneTerritory), number: convertPhoneNumberModelToPhoneNumberModel(model: number)))
                     }
                 }
-                
-                // Add calls
+
                 calls.forEach { call in
-                    if let number = numbers.first(where: { $0.id == call.phoneNumber }),
+                    if call.notes.localizedCaseInsensitiveContains(query) || call.user.localizedCaseInsensitiveContains(query),
+                       let number = numbers.first(where: { $0.id == call.phoneNumber }),
                        let phoneTerritory = phoneTerritories.first(where: { $0.id == number.territory }) {
                         results.append(MySearchResult(type: .Call, phoneTerritory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: phoneTerritory), number: convertPhoneNumberModelToPhoneNumberModel(model: number), call: convertPhoneCallModelToPhoneCallModel(model: call)))
                     }
                 }
-                
+
                 return results
             }
             .eraseToAnyPublisher()
         }
-        
+
         return combinedPublisher
     }
+
     
     func phoneCallAccessLevel(call: PhoneCallObject, email: String) -> AccessLevel {
         if AuthorizationLevelManager().existsAdminCredentials() {

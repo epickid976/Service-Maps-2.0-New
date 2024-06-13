@@ -16,7 +16,7 @@ struct CustomField: View {
     var keyboardType: UIKeyboardType?
     var textAlignment: TextAlignment?
     var textfieldAxis: Axis?
-    var disabled: Bool?
+    @State var disabled: Bool?
     var formatAsPhone: Bool?
     var disableAutocorrect: Bool?
     var expanded: Bool?

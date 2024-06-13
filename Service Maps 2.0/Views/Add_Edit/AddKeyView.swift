@@ -18,8 +18,10 @@ struct AddKeyView: View {
     @Environment(\.mainWindowSize) var mainWindowSize
     @FocusState private var nameFocus: Bool
     
-    init(onDone: @escaping () -> Void) {
-        _viewModel = StateObject(wrappedValue: AddKeyViewModel())
+    init(keyData: KeyData?, onDone: @escaping () -> Void) {
+        self.keyData = keyData
+        let viewModel = AddKeyViewModel(keyData: keyData)
+        _viewModel = StateObject(wrappedValue: viewModel)
         self.onDone = onDone
     }
     @StateObject var synchronizationManager = SynchronizationManager.shared
@@ -28,7 +30,7 @@ struct AddKeyView: View {
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
-    
+    @State var keyData: KeyData?
     var body: some View {
         GeometryReader { proxy in
             VStack {
@@ -87,11 +89,19 @@ struct AddKeyView: View {
                                         .hSpacing(.trailing)
                                 }
                                 .toggleStyle(CheckmarkToggleStyle())
+                                .disabled(keyData != nil)
                                 //.padding()
                             }
                         }
-                        CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Key Name", comment: ""))
-                        
+                        if keyData != nil {
+                            Text(keyData!.key.name)
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .hSpacing(.leading)
+                                .padding(.leading)
+                        } else {
+                            CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Key Name", comment: ""))
+                        }
                         ScrollView {
                             LazyVStack {
                                 ForEach(viewModel.territoryData!) { dataWithKey in
@@ -106,7 +116,7 @@ struct AddKeyView: View {
                             }
                             //.padding([.top])
                             
-                            CustomButton(loading: viewModel.loading, title: NSLocalizedString("Add", comment: "")) {
+                            CustomButton(loading: viewModel.loading, title: NSLocalizedString(keyData != nil ? "Edit" : "Add", comment: "")) {
                                 if viewModel.checkInfo() {
                                     Task {
                                         withAnimation {
@@ -118,7 +128,7 @@ struct AddKeyView: View {
                                             onDone()
                                             presentationMode.wrappedValue.dismiss()
                                         case .failure(_):
-                                            viewModel.error = NSLocalizedString("Error adding key.", comment: "")
+                                            viewModel.error = NSLocalizedString("Error adding/updating key.", comment: "")
                                             viewModel.loading = false
                                         }
                                     }

@@ -84,6 +84,14 @@ class TokenAPI {
         }
     }
     
+    func editToken(tokenId: String, territories: String) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "edit", body: EditTokenForm(token: tokenId, territories: territories))
+        } catch {
+            throw error.self
+        }
+    }
+    
     func deleteToken(token: String) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "delete", body: DeleteTokenForm(token: token))
@@ -128,6 +136,14 @@ class TokenAPI {
     func removeUserFromToken(token: String, userId: String) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "tokenuserremove", body: TokenAndUserIdForm(token: token, userid: userId))
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func blockUnblockUserFromToken(token: String, userId: String, blocked: Bool) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "blockunblock", body: TokenAndUserIdForm(token: token, userid: userId, blocked: blocked))
         } catch {
             throw error.self
         }

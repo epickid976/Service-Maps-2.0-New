@@ -164,7 +164,7 @@ class SynchronizationManager: ObservableObject {
                 do {
                     let response = try await tokenApi.usersOfToken(token: token.id)
                     for user in response {
-                        userTokensApi.append(UserTokenModel(id: UUID().uuidString, token: token.id, userId: String(user.id), name: user.name))
+                        userTokensApi.append(UserTokenModel(id: UUID().uuidString, token: token.id, userId: String(user.id), name: user.name, blocked: user.blocked))
                     }
                 } catch {
                     print("not authorized")

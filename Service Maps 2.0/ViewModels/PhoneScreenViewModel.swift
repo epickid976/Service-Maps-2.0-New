@@ -74,6 +74,7 @@ class PhoneScreenViewModel: ObservableObject {
     
     @Published var searchActive = false
   
+    @Published var backAnimation = false
 }
 
 @MainActor

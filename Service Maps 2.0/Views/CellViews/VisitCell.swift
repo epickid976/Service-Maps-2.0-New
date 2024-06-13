@@ -22,7 +22,7 @@ struct VisitCell: View {
                                 .fontWeight(.heavy)
                                 .hSpacing(.leading)
                             Spacer().frame(width: 5)
-                            Text(visit.visit.symbol.localizedUppercase)
+                            Text(NSLocalizedString(visit.visit.symbol.localizedUppercase, comment: ""))
                                 .font(.title3)
                                 .lineLimit(1)
                                 .foregroundColor(.primary)

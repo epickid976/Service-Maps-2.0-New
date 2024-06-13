@@ -12,6 +12,7 @@ class UserTokenObject: Object, Identifiable {
     @Persisted var id: String
     @Persisted var token: String
     @Persisted var userId: String
+    @Persisted var blocked: Bool
     @Persisted var name: String
     
     override static func primaryKey() -> String? {
@@ -22,7 +23,8 @@ class UserTokenObject: Object, Identifiable {
         return lhs.id == rhs.id &&
                lhs.token == rhs.token &&
                lhs.userId == rhs.userId &&
-               lhs.name == rhs.name
+               lhs.name == rhs.name &&
+                lhs.blocked == rhs.blocked
       }
     
     func createUserTokenObject(from model: UserTokenModel) -> UserTokenObject {
@@ -31,6 +33,7 @@ class UserTokenObject: Object, Identifiable {
         userTokenObject.token = model.token
         userTokenObject.userId = model.userId
         userTokenObject.name = model.name
+        userTokenObject.blocked = model.blocked
       return userTokenObject
     }
 

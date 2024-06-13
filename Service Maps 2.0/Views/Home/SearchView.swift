@@ -21,10 +21,15 @@ import MijickPopupView
 struct SearchView: View {
     @StateObject var searchViewModel: SearchViewModel
     
+    @State var backAnimation = false
+    @State var progress: CGFloat = 0.0
+    
     init(searchMode: SearchMode = .Territories) {
         let searchViewModel = SearchViewModel(mode: searchMode)
         self._searchViewModel = StateObject(wrappedValue: searchViewModel)
     }
+    
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         GeometryReader { proxy in
@@ -33,46 +38,120 @@ struct SearchView: View {
                     SearchBar(searchText: $searchViewModel.searchQuery)
                     
                     LazyVStack {
-                        if searchViewModel.searchState == .Searching {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("loading"))
-                                    .playing(loopMode: .autoReverse)
-                                    .resizable()
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("loading"))
-                                    .playing(loopMode: .autoReverse)
-                                    .resizable()
-                                    .frame(width: 350, height: 350)
+                        switch searchViewModel.searchState {
+                            case .Idle:
+                            VStack {
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("searchquiet"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .frame(width: 250, height: 250)
+                                } else {
+                                    LottieView(animation: .named("searchquiet"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .frame(width: 350, height: 350)
+                                }
+                                if searchViewModel.searchMode == .Territories {
+                                    Text("Search for a Territory, Address, House, Visit")
+                                        .font(.title)
+                                        .fontWeight(.heavy)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.top, -50)
+                                } else {
+                                    Text("Search for a Phone Territory, Number, Call")
+                                        .font(.title)
+                                        .fontWeight(.heavy)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.top, -50)
+                                }
+                                
                             }
-                        } else if searchViewModel.searchState == .Done && searchViewModel.searchQuery.isEmpty {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("searchquiet"))
-                                    .playing(loopMode: .autoReverse)
-                                    .resizable()
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("searchquiet"))
-                                    .playing(loopMode: .autoReverse)
-                                    .resizable()
-                                    .frame(width: 350, height: 350)
+                            case .Searching:
+                            VStack {
+                                
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("search"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .frame(width: 250, height: 250)
+                                } else {
+                                    LottieView(animation: .named("search"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .frame(width: 350, height: 350)
+                                }
+                                Text("Searching...")
+                                    .font(.title)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.top, -50)
                             }
-                        } else if searchViewModel.isLoaded() {
-                            // Display search results
-                            ForEach(SearchResultType.allCases, id: \.self) { type in
-                                if searchViewModel.searchResults.contains(where: { $0.type == type }) {
-                                    Section(header: Text(type.rawValue)) {
-                                        ForEach(searchViewModel.searchResults.filter { $0.type == type }, id: \.self.id) { data in
-                                            MySearchResultItem(data: data, mainWindowSize: proxy.size)
+                            case .Done:
+                            if searchViewModel.searchResults.isEmpty {
+                                VStack {
+                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                        LottieView(animation: .named("noresults"))
+                                            .playing(loopMode: .loop)
+                                            .resizable()
+                                            .frame(width: 250, height: 250)
+                                    } else {
+                                        LottieView(animation: .named("noresults"))
+                                            .playing(loopMode: .loop)
+                                            .resizable()
+                                            .frame(width: 350, height: 350)
+                                    }
+                                    Text("No results found")
+                                        .font(.title)
+                                        .fontWeight(.heavy)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.top, -50)
+                                }
+                            } else {
+                                LazyVStack {
+                                    ForEach(SearchResultType.allCases, id: \.id) { type in
+                                        if searchViewModel.searchResults.contains(where: { $0.type == type }) {
+                                            Section(header: Text(type.rawValue).fontWeight(.heavy).font(.title3)) {
+                                                ForEach(searchViewModel.searchResults.filter { $0.type == type }, id: \.id) { data in
+                                                    MySearchResultItem(data: data, mainWindowSize: proxy.size)
+                                                }
+                                            }
                                         }
                                     }
-                                }
+                                }.animation(.spring(), value: searchViewModel.searchResults)
                             }
+                        }
+                    }.animation(.easeInOut(duration: 0.5), value: searchViewModel.searchState)
+                }
+                .padding()
+            }.navigationTransition(.zoom.combined(with: .fade(.in)))
+                .toolbar{
+                    ToolbarItemGroup(placement: .keyboard){
+                        Spacer()
+                        Button("Done"){
+                            DispatchQueue.main.async {
+                                hideKeyboard()
+                            }
+                        }.foregroundColor(.primary)
+                    }
+                }
+                .toolbar {
+                    ToolbarItemGroup(placement: .topBarLeading) {
+                        HStack {
+                            Button("", action: {withAnimation { backAnimation.toggle() };
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    presentationMode.wrappedValue.dismiss()
+                                }
+                            }).keyboardShortcut(.delete, modifiers: .command)
+                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $progress, animation: $backAnimation))
                         }
                     }
                 }
-                .padding()
-            }
+                .navigationBarBackButtonHidden()
         }
     }
 }
@@ -85,11 +164,11 @@ struct MySearchResultItem: View {
         VStack {
             switch data.type {
             case .Territory:
-                NavigationLink(destination: TerritoryView()) {
+                NavigationLink(destination: NavigationLazyView(TerritoryView().implementPopupView()).implementPopupView()) {
                     CellView(territory: data.territory!, houseQuantity: 0, mainWindowSize: mainWindowSize)
                 }
             case .Address:
-                NavigationLink(destination: TerritoryAddressView(territory: data.territory!)) {
+                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: data.territory!).implementPopupView()).implementPopupView()) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(AddressData(id: ObjectIdentifier(TerritoryAddressObject().createTerritoryAddressObject(from: data.address!)), address: data.address!, houseQuantity: 0, accessLevel: .User).address.address)")
@@ -114,19 +193,19 @@ struct MySearchResultItem: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
             case .House:
-                NavigationLink(destination: HousesView(address: data.address!)) {
+                NavigationLink(destination: NavigationLazyView(HousesView(address: data.address!).implementPopupView()).implementPopupView()) {
                     HouseCell(house: HouseData(id: UUID(), house: data.house!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: HouseObject().createHouseObject(from: data.house!)) ?? .User), mainWindowSize: mainWindowSize)
                 }
             case .Visit:
-                NavigationLink(destination: VisitsView(house: data.house!)) {
+                NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!).implementPopupView()).implementPopupView()) {
                     VisitCell(visit: VisitData(id: UUID(), visit: data.visit!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: VisitObject().createVisitObject(from: data.visit!)) ?? .User))
                 }
             case .PhoneTerritory:
-                NavigationLink(destination: PhoneTerritoriesScreen()) {
+                NavigationLink(destination: NavigationLazyView(PhoneTerritoriesScreen().implementPopupView()).implementPopupView()) {
                     PhoneTerritoryCellView(territory: data.phoneTerritory!, numbers: 0, mainWindowSize: mainWindowSize)
                 }
             case .Number:
-                NavigationLink(destination: PhoneNumbersView(territory: data.phoneTerritory!)) {
+                NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: data.phoneTerritory!).implementPopupView()).implementPopupView()) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(PhoneNumbersData(id: UUID(), phoneNumber: data.number!, phoneCall: nil).phoneNumber.number.formatPhoneNumber())")
@@ -176,7 +255,7 @@ struct MySearchResultItem: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
             case .Call:
-                NavigationLink(destination: CallsView(phoneNumber: data.number!)) {
+                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: data.number!).implementPopupView()).implementPopupView()) {
                     CallCell(call: PhoneCallData(id: UUID(), phoneCall: data.call!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: PhoneCallObject().createTerritoryObject(from: data.call!)) ?? .User))
                 }
             }

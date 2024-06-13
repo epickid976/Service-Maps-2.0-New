@@ -67,7 +67,8 @@ class SettingsViewModel: ObservableObject {
             return Result.failure(failure)
         }
     }
-    
+    //UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+
     @ViewBuilder
     func profile(showBack: Bool, onDone: @escaping () -> Void?) -> some View {
         VStack {
@@ -271,6 +272,36 @@ class SettingsViewModel: ObservableObject {
             .background(.thinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }.padding(.bottom).frame(maxWidth: .infinity)
+    }
+    
+    @ViewBuilder
+    func languageLinkView(mainWindowSize: CGSize) -> some View {
+        VStack {
+            HStack {
+                Button {
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                } label: {
+                    Image(systemName: "globe")
+                        .imageScale(.large)
+                        .padding(.horizontal)
+                    Text("Language")
+                        .font(.title3)
+                        .lineLimit(2)
+                        .foregroundColor(.primary)
+                        .fontWeight(.heavy)
+                }
+                .hSpacing(.leading)
+                Spacer()
+                Image(systemName: "arrowshape.right.circle.fill")
+                    .imageScale(.large)
+                    .padding(.horizontal)
+            }
+            .frame(minHeight: 50)
+            .padding(10)
+            .frame(minWidth: mainWindowSize.width * 0.95)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
     }
     
     @ViewBuilder

@@ -117,36 +117,6 @@ struct VisitsView: View {
                     .animation(.easeInOut(duration: 0.25), value: viewModel.visitData == nil || viewModel.visitData != nil)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-//                    .popup(isPresented: $viewModel.showAlert) {
-//                        if viewModel.visitToDelete != nil{
-//                            viewModel.alert()
-//                                .frame(width: 400, height: 260)
-//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                        }
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                    }
-//                    .popup(isPresented: $viewModel.presentSheet) {
-//
-//                        .frame(width: 400, height: 300)
-//                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                    }
                     .onChange(of: viewModel.presentSheet) { value in
                         if value {
                             CentrePopup_AddVisit(viewModel: viewModel, house: house).showAndStack()
@@ -170,19 +140,23 @@ struct VisitsView: View {
                         HStack {
                             Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                 .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                            //                            Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-                            //                                .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-                            
                         }
                     }
                 }
                 .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                 .navigationViewStyle(StackNavigationViewStyle())
-            }.coordinateSpace(name: "scroll").searchable(text: $viewModel.search)
+            }.coordinateSpace(name: "scroll")
                 .scrollIndicators(.hidden)
                 .refreshable {
                 viewModel.synchronizationManager.startupProcess(synchronizing: true)
             }
+                .onChange(of: viewModel.dataStore.synchronized) { value in
+                    if value {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            viewModel.getVisits()
+                        }
+                    }
+                }
             MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
                     }

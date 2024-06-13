@@ -178,6 +178,13 @@ struct TerritoryAddressView: View {
                 }
             }
             .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+            .onChange(of: viewModel.dataStore.synchronized) { value in
+                if value {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        viewModel.getAddresses()
+                    }
+                }
+            }
         }
     }
     

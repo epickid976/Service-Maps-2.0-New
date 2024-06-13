@@ -34,6 +34,7 @@ class AccessViewModel: ObservableObject {
     
     @Published var keyData: Optional<[KeyData]> = nil
     @Published var keyUsers: Optional<[UserTokenModel]> = nil
+    @Published var blockedUsers: Optional<[UserTokenModel]> = nil
     
     @Published var currentKey: MyTokenModel? = nil {
         didSet {
@@ -53,6 +54,9 @@ class AccessViewModel: ObservableObject {
             }
         }
     }
+    
+    @State var showUserBlockAlert = false
+    @State var showUserUnblockAlert = false
     
     @Published var optionsAnimation = false
     @Published var progress: CGFloat = 0.0
@@ -109,6 +113,16 @@ class AccessViewModel: ObservableObject {
         return await dataUploaderManager.registerToken(myToken: universalLinksManager.dataFromUrl ?? "")
     }
     
+    @MainActor
+    func removeUserFromToken() async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteUserFromToken(userToken: userToDelete.0!)
+    }
+    
+    @MainActor
+    func blockUnblockUserFromToken() async -> Result<Bool, Error> {
+        return await dataUploaderManager.blockUnblockUserFromToken(userToken: userToDelete.0!, blocked: Bool(userToDelete.1!)!)
+    }
+    
 }
 
 @MainActor
@@ -152,8 +166,11 @@ extension AccessViewModel {
                         print("Error retrieving territory data: \(error)")
                     }
                 }, receiveValue: { keyUsers in
+                    var blockedUsers = keyUsers.filter { $0.blocked }
+                    var unblockedUsers = keyUsers.filter { !$0.blocked }
                     DispatchQueue.main.async {
-                        self.keyUsers = keyUsers
+                        self.keyUsers = unblockedUsers
+                        self.blockedUsers = blockedUsers
                     }
                 })
                 .store(in: &cancellablesTwo)

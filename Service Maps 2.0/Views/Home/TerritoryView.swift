@@ -156,6 +156,7 @@ struct TerritoryView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                 viewModel.showAddedToast = false
                             }
+                            
                         }
                     }
                     .navigationDestination(isPresented: $searchViewDestination) {
@@ -179,7 +180,7 @@ struct TerritoryView: View {
                         
                         
                     }
-                    .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                    .navigationTransition(viewModel.presentSheet || searchViewDestination ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                     .navigationViewStyle(StackNavigationViewStyle())
                     
                 }.coordinateSpace(name: "scroll")
@@ -190,17 +191,13 @@ struct TerritoryView: View {
                             hideFloatingButton = false
                         }
                     }
-                    .optionalViewModifier { content in
-                        if #available(iOS 17, *) {
-                            content
-                                .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
-                        } else {
-                            content
-                                .searchable(text: $viewModel.search, placement: .navigationBarDrawer)
+                    .onChange(of: viewModel.dataStore.synchronized) { value in
+                        if value {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                viewModel.getTerritories()
+                            }
                         }
-                        
                     }
-                
                 
                 
                 if AuthorizationLevelManager().existsAdminCredentials() {

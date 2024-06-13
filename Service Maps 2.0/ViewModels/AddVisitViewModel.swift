@@ -58,8 +58,8 @@ class AddVisitViewModel: ObservableObject {
     }
     
     func checkInfo() -> Bool {
-        if selectedOption == .none{
-            error = NSLocalizedString("Notes and Symbol are required.", comment: "")
+        if notes.isEmpty{
+            error = NSLocalizedString("Notes are required.", comment: "")
             return false
         } else {
             return true

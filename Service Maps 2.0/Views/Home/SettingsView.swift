@@ -45,6 +45,8 @@ struct SettingsView: View {
                 viewModel.administratorInfoCell(mainWindowSize: mainWindowSize, showBack: showBackButton) {
                     presentationMode.wrappedValue.dismiss()
                 }
+                viewModel.languageLinkView(mainWindowSize: mainWindowSize)
+                Spacer().frame(height: 25)
                 viewModel.infosView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
                 viewModel.deleteCacheMenu(mainWindowSize: mainWindowSize)
@@ -229,7 +231,7 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                             self.viewModel.deletionError = "Error deleting account"
                         }
                     }
-                })
+                }) 
                 .hSpacing(.trailing)
                 //.frame(width: 100)
             }

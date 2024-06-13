@@ -26,14 +26,14 @@ enum Symbols: String, CaseIterable, Identifiable {
         case .M: return "m"
         case .O: return "o"
         case .NT: return "nt"
-        case .none: return "-"
+        case .none: return "uk"
         }
       }
     
     var localizedString: String {
         switch self {
         case .none:
-            return NSLocalizedString("-", comment: "")
+            return NSLocalizedString("uk", comment: "")
         case .NC:
             return NSLocalizedString("NC", comment: "")
         case .NT:

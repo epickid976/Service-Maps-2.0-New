@@ -664,4 +664,56 @@ class DataUploaderManager: ObservableObject {
             return Result.failure(error)
         }
     }
+    
+    @MainActor
+    func editToken(token: String, territories: [TerritoryObject]) async -> Result<Bool, Error> {
+        do {
+            var territoriesToSend = [String]()
+            territories.forEach { territory in
+                territoriesToSend.append(territory.id)
+            }
+            
+            try await tokenApi.editToken(tokenId: token, territories: territoriesToSend.description)
+            
+            var tokenTerritories = [TokenTerritoryObject]()
+            
+            tokenTerritoryEntities.forEach { oldTokenTerritory in
+                if token == oldTokenTerritory.token {
+                    _ = realmManager.deleteTokenTerritory(tokenTerritory: oldTokenTerritory)
+                }
+            }
+            
+            territories.forEach { territory in
+                let newTokenTerritory = TokenTerritoryObject()
+                newTokenTerritory.token = token
+                newTokenTerritory.territory = territory.id
+                tokenTerritories.append(newTokenTerritory)
+            }
+            
+            tokenTerritories.forEach { tokenTerritory in
+                _ = realmManager.addModel(tokenTerritory)
+            }
+            
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func blockUnblockUserFromToken(userToken: String, blocked: Bool) async -> Result<Bool, Error> {
+        do {
+            let realm = try! await Realm()
+            if let userToken = realm.objects(UserTokenObject.self).filter("userId == %d", userToken).first {
+                try await tokenApi.blockUnblockUserFromToken(token: userToken.token, userId: userToken.userId, blocked: blocked)
+                return realmManager.updateUserToken(userToken: UserTokenModel(id: userToken.id, token: userToken.token, userId: userToken.userId, name: userToken.name, blocked: blocked))
+            }
+            
+            
+            return Result.failure(CustomErrors.NotFound)
+        } catch {
+            print("Error from blockUnblockUserFromToken \(error)")
+            return Result.failure(error)
+        }
+    }
 }

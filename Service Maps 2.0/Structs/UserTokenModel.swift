@@ -12,12 +12,15 @@ struct UserTokenModel: Codable, Equatable, Hashable, Identifiable {
     var token: String
     var userId: String
     var name: String
+    var blocked = false
     
     static func == (lhs: UserTokenModel, rhs: UserTokenModel) -> Bool {
         return lhs.id == rhs.id &&
         lhs.token == rhs.token &&
         lhs.userId == rhs.userId &&
-        lhs.name == rhs.name
+        lhs.name == rhs.name &&
+        lhs.blocked == rhs.blocked
+        
     }
     
     func hash(into hasher: inout Hasher) {
@@ -25,9 +28,10 @@ struct UserTokenModel: Codable, Equatable, Hashable, Identifiable {
         hasher.combine(token)
         hasher.combine(userId)
         hasher.combine(name)
+        hasher.combine(blocked)
       }
 }
 
 func convertUserTokenToModel(model: UserTokenObject) -> UserTokenModel {
-    return UserTokenModel(id: model.id, token: model.token, userId: model.userId, name: model.name)
+    return UserTokenModel(id: model.id, token: model.token, userId: model.userId, name: model.name, blocked: model.blocked)
 }

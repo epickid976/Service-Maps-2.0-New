@@ -10,4 +10,5 @@ import Foundation
 struct TokenAndUserIdForm: Codable {
     var token: String
     var userid: String
+    var blocked: Bool = false
 }

@@ -1,10 +1,3 @@
-//
-//  SearchViewModel.swift
-//  Service Maps 2.0
-//
-//  Created by Jose Blanco on 6/11/24.
-//
-
 import Foundation
 import SwiftUI
 import Combine
@@ -14,12 +7,12 @@ class SearchViewModel: ObservableObject {
     @Published var dataStore = StorageManager.shared
     @Published var realmManager = RealmManager.shared
     @Published var searchResults: [MySearchResult] = []
-    @Published var searchQuery: String = "" {
+    @Published var searchQuery: String = ""
+    @Published var searchState: SearchState = .Idle {
         didSet {
-            getSearchResults()
+            print("Search state changed to: \(searchState)")
         }
     }
-    @Published var searchState: SearchState = .Idle
     @Published var searchMode: SearchMode = .Territories
     
     private var cancellables = Set<AnyCancellable>()
@@ -31,13 +24,14 @@ class SearchViewModel: ObservableObject {
     
     private func setupSearchQueryObserver() {
         $searchQuery
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .debounce(for: .milliseconds(50), scheduler: RunLoop.main) // Increase debounce duration for better effect
             .removeDuplicates()
-            .handleEvents(receiveOutput: { [weak self] _ in
-                self?.searchState = .Searching
-            })
             .sink { [weak self] query in
-                self?.getSearchResults()
+                if !query.isEmpty {
+                    self?.getSearchResults()
+                } else {
+                    self?.searchState = .Idle
+                }
             }
             .store(in: &cancellables)
     }
@@ -45,8 +39,6 @@ class SearchViewModel: ObservableObject {
     func isLoaded() -> Bool {
         return !searchResults.isEmpty
     }
-    
-    
 }
 
 struct MySearchResult: Hashable, Identifiable {
@@ -81,8 +73,6 @@ struct MySearchResult: Hashable, Identifiable {
         lhs.number == rhs.number &&
         lhs.call == rhs.call
     }
-    
-    
 }
 
 enum SearchResultType: String, CaseIterable, Identifiable {
@@ -102,16 +92,24 @@ enum SearchState {
 extension SearchViewModel {
     @MainActor
     func getSearchResults() {
+        self.searchState = .Searching
         RealmManager.shared.searchEverywhere(query: self.searchQuery, searchMode: searchMode)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
                     // Handle errors here
                     print("Error retrieving territory data: \(error)")
+                    self.searchState = .Idle
                 }
             }, receiveValue: { searchResults in
                 self.searchResults = searchResults
-                self.searchState = .Done
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    if self.searchQuery.isEmpty {
+                        self.searchState = .Idle
+                    } else {
+                        self.searchState = .Done
+                    }
+                }
             })
             .store(in: &cancellables)
     }

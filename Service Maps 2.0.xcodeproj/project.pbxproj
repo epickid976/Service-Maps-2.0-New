@@ -86,6 +86,7 @@
 		8250B1A92A8A826800A7B70E /* TerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */; };
 		8255F1922C1944D000445A82 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1912C1944D000445A82 /* SearchView.swift */; };
 		8255F1942C19465200445A82 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1932C19465200445A82 /* SettingsView.swift */; };
+		8255F1962C1A79AF00445A82 /* EditTokenForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1952C1A79AF00445A82 /* EditTokenForm.swift */; };
 		825645A02BCE0FC000F18AC9 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 8256459F2BCE0FC000F18AC9 /* Realm */; };
 		825645A22BCE0FC000F18AC9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 825645A12BCE0FC000F18AC9 /* RealmSwift */; };
 		825645A52BCE104300F18AC9 /* HouseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645A42BCE104300F18AC9 /* HouseObject.swift */; };
@@ -248,6 +249,7 @@
 		8250B1A82A8A826800A7B70E /* TerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryViewModel.swift; sourceTree = "<group>"; };
 		8255F1912C1944D000445A82 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		8255F1932C19465200445A82 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8255F1952C1A79AF00445A82 /* EditTokenForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTokenForm.swift; sourceTree = "<group>"; };
 		825645A42BCE104300F18AC9 /* HouseObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseObject.swift; sourceTree = "<group>"; };
 		825645A62BCE117500F18AC9 /* TerritoryObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryObject.swift; sourceTree = "<group>"; };
 		825645A82BCE11EE00F18AC9 /* VisitObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitObject.swift; sourceTree = "<group>"; };
@@ -509,6 +511,7 @@
 				82CEA02A2C114DE500F52DE9 /* UserSimpleResponse.swift */,
 				82CEA02C2C114E2900F52DE9 /* TokenAndUserIdForm.swift */,
 				82CEA0322C11568700F52DE9 /* NewUserNameForm.swift */,
+				8255F1952C1A79AF00445A82 /* EditTokenForm.swift */,
 			);
 			path = APIStructs;
 			sourceTree = "<group>";
@@ -918,6 +921,7 @@
 				82A5B4642BD5B9D700F52F2F /* VisitData.swift in Sources */,
 				82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */,
 				82F75C162BE132D3002CCAB0 /* AllPhoneDataResponse.swift in Sources */,
+				8255F1962C1A79AF00445A82 /* EditTokenForm.swift in Sources */,
 				826B76772A729FE1000A4BAA /* NSManagedObjectExtension.swift in Sources */,
 				823FD4D72A7E78DA0036A1DD /* CellView.swift in Sources */,
 				821C12762A78111C0050D106 /* ResetPasswordForm.swift in Sources */,

@@ -20,11 +20,17 @@ class AddKeyViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    init(keyData: KeyData?) {
+        self.keyData = keyData
+        if let keyData = keyData {
+            getTerritories(withTerritories: keyData.territories)
+            servant = keyData.key.moderator
+            name = keyData.key.name
+        }
         error = ""
         getTerritories()
     }
-    
+    @Published var keyData: KeyData?
     @Published var name = ""
     @Published var servant = false
     
@@ -131,12 +137,15 @@ class AddKeyViewModel: ObservableObject {
             territories.append(territory.territory.id)
             territoryObjects.append(territory.territory)
         }
-        
-        switch await dataUploader.createToken(newTokenForm: NewTokenForm(name: tokenObject.name, moderator: tokenObject.moderator, territories: territories.description, congregation: AuthorizationProvider.shared.congregationId ?? 0, expire: tokenObject.expire), territories: StructToModel().convertTerritoryStructsToEntities(structs: territoryObjects)) {
-        case .success(_):
-            return Result.success(true)
-        case .failure(let error):
-            return Result.failure(error)
+        if keyData != nil {
+            return await dataUploader.editToken(token: keyData!.key.id, territories: StructToModel().convertTerritoryStructsToEntities(structs: territoryObjects))
+        } else {
+            switch await dataUploader.createToken(newTokenForm: NewTokenForm(name: tokenObject.name, moderator: tokenObject.moderator, territories: territories.description, congregation: AuthorizationProvider.shared.congregationId ?? 0, expire: tokenObject.expire), territories: StructToModel().convertTerritoryStructsToEntities(structs: territoryObjects)) {
+            case .success(_):
+                return Result.success(true)
+            case .failure(let error):
+                return Result.failure(error)
+            }
         }
     }
     
@@ -182,6 +191,30 @@ extension AddKeyViewModel {
             })
             .store(in: &cancellables)
     }
+    
+    func getTerritories(withTerritories selectedTerritories: [TerritoryModel]) {
+            RealmManager.shared.getTerritoryData()
+                .receive(on: DispatchQueue.main)
+                .map { territoryDataWithKeys -> [TerritoryDataWithKeys] in
+                    // Filter the territories based on selected TerritoryModel objects
+                    return territoryDataWithKeys.map { dataWithKeys in
+                        var filteredDataWithKeys = dataWithKeys
+                        filteredDataWithKeys.territoriesData = dataWithKeys.territoriesData.filter { territoryData in
+                            selectedTerritories.contains(territoryData.territory) // Compare TerritoryModel objects
+                        }
+                        return filteredDataWithKeys
+                    }.filter { !$0.territoriesData.isEmpty }
+                }
+                .sink(receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        print("Error retrieving territory data: \(error)")
+                    }
+                }, receiveValue: { filteredTerritoryData in
+                    self.territoryData = filteredTerritoryData
+                    self.selectedTerritories = filteredTerritoryData.flatMap { $0.territoriesData }
+                })
+                .store(in: &cancellables)
+        }
 }
 
 
