@@ -192,7 +192,7 @@ struct PhoneTerritoriesScreen: View {
                                 }
                             }
                         }
-                        .navigationTransition(viewModel.presentSheet || searchViewDestination || viewModel.territoryIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                        .navigationTransition(viewModel.presentSheet || searchViewDestination || viewModel.phoneTerritoryToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                         .navigationViewStyle(StackNavigationViewStyle())
                     }.coordinateSpace(name: "scroll")
                         .scrollIndicators(.hidden)
