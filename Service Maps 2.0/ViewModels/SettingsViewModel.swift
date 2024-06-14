@@ -281,20 +281,24 @@ class SettingsViewModel: ObservableObject {
                 Button {
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                 } label: {
-                    Image(systemName: "globe")
-                        .imageScale(.large)
-                        .padding(.horizontal)
-                    Text("Language")
-                        .font(.title3)
-                        .lineLimit(2)
-                        .foregroundColor(.primary)
-                        .fontWeight(.heavy)
+                    HStack {
+                        Image(systemName: "globe")
+                            .imageScale(.large)
+                            .padding(.horizontal)
+                        Text("Language")
+                            .font(.title3)
+                            .lineLimit(2)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                        Spacer()
+                        Image(systemName: "arrowshape.right.circle.fill")
+                            .imageScale(.large)
+                            .padding(.horizontal)
+                            .foregroundColor(.primary)
+                    }
                 }
                 .hSpacing(.leading)
-                Spacer()
-                Image(systemName: "arrowshape.right.circle.fill")
-                    .imageScale(.large)
-                    .padding(.horizontal)
+                
             }
             .frame(minHeight: 50)
             .padding(10)
