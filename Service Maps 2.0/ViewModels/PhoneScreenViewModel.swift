@@ -15,10 +15,12 @@ import SwipeActions
 @MainActor
 class PhoneScreenViewModel: ObservableObject {
     
-    init() {
-        getTeritories()
+    init(phoneTerritoryToScrollTo: String? = nil) {
+        getTeritories(phoneTerritoryToScrollTo: phoneTerritoryToScrollTo)
         getRecentTerritoryData()
     }
+    
+    @Published var phoneTerritoryToScrollTo: String? = nil 
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
@@ -79,7 +81,7 @@ class PhoneScreenViewModel: ObservableObject {
 
 @MainActor
 extension PhoneScreenViewModel {
-    func getTeritories() {
+    func getTeritories(phoneTerritoryToScrollTo: String? = nil) {
         RealmManager.shared.getPhoneData()
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -91,6 +93,11 @@ extension PhoneScreenViewModel {
                 if self.search.isEmpty {
                     DispatchQueue.main.async {
                         self.phoneData = phoneData
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if let phoneTerritoryToScrollTo = phoneTerritoryToScrollTo {
+                                self.phoneTerritoryToScrollTo = phoneTerritoryToScrollTo
+                            }
+                        }
                     }
                 } else {
                     DispatchQueue.main.async {

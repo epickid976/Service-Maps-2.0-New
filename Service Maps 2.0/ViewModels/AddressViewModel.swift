@@ -54,10 +54,9 @@ class AddressViewModel: ObservableObject {
     
     @Published var territory: TerritoryModel
     
-    init(territory: TerritoryModel) {
+    init(territory: TerritoryModel, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
-        
-        getAddresses()
+        getAddresses(territoryAddressIdToScrollTo: territoryAddressIdToScrollTo)
     }
     
     @Published var showToast = false
@@ -69,6 +68,8 @@ class AddressViewModel: ObservableObject {
         }
     }
     @Published var isShowingSearch = false
+    
+    @Published var territoryAddressIdToScrollTo: String? = nil
     
     @ViewBuilder
     func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {
@@ -168,7 +169,7 @@ class AddressViewModel: ObservableObject {
 
 @MainActor
 extension AddressViewModel {
-    func getAddresses() {
+    func getAddresses(territoryAddressIdToScrollTo: String? = nil) {
         databaseManager.getAddressData(territoryId: territory.id)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -181,6 +182,11 @@ extension AddressViewModel {
                 if self.search.isEmpty {
                     DispatchQueue.main.async {
                         self.addressData = addressData.sorted { $0.address.address < $1.address.address }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if let territoryAddressIdToScrollTo = territoryAddressIdToScrollTo {
+                                self.territoryAddressIdToScrollTo = territoryAddressIdToScrollTo
+                            }
+                        }
                     }
                 } else {
                     DispatchQueue.main.async {

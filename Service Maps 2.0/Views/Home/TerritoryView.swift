@@ -122,12 +122,12 @@ struct TerritoryView: View {
                                         LazyVStack {
                                             SwipeViewGroup {
                                                 ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
-                                                    territoryHeader(dataWithKeys: dataWithKeys)
-                                                    ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                                                        territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                            .id(territoryData.territory.id)
-                                                    }
-                                                }
+                                                                territoryHeader(dataWithKeys: dataWithKeys)
+                                                                ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+                                                                    territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
+                                                                        .id(territoryData.territory.id)
+                                                                }
+                                                            }
                                             }
                                         }.animation(.default, value: viewModel.territoryData!)
                                     }
@@ -172,14 +172,28 @@ struct TerritoryView: View {
                         .navigationBarTitle("Territories", displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
+                            ToolbarItemGroup(placement: .topBarLeading) {
+                                HStack {
+                                    if viewModel.territoryIdToScrollTo != nil {
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                presentationMode.wrappedValue.dismiss()
+                                            }
+                                        }).keyboardShortcut(.delete, modifiers: .command)
+                                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    }
+                                }
+                            }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            searchViewDestination = true
-                                        }
-                                    }).keyboardShortcut(.delete, modifiers: .command)
-                                        .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    if viewModel.territoryIdToScrollTo == nil {
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                searchViewDestination = true
+                                            }
+                                        }).keyboardShortcut(.delete, modifiers: .command)
+                                            .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    }
                                     Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 }
@@ -201,17 +215,17 @@ struct TerritoryView: View {
                         .onChange(of: viewModel.territoryIdToScrollTo) { id in
                             if let id = id {
                                 
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    withAnimation {
-                                        scrollViewProxy.scrollTo(id, anchor: .center)
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                            highlightedTerritoryId = id // Highlight after scrolling
-                                        }
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                            highlightedTerritoryId = nil
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        withAnimation {
+                                            scrollViewProxy.scrollTo(id, anchor: .center)
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                                highlightedTerritoryId = id // Highlight after scrolling
+                                            }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                highlightedTerritoryId = nil
+                                            }
                                         }
                                     }
-                                }
                                 
                             }
                         }
@@ -223,7 +237,7 @@ struct TerritoryView: View {
                             }
                         }
                     
-                    
+                        
                 }
                 
                 if AuthorizationLevelManager().existsAdminCredentials() {
@@ -242,21 +256,21 @@ struct TerritoryView: View {
     }
     
     @ViewBuilder
-    func territoryHeader(dataWithKeys: TerritoryDataWithKeys) -> some View {
-        if !dataWithKeys.keys.isEmpty {
-            Text(self.viewModel.processData(dataWithKeys: dataWithKeys))
-                .font(.title2)
-                .lineLimit(1)
-                .foregroundColor(.primary)
-                .fontWeight(.bold)
-                .hSpacing(.leading)
-                .padding(5)
-                .padding(.horizontal, 10)
-        } else {
-            Spacer()
-                .frame(height: 20)
+        func territoryHeader(dataWithKeys: TerritoryDataWithKeys) -> some View {
+            if !dataWithKeys.keys.isEmpty {
+                Text(self.viewModel.processData(dataWithKeys: dataWithKeys))
+                    .font(.title2)
+                    .lineLimit(1)
+                    .foregroundColor(.primary)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(5)
+                    .padding(.horizontal, 10)
+            } else {
+                Spacer()
+                    .frame(height: 20)
+            }
         }
-    }
     
     @ViewBuilder
     func territoryCell(dataWithKeys: TerritoryDataWithKeys, territoryData: TerritoryData, mainViewSize: CGSize) -> some View {
@@ -266,9 +280,9 @@ struct TerritoryView: View {
                     CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize)
                         .overlay (
                             highlightedTerritoryId == (territoryData.territory.id)
-                            ? Color.gray.opacity(0.5) // Or your preferred highlight color
-                            : Color.clear
-                        )
+                                        ? Color.gray.opacity(0.5) // Or your preferred highlight color
+                                        : Color.clear
+                        ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedTerritoryId == (territoryData.territory.id))
                         .padding(.bottom, 2)
                         .optionalViewModifier { content in
                             if AuthorizationLevelManager().existsAdminCredentials() {
@@ -338,7 +352,7 @@ struct TerritoryView: View {
             .swipeMinimumDistance(territoryData.accessLevel != .User ? 25 : 1000)
         }.padding(.horizontal, 15)
     }
-    
+
 }
 
 

@@ -24,11 +24,13 @@ class VisitsViewModel: ObservableObject {
     @Published var visitData: Optional<[VisitData]> = nil
     //@ObservedObject var databaseManager = RealmManager.shared
     
-    init(house: HouseModel) {
+    init(house: HouseModel, visitIdToScrollTo: String? = nil) {
         self.house = house
         
-        getVisits()
+        getVisits(visitIdToScrollTo: visitIdToScrollTo)
     }
+    
+    @Published var visitIdToScrollTo: String?
     
     @Published var backAnimation = false
     @Published var optionsAnimation = false
@@ -76,7 +78,7 @@ class VisitsViewModel: ObservableObject {
 
 @MainActor
 extension VisitsViewModel {
-    func getVisits() {
+    func getVisits(visitIdToScrollTo: String? = nil) {
         RealmManager.shared.getVisitData(houseId: house.id)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -88,6 +90,12 @@ extension VisitsViewModel {
                 if self.search.isEmpty {
                     DispatchQueue.main.async {
                         self.visitData = visitData
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if let visitIdToScrollTo = visitIdToScrollTo {
+                                self.visitIdToScrollTo = visitIdToScrollTo
+                            }
+                        }
                     }
                 } else {
                     DispatchQueue.main.async {

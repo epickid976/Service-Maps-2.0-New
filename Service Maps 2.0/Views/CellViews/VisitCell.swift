@@ -40,6 +40,7 @@ struct VisitCell: View {
                         .foregroundColor(.primary)
                         .fontWeight(.heavy)
                         .hSpacing(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                     
                     Text(visit.visit.user)
                         .font(.headline)

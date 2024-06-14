@@ -20,12 +20,14 @@ struct PhoneNumbersView: View {
     var territory: PhoneTerritoryModel
     
     @StateObject var viewModel: NumbersViewModel
-    init(territory: PhoneTerritoryModel) {
+    init(territory: PhoneTerritoryModel, phoneNumberToScrollTo: String? = nil) {
         self.territory = territory
         
-        let initialViewModel = NumbersViewModel(territory: territory)
+        let initialViewModel = NumbersViewModel(territory: territory, phoneNumberToScrollTo: phoneNumberToScrollTo)
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
+    
+    @State var highlightedNumberId: String?
     
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
@@ -43,131 +45,106 @@ struct PhoneNumbersView: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                ScalingHeaderScrollView {
-                    ZStack {
-                        Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
-                        viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
-                    }
-                } content: {
-                    VStack {
-                        SearchBar(searchText: $viewModel.search).padding([.top, .horizontal])
-                        if viewModel.phoneNumbersData == nil || viewModel.dataStore.synchronized == false {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .frame(width: 350, height: 350)
-                            }
-                        } else {
-                            if viewModel.phoneNumbersData!.isEmpty {
+                ScrollViewReader { scrollViewProxy in
+                    ScalingHeaderScrollView {
+                        ZStack {
+                            Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
+                            viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
+                        }
+                    } content: {
+                        VStack {
+                            SearchBar(searchText: $viewModel.search).padding([.top, .horizontal])
+                            if viewModel.phoneNumbersData == nil || viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                    LottieView(animation: .named("nodatapreview"))
-                                        .playing()
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
                                         .resizable()
                                         .frame(width: 250, height: 250)
                                 } else {
-                                    LottieView(animation: .named("nodatapreview"))
-                                        .playing()
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
                                         .resizable()
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
-                                LazyVStack {
-                                    SwipeViewGroup {
-                                        ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
-                                            numbersCell(numbersData: numbersData, mainWindowSize: proxy.size)
-                                                .padding(.bottom, 2)
+                                if viewModel.phoneNumbersData!.isEmpty {
+                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                        LottieView(animation: .named("nodatapreview"))
+                                            .playing()
+                                            .resizable()
+                                            .frame(width: 250, height: 250)
+                                    } else {
+                                        LottieView(animation: .named("nodatapreview"))
+                                            .playing()
+                                            .resizable()
+                                            .frame(width: 350, height: 350)
+                                    }
+                                } else {
+                                    LazyVStack {
+                                        SwipeViewGroup {
+                                            ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
+                                                numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id)
+                                                    .padding(.bottom, 2)
+                                            }
+                                            
                                         }
-                                        
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.top)
+                                    .padding(.bottom)
+                                    .animation(.default, value: viewModel.phoneNumbersData)
+                                    
+                                }
+                            }
+                        }.background(GeometryReader {
+                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                            if ( abs(offsetDifference) > minimumOffset) {
+                                if offsetDifference > 0 {
+                                    print("Is scrolling up toward top.")
+                                    hideFloatingButton = false
+                                } else {
+                                    print("Is scrolling down toward bottom.")
+                                    hideFloatingButton = true
+                                }
+                                self.previousViewOffset = currentOffset
+                            }
+                        }
+                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
+                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
+                        .onChange(of: viewModel.presentSheet) { value in
+                            if value {
+                                CentrePopup_AddNumber(viewModel: viewModel, territory: territory).showAndStack()
+                            }
+                        }
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil || viewModel.phoneNumbersData != nil)
+                        .onChange(of: viewModel.phoneNumberToScrollTo) { id in
+                            if let id = id {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    withAnimation {
+                                        scrollViewProxy.scrollTo(id, anchor: .center)
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            highlightedNumberId = id // Highlight after scrolling
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            highlightedNumberId = nil
+                                        }
                                     }
                                 }
-                                .padding(.horizontal)
-                                .padding(.top)
-                                .padding(.bottom)
-                                .animation(.default, value: viewModel.phoneNumbersData)
                                 
                             }
                         }
-                    }.background(GeometryReader {
-                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                    }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                        let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                        if ( abs(offsetDifference) > minimumOffset) {
-                            if offsetDifference > 0 {
-                                print("Is scrolling up toward top.")
-                                hideFloatingButton = false
-                            } else {
-                                print("Is scrolling down toward bottom.")
-                                hideFloatingButton = true
-                            }
-                            self.previousViewOffset = currentOffset
-                        }
                     }
-                    .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                    .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-//                    .popup(isPresented: $viewModel.showAlert) {
-//                        if viewModel.numberToDelete.0 != nil && viewModel.numberToDelete.1 != nil {
-//                            viewModel.alert()
-//                                .frame(width: 400, height: 230)
-//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                        }
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                    }
-//                    .popup(isPresented: $viewModel.presentSheet) {
-//                        AddPhoneNumberScreen(territory: territory, number: viewModel.currentNumber, onDone: {
-//                            DispatchQueue.main.async {
-//                                viewModel.presentSheet = false
-//                                synchronizationManager.startupProcess(synchronizing: true)
-//                                viewModel.getNumbers()
-//                                viewModel.showAddedToast = true
-//                                
-//                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                                    viewModel.showAddedToast = false
-//                                }
-//                            }
-//                        }, onDismiss: {
-//                            viewModel.presentSheet = false
-//                        })
-//                        .frame(width: 400, height: 400)
-//                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                    }
-                    .onChange(of: viewModel.presentSheet) { value in
-                        if value {
-                            CentrePopup_AddNumber(viewModel: viewModel, territory: territory).showAndStack()
-                        }
+                    .height(min: 180, max: 350.0)
+                    .allowsHeaderGrowth()
+                    .collapseProgress($viewModel.progress)
+                    .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
+                        synchronizationManager.startupProcess(synchronizing: true)
                     }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil || viewModel.phoneNumbersData != nil)
+                    .scrollIndicators(.hidden)
+                    .coordinateSpace(name: "scroll")
                 }
-                .height(min: 180, max: 350.0)
-                .allowsHeaderGrowth()
-                .collapseProgress($viewModel.progress)
-                .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
-                    synchronizationManager.startupProcess(synchronizing: true)
-                }
-                .scrollIndicators(.hidden)
-                .coordinateSpace(name: "scroll")
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
@@ -214,7 +191,7 @@ struct PhoneNumbersView: View {
                     }
                 }
             }
-            .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+            .navigationTransition(viewModel.presentSheet || viewModel.phoneNumberToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
             .onChange(of: viewModel.dataStore.synchronized) { value in
                 if value {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -272,6 +249,9 @@ struct PhoneNumbersView: View {
                         }
                         .frame(maxWidth: mainWindowSize.width * 0.90)
                     }
+                    .overlay(
+                        highlightedNumberId == numbersData.phoneNumber.id ? Color.gray.opacity(0.5) : Color.clear
+                    ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedNumberId == numbersData.phoneNumber.id)
                     //.id(territory.id)
                     .padding(10)
                     .frame(minWidth: mainWindowSize.width * 0.95)
@@ -403,11 +383,13 @@ class NumbersViewModel: ObservableObject {
     
     @Published var territory: PhoneTerritoryModel
     
-    init(territory: PhoneTerritoryModel) {
+    init(territory: PhoneTerritoryModel, phoneNumberToScrollTo: String? = nil) {
         self.territory = territory
         
-        getNumbers()
+        getNumbers(phoneNumberToScrollTo: phoneNumberToScrollTo)
     }
+    
+    @Published var phoneNumberToScrollTo: String? = nil
     
     @Published var showToast = false
     @Published var showAddedToast = false
@@ -516,7 +498,7 @@ class NumbersViewModel: ObservableObject {
 
 @MainActor
 extension NumbersViewModel {
-    func getNumbers() {
+    func getNumbers(phoneNumberToScrollTo: String? = nil) {
         databaseManager.getPhoneNumbersData(phoneTerritoryId: territory.id)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -528,6 +510,11 @@ extension NumbersViewModel {
                 if self.search.isEmpty {
                     DispatchQueue.main.async {
                         self.phoneNumbersData = phoneNumbersData.sorted { $0.phoneNumber.number < $1.phoneNumber.number }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if let phoneNumberToScrollTo = phoneNumberToScrollTo {
+                                self.phoneNumberToScrollTo = phoneNumberToScrollTo
+                            }
+                        }
                     }
                 } else {
                     DispatchQueue.main.async {

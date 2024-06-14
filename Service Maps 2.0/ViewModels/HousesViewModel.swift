@@ -24,10 +24,10 @@ class HousesViewModel: ObservableObject {
     //@ObservedObject var databaseManager = RealmManager.shared
     @Published var houseData: Optional<[HouseData]> = nil
     
-    init(territoryAddress: TerritoryAddressModel) {
+    init(territoryAddress: TerritoryAddressModel, houseIdToScrollTo: String? = nil) {
         self.territoryAddress = territoryAddress
         
-        getHouses()
+        getHouses(houseIdToScrollTo: houseIdToScrollTo)
         //houses = databaseManager.housesFlow
     }
     
@@ -80,11 +80,13 @@ class HousesViewModel: ObservableObject {
     func deleteHouse(house: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteHouse(house: house)
     }
+    
+    @Published var houseIdToScrollTo: String? = nil
 }
 
 @MainActor
 extension HousesViewModel {
-    func getHouses() {
+    func getHouses(houseIdToScrollTo: String? = nil) {
         RealmManager.shared.getHouseData(addressId: territoryAddress.id)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -124,6 +126,11 @@ extension HousesViewModel {
                     }
                     
                     self.houseData = data
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if let houseIdToScrollTo = houseIdToScrollTo {
+                            self.houseIdToScrollTo = houseIdToScrollTo
+                        }
+                    }
                 }
             })
             .store(in: &cancellables)

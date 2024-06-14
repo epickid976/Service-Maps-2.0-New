@@ -128,7 +128,7 @@ struct SearchView: View {
                     }.animation(.easeInOut(duration: 0.5), value: searchViewModel.searchState)
                 }
                 .padding()
-            }.navigationTransition(.zoom.combined(with: .fade(.in)))
+            }.navigationTransition(.zoom.combined(with: .fade(.in))).scrollIndicators(.never)
                 .toolbar{
                     ToolbarItemGroup(placement: .keyboard){
                         Spacer()
@@ -164,11 +164,13 @@ struct MySearchResultItem: View {
         VStack {
             switch data.type {
             case .Territory:
+                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).bold()
                 NavigationLink(destination: NavigationLazyView(TerritoryView(territoryIdToScrollTo: data.territory!.id).implementPopupView()).implementPopupView()) {
                     CellView(territory: data.territory!, houseQuantity: 0, mainWindowSize: mainWindowSize)
                 }
             case .Address:
-                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: data.territory!).implementPopupView()).implementPopupView()) {
+                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).bold()
+                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: data.territory!, territoryAddressIdToScrollTo: data.address!.id).implementPopupView()).implementPopupView()) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(AddressData(id: ObjectIdentifier(TerritoryAddressObject().createTerritoryAddressObject(from: data.address!)), address: data.address!, houseQuantity: 0, accessLevel: .User).address.address)")
@@ -193,19 +195,23 @@ struct MySearchResultItem: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
             case .House:
-                NavigationLink(destination: NavigationLazyView(HousesView(address: data.address!).implementPopupView()).implementPopupView()) {
+                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).bold()
+                NavigationLink(destination: NavigationLazyView(HousesView(address: data.address!, houseIdToScrollTo: data.house!.id).implementPopupView()).implementPopupView()) {
                     HouseCell(house: HouseData(id: UUID(), house: data.house!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: HouseObject().createHouseObject(from: data.house!)) ?? .User), mainWindowSize: mainWindowSize)
                 }
             case .Visit:
-                NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!).implementPopupView()).implementPopupView()) {
+                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).bold()
+                NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!, visitIdToScrollTo: data.visit!.id).implementPopupView()).implementPopupView()) {
                     VisitCell(visit: VisitData(id: UUID(), visit: data.visit!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: VisitObject().createVisitObject(from: data.visit!)) ?? .User))
                 }
             case .PhoneTerritory:
-                NavigationLink(destination: NavigationLazyView(PhoneTerritoriesScreen().implementPopupView()).implementPopupView()) {
+                Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()
+                NavigationLink(destination: NavigationLazyView(PhoneTerritoriesScreen(phoneTerritoryToScrollTo: data.phoneTerritory!.id).implementPopupView()).implementPopupView()) {
                     PhoneTerritoryCellView(territory: data.phoneTerritory!, numbers: 0, mainWindowSize: mainWindowSize)
                 }
             case .Number:
-                NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: data.phoneTerritory!).implementPopupView()).implementPopupView()) {
+                Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()
+                NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: data.phoneTerritory!, phoneNumberToScrollTo: data.number!.id).implementPopupView()).implementPopupView()) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(PhoneNumbersData(id: UUID(), phoneNumber: data.number!, phoneCall: nil).phoneNumber.number.formatPhoneNumber())")
@@ -255,10 +261,52 @@ struct MySearchResultItem: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
             case .Call:
-                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: data.number!).implementPopupView()).implementPopupView()) {
+                Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()
+                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: data.number!, callToScrollTo: data.call!.id).implementPopupView()).implementPopupView()) {
                     CallCell(call: PhoneCallData(id: UUID(), phoneCall: data.call!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: PhoneCallObject().createTerritoryObject(from: data.call!)) ?? .User))
                 }
             }
         }
     }
+    
+    func buildPath(territory: TerritoryModel?, address: TerritoryAddressModel?, house: HouseModel?) -> String {
+        var territoryString = "Territory \(territory?.number ?? 0)"
+        let addressString: String? = {
+            guard let address = address else { return nil }
+            return "Address: \(address.address)"
+        }()
+
+        let houseString: String? = {
+            guard let house = house else { return nil }
+            return "House: \(house.number)"
+        }()
+        
+        var finalString = territoryString
+
+        if let addressString = addressString {
+            finalString += " → \(addressString)"
+        }
+
+        if let houseString = houseString {
+            finalString += " → \(houseString)"
+        }
+
+        return finalString
+    }
+    
+    private func buildFoundPath(phoneTerritory: PhoneTerritoryModel?, phoneNumber: PhoneNumberModel?) -> String {
+        var territoryString = String.localizedStringWithFormat("Territory: \(phoneTerritory?.number ?? 0)")
+
+        let numberString: String? = {
+            guard let phoneNumber = phoneNumber else { return nil }
+            return "Number: \(phoneNumber.number.formatPhoneNumber())"
+        }()
+
+        if let numberString = numberString {
+            territoryString += " → \(numberString)"
+        }
+
+        return territoryString
+    }
+
 }

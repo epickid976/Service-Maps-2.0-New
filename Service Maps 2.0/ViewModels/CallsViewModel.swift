@@ -24,11 +24,13 @@ class CallsViewModel: ObservableObject {
     @Published var callsData: Optional<[PhoneCallData]> = nil
     //@ObservedObject var databaseManager = RealmManager.shared
     
-    init(phoneNumber: PhoneNumberModel) {
+    init(phoneNumber: PhoneNumberModel, callToScrollTo: String? = nil) {
         self.phoneNumber = phoneNumber
         
-        getCalls()
+        getCalls(callToScrollTo: callToScrollTo)
     }
+    
+    @Published var callToScrollTo: String? = nil
     
     @Published var backAnimation = false
     @Published var optionsAnimation = false
@@ -73,7 +75,7 @@ class CallsViewModel: ObservableObject {
 
 @MainActor
 extension CallsViewModel {
-    func getCalls() {
+    func getCalls(callToScrollTo: String? = nil) {
         RealmManager.shared.getPhoneCallData(phoneNumberId: phoneNumber.id)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -85,6 +87,11 @@ extension CallsViewModel {
                 if self.search.isEmpty {
                     DispatchQueue.main.async {
                         self.callsData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date}
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if let callToScrollTo = callToScrollTo {
+                                self.callToScrollTo = callToScrollTo
+                            }
+                        }
                     }
                 } else {
                     DispatchQueue.main.async {

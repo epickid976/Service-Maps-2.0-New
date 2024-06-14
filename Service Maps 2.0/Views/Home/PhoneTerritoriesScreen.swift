@@ -17,7 +17,7 @@ import Nuke
 import MijickPopupView
 
 struct PhoneTerritoriesScreen: View {
-    @StateObject var viewModel = PhoneScreenViewModel()
+    @StateObject var viewModel: PhoneScreenViewModel
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
@@ -34,175 +34,198 @@ struct PhoneTerritoriesScreen: View {
     @State var searchViewDestination = false
     
     let minimumOffset: CGFloat = 60
+    
+    init(phoneTerritoryToScrollTo: String? = nil) {
+       let viewModel = PhoneScreenViewModel(phoneTerritoryToScrollTo: phoneTerritoryToScrollTo)
+        _viewModel = StateObject(wrappedValue: viewModel)
+        
+    }
+    
+    @State var highlightedTerritoryId: String?
+    
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                ScrollView {
-                    VStack {
-                        if viewModel.phoneData == nil || viewModel.dataStore.synchronized == false {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
-                                    .frame(width: 350, height: 350)
-                            }
-                        } else {
-                            if viewModel.phoneData!.isEmpty {
-                                VStack {
-                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 250, height: 250)
-                                    } else {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 350, height: 350)
-                                    }
+                ScrollViewReader { scrollViewProxy in
+                    ScrollView {
+                        VStack {
+                            if viewModel.phoneData == nil || viewModel.dataStore.synchronized == false {
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .animationDidFinish { completed in
+                                            self.animationDone = completed
+                                        }
+                                        .getRealtimeAnimationProgress($animationProgressTime)
+                                        .frame(width: 250, height: 250)
+                                } else {
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .animationDidFinish { completed in
+                                            self.animationDone = completed
+                                        }
+                                        .getRealtimeAnimationProgress($animationProgressTime)
+                                        .frame(width: 350, height: 350)
                                 }
-                                
                             } else {
-                                LazyVStack {
-                                    if !(viewModel.recentPhoneData == nil) {
-                                        if viewModel.recentPhoneData!.count > 0 {
-                                        LazyVStack {
-                                                Text("Recent Territories")
-                                                    .font(.title2)
-                                                    .lineLimit(1)
-                                                    .foregroundColor(.primary)
-                                                    .fontWeight(.bold)
-                                                    .hSpacing(.leading)
-                                                    .padding(5)
-                                                    .padding(.horizontal, 10)
-                                                ScrollView(.horizontal, showsIndicators: false) {
-                                                    LazyHStack {
-                                                        ForEach(viewModel.recentPhoneData!, id: \.self) { territoryData in
-                                                            NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
-                                                                recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                if viewModel.phoneData!.isEmpty {
+                                    VStack {
+                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 250, height: 250)
+                                        } else {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 350, height: 350)
+                                        }
+                                    }
+                                    
+                                } else {
+                                    LazyVStack {
+                                        if !(viewModel.recentPhoneData == nil) {
+                                            if viewModel.recentPhoneData!.count > 0 {
+                                                LazyVStack {
+                                                    Text("Recent Territories")
+                                                        .font(.title2)
+                                                        .lineLimit(1)
+                                                        .foregroundColor(.primary)
+                                                        .fontWeight(.bold)
+                                                        .hSpacing(.leading)
+                                                        .padding(5)
+                                                        .padding(.horizontal, 10)
+                                                    ScrollView(.horizontal, showsIndicators: false) {
+                                                        LazyHStack {
+                                                            ForEach(viewModel.recentPhoneData!, id: \.self) { territoryData in
+                                                                NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                                    recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                                                }
                                                             }
                                                         }
                                                     }
-                                                }
-                                                .padding(.leading)
-                                                
-                                            }.animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
-                                        }
-                                    }
-                                    LazyVStack {
-                                        SwipeViewGroup {
-                                            ForEach(viewModel.phoneData!, id: \.self) { phoneData in
-                                                territoryCell(phoneData: phoneData, mainViewSize: proxy.size)
+                                                    .padding(.leading)
+                                                    
+                                                }.animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
                                             }
-                                            //.animation(.default, value: viewModel.phoneData!)
-                                            
-                                            
                                         }
-                                    }.animation(.spring(), value: viewModel.phoneData)
+                                        LazyVStack {
+                                            SwipeViewGroup {
+                                                ForEach(viewModel.phoneData!, id: \.self) { phoneData in
+                                                    territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id)
+                                                }
+                                                //.animation(.default, value: viewModel.phoneData!)
+                                                
+                                                
+                                            }
+                                        }.animation(.spring(), value: viewModel.phoneData)
+                                    }
+                                    
+                                    
+                                    
+                                }
+                            }
+                        }.background(GeometryReader {
+                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                            if ( abs(offsetDifference) > minimumOffset) {
+                                if offsetDifference > 0 {
+                                    print("Is scrolling up toward top.")
+                                    hideFloatingButton = false
+                                } else {
+                                    print("Is scrolling down toward bottom.")
+                                    hideFloatingButton = true
+                                }
+                                self.previousViewOffset = currentOffset
+                            }
+                        }
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.phoneData == nil || viewModel.phoneData != nil)
+                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
+                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
+                        .navigationDestination(isPresented: $viewModel.presentSheet) {
+                            AddPhoneTerritoryView(territory: viewModel.currentTerritory) {
+                                synchronizationManager.startupProcess(synchronizing: true)
+                                DispatchQueue.main.async {
+                                    viewModel.showAddedToast = true
                                 }
                                 
-                                
-                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    viewModel.showAddedToast = false
+                                }
                             }
                         }
-                    }.background(GeometryReader {
-                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                    }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                        let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                        if ( abs(offsetDifference) > minimumOffset) {
-                            if offsetDifference > 0 {
-                                print("Is scrolling up toward top.")
-                                hideFloatingButton = false
-                            } else {
-                                print("Is scrolling down toward bottom.")
-                                hideFloatingButton = true
-                            }
-                            self.previousViewOffset = currentOffset
+                        .navigationDestination(isPresented: $searchViewDestination) {
+                            NavigationLazyView(SearchView(searchMode: .PhoneTerritories))
                         }
-                    }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.phoneData == nil || viewModel.phoneData != nil)
-                    .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                    .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    //                    .popup(isPresented: $viewModel.showAlert) {
-                    //                        if viewModel.territoryToDelete.0 != nil && viewModel.territoryToDelete.1 != nil {
-                    //                            viewModel.alert()
-                    //                                .frame(width: 400, height: 230)
-                    //                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-                    //                        }
-                    //                    } customize: {
-                    //                        $0
-                    //                            .type(.default)
-                    //                            .closeOnTapOutside(false)
-                    //                            .dragToDismiss(false)
-                    //                            .isOpaque(true)
-                    //                            .animation(.spring())
-                    //                            .closeOnTap(false)
-                    //                            .backgroundColor(.black.opacity(0.8))
-                    //                    }
-                    
-                    .navigationDestination(isPresented: $viewModel.presentSheet) {
-                        AddPhoneTerritoryView(territory: viewModel.currentTerritory) {
-                            synchronizationManager.startupProcess(synchronizing: true)
-                            DispatchQueue.main.async {
-                                viewModel.showAddedToast = true
-                            }
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                viewModel.showAddedToast = false
-                            }
-                        }
-                    }
-                    .navigationDestination(isPresented: $searchViewDestination) {
-                        NavigationLazyView(SearchView(searchMode: .PhoneTerritories))
-                    }
-                    //.scrollIndicators(.hidden)
-                    .navigationBarTitle("Phone Territories", displayMode: .automatic)
-                    .navigationBarBackButtonHidden(true)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .topBarTrailing) {
-                            HStack {
-                                Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        searchViewDestination = true
+                        //.scrollIndicators(.hidden)
+                        .navigationBarTitle("Phone Territories", displayMode: .automatic)
+                        .navigationBarBackButtonHidden(true)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .topBarLeading) {
+                                HStack {
+                                    if viewModel.phoneTerritoryToScrollTo != nil {
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                presentationMode.wrappedValue.dismiss()
+                                            }
+                                        }).keyboardShortcut(.delete, modifiers: .command)
+                                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                     }
-                                }).keyboardShortcut(.delete, modifiers: .command)
-                                .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
-                                
-                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
-                                    .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                }
+                            }
+                            ToolbarItemGroup(placement: .topBarTrailing) {
+                                HStack {
+                                    if viewModel.phoneTerritoryToScrollTo == nil {
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                searchViewDestination = true
+                                            }
+                                        }).keyboardShortcut(.delete, modifiers: .command)
+                                            .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    }
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                }
                             }
                         }
-                    }
-                    .navigationTransition(viewModel.presentSheet || searchViewDestination ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-                    .navigationViewStyle(StackNavigationViewStyle())
-                }.coordinateSpace(name: "scroll")
-                    .scrollIndicators(.hidden)
-                    .refreshable {
-                        synchronizationManager.startupProcess(synchronizing: true)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            hideFloatingButton = false
-                        }
-                    }
-                    .onChange(of: viewModel.dataStore.synchronized) { value in
-                        if value {
+                        .navigationTransition(viewModel.presentSheet || searchViewDestination || viewModel.territoryIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                        .navigationViewStyle(StackNavigationViewStyle())
+                    }.coordinateSpace(name: "scroll")
+                        .scrollIndicators(.hidden)
+                        .refreshable {
+                            synchronizationManager.startupProcess(synchronizing: true)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                viewModel.getTeritories()
+                                hideFloatingButton = false
                             }
                         }
-                    }
+                        .onChange(of: viewModel.dataStore.synchronized) { value in
+                            if value {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    viewModel.getTeritories()
+                                }
+                            }
+                        }
+                        .onChange(of: viewModel.phoneTerritoryToScrollTo) { id in
+                            if let id = id {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    withAnimation {
+                                        scrollViewProxy.scrollTo(id, anchor: .center)
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            highlightedTerritoryId = id // Highlight after scrolling
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            highlightedTerritoryId = nil
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                }
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
@@ -224,6 +247,9 @@ struct PhoneTerritoriesScreen: View {
             NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: phoneData.territory).implementPopupView()).implementPopupView()) {
                 PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity, mainWindowSize: mainViewSize)
                     .padding(.bottom, 2)
+                    .overlay(
+                        highlightedTerritoryId == phoneData.territory.id ? Color.gray.opacity(0.5) : Color.clear
+                    ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedTerritoryId == phoneData.territory.id)
                     .optionalViewModifier { content in
                         if AuthorizationLevelManager().existsAdminCredentials() {
                             content

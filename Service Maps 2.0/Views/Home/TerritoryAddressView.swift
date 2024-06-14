@@ -20,10 +20,10 @@ struct TerritoryAddressView: View {
     var territory: TerritoryModel
     
     @StateObject var viewModel: AddressViewModel
-    init(territory: TerritoryModel) {
+    init(territory: TerritoryModel, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
         
-        let initialViewModel = AddressViewModel(territory: territory)
+        let initialViewModel = AddressViewModel(territory: territory, territoryAddressIdToScrollTo: territoryAddressIdToScrollTo)
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
@@ -39,106 +39,127 @@ struct TerritoryAddressView: View {
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 60
     
+    @State var highlightedTerritoryAddressId: String?
+    
     @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                ScalingHeaderScrollView {
+                ScrollViewReader { scrollViewProxy in
+                    ScalingHeaderScrollView {
                         ZStack {
                             Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
                             viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
                         }
                         
-                } content: {
-                    VStack {
-                        if viewModel.addressData == nil || viewModel.dataStore.synchronized == false {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
-                                    .frame(width: 350, height: 350)
-                            }
-                        } else {
-                            if viewModel.addressData!.isEmpty {
-                                VStack {
-                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 250, height: 250)
-                                    } else {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 350, height: 350)
-                                    }
+                    } content: {
+                        VStack {
+                            if viewModel.addressData == nil || viewModel.dataStore.synchronized == false {
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .animationDidFinish { completed in
+                                            self.animationDone = completed
+                                        }
+                                        .getRealtimeAnimationProgress($animationProgressTime)
+                                        .frame(width: 250, height: 250)
+                                } else {
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .animationDidFinish { completed in
+                                            self.animationDone = completed
+                                        }
+                                        .getRealtimeAnimationProgress($animationProgressTime)
+                                        .frame(width: 350, height: 350)
                                 }
                             } else {
-                                LazyVStack {
-                                    
-                                    SwipeViewGroup {
-                                        ForEach(viewModel.addressData!) { addressData in
-                                                addressCell(addressData: addressData, mainWindowSize: proxy.size)
-                                                    .padding(.bottom, 2)
+                                if viewModel.addressData!.isEmpty {
+                                    VStack {
+                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 250, height: 250)
+                                        } else {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 350, height: 350)
                                         }
                                     }
+                                } else {
+                                    LazyVStack {
+                                        
+                                        SwipeViewGroup {
+                                            ForEach(viewModel.addressData!) { addressData in
+                                                addressCell(addressData: addressData, mainWindowSize: proxy.size)
+                                                    .padding(.bottom, 2)
+                                                    .id(addressData.address.id)
+                                            }
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.top)
+                                    .padding(.bottom)
+                                    .animation(.default, value: viewModel.addressData)
+                                    
                                 }
-                                .padding(.horizontal)
-                                .padding(.top)
-                                .padding(.bottom)
-                                .animation(.default, value: viewModel.addressData)
-                                
+                            }
+                        }.background(GeometryReader {
+                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                            if ( abs(offsetDifference) > minimumOffset) {
+                                if offsetDifference > 0 {
+                                    print("Is scrolling up toward top.")
+                                    hideFloatingButton = false
+                                } else {
+                                    print("Is scrolling down toward bottom.")
+                                    hideFloatingButton = true
+                                }
+                                self.previousViewOffset = currentOffset
                             }
                         }
-                    }.background(GeometryReader {
-                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                    }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                        let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                        if ( abs(offsetDifference) > minimumOffset) {
-                            if offsetDifference > 0 {
-                                print("Is scrolling up toward top.")
-                                hideFloatingButton = false
-                            } else {
-                                print("Is scrolling down toward bottom.")
-                                hideFloatingButton = true
+                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
+                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || viewModel.addressData != nil)
+                        .onChange(of: viewModel.presentSheet) { value in
+                            if value {
+                                CentrePopup_AddAddress(viewModel: viewModel, territory: territory).showAndStack()
                             }
-                            self.previousViewOffset = currentOffset
                         }
                     }
-                    .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                    .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || viewModel.addressData != nil)
-                    .onChange(of: viewModel.presentSheet) { value in
-                        if value {
-                            CentrePopup_AddAddress(viewModel: viewModel, territory: territory).showAndStack()
+                    .height(min: 180, max: 350.0)
+                    
+                    .allowsHeaderGrowth()
+                    .collapseProgress($viewModel.progress)
+                    .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
+                        synchronizationManager.startupProcess(synchronizing: true)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            hideFloatingButton = false
+                        }
+                    }
+                    .scrollIndicators(.hidden)
+                    .coordinateSpace(name: "scroll")
+                    .onChange(of: viewModel.territoryAddressIdToScrollTo) { id in
+                        if let id = id {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation {
+                                    scrollViewProxy.scrollTo(id, anchor: .center)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                        highlightedTerritoryAddressId = id // Highlight after scrolling
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        highlightedTerritoryAddressId = nil
+                                    }
+                                }
+                            }
+                            
                         }
                     }
                 }
-                .height(min: 180, max: 350.0)
-                
-                .allowsHeaderGrowth()
-                .collapseProgress($viewModel.progress)
-                .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
-                    synchronizationManager.startupProcess(synchronizing: true)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        hideFloatingButton = false
-                    }
-                }
-                .scrollIndicators(.hidden)
-                .coordinateSpace(name: "scroll")
                 
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
@@ -177,7 +198,7 @@ struct TerritoryAddressView: View {
                     }
                 }
             }
-            .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+            .navigationTransition(viewModel.presentSheet || viewModel.territoryAddressIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
             .onChange(of: viewModel.dataStore.synchronized) { value in
                 if value {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -210,6 +231,7 @@ struct TerritoryAddressView: View {
                         }
                         .frame(maxWidth: mainWindowSize.width * 0.90)
                     }
+                    
                     //.id(territory.id)
                     .padding(10)
                     .frame(minWidth: mainWindowSize.width * 0.95)
@@ -251,7 +273,9 @@ struct TerritoryAddressView: View {
                     }
                     
                 }
-                
+                .overlay(
+                    highlightedTerritoryAddressId == addressData.address.id ? Color.gray.opacity(0.5) : Color.clear
+                ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedTerritoryAddressId == addressData.address.id)
             } trailingActions: { context in
                 if addressData.accessLevel == .Admin {
                     SwipeAction(

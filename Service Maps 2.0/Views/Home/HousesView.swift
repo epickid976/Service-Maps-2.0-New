@@ -27,10 +27,9 @@ struct HousesView: View {
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
     
-    init(address: TerritoryAddressModel) {
-        
+    init(address: TerritoryAddressModel, houseIdToScrollTo: String? = nil) {
         self.address = address
-        let initialViewModel = HousesViewModel(territoryAddress: address)
+        let initialViewModel = HousesViewModel(territoryAddress: address, houseIdToScrollTo: houseIdToScrollTo)
         _viewModel = ObservedObject(wrappedValue: initialViewModel)
         
     }
@@ -42,180 +41,160 @@ struct HousesView: View {
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 60
     
+    @State var highlightedHouseId: String?
+    
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                ScrollView {
-                    VStack {
-                        if viewModel.houseData == nil || viewModel.dataStore.synchronized == false {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
-                                    .frame(width: 350, height: 350)
-                            }
-                        } else {
-                            if viewModel.houseData!.isEmpty {
-                                VStack {
-                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 250, height: 250)
-                                    } else {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 350, height: 350)
-                                    }
+                ScrollViewReader { scrollViewProxy in
+                    ScrollView {
+                        VStack {
+                            if viewModel.houseData == nil || viewModel.dataStore.synchronized == false {
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .animationDidFinish { completed in
+                                            self.animationDone = completed
+                                        }
+                                        .getRealtimeAnimationProgress($animationProgressTime)
+                                        .frame(width: 250, height: 250)
+                                } else {
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .animationDidFinish { completed in
+                                            self.animationDone = completed
+                                        }
+                                        .getRealtimeAnimationProgress($animationProgressTime)
+                                        .frame(width: 350, height: 350)
                                 }
-                                
                             } else {
-                                LazyVStack {
-                                    SwipeViewGroup {
-                                        ForEach(viewModel.houseData!, id: \.self) { houseData in
-                                            houseCellView(houseData: houseData, mainWindowSize: proxy.size)
+                                if viewModel.houseData!.isEmpty {
+                                    VStack {
+                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 250, height: 250)
+                                        } else {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 350, height: 350)
                                         }
                                     }
-                                }.animation(.spring(), value: viewModel.houseData)
-                                    .padding()
-                                
-                                
-                            }
-                        }
-                    }.background(GeometryReader {
-                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                    }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                        let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                        if ( abs(offsetDifference) > minimumOffset) {
-                            if offsetDifference > 0 {
-                                print("Is scrolling up toward top.")
-                                hideFloatingButton = false
-                            } else {
-                                print("Is scrolling down toward bottom.")
-                                hideFloatingButton = true
-                            }
-                            self.previousViewOffset = currentOffset
-                        }
-                    }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.houseData == nil || viewModel.houseData != nil)
-                    .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                    .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-//                    .popup(isPresented: $viewModel.showAlert) {
-//                        if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-//                            viewModel.alert()
-//                                .frame(width: 400, height: 260)
-//                                .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                        }
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                    }
-//                    .popup(isPresented: $viewModel.presentSheet) {
-//
-//                        .frame(width: 400, height: 260)
-//                        .background(Material.thin).cornerRadius(16, corners: .allCorners)
-//                    } customize: {
-//                        $0
-//                            .type(.default)
-//                            .closeOnTapOutside(false)
-//                            .dragToDismiss(false)
-//                            .isOpaque(true)
-//                            .animation(.spring())
-//                            .closeOnTap(false)
-//                            .backgroundColor(.black.opacity(0.8))
-//                    }
-                    .onChange(of: viewModel.presentSheet) { value in
-                        if value {
-                            CentrePopup_AddHouse(viewModel: viewModel, address: address).showAndStack()
-                        }
-                    }
-                    .navigationBarTitle("\(address.address)", displayMode: .large)
-                    .navigationBarBackButtonHidden(true)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .topBarLeading) {
-                            HStack {
-                                Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        presentationMode.wrappedValue.dismiss()
-                                    }
-                                }).keyboardShortcut(.delete, modifiers: .command)
-                                .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
-                            }
-                        }
-                        ToolbarItemGroup(placement: .topBarTrailing) {
-                            HStack {
-                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
-                                    .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                                
-                                Menu {
-                                    //                                if viewModel.isAdmin {
-                                    //                                    Button {
-                                    //                                        viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle()
-                                    //                                    } label: {
-                                    //                                        HStack {
-                                    //                                            Image(systemName: "plus")
-                                    //                                            Text("Add House")
-                                    //                                        }
-                                    //                                    }
-                                    //                                }
-                                    Picker("Sort", selection: $viewModel.sortPredicate) {
-                                        ForEach(HouseSortPredicate.allCases, id: \.self) { option in
-                                            Text(String(describing: option).capitalized)
-                                        }
-                                    }
-                                    .pickerStyle(.menu)
                                     
-                                    Picker("Filter", selection: $viewModel.filterPredicate) {
-                                        ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
-                                            Text(option.rawValue)
+                                } else {
+                                    LazyVStack {
+                                        SwipeViewGroup {
+                                            ForEach(viewModel.houseData!, id: \.self) { houseData in
+                                                houseCellView(houseData: houseData, mainWindowSize: proxy.size).id(houseData.house.id)
+                                            }
+                                        }
+                                    }.animation(.spring(), value: viewModel.houseData)
+                                        .padding()
+                                    
+                                    
+                                }
+                            }
+                        }.background(GeometryReader {
+                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                            if ( abs(offsetDifference) > minimumOffset) {
+                                if offsetDifference > 0 {
+                                    print("Is scrolling up toward top.")
+                                    hideFloatingButton = false
+                                } else {
+                                    print("Is scrolling down toward bottom.")
+                                    hideFloatingButton = true
+                                }
+                                self.previousViewOffset = currentOffset
+                            }
+                        }
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.houseData == nil || viewModel.houseData != nil)
+                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
+                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
+                        .onChange(of: viewModel.presentSheet) { value in
+                            if value {
+                                CentrePopup_AddHouse(viewModel: viewModel, address: address).showAndStack()
+                            }
+                        }
+                        .navigationBarTitle("\(address.address)", displayMode: .large)
+                        .navigationBarBackButtonHidden(true)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .topBarLeading) {
+                                HStack {
+                                    Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            presentationMode.wrappedValue.dismiss()
+                                        }
+                                    }).keyboardShortcut(.delete, modifiers: .command)
+                                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                }
+                            }
+                            ToolbarItemGroup(placement: .topBarTrailing) {
+                                HStack {
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                    
+                                    Menu {
+                                        Picker("Sort", selection: $viewModel.sortPredicate) {
+                                            ForEach(HouseSortPredicate.allCases, id: \.self) { option in
+                                                Text(String(describing: option).capitalized)
+                                            }
+                                        }
+                                        .pickerStyle(.menu)
+                                        
+                                        Picker("Filter", selection: $viewModel.filterPredicate) {
+                                            ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
+                                                Text(option.rawValue)
+                                            }
+                                        }
+                                        .pickerStyle(.menu)
+                                    } label: {
+                                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() }).keyboardShortcut(";", modifiers: .command)
+                                            .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                                    }
+                                    
+                                }
+                            }
+                        }
+                        .navigationTransition(viewModel.presentSheet || viewModel.houseIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                        .navigationViewStyle(StackNavigationViewStyle())
+                    }.coordinateSpace(name: "scroll")
+                        .scrollIndicators(.hidden)
+                        .refreshable {
+                            viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                hideFloatingButton = false
+                            }
+                        }
+                        .onChange(of: viewModel.dataStore.synchronized) { value in
+                            if value {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    viewModel.getHouses()
+                                }
+                            }
+                        }
+                        .onChange(of: viewModel.houseIdToScrollTo) { id in
+                            if let id = id {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    withAnimation {
+                                        scrollViewProxy.scrollTo(id, anchor: .center)
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            highlightedHouseId = id // Highlight after scrolling
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            highlightedHouseId = nil
                                         }
                                     }
-                                    .pickerStyle(.menu)
-                                } label: {
-                                    Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() }).keyboardShortcut(";", modifiers: .command)
-                                        .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                                 }
                                 
                             }
                         }
-                    }
-                    .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-                    .navigationViewStyle(StackNavigationViewStyle())
-                }.coordinateSpace(name: "scroll")
-                    .scrollIndicators(.hidden)
-                    .refreshable {
-                        viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            hideFloatingButton = false
-                        }
-                    }
-                    .onChange(of: viewModel.dataStore.synchronized) { value in
-                        if value {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                viewModel.getHouses()
-                            }
-                        }
-                    }
+                }
                 if AuthorizationLevelManager().existsAdminCredentials() {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
@@ -237,6 +216,9 @@ struct HousesView: View {
             NavigationLink(destination: NavigationLazyView(VisitsView(house: houseData.house).implementPopupView()).implementPopupView()) {
                 HouseCell(house: houseData, mainWindowSize: mainWindowSize)
                     .padding(.bottom, 2)
+                    .overlay(
+                        highlightedHouseId == houseData.house.id ? Color.gray.opacity(0.5) : Color.clear
+                    ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedHouseId == houseData.house.id)
                     .optionalViewModifier { content in
                         if AuthorizationLevelManager().existsAdminCredentials() {
                             content
