@@ -48,25 +48,17 @@ struct HousesView: View {
             ZStack {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
-                        VStack {
+                        LazyVStack {
                             if viewModel.houseData == nil || viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
                                         .resizable()
-                                        .animationDidFinish { completed in
-                                            self.animationDone = completed
-                                        }
-                                        .getRealtimeAnimationProgress($animationProgressTime)
                                         .frame(width: 250, height: 250)
                                 } else {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
                                         .resizable()
-                                        .animationDidFinish { completed in
-                                            self.animationDone = completed
-                                        }
-                                        .getRealtimeAnimationProgress($animationProgressTime)
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
@@ -88,11 +80,11 @@ struct HousesView: View {
                                 } else {
                                     LazyVStack {
                                         SwipeViewGroup {
-                                            ForEach(viewModel.houseData!, id: \.self) { houseData in
+                                            ForEach(viewModel.houseData!, id: \.id) { houseData in
                                                 houseCellView(houseData: houseData, mainWindowSize: proxy.size).id(houseData.house.id)
-                                            }
+                                            }.modifier(ScrollTransitionModifier())
                                         }
-                                    }.animation(.spring(), value: viewModel.houseData)
+                                    }.animation(.default, value: viewModel.houseData)
                                         .padding()
                                     
                                     
@@ -100,7 +92,8 @@ struct HousesView: View {
                             }
                         }.background(GeometryReader {
                             Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                        })
+                        .onPreferenceChange(ViewOffsetKey.self) { currentOffset in
                             let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
                             if ( abs(offsetDifference) > minimumOffset) {
                                 if offsetDifference > 0 {
@@ -213,12 +206,13 @@ struct HousesView: View {
     @ViewBuilder
     func houseCellView(houseData: HouseData, mainWindowSize: CGSize) -> some View {
         SwipeView {
-            NavigationLink(destination: NavigationLazyView(VisitsView(house: houseData.house).implementPopupView()).implementPopupView()) {
+            NavigationLink(destination: NavigationLazyView(VisitsView(house: houseData.house).implementPopupView())) {
                 HouseCell(house: houseData, mainWindowSize: mainWindowSize)
                     .padding(.bottom, 2)
                     .overlay(
-                        highlightedHouseId == houseData.house.id ? Color.gray.opacity(0.5) : Color.clear
-                    ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedHouseId == houseData.house.id)
+                        RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                            .fill(highlightedHouseId == houseData.house.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedHouseId == houseData.house.id) // Fill with transparent gray if highlighted
+                    )
                     .optionalViewModifier { content in
                         if AuthorizationLevelManager().existsAdminCredentials() {
                             content
@@ -243,7 +237,7 @@ struct HousesView: View {
                             content
                         }
                     }
-                    
+                
             }
         } trailingActions: { context in
             if houseData.accessLevel == .Admin {
@@ -272,6 +266,16 @@ struct HousesView: View {
         .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
         .swipeMinimumDistance(houseData.accessLevel != .User ? 25:1000)
         
+    }
+    
+    struct BorderModifier: ViewModifier {
+        let highlighted: Bool
+        
+        func body(content: Content) -> some View {
+            content
+                .border(highlighted ? Color.gray : Color.clear, width: 2)
+                .cornerRadius(16)
+        }
     }
 }
 
@@ -387,21 +391,21 @@ struct CentrePopup_AddHouse: CentrePopup {
             viewModel.presentSheet = false
             dismiss()
         })
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
-            .simultaneousGesture(
-                // Hide the keyboard on scroll
-                DragGesture().onChanged { _ in
-                    UIApplication.shared.sendAction(
-                        #selector(UIResponder.resignFirstResponder),
-                        to: nil,
-                        from: nil,
-                        for: nil
-                    )
-                }
-            )
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .simultaneousGesture(
+            // Hide the keyboard on scroll
+            DragGesture().onChanged { _ in
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.resignFirstResponder),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )
+            }
+        )
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {

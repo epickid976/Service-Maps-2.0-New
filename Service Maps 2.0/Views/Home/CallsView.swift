@@ -92,7 +92,7 @@ struct CallsView: View {
                                     SwipeViewGroup {
                                         ForEach(viewModel.callsData!, id: \.self) { callData in
                                             callCellView(callData: callData).id(callData.phoneCall.id)
-                                        }
+                                        }.modifier(ScrollTransitionModifier())
                                         //.animation(.default, value: viewModel.callsData!)
                                     }
                                 }.animation(.default, value: viewModel.callsData)
@@ -197,8 +197,9 @@ struct CallsView: View {
         SwipeView {
             CallCell(call: callData)
                 .overlay(
-                    highlightedCallId == callData.phoneCall.id ? Color.gray.opacity(0.5) : Color.clear
-                ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedCallId == callData.phoneCall.id)
+                    RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                        .fill(highlightedCallId == callData.phoneCall.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedCallId == callData.phoneCall.id) // Fill with transparent gray if highlighted
+                )
                 .padding(.bottom, 2)
                 .contextMenu {
                     Button {

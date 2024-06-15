@@ -121,7 +121,7 @@ struct SearchView: View {
                                                 }
                                             }
                                         }
-                                    }
+                                    }.modifier(ScrollTransitionModifier())
                                 }.animation(.spring(), value: searchViewModel.searchResults)
                             }
                         }

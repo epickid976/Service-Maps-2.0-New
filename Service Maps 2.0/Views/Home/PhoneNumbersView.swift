@@ -85,7 +85,7 @@ struct PhoneNumbersView: View {
                                             ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
                                                 numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id)
                                                     .padding(.bottom, 2)
-                                            }
+                                            }.modifier(ScrollTransitionModifier())
                                             
                                         }
                                     }
@@ -177,7 +177,7 @@ struct PhoneNumbersView: View {
                                 presentationMode.wrappedValue.dismiss()
                             }
                         }).keyboardShortcut(.delete, modifiers: .command)
-                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -224,14 +224,14 @@ struct PhoneNumbersView: View {
                             VStack {
                                 HStack {
                                     if let call = numbersData.phoneCall  {
-                                            Text("Note: \(call.notes)")
-                                                .font(.headline)
-                                                .lineLimit(2)
-                                                .foregroundColor(.primary)
-                                                .fontWeight(.bold)
-                                                .multilineTextAlignment(.leading)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                                .hSpacing(.leading)
+                                        Text("Note: \(call.notes)")
+                                            .font(.headline)
+                                            .lineLimit(2)
+                                            .foregroundColor(.primary)
+                                            .fontWeight(.bold)
+                                            .multilineTextAlignment(.leading)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .hSpacing(.leading)
                                         
                                     } else {
                                         Text("Note: N/A")
@@ -250,8 +250,9 @@ struct PhoneNumbersView: View {
                         .frame(maxWidth: mainWindowSize.width * 0.90)
                     }
                     .overlay(
-                        highlightedNumberId == numbersData.phoneNumber.id ? Color.gray.opacity(0.5) : Color.clear
-                    ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedNumberId == numbersData.phoneNumber.id)
+                        RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                            .fill(highlightedNumberId == numbersData.phoneNumber.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedNumberId == numbersData.phoneNumber.id) // Fill with transparent gray if highlighted
+                    )
                     //.id(territory.id)
                     .padding(10)
                     .frame(minWidth: mainWindowSize.width * 0.95)
@@ -493,7 +494,7 @@ class NumbersViewModel: ObservableObject {
         .hSpacing(.center)
     }
     
-   
+    
 }
 
 @MainActor
@@ -552,13 +553,13 @@ struct NavigationLazyView<Content: View>: View {
 public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
     var destination: () -> Destination
     var label: () -> Label
-
+    
     public init(@ViewBuilder destination: @escaping () -> Destination,
                 @ViewBuilder label: @escaping () -> Label) {
         self.destination = destination
         self.label = label
     }
-
+    
     public var body: some View {
         NavigationLink {
             LazyView {
@@ -568,10 +569,10 @@ public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
             label().implementPopupView()
         }
     }
-
+    
     private struct LazyView<Content: View>: View {
         var content: () -> Content
-     
+        
         var body: some View {
             content().implementPopupView()
         }
@@ -687,21 +688,21 @@ struct CentrePopup_AddNumber: CentrePopup {
             viewModel.presentSheet = false
             dismiss()
         })
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
-            .simultaneousGesture(
-                // Hide the keyboard on scroll
-                DragGesture().onChanged { _ in
-                    UIApplication.shared.sendAction(
-                        #selector(UIResponder.resignFirstResponder),
-                        to: nil,
-                        from: nil,
-                        for: nil
-                    )
-                }
-            )
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .simultaneousGesture(
+            // Hide the keyboard on scroll
+            DragGesture().onChanged { _ in
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.resignFirstResponder),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )
+            }
+        )
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {

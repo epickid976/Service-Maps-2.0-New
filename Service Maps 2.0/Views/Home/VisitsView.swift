@@ -92,7 +92,7 @@ struct VisitsView: View {
                                     SwipeViewGroup {
                                         ForEach(viewModel.visitData!, id: \.self) { visitData in
                                             visitCellView(visitData: visitData).id(visitData.visit.id)
-                                        }
+                                        }.modifier(ScrollTransitionModifier())
                                         .animation(.default, value: viewModel.visitData!)
                                         
                                         
@@ -197,8 +197,9 @@ struct VisitsView: View {
             VisitCell(visit: visitData)
                 .padding(.bottom, 2)
                 .overlay(
-                    highlightedVisitId == visitData.visit.id ? Color.gray.opacity(0.5) : Color.clear
-                ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedVisitId == visitData.visit.id)
+                    RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                        .fill(highlightedVisitId == visitData.visit.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedVisitId == visitData.visit.id) // Fill with transparent gray if highlighted
+                )
                 .optionalViewModifier { content in
                     if AuthorizationLevelManager().existsAdminCredentials() {
                        content

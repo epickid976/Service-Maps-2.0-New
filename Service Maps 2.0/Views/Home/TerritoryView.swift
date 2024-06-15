@@ -77,7 +77,6 @@ struct TerritoryView: View {
                                 }
                             } else {
                                 if viewModel.territoryData!.isEmpty {
-                                    VStack {
                                         if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                             LottieView(animation: .named("nodatapreview"))
                                                 .playing()
@@ -89,7 +88,7 @@ struct TerritoryView: View {
                                                 .resizable()
                                                 .frame(width: 350, height: 350)
                                         }
-                                    }
+                                    
                                     
                                 } else {
                                     LazyVStack {
@@ -115,7 +114,8 @@ struct TerritoryView: View {
                                                         }
                                                     }.padding(.leading)
                                                     
-                                                }.animation(.default, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                                }.modifier(ScrollTransitionModifier())
+                                                .animation(.default, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
                                             }
                                         }
                                         
@@ -126,8 +126,9 @@ struct TerritoryView: View {
                                                                 ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
                                                                     territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
                                                                         .id(territoryData.territory.id)
+                                                                        
                                                                 }
-                                                            }
+                                                }.modifier(ScrollTransitionModifier())
                                             }
                                         }.animation(.default, value: viewModel.territoryData!)
                                     }
@@ -278,11 +279,10 @@ struct TerritoryView: View {
             SwipeView {
                 NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
                     CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize)
-                        .overlay (
-                            highlightedTerritoryId == (territoryData.territory.id)
-                                        ? Color.gray.opacity(0.5) // Or your preferred highlight color
-                                        : Color.clear
-                        ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedTerritoryId == (territoryData.territory.id))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                                .fill(highlightedTerritoryId == territoryData.territory.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedTerritoryId == territoryData.territory.id) // Fill with transparent gray if highlighted
+                        )
                         .padding(.bottom, 2)
                         .optionalViewModifier { content in
                             if AuthorizationLevelManager().existsAdminCredentials() {
@@ -501,3 +501,22 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
     }
 }
 
+struct ScrollTransitionModifier: ViewModifier {
+    @Environment(\.isScrollEnabled) var isScrollEnabled: Bool // Detect if scroll is active (iOS 16)
+    @State private var opacity: Double = 1.0 // Local state for opacity (iOS 16)
+    @State private var scale: CGFloat = 1.0 // Local state for scale (iOS 16)
+    
+    func body(content: Content) -> some View {
+        Group {
+            if #available(iOS 17.0, *) {
+                content.scrollTransition { content, phase in
+                    content
+                        .opacity(phase.isIdentity || phase == .bottomTrailing ? 1 : 0)
+                        .scaleEffect(phase.isIdentity || phase == .bottomTrailing ? 1 : 0.75)
+                }
+            } else {
+                content
+            }
+        }
+    }
+}

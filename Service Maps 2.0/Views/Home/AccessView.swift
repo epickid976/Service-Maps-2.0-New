@@ -44,7 +44,7 @@ struct AccessView: View {
         GeometryReader { proxy in
             ZStack {
                 ScrollView {
-                    VStack {
+                    LazyVStack {
                         if viewModel.keyData == nil || viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
@@ -67,7 +67,6 @@ struct AccessView: View {
                             }
                         } else {
                             if viewModel.keyData!.isEmpty {
-                                VStack {
                                     if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                         LottieView(animation: .named("nodatapreview"))
                                             .playing()
@@ -79,17 +78,14 @@ struct AccessView: View {
                                             .resizable()
                                             .frame(width: 350, height: 350)
                                     }
-                                }
-                                
                             } else {
                                 LazyVStack {
                                     SwipeViewGroup {
                                         ForEach(viewModel.keyData!, id: \.self) { keyData in
-                                            
                                             NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).implementPopupView()).implementPopupView()) {
                                                 keyCell(keyData: keyData)
                                             }
-                                        }
+                                        }.modifier(ScrollTransitionModifier())
                                         .animation(.default, value: viewModel.keyData!)
                                     }
                                 }

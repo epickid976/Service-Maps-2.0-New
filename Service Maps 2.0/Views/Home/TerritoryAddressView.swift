@@ -97,7 +97,7 @@ struct TerritoryAddressView: View {
                                                 addressCell(addressData: addressData, mainWindowSize: proxy.size)
                                                     .padding(.bottom, 2)
                                                     .id(addressData.address.id)
-                                            }
+                                            }.modifier(ScrollTransitionModifier())
                                         }
                                     }
                                     .padding(.horizontal)
@@ -184,7 +184,7 @@ struct TerritoryAddressView: View {
                                 presentationMode.wrappedValue.dismiss()
                             }
                         }).keyboardShortcut(.delete, modifiers: .command)
-                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -274,8 +274,9 @@ struct TerritoryAddressView: View {
                     
                 }
                 .overlay(
-                    highlightedTerritoryAddressId == addressData.address.id ? Color.gray.opacity(0.5) : Color.clear
-                ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedTerritoryAddressId == addressData.address.id)
+                    RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                        .fill(highlightedTerritoryAddressId == addressData.address.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedTerritoryAddressId == addressData.address.id) // Fill with transparent gray if highlighted
+                )
             } trailingActions: { context in
                 if addressData.accessLevel == .Admin {
                     SwipeAction(
@@ -428,21 +429,21 @@ struct CentrePopup_AddAddress: CentrePopup {
             viewModel.presentSheet = false
             dismiss()
         })
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
-            .simultaneousGesture(
-                // Hide the keyboard on scroll
-                DragGesture().onChanged { _ in
-                    UIApplication.shared.sendAction(
-                        #selector(UIResponder.resignFirstResponder),
-                        to: nil,
-                        from: nil,
-                        for: nil
-                    )
-                }
-            )
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .simultaneousGesture(
+            // Hide the keyboard on scroll
+            DragGesture().onChanged { _ in
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.resignFirstResponder),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )
+            }
+        )
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {

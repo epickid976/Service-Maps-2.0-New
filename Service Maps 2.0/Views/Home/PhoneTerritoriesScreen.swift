@@ -109,14 +109,15 @@ struct PhoneTerritoriesScreen: View {
                                                     }
                                                     .padding(.leading)
                                                     
-                                                }.animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
+                                                }.modifier(ScrollTransitionModifier())
+                                                .animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
                                             }
                                         }
                                         LazyVStack {
                                             SwipeViewGroup {
                                                 ForEach(viewModel.phoneData!, id: \.self) { phoneData in
                                                     territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id)
-                                                }
+                                                }.modifier(ScrollTransitionModifier())
                                                 //.animation(.default, value: viewModel.phoneData!)
                                                 
                                                 
@@ -248,8 +249,9 @@ struct PhoneTerritoriesScreen: View {
                 PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity, mainWindowSize: mainViewSize)
                     .padding(.bottom, 2)
                     .overlay(
-                        highlightedTerritoryId == phoneData.territory.id ? Color.gray.opacity(0.5) : Color.clear
-                    ).cornerRadius(16, corners: .allCorners).animation(.default, value: highlightedTerritoryId == phoneData.territory.id)
+                        RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                            .fill(highlightedTerritoryId == phoneData.territory.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedTerritoryId == phoneData.territory.id) // Fill with transparent gray if highlighted
+                    )
                     .optionalViewModifier { content in
                         if AuthorizationLevelManager().existsAdminCredentials() {
                             content
