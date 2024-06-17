@@ -12,7 +12,6 @@ import RealmSwift
 import ScalingHeaderScrollView
 import SwipeActions
 import Lottie
-import PopupView
 import AlertKit
 import MijickPopupView
 
@@ -97,7 +96,7 @@ struct TerritoryAddressView: View {
                                                 addressCell(addressData: addressData, mainWindowSize: proxy.size)
                                                     .padding(.bottom, 2)
                                                     .id(addressData.address.id)
-                                            }.modifier(ScrollTransitionModifier())
+                                            }
                                         }
                                     }
                                     .padding(.horizontal)
@@ -266,7 +265,7 @@ struct TerritoryAddressView: View {
                                         }
                                     }
                                     //TODO Trash and Pencil only if admin
-                                }
+                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                         } else {
                             content
                         }
@@ -284,6 +283,7 @@ struct TerritoryAddressView: View {
                         backgroundColor: .red
                     ) {
                         DispatchQueue.main.async {
+                            context.state.wrappedValue = .closed
                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
                             //self.showAlert = true
                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {

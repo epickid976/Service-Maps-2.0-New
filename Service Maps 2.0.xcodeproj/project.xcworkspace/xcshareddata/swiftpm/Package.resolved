@@ -1,5 +1,5 @@
 {
-  "originHash" : "036eb37726ad53ba723f3543690e7ff78eacb4039aa7bfee9acf4b04b8fef1f0",
+  "originHash" : "05b22c89cee7d64ec692fc1e4e53eed56e9a61a35834773af4ec68e4ba9e71a2",
   "pins" : [
     {
       "identity" : "activityindicatorview",
@@ -56,21 +56,12 @@
       }
     },
     {
-      "identity" : "popupview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/epickid976/PopupView",
-      "state" : {
-        "branch" : "master",
-        "revision" : "93c581fa9dc50aea1708e5a6d2ddb665aa7df50e"
-      }
-    },
-    {
       "identity" : "popupview?tab=readme-ov-file",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Mijick/PopupView?tab=readme-ov-file",
       "state" : {
-        "revision" : "fea5e68469b9967bdbb48fbb1ddd608db5aeaa29",
-        "version" : "2.4.0"
+        "revision" : "2465a5aef481f3b0bbf2a26dc0aca692c7dc6f5b",
+        "version" : "2.4.2"
       }
     },
     {

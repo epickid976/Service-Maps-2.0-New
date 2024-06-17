@@ -11,7 +11,6 @@ import SwipeActions
 import Combine
 import UIKit
 import Lottie
-import PopupView
 import AlertKit
 import Nuke
 import FloatingButton
@@ -309,7 +308,7 @@ struct TerritoryView: View {
                                                 Text("Edit Territory")
                                             }
                                         }
-                                    }
+                                    }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                             } else {
                                 content
                             }
@@ -322,6 +321,7 @@ struct TerritoryView: View {
                         backgroundColor: .red
                     ) {
                         DispatchQueue.main.async {
+                            context.state.wrappedValue = .closed
                             self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
                             CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).showAndStack()
                         }
@@ -363,19 +363,29 @@ struct MainButton: View {
     var width: CGFloat = 50
     var action: () -> Void
     
+    @State private var isPressed: Bool = false
+    
     var body: some View {
-        Button {
-            action()
-        } label: {
-            ZStack {
-                Color(hex: colorHex)
-                    .frame(width: width, height: width)
-                    .cornerRadius(width / 2)
-                    .shadow(color: Color(hex: colorHex).opacity(0.3), radius: 15, x: 0, y: 15)
-                Image(systemName: imageName)
-                    .foregroundColor(.white)
-            }
+        ZStack {
+            Color(hex: colorHex)
+                .frame(width: width, height: width)
+                .cornerRadius(width / 2)
+                .shadow(color: Color(hex: colorHex).opacity(0.3), radius: 15, x: 0, y: 15)
+            Image(systemName: imageName)
+                .foregroundColor(.white)
         }
+        .scaleEffect(isPressed ? 0.9 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.2), value: isPressed)
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    isPressed = true
+                }
+                .onEnded { _ in
+                    isPressed = false
+                    action()
+                }
+        )
     }
 }
 

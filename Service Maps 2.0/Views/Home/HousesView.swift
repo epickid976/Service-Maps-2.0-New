@@ -12,7 +12,6 @@ import SwipeActions
 import Combine
 import UIKit
 import Lottie
-import PopupView
 import AlertKit
 import MijickPopupView
 
@@ -49,7 +48,7 @@ struct HousesView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
                         LazyVStack {
-                            if viewModel.houseData == nil || viewModel.dataStore.synchronized == false {
+                            if viewModel.houseData == nil || !viewModel.dataStore.synchronized {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
@@ -84,7 +83,7 @@ struct HousesView: View {
                                                 houseCellView(houseData: houseData, mainWindowSize: proxy.size).id(houseData.house.id)
                                             }.modifier(ScrollTransitionModifier())
                                         }
-                                    }.animation(.default, value: viewModel.houseData)
+                                    }.animation(.default, value: viewModel.houseData!)
                                         .padding()
                                     
                                     
@@ -232,7 +231,7 @@ struct HousesView: View {
                                         }
                                     }
                                     //TODO Trash and Pencil only if admin
-                                }
+                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                         } else {
                             content
                         }
@@ -246,6 +245,7 @@ struct HousesView: View {
                     backgroundColor: .red
                 ) {
                     DispatchQueue.main.async {
+                        context.state.wrappedValue = .closed
                         self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
                         //self.showAlert = true
                         if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {

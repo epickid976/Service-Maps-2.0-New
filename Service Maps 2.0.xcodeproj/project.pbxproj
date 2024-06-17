@@ -75,9 +75,6 @@
 		824213792A83335B00626DD5 /* CustomBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213782A83335B00626DD5 /* CustomBackButton.swift */; };
 		8242137B2A83357600626DD5 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242137A2A83357600626DD5 /* CustomButton.swift */; };
 		8242137D2A84810300626DD5 /* SignupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242137C2A84810300626DD5 /* SignupViewModel.swift */; };
-		8244B79D2BEBDFC7005BA9FE /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 8244B79C2BEBDFC7005BA9FE /* PopupView */; };
-		8244B7A32BEBE396005BA9FE /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 8244B7A22BEBE396005BA9FE /* PopupView */; };
-		8244B7A62BEBF782005BA9FE /* MijickPopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 8244B7A52BEBF782005BA9FE /* MijickPopupView */; };
 		824E5CEE2BC37962001DE348 /* VisitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CED2BC37962001DE348 /* VisitsViewModel.swift */; };
 		824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CEF2BC43012001DE348 /* VisitCell.swift */; };
 		824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */; };
@@ -130,6 +127,7 @@
 		82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4692BD820BB00F52F2F /* AddKeyView.swift */; };
 		82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */; };
 		82A967B72AAABE890043946F /* RoundedCornerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A967B62AAABE890043946F /* RoundedCornerExtension.swift */; };
+		82B22C9A2C2099AA002E4EE8 /* MijickPopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 82B22C992C2099AA002E4EE8 /* MijickPopupView */; };
 		82BC0F1B2A9BEFCB00B255BF /* TerritoryAddressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1A2A9BEFCB00B255BF /* TerritoryAddressModel.swift */; };
 		82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1C2A9BF53900B255BF /* DataUploaderManager.swift */; };
 		82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1E2A9BF55B00B255BF /* AuthorizationLevelManager.swift */; };
@@ -356,10 +354,8 @@
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
 				822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */,
-				8244B79D2BEBDFC7005BA9FE /* PopupView in Frameworks */,
-				8244B7A32BEBE396005BA9FE /* PopupView in Frameworks */,
 				822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */,
-				8244B7A62BEBF782005BA9FE /* MijickPopupView in Frameworks */,
+				82B22C9A2C2099AA002E4EE8 /* MijickPopupView in Frameworks */,
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
 				822FA07D2AA6B6320008FA61 /* Nuke in Frameworks */,
@@ -752,9 +748,7 @@
 				825645A12BCE0FC000F18AC9 /* RealmSwift */,
 				82A5B45F2BD482EB00F52F2F /* AlertKit */,
 				82F768FF2BE92FA2001FA3CF /* FloatingButton */,
-				8244B79C2BEBDFC7005BA9FE /* PopupView */,
-				8244B7A22BEBE396005BA9FE /* PopupView */,
-				8244B7A52BEBF782005BA9FE /* MijickPopupView */,
+				82B22C992C2099AA002E4EE8 /* MijickPopupView */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -797,8 +791,7 @@
 				8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */,
 				82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */,
-				8244B7A12BEBE396005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */,
-				8244B7A42BEBF782005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */,
+				82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1131,7 +1124,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.4;
+				MARKETING_VERSION = 2.7.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1164,7 +1157,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.4;
+				MARKETING_VERSION = 2.7.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1253,22 +1246,6 @@
 				minimumVersion = 0.11.0;
 			};
 		};
-		8244B7A12BEBE396005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/epickid976/PopupView";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-		8244B7A42BEBF782005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Mijick/PopupView?tab=readme-ov-file";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.4.0;
-			};
-		};
 		8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift";
@@ -1283,6 +1260,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.1.9;
+			};
+		};
+		82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Mijick/PopupView?tab=readme-ov-file";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.0;
 			};
 		};
 		82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */ = {
@@ -1346,20 +1331,6 @@
 			package = 822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
 			productName = NavigationTransitions;
 		};
-		8244B79C2BEBDFC7005BA9FE /* PopupView */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = PopupView;
-		};
-		8244B7A22BEBE396005BA9FE /* PopupView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8244B7A12BEBE396005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */;
-			productName = PopupView;
-		};
-		8244B7A52BEBF782005BA9FE /* MijickPopupView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8244B7A42BEBF782005BA9FE /* XCRemoteSwiftPackageReference "PopupView" */;
-			productName = MijickPopupView;
-		};
 		8256459F2BCE0FC000F18AC9 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */;
@@ -1374,6 +1345,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */;
 			productName = AlertKit;
+		};
+		82B22C992C2099AA002E4EE8 /* MijickPopupView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = MijickPopupView;
 		};
 		82F768FF2BE92FA2001FA3CF /* FloatingButton */ = {
 			isa = XCSwiftPackageProductDependency;

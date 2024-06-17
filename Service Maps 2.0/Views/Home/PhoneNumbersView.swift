@@ -53,7 +53,6 @@ struct PhoneNumbersView: View {
                         }
                     } content: {
                         VStack {
-                            SearchBar(searchText: $viewModel.search).padding([.top, .horizontal])
                             if viewModel.phoneNumbersData == nil || viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
@@ -285,7 +284,7 @@ struct PhoneNumbersView: View {
                                         }
                                     }
                                     //TODO Trash and Pencil only if admin
-                                }
+                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                         } else if AuthorizationLevelManager().existsPhoneCredentials() {
                             content
                                 .contextMenu {
@@ -299,7 +298,7 @@ struct PhoneNumbersView: View {
                                         }
                                     }
                                     //TODO Trash and Pencil only if admin
-                                }
+                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                         } else {
                             content
                         }
@@ -312,6 +311,7 @@ struct PhoneNumbersView: View {
                         systemImage: "trash",
                         backgroundColor: .red
                     ) {
+                        context.state.wrappedValue = .closed
                         DispatchQueue.main.async {
                             self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
                             

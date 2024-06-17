@@ -11,7 +11,6 @@ import SwipeActions
 import Combine
 import Lottie
 import UIKit
-import PopupView
 
 @MainActor
 class TerritoryViewModel: ObservableObject {

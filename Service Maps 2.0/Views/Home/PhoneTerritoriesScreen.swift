@@ -11,7 +11,6 @@ import SwipeActions
 import Combine
 import UIKit
 import Lottie
-import PopupView
 import AlertKit
 import Nuke
 import MijickPopupView
@@ -278,7 +277,7 @@ struct PhoneTerritoriesScreen: View {
                                         }
                                     }
                                     //TODO Trash and Pencil only if admin
-                                }
+                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                         } else if AuthorizationLevelManager().existsPhoneCredentials() {
                             content
                                 .contextMenu {
@@ -292,7 +291,7 @@ struct PhoneTerritoriesScreen: View {
                                         }
                                     }
                                     //TODO Trash and Pencil only if admin
-                                }
+                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                         } else {
                             content
                         }
@@ -306,6 +305,7 @@ struct PhoneTerritoriesScreen: View {
                     backgroundColor: .red
                 ) {
                     DispatchQueue.main.async {
+                        context.state.wrappedValue = .closed
                         self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
                         CentrePopup_DeletePhoneTerritory(viewModel: viewModel).showAndStack()
                     }

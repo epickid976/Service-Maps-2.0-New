@@ -10,11 +10,13 @@ import SwiftUI
 
 struct SearchBar: View {
     @Binding var searchText: String
+    var isFocused: FocusState<Bool>.Binding
 
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
             TextField("Search...", text: $searchText)
+                .focused(isFocused)
                 .overlay(alignment: .trailing) {
                     if !searchText.isEmpty { // Show clear button only when text exists
                         Button(action: {

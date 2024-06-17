@@ -13,7 +13,6 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import PopupView
 import MijickPopupView
 
 struct CallsView: View {
@@ -224,13 +223,14 @@ struct CallsView: View {
                         }
                     }
                     //TODO Trash and Pencil only if admin
-                }
+                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
         } trailingActions: { context in
             if callData.accessLevel == .Admin {
                 SwipeAction(
                     systemImage: "trash",
                     backgroundColor: .red
                 ) {
+                    context.state.wrappedValue = .closed
                     DispatchQueue.main.async {
                         self.viewModel.callToDelete = callData.phoneCall.id
                         CentrePopup_DeleteCall(viewModel: viewModel).showAndStack()

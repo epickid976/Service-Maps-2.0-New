@@ -39,19 +39,11 @@ struct AddKeyView: View {
                         LottieView(animation: .named("loadsimple"))
                             .playing()
                             .resizable()
-                            .animationDidFinish { completed in
-                                self.animationDone = completed
-                            }
-                            .getRealtimeAnimationProgress($animationProgressTime)
                             .frame(width: 250, height: 250)
                     } else {
                         LottieView(animation: .named("loadsimple"))
                             .playing()
                             .resizable()
-                            .animationDidFinish { completed in
-                                self.animationDone = completed
-                            }
-                            .getRealtimeAnimationProgress($animationProgressTime)
                             .frame(width: 350, height: 350)
                     }
                 } else {

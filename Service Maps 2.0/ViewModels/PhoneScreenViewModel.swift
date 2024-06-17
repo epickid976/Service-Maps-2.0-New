@@ -49,11 +49,7 @@ class PhoneScreenViewModel: ObservableObject {
     @Published var syncAnimationprogress: CGFloat = 0.0
     
     @Published var restartAnimation = false
-    @Published var animationProgress: Bool = false {
-        didSet {
-            print(animationProgress)
-        }
-    }
+    @Published var animationProgress: Bool = false
     
     @Published var showAlert = false
     @Published var ifFailed = false

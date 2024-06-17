@@ -22,7 +22,7 @@ func formattedDate(date: Date, withTime: Bool = true) -> String {
             formatter1.dateFormat = "EEEE HH:mm"
             return  formatter1.string(from: date)
         } else {
-            formatter1.dateFormat = "MM-dd-yyyy HH:mm"
+            formatter1.dateFormat = "dd MMM yyyy hh:mm a"
             return  formatter1.string(from: date)
         }
     } else {

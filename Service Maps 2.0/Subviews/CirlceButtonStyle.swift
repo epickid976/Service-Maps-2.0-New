@@ -87,6 +87,13 @@ struct PillButtonStyle: ButtonStyle {
                     } else {
                         displayText(NSLocalizedString("Syncing", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
                     }
+                }.optionalViewModifier { content in
+                    if #available(iOS 17, *) {
+                        content
+                            .contentTransition(.numericText())
+                            .animation(.spring(duration: 0.5), value: timePassed)
+                            .animation(.spring(duration: 0.5), value: synced)
+                    }
                 }
             )
             .frame(width: width, height: height)
@@ -103,12 +110,7 @@ struct PillButtonStyle: ButtonStyle {
             .font(fontSize)
             .foregroundColor(foregroundColor)
             .multilineTextAlignment(.center)
-            .optionalViewModifier { content in
-                if #available(iOS 17, *) {
-                    content.contentTransition(.numericText()).animation(.spring(duration: 0.5), value: text)
-                        .minimumScaleFactor (0.8)
-                }
-            }
+            
         
     }
 }

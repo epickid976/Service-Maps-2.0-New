@@ -8,11 +8,7 @@ class SearchViewModel: ObservableObject {
     @Published var realmManager = RealmManager.shared
     @Published var searchResults: [MySearchResult] = []
     @Published var searchQuery: String = ""
-    @Published var searchState: SearchState = .Idle {
-        didSet {
-            print("Search state changed to: \(searchState)")
-        }
-    }
+    @Published var searchState: SearchState = .Idle
     @Published var searchMode: SearchMode = .Territories
     
     private var cancellables = Set<AnyCancellable>()

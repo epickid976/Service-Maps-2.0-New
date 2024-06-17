@@ -7,9 +7,9 @@
 
 import SwiftUI
 import NavigationTransitions
-import PopupView
 import AlertKit
 import MijickPopupView
+
 
 struct SettingsView: View {
     @State var loading = false
@@ -29,6 +29,9 @@ struct SettingsView: View {
     let alertViewDeleted = AlertAppleMusic17View(title: "Cache Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     
     @Environment(\.mainWindowSize) var mainWindowSize
+    
+    @Environment(\.requestReview) var requestReview
+    
     var body: some View {
         let alertUpdate = AlertAppleMusic17View(title: viewModel.showUpdateToastMessage, subtitle: nil, icon: .custom(UIImage(systemName: "arrow.triangle.2.circlepath.circle")!))
         ScrollView {
@@ -132,7 +135,16 @@ struct SettingsView: View {
         }
         .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
         .navigationViewStyle(StackNavigationViewStyle())
+        .onChange(of: viewModel.requestReview) { value in
+            if value {
+                requestReview()
+                DispatchQueue.main.async {
+                    self.viewModel.requestReview = false
+                }
+            }
+        }
     }
+    
 }
 
 struct CentrePopup_AboutApp: CentrePopup {
@@ -316,9 +328,11 @@ struct CentrePopup_EditUsername: CentrePopup {
             CustomField(text: $username, isFocused: $usernameFocus, textfield: true, textfieldAxis: .vertical, placeholder: "New Username")
                 .padding(.bottom)
             
-            Text(error)
-                .fontWeight(.bold)
-                .foregroundColor(.red)
+            if !error.isEmpty {
+                Text(error)
+                    .fontWeight(.bold)
+                    .foregroundColor(.red)
+            }
             
             HStack {
                 if !loading {
@@ -352,7 +366,6 @@ struct CentrePopup_EditUsername: CentrePopup {
             }
             .padding()
         }
-        .padding()
         .onAppear {
             usernameFocus = true // Focus on the text field when the view appears
         }

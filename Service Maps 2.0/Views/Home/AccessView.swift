@@ -11,14 +11,12 @@ import SwipeActions
 import Combine
 import UIKit
 import Lottie
-import PopupView
 import AlertKit
 import MijickPopupView
 
 struct AccessView: View {
-    @StateObject var viewModel = AccessViewModel()
+    @StateObject var viewModel: AccessViewModel
     
-    @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var databaseManager = RealmManager.shared
     
@@ -28,65 +26,60 @@ struct AccessView: View {
     let alertViewDeleted = AlertAppleMusic17View(title: "Key Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     let alertViewAdded = AlertAppleMusic17View(title: "Key Added/Edited", subtitle: nil, icon: .done)
     
-    
-    
-    
-    
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @Environment(\.mainWindowSize) var mainWindowSize
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 60
+    let minimumOffset: CGFloat = 40
     
     @State var keydataToEdit: KeyData?
+    
+    @State private var scrollDebounceCancellable: AnyCancellable?
+    
+    init() {
+        let viewModel = AccessViewModel()
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
     
     var body: some View {
         GeometryReader { proxy in
             ZStack {
                 ScrollView {
-                    LazyVStack {
+                    VStack {
                         if viewModel.keyData == nil || viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
                                     .playing(loopMode: .loop)
                                     .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
                                     .frame(width: 250, height: 250)
                             } else {
                                 LottieView(animation: .named("loadsimple"))
                                     .playing(loopMode: .loop)
                                     .resizable()
-                                    .animationDidFinish { completed in
-                                        self.animationDone = completed
-                                    }
-                                    .getRealtimeAnimationProgress($animationProgressTime)
                                     .frame(width: 350, height: 350)
                             }
                         } else {
                             if viewModel.keyData!.isEmpty {
-                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 250, height: 250)
-                                    } else {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 350, height: 350)
-                                    }
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("nodatapreview"))
+                                        .playing()
+                                        .resizable()
+                                        .frame(width: 250, height: 250)
+                                } else {
+                                    LottieView(animation: .named("nodatapreview"))
+                                        .playing()
+                                        .resizable()
+                                        .frame(width: 350, height: 350)
+                                }
                             } else {
                                 LazyVStack {
                                     SwipeViewGroup {
-                                        ForEach(viewModel.keyData!, id: \.self) { keyData in
-                                            NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).implementPopupView()).implementPopupView()) {
+                                        ForEach(viewModel.keyData!, id: \.id) { keyData in
+                                            NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
                                                 keyCell(keyData: keyData)
                                             }
                                         }.modifier(ScrollTransitionModifier())
-                                        .animation(.default, value: viewModel.keyData!)
                                     }
                                 }
                                 .animation(.spring(), value: viewModel.keyData)
@@ -95,7 +88,7 @@ struct AccessView: View {
                                 
                             }
                         }
-                    }
+                    }.hSpacing(.center)
                     .background(GeometryReader {
                         Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                     }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
@@ -103,10 +96,10 @@ struct AccessView: View {
                         if ( abs(offsetDifference) > minimumOffset) {
                             if offsetDifference > 0 {
                                 print("Is scrolling up toward top.")
-                                hideFloatingButton = false
+                               debounceHideFloatingButton(false)
                             } else {
                                 print("Is scrolling down toward bottom.")
-                                hideFloatingButton = true
+                                debounceHideFloatingButton(true)
                             }
                             self.previousViewOffset = currentOffset
                         }
@@ -114,10 +107,10 @@ struct AccessView: View {
                     .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
                     .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                     .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    
                     .navigationDestination(isPresented: $viewModel.presentSheet) {
                         AddKeyView(keyData: keydataToEdit) {
                             synchronizationManager.startupProcess(synchronizing: true)
+                            keydataToEdit = nil
                             DispatchQueue.main.async {
                                 viewModel.showAddedToast = true
                             }
@@ -152,7 +145,9 @@ struct AccessView: View {
                     }
                     .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                     .navigationViewStyle(StackNavigationViewStyle())
-                }.coordinateSpace(name: "scroll")
+                }
+                
+                .coordinateSpace(name: "scroll")
                     .scrollIndicators(.hidden)
                     .refreshable {
                         synchronizationManager.startupProcess(synchronizing: true)
@@ -168,19 +163,33 @@ struct AccessView: View {
                             }
                         }
                     }
-                if AuthorizationLevelManager().existsAdminCredentials() {
-                    MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
-                        self.viewModel.presentSheet = true
-                    }
-                    .offset(y: hideFloatingButton ? 150 : 0)
-                    .animation(.spring(), value: hideFloatingButton)
-                    .vSpacing(.bottom).hSpacing(.trailing)
-                    .padding()
-                    .keyboardShortcut("+", modifiers: .command)
+                if viewModel.isAdmin {
+                    
+                        MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
+                            keydataToEdit = nil
+                            self.viewModel.presentSheet = true
+                        }
+                        .offset(y: hideFloatingButton ? 150 : 0)
+                        .animation(.spring(), value:hideFloatingButton)
+                        .vSpacing(.bottom).hSpacing(.trailing)
+                        .padding()
+                        .keyboardShortcut("+", modifiers: .command)
                 }
             }
         }
     }
+    
+    private func debounceHideFloatingButton(_ hide: Bool) {
+            scrollDebounceCancellable?.cancel()
+            scrollDebounceCancellable = Just(hide)
+            .throttle(for: .milliseconds(0), scheduler: RunLoop.main, latest: true)
+                .sink { shouldHide in
+                    withAnimation {
+                        self.hideFloatingButton = shouldHide
+                    }
+                }
+        }
+    
     @ViewBuilder
     func keyCell(keyData: KeyData) -> some View {
         SwipeView {
@@ -188,25 +197,21 @@ struct AccessView: View {
                 .padding(.bottom, 2)
                 .contextMenu {
                     Button {
-                        DispatchQueue.main.async {
-                            self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
-                            //self.showAlert = true
-                            CentrePopup_DeleteKey(viewModel: viewModel).showAndStack()
-                        }
+                        self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
+                        CentrePopup_DeleteKey(viewModel: viewModel).showAndStack()
                     } label: {
                         HStack {
                             Image(systemName: "trash")
                             Text("Delete Key")
                         }
                     }
-                    if AuthorizationLevelManager().existsAdminCredentials() {
+                    if viewModel.isAdmin {
                         Button {
                             DispatchQueue.main.async {
                                 keydataToEdit = keyData
+                                viewModel.presentSheet = true
                             }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                self.viewModel.presentSheet = true
-                            }
+                            
                         } label: {
                             HStack {
                                 Image(systemName: "pencil")
@@ -221,13 +226,15 @@ struct AccessView: View {
                         let itemSource = CustomActivityItemSource(keyName: keyData.key.name, territories: territories, url: url!)
                         
                         let av = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
-
+                        
                         UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
                         
                         if UIDevice.current.userInterfaceIdiom == .pad {
                             av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
                             av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
                         }
+                        
+                        
                     } label: {
                         HStack {
                             Image(systemName: "square.and.arrow.up")
@@ -236,31 +243,29 @@ struct AccessView: View {
                     }
                     //TODO Trash and Pencil only if admin
                 }
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         } trailingActions: { context in
             SwipeAction(
                 systemImage: "trash",
                 backgroundColor: .red
             ) {
-                DispatchQueue.main.async {
-                    self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
-                    //self.showAlert = true
-                    CentrePopup_DeleteKey(viewModel: viewModel).showAndStack()
-                }
+                context.state.wrappedValue = .closed
+                CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)).showAndStack()
             }
             .font(.title.weight(.semibold))
             .foregroundColor(.white)
             
-            if AuthorizationLevelManager().existsAdminCredentials() {
+            
+            if viewModel.isAdmin {
                 SwipeAction(
                     systemImage: "pencil",
                     backgroundColor: .teal
                 ) {
-                    DispatchQueue.main.async {
-                        keydataToEdit = keyData
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.viewModel.presentSheet = true
-                    }
+                    context.state.wrappedValue = .closed
+                    keydataToEdit = keyData
+                    viewModel.presentSheet = true
+                    
+                    
                 }
                 .font(.title.weight(.semibold))
                 .foregroundColor(.white)
@@ -270,21 +275,26 @@ struct AccessView: View {
                 systemImage: "square.and.arrow.up",
                 backgroundColor: Color.green
             ) {
-                context.state.wrappedValue = .closed
+                
+                
+                
                 let url = URL(string: getShareLink(id: keyData.key.id))
                 let territories = keyData.territories.map { String($0.number) }
                 
                 let itemSource = CustomActivityItemSource(keyName: keyData.key.name, territories: territories, url: url!)
                 
                 let av = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
-
-                UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
                 
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
-                    av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.40) {
+                    UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
+                    
+                    if UIDevice.current.userInterfaceIdiom == .pad {
+                        av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
+                        av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                    }
                 }
                 
+                context.state.wrappedValue = .closed
             }
             .allowSwipeToTrigger()
             .font(.title.weight(.semibold))
@@ -303,17 +313,17 @@ class CustomActivityItemSource: NSObject, UIActivityItemSource {
     var keyName: String
     var territories: [String]
     var url: URL
-
+    
     init(keyName: String, territories: [String], url: URL) {
         self.keyName = keyName
         self.territories = territories
         self.url = url
     }
-
+    
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
         return url
     }
-
+    
     func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
         if activityType == .airDrop {
             // For AirDrop, just share the URL
@@ -324,7 +334,7 @@ class CustomActivityItemSource: NSObject, UIActivityItemSource {
             return "\(keyName)\nTerritories: \(territoriesString)\n\n\(url.absoluteString)"
         }
     }
-
+    
     func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
         return keyName
     }
@@ -332,9 +342,8 @@ class CustomActivityItemSource: NSObject, UIActivityItemSource {
 
 struct AccessViewUsersView: View {
     
-    @ObservedObject var viewModel = AccessViewModel()
+    @StateObject var viewModel = AccessViewModel()
     
-    @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var databaseManager = RealmManager.shared
     
@@ -352,7 +361,7 @@ struct AccessViewUsersView: View {
     
     init(viewModel: AccessViewModel, currentKey: MyTokenModel) {
         self.currentKey = currentKey
-        _viewModel = ObservedObject(wrappedValue: viewModel)
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     let alertViewBlocked = AlertAppleMusic17View(title: "User Blocked", subtitle: nil, icon: .custom(UIImage(systemName: "nosign")!))
@@ -419,7 +428,7 @@ struct AccessViewUsersView: View {
                                                                     }
                                                                 }
                                                             }
-                                                        }
+                                                        }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                                                 } trailingActions: { context in
                                                     if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
                                                         SwipeAction(
@@ -441,6 +450,7 @@ struct AccessViewUsersView: View {
                                                             backgroundColor: .red
                                                         ) {
                                                             DispatchQueue.main.async {
+                                                                context.state.wrappedValue = .closed
                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                 //self.showAlert = true
                                                                 CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
@@ -450,7 +460,7 @@ struct AccessViewUsersView: View {
                                                         .foregroundColor(.white)
                                                     }
                                                 }
-                                            }
+                                            }.modifier(ScrollTransitionModifier())
                                         }
                                         .animation(.spring(), value: viewModel.keyUsers!)
                                         if !viewModel.blockedUsers!.isEmpty {
@@ -478,7 +488,7 @@ struct AccessViewUsersView: View {
                                                                             }
                                                                         }
                                                                     }
-                                                                }
+                                                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                                                         } trailingActions: { context in
                                                             if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
                                                                 SwipeAction(
@@ -500,6 +510,7 @@ struct AccessViewUsersView: View {
                                                                     backgroundColor: .red
                                                                 ) {
                                                                     DispatchQueue.main.async {
+                                                                        context.state.wrappedValue = .closed
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                         //self.showAlert = true
                                                                         CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
@@ -522,26 +533,26 @@ struct AccessViewUsersView: View {
                             }
                         }
                     }.hSpacing(.center)
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.keyUsers == nil || viewModel.keyUsers != nil)
-                    .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                    .alert(isPresent: $viewModel.showUserBlockAlert, view: alertViewBlocked)
-                    .alert(isPresent: $viewModel.showUserUnblockAlert, view: alertViewUnblocked)
-                    .navigationBarTitle("Users", displayMode: .automatic)
-                    .navigationBarBackButtonHidden(true)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .topBarLeading) {
-                            HStack {
-                                Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        presentationMode.wrappedValue.dismiss()
-                                    }
-                                }).keyboardShortcut(.delete, modifiers: .command)
-                                    .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.keyUsers == nil || viewModel.keyUsers != nil)
+                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
+                        .alert(isPresent: $viewModel.showUserBlockAlert, view: alertViewBlocked)
+                        .alert(isPresent: $viewModel.showUserUnblockAlert, view: alertViewUnblocked)
+                        .navigationBarTitle("Users", displayMode: .automatic)
+                        .navigationBarBackButtonHidden(true)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .topBarLeading) {
+                                HStack {
+                                    Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            presentationMode.wrappedValue.dismiss()
+                                        }
+                                    }).keyboardShortcut(.delete, modifiers: .command)
+                                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                }
                             }
                         }
-                    }
-                    .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-                    .navigationViewStyle(StackNavigationViewStyle())
+                        .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                        .navigationViewStyle(StackNavigationViewStyle())
                 }
                 .scrollIndicators(.hidden)
             }
@@ -573,7 +584,7 @@ struct AccessViewUsersView: View {
                             Text("Delete User")
                         }
                     }
-                }
+                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
         } trailingActions: { context in
             if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
                 SwipeAction(
@@ -581,6 +592,7 @@ struct AccessViewUsersView: View {
                     backgroundColor: .red
                 ) {
                     DispatchQueue.main.async {
+                        context.state.wrappedValue = .closed
                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                         //self.showAlert = true
                         CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
@@ -601,12 +613,12 @@ struct AccessViewUsersView: View {
 
 struct CentrePopup_DeleteKey: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
-    
+    var keyToDelete: (String?,String?)
     
     func createContent() -> some View {
         ZStack {
             VStack {
-                Text("Delete Key: \(viewModel.keyToDelete.1 ?? "0")")
+                Text("Delete Key: \(keyToDelete.1 ?? "0")")
                     .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
@@ -628,7 +640,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                         CustomBackButton() {
                             withAnimation {
                                 dismiss()
-                                self.viewModel.keyToDelete = (nil,nil)
+                                
                             }
                         }
                     }
@@ -639,8 +651,8 @@ struct CentrePopup_DeleteKey: CentrePopup {
                             self.viewModel.loading = true
                         }
                         Task {
-                            if self.viewModel.keyToDelete.0 != nil && self.viewModel.keyToDelete.1 != nil {
-                                switch await self.viewModel.deleteKey(key: self.viewModel.keyToDelete.0 ?? "") {
+                            if self.keyToDelete.0 != nil && self.keyToDelete.1 != nil {
+                                switch await self.viewModel.deleteKey(key: self.keyToDelete.0 ?? "") {
                                 case .success(_):
                                     withAnimation {
                                         withAnimation {
@@ -649,7 +661,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                                         }
                                         //self.viewModel.showAlert = false
                                         dismiss()
-                                        self.viewModel.keyToDelete = (nil,nil)
+                                        
                                         self.viewModel.showToast = true
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                             self.viewModel.showToast = false
@@ -784,18 +796,18 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
     func createContent() -> some View {
         ZStack {
             VStack {
-                Text("\(viewModel.userToDelete.1 == "true" ? "Block" : "Unblock") User")
+                Text("\(viewModel.userToDelete.1 == "true" ? NSLocalizedString("Block", comment: "") : NSLocalizedString("Unblock", comment: "")) User")
                     .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .padding(.leading)
-                Text("Are you sure you want to \(viewModel.userToDelete.1 == "true" ? "block" : "unblock") the selected user?")
+                Text("Are you sure you want to \(viewModel.userToDelete.1 == "true" ? NSLocalizedString("block", comment: "") : NSLocalizedString("unblock", comment: "")) the selected user?")
                     .font(.headline)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
                 if viewModel.ifFailed {
-                    Text("Error \(viewModel.userToDelete.1 == "true" ? "blocking" : "unblocking") user, please try again later")
+                    Text("Error \(viewModel.userToDelete.1 == "true" ? NSLocalizedString("blocking",comment: "") : NSLocalizedString("unblocking", comment: "")) user, please try again later")
                         .fontWeight(.bold)
                         .foregroundColor(.red)
                 }
@@ -813,14 +825,14 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "\(viewModel.userToDelete.1 == "true" ? "Block" : "Unblock")", color: .red) {
+                    CustomButton(loading: viewModel.loading, title: "\(viewModel.userToDelete.1 == "true" ? NSLocalizedString("Block", comment: "") : NSLocalizedString("Unblock", comment: ""))", color: viewModel.userToDelete.1 == "true" ? .red : .green) {
                         withAnimation {
                             self.viewModel.loading = true
                         }
                         Task {
                             if self.viewModel.userToDelete.0 != nil && self.viewModel.userToDelete.1 != nil {
                                 switch await self.viewModel.blockUnblockUserFromToken() {
-                                case .success(let success):
+                                case .success(_):
                                     //SynchronizationManager.shared.startupProcess(synchronizing: true)
                                     withAnimation {
                                         
@@ -830,18 +842,20 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                                         }
                                         //self.viewModel.showAlert = false
                                         dismiss()
-                                        self.viewModel.userToDelete = (nil,nil)
+                                       
                                         if viewModel.userToDelete.1 == "true" {
-                                            self.viewModel.showUserUnblockAlert = true
-                                        } else {
                                             self.viewModel.showUserBlockAlert = true
+                                        } else {
+                                            
+                                            self.viewModel.showUserUnblockAlert = true
                                         }
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                             self.viewModel.showUserBlockAlert = false
                                             self.viewModel.showUserUnblockAlert = false
                                         }
+                                        self.viewModel.userToDelete = (nil,nil)
                                     }
-                                case .failure(let failure):
+                                case .failure(_):
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }

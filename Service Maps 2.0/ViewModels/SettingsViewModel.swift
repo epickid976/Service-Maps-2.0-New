@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Nuke
 import AlertKit
+import StoreKit
 
 @MainActor
 class SettingsViewModel: ObservableObject {
@@ -55,6 +56,8 @@ class SettingsViewModel: ObservableObject {
     @Published var showUpdateToastMessage = ""
     
     @Published var showEditNamePopup = false
+    
+    @Published var requestReview = false
     
     func editUserName(name: String) async -> Result<Bool, Error> {
         let result = await authenticationManager.editUserName(userName: name)
@@ -355,6 +358,28 @@ class SettingsViewModel: ObservableObject {
                     .hSpacing(.leading)
                 }
             }.keyboardShortcut("p", modifiers: .command)
+            .frame(minHeight: 50)
+            
+            
+            Button {
+                DispatchQueue.main.async {
+                    self.requestReview = true
+                }
+            } label: {
+                HStack {
+                    HStack {
+                        Image(systemName: "star.fill")
+                            .imageScale(.large)
+                            .padding(.horizontal)
+                        Text("Review App")
+                            .font(.title3)
+                            .lineLimit(2)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                    }
+                    .hSpacing(.leading)
+                }
+            }.keyboardShortcut("a", modifiers: [.command, .shift])
             .frame(minHeight: 50)
             
             Button {

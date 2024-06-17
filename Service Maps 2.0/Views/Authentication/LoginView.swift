@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 import NavigationTransitions
 import ActivityIndicatorView
-import PopupView
 import AlertKit
 
 
@@ -115,7 +114,7 @@ struct LoginView: View {
                     
                     Spacer()
                     
-                    HStack {
+                    HStack { //Don't show back button on reset password
                         if synchronizationManager.startupState != .Login {
                             if !loading {
                                 CustomBackButton() { 
@@ -133,12 +132,15 @@ struct LoginView: View {
                                     await viewModel.login() { result in
                                         switch result {
                                         case .success(_):
-                                            
                                             DispatchQueue.main.async {
                                                 onDone()
+                                            }
+                                            
+                                            DispatchQueue.main.async{
+                                                withAnimation { loading = false }
                                                 dismiss()
                                             }
-                                            withAnimation { loading = false }
+                                           
                                         case .failure(_):
                                             withAnimation { loading = false }
                                         }

@@ -121,7 +121,14 @@
       }
     },
     "%@ User" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Usuario"
+          }
+        }
+      }
     },
     "%@ Visit" : {
       "localizations" : {
@@ -401,7 +408,20 @@
       }
     },
     "Are you sure you want to %@ the selected user?" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Esta seguro de que quiere %@ este usuario?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sur de vouloir supprimer cet utilisateur?"
+          }
+        }
+      }
     },
     "Are you sure you want to delete the selected address?" : {
       "localizations" : {
@@ -580,8 +600,69 @@
         }
       }
     },
+    "block" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desbloquear"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bloquer"
+          }
+        }
+      }
+    },
+    "Block" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquear"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloquer"
+          }
+        }
+      }
+    },
     "Blocked Users" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuarios Bloqueados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisateurs Bloqués"
+          }
+        }
+      }
+    },
+    "blocking" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desbloqueando"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "en bloquant"
+          }
+        }
+      }
     },
     "Confirm Password" : {
       "localizations" : {
@@ -664,7 +745,11 @@
         }
       }
     },
+    "Date: %@" : {
+
+    },
     "Date: N/A" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1034,7 +1119,20 @@
       }
     },
     "Edit Key" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar Llave"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier la Clé"
+          }
+        }
+      }
     },
     "Edit Number" : {
       "localizations" : {
@@ -1181,7 +1279,20 @@
       }
     },
     "Error %@ user, please try again later" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error %@ usuario, por favor intente más tarde"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en %@  l'utilisateur. Essayez plus tard."
+          }
+        }
+      }
     },
     "Error adding address." : {
       "localizations" : {
@@ -1297,7 +1408,20 @@
       }
     },
     "Error adding/updating key." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error añadiendo/actualizando llave."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur en ajoutant/modifiant la clé."
+          }
+        }
+      }
     },
     "Error deleting address, please try again later" : {
       "localizations" : {
@@ -1834,7 +1958,20 @@
       }
     },
     "Language" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lenguaje"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Langue"
+          }
+        }
+      }
     },
     "last name" : {
       "localizations" : {
@@ -2138,7 +2275,20 @@
       }
     },
     "No results found" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontro resultados"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Résultat pas trouvé"
+          }
+        }
+      }
     },
     "Not a valid email." : {
       "localizations" : {
@@ -2189,7 +2339,21 @@
       }
     },
     "Note: No notes" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nota: Ninguna nota"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note: Pas de Notes"
+          }
+        }
+      }
     },
     "Notes" : {
       "localizations" : {
@@ -2701,6 +2865,9 @@
         }
       }
     },
+    "Review App" : {
+
+    },
     "Save" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2719,10 +2886,36 @@
       }
     },
     "Search for a Phone Territory, Number, Call" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busque un territorio, teléfono o llamada."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cherchez un territoire, numéro ou appel."
+          }
+        }
+      }
     },
     "Search for a Territory, Address, House, Visit" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busque un territorio, dirección, casa o visita."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cherchez un territoire, adresse, maison ou visite."
+          }
+        }
+      }
     },
     "Search..." : {
       "localizations" : {
@@ -2741,7 +2934,20 @@
       }
     },
     "Searching..." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscando..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recherche..."
+          }
+        }
+      }
     },
     "Select Symbol" : {
       "extractionState" : "stale",
@@ -2915,7 +3121,21 @@
       }
     },
     "Symbol: -" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simbolo: -"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Symbole: -"
+          }
+        }
+      }
     },
     "Symbol: %@" : {
       "localizations" : {
@@ -3176,6 +3396,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "-"
+          }
+        }
+      }
+    },
+    "unblock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desbloquear"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "débloquer"
+          }
+        }
+      }
+    },
+    "Unblock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquear"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debloquer"
+          }
+        }
+      }
+    },
+    "unblocking" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desbloqueando"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "en débloquant"
           }
         }
       }

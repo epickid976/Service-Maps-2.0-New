@@ -55,8 +55,8 @@ class AccessViewModel: ObservableObject {
         }
     }
     
-    @State var showUserBlockAlert = false
-    @State var showUserUnblockAlert = false
+    @Published var showUserBlockAlert = false
+    @Published var showUserUnblockAlert = false
     
     @Published var optionsAnimation = false
     @Published var progress: CGFloat = 0.0
@@ -81,6 +81,7 @@ class AccessViewModel: ObservableObject {
     @Published var showAddedToast = false
     @Published var showUserDeleteToast = false
     
+    @MainActor
     func deleteKey(key: String) async -> Result<Bool, Error> {
         if !isAdmin {
             switch await dataUploaderManager.unregisterToken(myToken: key) {
@@ -95,6 +96,7 @@ class AccessViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func deleteUser(user: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteUserFromToken(userToken: user)
     }
@@ -166,8 +168,8 @@ extension AccessViewModel {
                         print("Error retrieving territory data: \(error)")
                     }
                 }, receiveValue: { keyUsers in
-                    var blockedUsers = keyUsers.filter { $0.blocked }
-                    var unblockedUsers = keyUsers.filter { !$0.blocked }
+                    let blockedUsers = keyUsers.filter { $0.blocked }
+                    let unblockedUsers = keyUsers.filter { !$0.blocked }
                     DispatchQueue.main.async {
                         self.keyUsers = unblockedUsers
                         self.blockedUsers = blockedUsers

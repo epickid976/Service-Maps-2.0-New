@@ -12,57 +12,62 @@ struct CellView: View {
     var territory: TerritoryModel
     var houseQuantity: Int
     var width: Double = 0.95
-    
+    let isIpad = UIDevice.current.userInterfaceIdiom == .pad
     var mainWindowSize: CGSize
     
+    @State private var cellHeight: CGFloat = 0
     
     var body: some View {
-        HStack(spacing: 10) {
-            VStack {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(
-                            LinearGradient(
-                                gradient: Gradient(colors: [.blue, .teal]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ).opacity(0.6)
-                        )
-                    
-                    VStack {
-                        Text("\(territory.number)")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.white)
+            HStack(spacing: 10) {
+                VStack {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [.blue, .teal]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ).opacity(0.6)
+                            )
                         
+                        VStack {
+                            Text("\(territory.number)")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                        }
+                        .frame(minWidth: mainWindowSize.width * 0.20)
                     }
-                    .frame(minWidth: mainWindowSize.width * 0.20)
+                    .hSpacing(.leading)
+                    .frame(width: mainWindowSize.width * 0.20, height: cellHeight, alignment: .center)
                 }
-                .hSpacing(.leading)
-                .frame(width: mainWindowSize.width * 0.20, height: 70, alignment: .center)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(territory.description )
+                        .font(.headline)
+                        .lineLimit(5)
+                        .foregroundColor(.primary)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.leading)
+                    Text("Doors: \(houseQuantity)")
+                        .font(.body)
+                        .lineLimit(2)
+                        .foregroundColor(.secondary)
+                        .fontWeight(.bold)
+                }.padding(10)
+                .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
             }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(territory.description )
-                    .font(.headline)
-                    .lineLimit(5)
-                    .foregroundColor(.primary)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.leading)
-                Text("Doors: \(houseQuantity)")
-                    .font(.body)
-                    .lineLimit(2)
-                    .foregroundColor(.secondary)
-                    .fontWeight(.bold)
-            }
-            .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
-            //Image("testTerritoryImage")
+            .id(territory.id)
             
-            
-        }
-        .id(territory.id)
-        .padding(5)
-        .frame(minWidth: mainWindowSize.width * width)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+            .frame(minWidth: isIpad ? (mainWindowSize.width * width ) / 2 : mainWindowSize.width * width)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background(GeometryReader { geometry in
+                            Color.clear
+                                .onAppear {
+                                    self.cellHeight = geometry.size.height
+                                    print("Cell height: \(self.cellHeight)")
+                                }
+                        })
     }
     
 }
@@ -74,6 +79,8 @@ struct PhoneTerritoryCellView: View {
     
     var mainWindowSize: CGSize
     
+    @State private var cellHeight: CGFloat = 0
+    
     var body: some View {
         HStack(spacing: 10) {
             VStack {
@@ -96,7 +103,7 @@ struct PhoneTerritoryCellView: View {
                     .frame(minWidth: mainWindowSize.width * 0.20)
                 }
                 .hSpacing(.leading)
-                .frame(width: mainWindowSize.width * 0.20, height: 70, alignment: .center)
+                .frame(width: mainWindowSize.width * 0.20, height: cellHeight, alignment: .center)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(territory.description )
@@ -110,17 +117,24 @@ struct PhoneTerritoryCellView: View {
                     .lineLimit(2)
                     .foregroundColor(.secondary)
                     .fontWeight(.bold)
-            }
+            }.padding(10)
             .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
             //Image("testTerritoryImage")
             
             
         }
         //.id(territory.id)
-        .padding(5)
+        //.padding(5)
         .frame(minWidth: mainWindowSize.width * width)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(GeometryReader { geometry in
+                        Color.clear
+                            .onAppear {
+                                self.cellHeight = geometry.size.height
+                                print("Cell height: \(self.cellHeight)")
+                            }
+                    })
     }
     
 }

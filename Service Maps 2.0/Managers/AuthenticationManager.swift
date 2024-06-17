@@ -35,10 +35,10 @@ class AuthenticationManager: ObservableObject {
     func login(logInForm: LoginForm) async -> Result<LoginResponse, Error> {
         do {
             let loginResponse = try await authenticationApi.login(email: logInForm.email, password: logInForm.password)
-            DispatchQueue.main.async {
+            //DispatchQueue.main.async {
                 self.dataStore.passTemp = nil
                 self.authorizationProvider.authorizationToken = loginResponse.access_token
-            }
+            //}
                 _ = await getUser()
             
             return Result.success(loginResponse)
@@ -52,10 +52,10 @@ class AuthenticationManager: ObservableObject {
         do {
             let userResponse = try await authenticationApi.user()
             
-            DispatchQueue.main.async {
+            //DispatchQueue.main.async {
                 self.dataStore.userEmail = userResponse.email
                 self.dataStore.userName = userResponse.name
-            }
+            //}
             
             return Result.success(userResponse)
             

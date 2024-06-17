@@ -14,7 +14,6 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import PopupView
 import MijickPopupView
 
 
@@ -29,13 +28,13 @@ struct SearchView: View {
         self._searchViewModel = StateObject(wrappedValue: searchViewModel)
     }
     
-    @Environment(\.presentationMode) var presentationMode
+    @State var isFocused = true
     
+    @Environment(\.presentationMode) var presentationMode
     var body: some View {
         GeometryReader { proxy in
             ScrollView {
                 LazyVStack {
-                    SearchBar(searchText: $searchViewModel.searchQuery)
                     
                     LazyVStack {
                         switch searchViewModel.searchState {
@@ -126,9 +125,21 @@ struct SearchView: View {
                             }
                         }
                     }.animation(.easeInOut(duration: 0.5), value: searchViewModel.searchState)
+                        .optionalViewModifier { content in
+                            if #available(iOS 17.0, *) {
+                                content
+                                    .searchable(text: $searchViewModel.searchQuery, isPresented: $isFocused, placement: .navigationBarDrawer(displayMode: .always))
+                            } else {
+                                content
+                                    .searchable(text: $searchViewModel.searchQuery, placement: .navigationBarDrawer(displayMode: .always))
+                            }
+                            
+                        }
+                        
                 }
                 .padding()
             }.navigationTransition(.zoom.combined(with: .fade(.in))).scrollIndicators(.never)
+                .scrollDismissesKeyboard(.never)
                 .toolbar{
                     ToolbarItemGroup(placement: .keyboard){
                         Spacer()

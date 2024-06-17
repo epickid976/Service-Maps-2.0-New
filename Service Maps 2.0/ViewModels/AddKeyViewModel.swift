@@ -42,11 +42,7 @@ class AddKeyViewModel: ObservableObject {
     
     @Published var territoryData: Optional<[TerritoryDataWithKeys]> = nil
     
-    @Published var selectedTerritories = [TerritoryData]() {
-        didSet {
-            print(selectedTerritories)
-        }
-    }
+    @Published var selectedTerritories = [TerritoryData]()
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     

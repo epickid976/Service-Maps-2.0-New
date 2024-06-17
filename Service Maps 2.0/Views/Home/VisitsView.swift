@@ -12,12 +12,11 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import PopupView
 import MijickPopupView
 
 struct VisitsView: View {
     
-    @StateObject var viewModel: VisitsViewModel
+    @ObservedObject var viewModel: VisitsViewModel
     var house: HouseModel
     
     @State var animationDone = false
@@ -33,7 +32,7 @@ struct VisitsView: View {
     init(house: HouseModel, visitIdToScrollTo: String? = nil) {
         self.house = house
         let initialViewModel = VisitsViewModel(house: house, visitIdToScrollTo: visitIdToScrollTo)
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
     }
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Visit Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
@@ -156,7 +155,7 @@ struct VisitsView: View {
                     }
                     .onChange(of: viewModel.dataStore.synchronized) { value in
                         if value {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                                 viewModel.getVisits()
                             }
                         }
@@ -214,7 +213,7 @@ struct VisitsView: View {
                                     }
                                 }
                                 //TODO Trash and Pencil only if admin
-                            }
+                            }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
                     } else {
                         content
                     }
@@ -226,6 +225,7 @@ struct VisitsView: View {
                     systemImage: "trash",
                     backgroundColor: .red
                 ) {
+                    context.state.wrappedValue = .closed
                     DispatchQueue.main.async {
                         self.viewModel.visitToDelete = visitData.visit.id
                         //self.viewModel.showAlert = true
@@ -363,11 +363,12 @@ struct CentrePopup_AddVisit: CentrePopup {
                 viewModel.presentSheet = false
                 dismiss()
                 viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                viewModel.getVisits()
                 viewModel.showAddedToast = true
+                
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     viewModel.showAddedToast = false
+                    viewModel.getVisits()
                 }
             }
         } onDismiss: {
