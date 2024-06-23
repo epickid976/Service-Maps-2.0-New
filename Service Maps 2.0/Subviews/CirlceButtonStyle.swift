@@ -95,6 +95,8 @@ struct PillButtonStyle: ButtonStyle {
                             .contentTransition(.numericText())
                             .animation(.spring(duration: 0.5), value: timePassed)
                             .animation(.spring(duration: 0.5), value: synced)
+                    } else {
+                    	content
                     }
                 }
             )
