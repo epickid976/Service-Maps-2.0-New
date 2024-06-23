@@ -65,7 +65,7 @@ struct SignupView: View {
                     .hSpacing(.leading)
                     .padding(.leading)
                 
-                CustomField(text: $viewModel.name, isFocused: $firstNameFocus, textfield: true, placeholder: NSLocalizedString("first name", comment: ""))
+                CustomField(text: $viewModel.name, isFocused: $firstNameFocus, textfield: true, keyboardContentType: .givenName, placeholder: NSLocalizedString("first name", comment: ""))
                 
                 Text("Last Name")
                     .font(.headline)
@@ -74,7 +74,7 @@ struct SignupView: View {
                     .hSpacing(.leading)
                     .padding(.leading)
                 
-                CustomField(text: $viewModel.lastName, isFocused: $lastNameFocus, textfield: true, placeholder: NSLocalizedString("last name", comment: ""))
+                CustomField(text: $viewModel.lastName, isFocused: $lastNameFocus, textfield: true, keyboardContentType: .familyName, placeholder: NSLocalizedString("last name", comment: ""))
                 
                 
                 Text("Email")
@@ -82,7 +82,7 @@ struct SignupView: View {
                     .fontWeight(.semibold)
                     .hSpacing(.leading)
                     .padding(.leading)
-                CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true, placeholder: "example@example.com")
+                CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true, keyboardContentType: .emailAddress, placeholder: "example@example.com")
                 
                 
                 Text("Password")
@@ -90,14 +90,14 @@ struct SignupView: View {
                     .fontWeight(.semibold)
                     .hSpacing(.leading)
                     .padding(.leading)
-                CustomField(text: $viewModel.password, isFocused: $passwordFocus, textfield: false, placeholder: "****")
+                CustomField(text: $viewModel.password, isFocused: $passwordFocus, textfield: false,keyboardContentType: .newPassword, placeholder: "****")
                 
                 Text("Confirm Password")
                     .font(.headline)
                     .fontWeight(.semibold)
                     .hSpacing(.leading)
                     .padding(.leading)
-                CustomField(text: $viewModel.passwordConfirmation, isFocused: $confirmPasswordFocus, textfield: false, placeholder: "****")
+                CustomField(text: $viewModel.passwordConfirmation, isFocused: $confirmPasswordFocus, textfield: false, keyboardContentType: .newPassword, placeholder: "****")
                 Spacer()
                 if viewModel.loginError {
                     Text(viewModel.loginErrorText)
@@ -108,6 +108,7 @@ struct SignupView: View {
                 HStack {
                     if !loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             dismiss()
                             viewModel.name = ""
                             viewModel.lastName = ""
@@ -118,6 +119,7 @@ struct SignupView: View {
                     }
                     
                     CustomButton(loading: loading, title: "Sign up") {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation { loading = true }
                         let validation = viewModel.validate()
                         
@@ -126,14 +128,17 @@ struct SignupView: View {
                                 await viewModel.signUp() { result in
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         withAnimation { loading = false }
                                         SynchronizationManager.shared.startupProcess(synchronizing: false)
                                         DispatchQueue.main.async { dismiss() }
                                     case .failure(_):  withAnimation { loading = false }
+                                        HapticManager.shared.trigger(.error)
                                     }
                                 }
                             }
                         } else {
+                            HapticManager.shared.trigger(.error)
                             withAnimation { viewModel.loginError = true }
                             withAnimation { loading = false }
                         }
@@ -166,6 +171,7 @@ struct SignupView: View {
             ToolbarItemGroup(placement: .keyboard){
                 Spacer()
                 Button("Done"){
+                    HapticManager.shared.trigger(.lightImpact)
                     DispatchQueue.main.async {
                         firstNameFocus = false
                         lastNameFocus = false

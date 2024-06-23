@@ -42,6 +42,8 @@ struct PhoneTerritoriesScreen: View {
     
     @State var highlightedTerritoryId: String?
     
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
     var body: some View {
         GeometryReader { proxy in
             ZStack {
@@ -102,7 +104,7 @@ struct PhoneTerritoriesScreen: View {
                                                             ForEach(viewModel.recentPhoneData!, id: \.self) { territoryData in
                                                                 NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
                                                                     recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size)
-                                                                }
+                                                                }.onTapHaptic(.lightImpact)
                                                             }
                                                         }
                                                     }
@@ -114,9 +116,20 @@ struct PhoneTerritoriesScreen: View {
                                         }
                                         LazyVStack {
                                             SwipeViewGroup {
-                                                ForEach(viewModel.phoneData!, id: \.self) { phoneData in
-                                                    territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id)
-                                                }.modifier(ScrollTransitionModifier())
+                                                if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                        ForEach(viewModel.phoneData!, id: \.self) { phoneData in
+                                                   
+                                                            let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
+                                                            
+                                                            territoryCell(phoneData: phoneData, mainViewSize: proxy).id(phoneData.territory.id)
+                                                        }.modifier(ScrollTransitionModifier())
+                                                    }
+                                                } else {
+                                                    ForEach(viewModel.phoneData!, id: \.self) { phoneData in
+                                                        territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id)
+                                                    }.modifier(ScrollTransitionModifier())
+                                                }
                                                 //.animation(.default, value: viewModel.phoneData!)
                                                 
                                                 
@@ -168,7 +181,7 @@ struct PhoneTerritoriesScreen: View {
                             ToolbarItemGroup(placement: .topBarLeading) {
                                 HStack {
                                     if viewModel.phoneTerritoryToScrollTo != nil {
-                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                 presentationMode.wrappedValue.dismiss()
                                             }
@@ -180,7 +193,7 @@ struct PhoneTerritoriesScreen: View {
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
                                     if viewModel.phoneTerritoryToScrollTo == nil {
-                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                 searchViewDestination = true
                                             }
@@ -215,6 +228,7 @@ struct PhoneTerritoriesScreen: View {
                                     withAnimation {
                                         scrollViewProxy.scrollTo(id, anchor: .center)
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            HapticManager.shared.trigger(.selectionChanged)
                                             highlightedTerritoryId = id // Highlight after scrolling
                                         }
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -297,13 +311,14 @@ struct PhoneTerritoriesScreen: View {
                         }
                     }
                     
-            }
+            }.onTapHaptic(.lightImpact)
         } trailingActions: { context in
             if self.viewModel.isAdmin {
                 SwipeAction(
                     systemImage: "trash",
                     backgroundColor: .red
                 ) {
+                    HapticManager.shared.trigger(.lightImpact)
                     DispatchQueue.main.async {
                         context.state.wrappedValue = .closed
                         self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
@@ -317,6 +332,7 @@ struct PhoneTerritoriesScreen: View {
                     systemImage: "pencil",
                     backgroundColor: Color.teal
                 ) {
+                    HapticManager.shared.trigger(.lightImpact)
                     context.state.wrappedValue = .closed
                     self.viewModel.currentTerritory = phoneData.territory
                     self.viewModel.presentSheet = true
@@ -362,6 +378,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 //self.showAlert = false
                                 dismiss()
@@ -372,6 +389,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
@@ -379,6 +397,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                             if self.viewModel.territoryToDelete.0 != nil && self.viewModel.territoryToDelete.1 != nil {
                                 switch await self.viewModel.deleteTerritory(territory: self.viewModel.territoryToDelete.0 ?? "") {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         withAnimation {
                                             self.viewModel.loading = false
@@ -391,6 +410,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                                         }
                                     }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }

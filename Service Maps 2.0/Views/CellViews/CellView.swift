@@ -14,6 +14,7 @@ struct CellView: View {
     var width: Double = 0.95
     let isIpad = UIDevice.current.userInterfaceIdiom == .pad
     var mainWindowSize: CGSize
+    //@Binding var territoryModel: TerritoryModel
     
     @State private var cellHeight: CGFloat = 0
     

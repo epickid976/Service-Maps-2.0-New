@@ -8,10 +8,10 @@
 import Foundation
 
 struct TerritoryData: Hashable {
-    let territory: TerritoryModel
-    let addresses: [TerritoryAddressModel]
-    let housesQuantity: Int
-    let accessLevel: AccessLevel
+    var territory: TerritoryModel
+    var addresses: [TerritoryAddressModel]
+    var housesQuantity: Int
+    var accessLevel: AccessLevel
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(territory)

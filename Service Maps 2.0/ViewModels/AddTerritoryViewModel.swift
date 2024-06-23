@@ -41,6 +41,7 @@ class AddTerritoryViewModel: ObservableObject {
     func addTerritory() async -> Result<Bool, Error>{
         loading = true
         let territoryObject = TerritoryObject()
+        territoryObject.id = "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)"
         territoryObject.number = Int32(number!)
         territoryObject.territoryDescription = description
         territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)

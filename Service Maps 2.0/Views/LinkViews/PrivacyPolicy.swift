@@ -24,25 +24,22 @@ struct PrivacyPolicy: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        NavigationStack {
-            WebView(url: URL(string: LinkScreens.PRIVACY_POLICY.rawValue)!)
-        }
+        WebView(url: URL(string: LinkScreens.PRIVACY_POLICY.rawValue)!)
+        .ignoresSafeArea()
         .navigationTitle("Privacy Policy")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.automatic)
         .toolbar {
             ToolbarItemGroup(placement: .topBarLeading) {
                 HStack {
-                    Button("", action: {withAnimation { backAnimation.toggle() };
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            if sheet {
-                                presentationMode.wrappedValue.dismiss()
-                            } else {
+                    if !sheet {
+                        Button("", action: {withAnimation { backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 universalLinksManager.resetLink()
                             }
-                        }
-                    })
-                    .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 39, height: 39, progress: $progress, animation: $backAnimation)).keyboardShortcut("\r", modifiers: [.command, .shift])
+                        })
+                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 39, height: 39, progress: $progress, animation: $backAnimation)).keyboardShortcut("\r", modifiers: [.command, .shift])
+                    }
                 }
             }
         }

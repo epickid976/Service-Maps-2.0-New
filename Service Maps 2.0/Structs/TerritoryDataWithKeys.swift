@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 struct TerritoryDataWithKeys: Hashable, Identifiable {
     var id: UUID
     var keys: [MyTokenModel]

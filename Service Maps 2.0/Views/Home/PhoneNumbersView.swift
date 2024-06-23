@@ -42,6 +42,10 @@ struct PhoneNumbersView: View {
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 60
     @Environment(\.mainWindowSize) var mainWindowSize
+    
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    
     var body: some View {
         GeometryReader { proxy in
             ZStack {
@@ -81,11 +85,20 @@ struct PhoneNumbersView: View {
                                 } else {
                                     LazyVStack {
                                         SwipeViewGroup {
-                                            ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
-                                                numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id)
-                                                    .padding(.bottom, 2)
-                                            }.modifier(ScrollTransitionModifier())
-                                            
+                                            if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                    ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
+                                                        let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
+                                                        numbersCell(numbersData: numbersData, mainWindowSize: proxy).id(numbersData.phoneNumber.id)
+                                                            .padding(.bottom, 2)
+                                                    }.modifier(ScrollTransitionModifier())
+                                                }
+                                            } else {
+                                                ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
+                                                    numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id)
+                                                        .padding(.bottom, 2)
+                                                }.modifier(ScrollTransitionModifier())
+                                            }
                                         }
                                     }
                                     .padding(.horizontal)
@@ -124,6 +137,7 @@ struct PhoneNumbersView: View {
                                     withAnimation {
                                         scrollViewProxy.scrollTo(id, anchor: .center)
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            HapticManager.shared.trigger(.selectionChanged)
                                             highlightedNumberId = id // Highlight after scrolling
                                         }
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -171,7 +185,7 @@ struct PhoneNumbersView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     HStack {
-                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 presentationMode.wrappedValue.dismiss()
                             }
@@ -216,27 +230,27 @@ struct PhoneNumbersView: View {
                             Text("House: \(numbersData.phoneNumber.house ?? "N/A")")
                                 .font(.body)
                                 .lineLimit(5)
-                                .foregroundColor(.primary)
+                                .foregroundColor(.secondary)
                                 .fontWeight(.bold)
                                 .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)
                             VStack {
                                 HStack {
                                     if let call = numbersData.phoneCall  {
-                                        Text("Note: \(call.notes)")
+                                        Text("\(call.notes)")
                                             .font(.headline)
                                             .lineLimit(2)
-                                            .foregroundColor(.primary)
+                                            .foregroundColor(.secondary)
                                             .fontWeight(.bold)
                                             .multilineTextAlignment(.leading)
                                             .fixedSize(horizontal: false, vertical: true)
                                             .hSpacing(.leading)
                                         
                                     } else {
-                                        Text("Note: N/A")
+                                        Text("No Notes")
                                             .font(.headline)
                                             .lineLimit(2)
-                                            .foregroundColor(.primary)
+                                            .foregroundColor(.secondary)
                                             .fontWeight(.bold)
                                             .multilineTextAlignment(.leading)
                                             .hSpacing(.leading)
@@ -304,13 +318,14 @@ struct PhoneNumbersView: View {
                         }
                     }
                     
-                }
+                }.onTapHaptic(.lightImpact)
             } trailingActions: { context in
                 if self.viewModel.isAdmin {
                     SwipeAction(
                         systemImage: "trash",
                         backgroundColor: .red
                     ) {
+                        HapticManager.shared.trigger(.lightImpact)
                         context.state.wrappedValue = .closed
                         DispatchQueue.main.async {
                             self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
@@ -324,6 +339,7 @@ struct PhoneNumbersView: View {
                         systemImage: "pencil",
                         backgroundColor: Color.teal
                     ) {
+                        HapticManager.shared.trigger(.lightImpact)
                         context.state.wrappedValue = .closed
                         self.viewModel.currentNumber = numbersData.phoneNumber
                         self.viewModel.presentSheet = true
@@ -606,6 +622,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 dismiss()
                                 self.viewModel.ifFailed = false
@@ -616,6 +633,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
@@ -623,6 +641,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                             if self.viewModel.numberToDelete.0 != nil && self.viewModel.numberToDelete.1 != nil {
                                 switch await self.viewModel.deleteNumber(number: self.viewModel.numberToDelete.0 ?? "") {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
                                         self.viewModel.getNumbers()
@@ -636,6 +655,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                                         }
                                     }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }

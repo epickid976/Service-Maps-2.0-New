@@ -73,6 +73,7 @@ struct ImagePickerView: View {
             .contentShape(.rect)
             //Implementing Drop Action and Retreving Dropped Image
             .dropDestination (for: Data.self, action: { items, location in
+                HapticManager.shared.trigger(.lightImpact)
                 if let firstItem = items.first, let droppedImage = UIImage(data: firstItem) {
                     //Sending the Image using the callback
                     generateImageThumbnail(droppedImage, size)
@@ -84,6 +85,7 @@ struct ImagePickerView: View {
                 
             })
             .onTapGesture {
+                HapticManager.shared.trigger(.lightImpact)
                 showImagePicker.toggle()
             }
             //Implementation of Manual Image Picker

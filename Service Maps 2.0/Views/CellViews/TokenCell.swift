@@ -11,6 +11,7 @@ struct TokenCell: View {
     @ObservedObject var dataStore = StorageManager.shared
     var keyData: KeyData
     @Environment(\.mainWindowSize) var mainWindowSize
+    var ipad: Bool = false
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
@@ -58,7 +59,7 @@ struct TokenCell: View {
             
         }
         .padding(10)
-        .frame(minWidth: mainWindowSize.width * 0.95)
+        .frame(minWidth: ipad ? (mainWindowSize.width / 2) * 0.90 : mainWindowSize.width * 0.90)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }

@@ -46,7 +46,7 @@ struct AddPhoneNumberScreen: View {
                 //.frame(alignment: .leading)
                 //.hSpacing(.center)
                     .padding(.leading)
-                CustomField(text: $viewModel.numberText, isFocused: $numberTextFocus, textfield: true, keyboardType: .numberPad, textfieldAxis: .vertical, formatAsPhone: true, placeholder: "#")
+                CustomField(text: $viewModel.numberText, isFocused: $numberTextFocus, textfield: true, keyboardType: .numberPad, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, formatAsPhone: true, placeholder: "#")
                     .padding(.bottom)
                 Text("House")
                     .font(.headline)
@@ -55,7 +55,7 @@ struct AddPhoneNumberScreen: View {
                 //.frame(alignment: .leading)
                 //.hSpacing(.center)
                     .padding(.leading)
-                CustomField(text: $viewModel.houseText, isFocused: $houseTextFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("House", comment: ""))
+                CustomField(text: $viewModel.houseText, isFocused: $houseTextFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("House", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -65,11 +65,12 @@ struct AddPhoneNumberScreen: View {
                 
                 HStack {
                     if !viewModel.loading {
-                        CustomBackButton() { onDismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                        CustomBackButton() { onDismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
+                        HapticManager.shared.trigger(.lightImpact)
                         if viewModel.checkInfo() {
                             if number != nil {
                                 Task {
@@ -79,8 +80,10 @@ struct AddPhoneNumberScreen: View {
                                     let result = await viewModel.editNumber(number: number!)
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error updating phone number.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -93,8 +96,10 @@ struct AddPhoneNumberScreen: View {
                                     let result = await viewModel.addNumber()
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error adding phone number.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -114,6 +119,7 @@ struct AddPhoneNumberScreen: View {
                 ToolbarItemGroup(placement: .keyboard){
                     Spacer()
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             hideKeyboard()
                         }

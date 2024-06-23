@@ -77,7 +77,7 @@ class RealmManager: ObservableObject {
             let realmDatabase = try Realm()
 
             try realmDatabase.write {
-                realmDatabase.add(object, update: .all)
+                realmDatabase.add(object)
             }
             return Result.success(true)
         } catch {
@@ -152,16 +152,18 @@ class RealmManager: ObservableObject {
     func updateVisit(visit: VisitModel) -> Result<Bool, Error> {
         do {
             let realmDatabase = try Realm()
-            if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
-                try realmDatabase.write {
-                    entity.house = visit.house
-                    entity.date = visit.date // Assuming date is a unix timestamp
-                    entity.symbol = visit.symbol
-                    entity.notes = visit.notes
-                    entity.user = visit.user
+            try realmDatabase.write {
+                if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
+                    
+                        entity.house = visit.house
+                        entity.date = visit.date // Assuming date is a unix timestamp
+                        entity.symbol = visit.symbol
+                        entity.notes = visit.notes
+                        entity.user = visit.user
+                    
+                } else {
+                    throw CustomErrors.NotFound
                 }
-            } else {
-                return .failure(CustomErrors.NotFound)
             }
             return .success(true)
         } catch {
@@ -464,96 +466,98 @@ class RealmManager: ObservableObject {
     }
     
     @MainActor
-    func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Never> {
-        
-        let flow = Publishers.CombineLatest3(
-            $territoriesFlow.share(),
-            $addressesFlow.share(),
-            $housesFlow.share()
-        )
-            .flatMap { territoryData -> AnyPublisher<[TerritoryDataWithKeys], Never> in
-                var data = [TerritoryData]()
-                
-                for territory in territoryData.0 {
-                    let currentAddresses = territoryData.1.filter { $0.territory == territory.id }
+        func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Never> {
+            
+            let flow = Publishers.CombineLatest3(
+                $territoriesFlow,
+                $addressesFlow,
+                $housesFlow
+            )
+                .flatMap { territoryData -> AnyPublisher<[TerritoryDataWithKeys], Never> in
+                    var data = [TerritoryData]()
                     
-                    let currentHouses = territoryData.1
-                        .filter { $0.territory == territory.id }
-                        .flatMap { address -> LazyFilterSequence<Results<HouseObject>> in
-                            return territoryData.2.filter { $0.territory_address == address.id }
-                        }
-                    
-                    let territoryDataEntry = TerritoryData(
-                        territory: convertTerritoryToTerritoryModel(model: territory) ,
-                        addresses: ModelToStruct().convertTerritoryAddressEntitiesToStructs(entities: Array(currentAddresses)) ,
-                        housesQuantity: currentHouses.count,
-                        accessLevel: AuthorizationLevelManager().getAccessLevel(model: territory) ?? .User // Implement your accessLevel logic
-                    )
-                    data.append(territoryDataEntry)
-                }
-                
-                // Combine moderator and non-moderator data into a single array (corrected)
-                let combinedData = data.sorted(by: { $0.territory.number < $1.territory.number })
-                
-                var dataWithKeys = [TerritoryDataWithKeys]()
-                
-                
-                for territoryData in combinedData {
-                    var keys = [TokenObject]()
-                    let keysDao = self.realmDatabase.objects(TokenObject.self)
-                    
-                    let tokenTerritoriesOfKey = self.realmDatabase.objects(TokenTerritoryObject.self).filter({ $0.territory == territoryData.territory.id})
-                    
-                    for tokenTerritory in tokenTerritoriesOfKey {
-                        if let token = keysDao.first(where: { $0.id == tokenTerritory.token}) {
-                            keys.append(token)
-                        }
+                    for territory in territoryData.0 {
+                        let currentAddresses = territoryData.1.filter { $0.territory == territory.id }
+                        
+                        let currentHouses = territoryData.1
+                            .filter { $0.territory == territory.id }
+                            .flatMap { address -> LazyFilterSequence<Results<HouseObject>> in
+                                return territoryData.2.filter { $0.territory_address == address.id }
+                            }
+                        
+                        let territoryDataEntry = TerritoryData(
+                            territory: convertTerritoryToTerritoryModel(model: territory) ,
+                            addresses: ModelToStruct().convertTerritoryAddressEntitiesToStructs(entities: Array(currentAddresses)) ,
+                            housesQuantity: currentHouses.count,
+                            accessLevel: AuthorizationLevelManager().getAccessLevel(model: territory) ?? .User // Implement your accessLevel logic
+                        )
+                        data.append(territoryDataEntry)
                     }
                     
-                    let founded = dataWithKeys.first { item in
-                        if keys.isEmpty {
-                            return item.keys.isEmpty
+                    // Combine moderator and non-moderator data into a single array (corrected)
+                    let combinedData = data.sorted(by: { $0.territory.number < $1.territory.number })
+                    
+                    var dataWithKeys = [TerritoryDataWithKeys]()
+                    
+                    
+                    for territoryData in combinedData {
+                        var keys = [TokenObject]()
+                        let keysDao = self.realmDatabase.objects(TokenObject.self)
+                        
+                        let tokenTerritoriesOfKey = self.realmDatabase.objects(TokenTerritoryObject.self).filter({ $0.territory == territoryData.territory.id})
+                        
+                        for tokenTerritory in tokenTerritoriesOfKey {
+                            if let token = keysDao.first(where: { $0.id == tokenTerritory.token}) {
+                                keys.append(token)
+                            }
+                        }
+                        
+                        let founded = dataWithKeys.first { item in
+                            if keys.isEmpty {
+                                return item.keys.isEmpty
+                            } else {
+                                return self.containsSame(first: item.keys, second: ModelToStruct().convertTokenEntitiesToStructs(entities: keys) , getId: { $0.id })
+                            }
+                        }
+                        
+                        if founded != nil {
+                            var territoriesToReplace = founded!.territoriesData
+                            
+                            territoriesToReplace.append(territoryData)
+                            
+                            if let index = dataWithKeys.firstIndex(where: { $0.id == founded!.id}) {
+                                dataWithKeys.remove(at: index)
+                            }
+                            
+                            dataWithKeys.append(
+                                TerritoryDataWithKeys(
+                                    id: UUID(),
+                                    keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
+                                    territoriesData: territoriesToReplace.sorted { $0.territory.number < $1.territory.number }
+                                )
+                            )
                         } else {
-                            return self.containsSame(first: item.keys, second: ModelToStruct().convertTokenEntitiesToStructs(entities: keys) , getId: { $0.id })
+                            dataWithKeys.append(
+                                TerritoryDataWithKeys(
+                                    id: UUID(),
+                                    keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
+                                    territoriesData: [territoryData]
+                                )
+                            )
                         }
                     }
                     
-                    if founded != nil {
-                        var territoriesToReplace = founded!.territoriesData
-                        
-                        territoriesToReplace.append(territoryData)
-                        
-                        if let index = dataWithKeys.firstIndex(where: { $0.id == founded!.id}) {
-                            dataWithKeys.remove(at: index)
-                        }
-                        
-                        dataWithKeys.append(
-                            TerritoryDataWithKeys(
-                                id: UUID(),
-                                keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
-                                territoriesData: territoriesToReplace.sorted { $0.territory.number < $1.territory.number }
-                            )
-                        )
-                    } else {
-                        dataWithKeys.append(
-                            TerritoryDataWithKeys(
-                                id: UUID(),
-                                keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
-                                territoriesData: [territoryData]
-                            )
-                        )
-                    }
+                    print("END OF REALM MANAGER FUNC \(dataWithKeys.sorted { $0.territoriesData.first?.territory.number ?? Int32(Int.max) < $1.territoriesData.first?.territory.number ?? Int32(Int.max) })")
+                    
+                    return CurrentValueSubject(dataWithKeys.sorted { $0.territoriesData.first?.territory.number ?? Int32(Int.max) < $1.territoriesData.first?.territory.number ?? Int32(Int.max) }).eraseToAnyPublisher()
+                    //.sorted { $0.territoriesData.first?.territory?.number ?? Int.max < $1.territoriesData.first?.territory?.number ?? Int.max }
+                    
                 }
-                
-                
-                return Just(dataWithKeys.sorted { $0.territoriesData.first?.territory.number ?? Int32(Int.max) < $1.territoriesData.first?.territory.number ?? Int32(Int.max) }).eraseToAnyPublisher()
-                //.sorted { $0.territoriesData.first?.territory?.number ?? Int.max < $1.territoriesData.first?.territory?.number ?? Int.max }
-                
-            }
-            .eraseToAnyPublisher()
-        
-        return flow
-    }
+                .eraseToAnyPublisher()
+            
+            return flow
+        }
+
     
     @MainActor
     func getAddressData(territoryId: String) -> AnyPublisher<[AddressData], Never> {
@@ -578,7 +582,7 @@ class RealmManager: ObservableObject {
                     )
                 }
                 
-                return Just(data).eraseToAnyPublisher()
+                return CurrentValueSubject(data).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         
@@ -588,8 +592,8 @@ class RealmManager: ObservableObject {
     @MainActor
     func getHouseData(addressId: String) -> AnyPublisher<[HouseData], Never>  {
         let flow = Publishers.CombineLatest(
-            $housesFlow.share(),
-            $visitsFlow.share()
+            $housesFlow,
+            $visitsFlow
         )
             .flatMap { houseData -> AnyPublisher<[HouseData], Never> in
                 var data = [HouseData]()
@@ -620,7 +624,7 @@ class RealmManager: ObservableObject {
                         )
                     }
                 }
-                return Just(data).eraseToAnyPublisher()
+                return CurrentValueSubject(data).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         return flow
@@ -628,7 +632,7 @@ class RealmManager: ObservableObject {
     
     @MainActor
     func getVisitData(houseId: String) -> AnyPublisher<[VisitData], Never> {
-        return Just(visitsFlow)
+        return CurrentValueSubject(visitsFlow)
             .flatMap { visits -> AnyPublisher<[VisitData], Never> in
                 let email = self.dataStore.userEmail
                 let name = self.dataStore.userName
@@ -646,7 +650,7 @@ class RealmManager: ObservableObject {
                     )
                 }
                 data.sort { $0.visit.date > $1.visit.date }
-                return Just(data).eraseToAnyPublisher()
+                return CurrentValueSubject(data).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

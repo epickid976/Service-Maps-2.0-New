@@ -36,6 +36,7 @@ struct LoginView: View {
     }
     
     let alertViewAdded = AlertAppleMusic17View(title: "Password Reset Email Sent", subtitle: nil, icon: .done)
+    let alertViewError = AlertAppleMusic17View(title: "Please type email above", subtitle: nil, icon: .error)
     
     var body: some View {
         ZStack {
@@ -69,14 +70,14 @@ struct LoginView: View {
                         .hSpacing(.leading)
                         .padding(.leading)
                         .keyboardType(.emailAddress)
-                    CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true, placeholder: "example@example.com")
+                    CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true,keyboardContentType: .emailAddress, placeholder: "example@example.com")
                     
                     Text("Password")
                         .font(.headline)
                         .fontWeight(.semibold)
                         .hSpacing(.leading)
                         .padding(.leading)
-                    CustomField(text: $viewModel.password, isFocused: $passwordFocus, textfield: false, placeholder: "****")
+                    CustomField(text: $viewModel.password, isFocused: $passwordFocus, textfield: false, keyboardContentType: .password, placeholder: "****")
                     
                     Spacer()
                     
@@ -97,12 +98,14 @@ struct LoginView: View {
                                 case .success(_):
                                     viewModel.resetFeedbackText = "Request Successfully Sent"
                                     viewModel.resetFeedback = true
+                                    HapticManager.shared.trigger(.success)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                         dismiss()
                                     }
                                 case .failure(_):
                                     viewModel.resetFeedbackText = "Please type email above"
-                                    viewModel.resetFeedback = true
+                                    HapticManager.shared.trigger(.error)
+                                    viewModel.resetError = true
                                 }
                             }
                         } label: {
@@ -118,6 +121,7 @@ struct LoginView: View {
                         if synchronizationManager.startupState != .Login {
                             if !loading {
                                 CustomBackButton() { 
+                                    HapticManager.shared.trigger(.lightImpact)
                                     dismiss()
                                     viewModel.username = ""
                                     viewModel.password = ""
@@ -126,12 +130,14 @@ struct LoginView: View {
                         }
                         CustomButton(loading: loading, title: "Login") {
                             withAnimation { loading = true }
+                            HapticManager.shared.trigger(.lightImpact)
                             let validation = viewModel.validate()
                             if validation {
                                 Task {
                                     await viewModel.login() { result in
                                         switch result {
                                         case .success(_):
+                                            HapticManager.shared.trigger(.success)
                                             DispatchQueue.main.async {
                                                 onDone()
                                             }
@@ -142,11 +148,13 @@ struct LoginView: View {
                                             }
                                            
                                         case .failure(_):
+                                            HapticManager.shared.trigger(.error)
                                             withAnimation { loading = false }
                                         }
                                     }
                                 }
                             } else {
+                                HapticManager.shared.trigger(.error)
                                 withAnimation { viewModel.loginError = true }
                                 withAnimation { loading = false }
                             }
@@ -163,6 +171,7 @@ struct LoginView: View {
                     Alert(title: Text(viewModel.alertTitle), message: Text(viewModel.alertMessage), dismissButton: .default(Text("OK")))
                 }
                 .alert(isPresent: $viewModel.resetFeedback, view: alertViewAdded)
+                .alert(isPresent: $viewModel.resetError, view: alertViewError)
             }
             .simultaneousGesture(
                 // Hide the keyboard on scroll
@@ -181,6 +190,7 @@ struct LoginView: View {
                     Spacer()
                     
                     Button("Done"){
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             emailFocus = false
                             passwordFocus = false

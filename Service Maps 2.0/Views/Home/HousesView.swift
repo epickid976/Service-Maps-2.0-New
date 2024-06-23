@@ -32,7 +32,7 @@ struct HousesView: View {
         _viewModel = ObservedObject(wrappedValue: initialViewModel)
         
     }
-    
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     let alertViewDeleted = AlertAppleMusic17View(title: "House Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     let alertViewAdded = AlertAppleMusic17View(title: "House Added", subtitle: nil, icon: .done)
     
@@ -41,6 +41,8 @@ struct HousesView: View {
     let minimumOffset: CGFloat = 60
     
     @State var highlightedHouseId: String?
+    
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
     
     var body: some View {
         GeometryReader { proxy in
@@ -62,7 +64,6 @@ struct HousesView: View {
                                 }
                             } else {
                                 if viewModel.houseData!.isEmpty {
-                                    VStack {
                                         if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                             LottieView(animation: .named("nodatapreview"))
                                                 .playing()
@@ -74,22 +75,33 @@ struct HousesView: View {
                                                 .resizable()
                                                 .frame(width: 350, height: 350)
                                         }
-                                    }
                                     
                                 } else {
-                                    LazyVStack {
                                         SwipeViewGroup {
-                                            ForEach(viewModel.houseData!, id: \.id) { houseData in
-                                                houseCellView(houseData: houseData, mainWindowSize: proxy.size).id(houseData.house.id)
-                                            }.modifier(ScrollTransitionModifier())
-                                        }
-                                    }.animation(.default, value: viewModel.houseData!)
+                                            if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                    let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
+                                                    ForEach(viewModel.houseData!, id: \.id) { houseData in
+                                                        houseCellView(houseData: houseData, mainWindowSize: proxy).id(houseData.house.id).modifier(ScrollTransitionModifier())
+                                                            .transition(.customBackInsertion)
+                                                    }.modifier(ScrollTransitionModifier())
+                                                }
+                                            } else {
+                                                LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                    ForEach(viewModel.houseData!, id: \.house.id) { houseData in
+                                                        houseCellView(houseData: houseData, mainWindowSize: proxy.size).id(houseData.house.id).modifier(ScrollTransitionModifier())
+                                                            .transition(.customBackInsertion)
+                                                    }.modifier(ScrollTransitionModifier())
+                                                }
+                                            }
+                                        }.animation(.default, value: viewModel.houseData!)
                                         .padding()
                                     
                                     
                                 }
                             }
-                        }.background(GeometryReader {
+                        }
+                        .background(GeometryReader {
                             Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                         })
                         .onPreferenceChange(ViewOffsetKey.self) { currentOffset in
@@ -113,12 +125,12 @@ struct HousesView: View {
                                 CentrePopup_AddHouse(viewModel: viewModel, address: address).showAndStack()
                             }
                         }
-                        .navigationBarTitle("\(address.address)", displayMode: .large)
+                        .navigationBarTitle(address.address, displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarLeading) {
                                 HStack {
-                                    Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                    Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             presentationMode.wrappedValue.dismiss()
                                         }
@@ -128,7 +140,7 @@ struct HousesView: View {
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                     
                                     Menu {
@@ -146,7 +158,7 @@ struct HousesView: View {
                                         }
                                         .pickerStyle(.menu)
                                     } label: {
-                                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() }).keyboardShortcut(";", modifiers: .command)
+                                        Button("", action: { viewModel.optionsAnimation.toggle(); HapticManager.shared.trigger(.lightImpact);  print("Add") ; viewModel.presentSheet.toggle() }).keyboardShortcut(";", modifiers: .command)
                                             .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                                     }
                                     
@@ -158,7 +170,7 @@ struct HousesView: View {
                     }.coordinateSpace(name: "scroll")
                         .scrollIndicators(.hidden)
                         .refreshable {
-                            viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                            synchronizationManager.startupProcess(synchronizing: true)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 hideFloatingButton = false
                             }
@@ -176,6 +188,7 @@ struct HousesView: View {
                                     withAnimation {
                                         scrollViewProxy.scrollTo(id, anchor: .center)
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            HapticManager.shared.trigger(.selectionChanged)
                                             highlightedHouseId = id // Highlight after scrolling
                                         }
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -205,7 +218,7 @@ struct HousesView: View {
     @ViewBuilder
     func houseCellView(houseData: HouseData, mainWindowSize: CGSize) -> some View {
         SwipeView {
-            NavigationLink(destination: NavigationLazyView(VisitsView(house: houseData.house).implementPopupView())) {
+            NavigationLink(destination: NavigationLazyView(VisitsView(house: houseData.house))) {
                 HouseCell(house: houseData, mainWindowSize: mainWindowSize)
                     .padding(.bottom, 2)
                     .overlay(
@@ -217,6 +230,7 @@ struct HousesView: View {
                             content
                                 .contextMenu {
                                     Button {
+                                        HapticManager.shared.trigger(.lightImpact)
                                         DispatchQueue.main.async {
                                             self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
                                             //self.showAlert = true
@@ -237,13 +251,14 @@ struct HousesView: View {
                         }
                     }
                 
-            }
+            }.onTapHaptic(.lightImpact)
         } trailingActions: { context in
             if houseData.accessLevel == .Admin {
                 SwipeAction(
                     systemImage: "trash",
                     backgroundColor: .red
                 ) {
+                    HapticManager.shared.trigger(.lightImpact)
                     DispatchQueue.main.async {
                         context.state.wrappedValue = .closed
                         self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
@@ -307,6 +322,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 //self.viewModel.showAlert = false
                                 dismiss()
@@ -317,6 +333,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
@@ -324,8 +341,9 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                             if self.viewModel.houseToDelete.0 != nil && self.viewModel.houseToDelete.1 != nil {
                                 switch await self.viewModel.deleteHouse(house: self.viewModel.houseToDelete.0 ?? "") {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                        self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                                        //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
                                         self.viewModel.getHouses()
                                         self.viewModel.loading = false
                                         //self.showAlert = false
@@ -338,6 +356,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                                         }
                                     }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation {
                                         self.viewModel.loading = false
                                         self.viewModel.ifFailed = true
@@ -379,8 +398,10 @@ struct CentrePopup_AddHouse: CentrePopup {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismiss()
-                viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                viewModel.getHouses()
+                //viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                DispatchQueue.main.async {
+                    viewModel.getHouses()
+                }
                 viewModel.showAddedToast = true
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

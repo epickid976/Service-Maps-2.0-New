@@ -18,10 +18,14 @@ class VisitsViewModel: ObservableObject {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
+    let latestVisitUpdatePublisher = PassthroughSubject<VisitModel, Never>()
+    var cancellables = Set<AnyCancellable>()
     
-    private var cancellables = Set<AnyCancellable>()
-    
-    @Published var visitData: Optional<[VisitData]> = nil
+    @Published var visitData: Optional<[VisitData]> = nil {
+        didSet {
+            print("VISIT DATA \(visitData)")
+        }
+    }
     //@ObservedObject var databaseManager = RealmManager.shared
     
     init(house: HouseModel, visitIdToScrollTo: String? = nil) {
@@ -80,16 +84,20 @@ class VisitsViewModel: ObservableObject {
 extension VisitsViewModel {
     func getVisits(visitIdToScrollTo: String? = nil) {
         RealmManager.shared.getVisitData(houseId: house.id)
+            .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
                     // Handle errors here
-                    print("Error retrieving territory data: \(error)")
+                    print("Error retrieving visit data: \(error)")
                 }
             }, receiveValue: { visitData in
-                if self.search.isEmpty {
                     DispatchQueue.main.async {
                         self.visitData = visitData
+                        
+                        if let  latestVisit = visitData.sorted(by: { $0.visit.date > $1.visit.date }).first?.visit {
+                            self.latestVisitUpdatePublisher.send(latestVisit)
+                        }
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             if let visitIdToScrollTo = visitIdToScrollTo {
@@ -97,14 +105,6 @@ extension VisitsViewModel {
                             }
                         }
                     }
-                } else {
-                    DispatchQueue.main.async {
-                        self.visitData = visitData.filter { visitData in
-                            visitData.visit.notes.lowercased().contains(self.search.lowercased()) ||
-                            visitData.visit.user.lowercased().contains(self.search.lowercased())
-                        }
-                    }
-                }
             })
             .store(in: &cancellables)
     }

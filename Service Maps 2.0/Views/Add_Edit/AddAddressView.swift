@@ -38,7 +38,7 @@ struct AddAddressView: View {
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
-                CustomField(text: $viewModel.addressText, isFocused: $addressTextFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Address", comment: ""))
+                CustomField(text: $viewModel.addressText, isFocused: $addressTextFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Address", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -48,11 +48,12 @@ struct AddAddressView: View {
                 
                 HStack {
                     if !viewModel.loading {
-                        CustomBackButton() { onDismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                        CustomBackButton() { onDismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
+                        HapticManager.shared.trigger(.lightImpact)
                         if viewModel.checkInfo() {
                             if address != nil {
                                 Task {
@@ -62,8 +63,10 @@ struct AddAddressView: View {
                                     let result = await viewModel.editAddress(address: address!)
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error updating address.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -76,8 +79,10 @@ struct AddAddressView: View {
                                     let result = await viewModel.addAddress()
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error adding address.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -93,21 +98,21 @@ struct AddAddressView: View {
             .ignoresSafeArea(.keyboard)
             .navigationBarTitle("\(title) Address", displayMode: .large)
             .navigationBarBackButtonHidden()
-            .toolbar{
-                ToolbarItemGroup(placement: .keyboard){
-                    Spacer()
-                    Button {
-                        DispatchQueue.main.async {
-                            hideKeyboard()
-                        }
-                    } label: {
-                        Text("Done")
-                            .tint(.primary)
-                            .fontWeight(.bold)
-                            .font(.body)
-                    }
-                }
-            }
+//            .toolbar{
+//                ToolbarItemGroup(placement: .keyboard){
+//                    Spacer()
+//                    Button {
+//                        DispatchQueue.main.async {
+//                            hideKeyboard()
+//                        }
+//                    } label: {
+//                        Text("Done")
+//                            .tint(.primary)
+//                            .fontWeight(.bold)
+//                            .font(.body)
+//                    }
+//                }
+//            }
             
         }//.ignoresSafeArea(.keyboard)
             .onAppear {

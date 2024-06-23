@@ -66,10 +66,13 @@ struct VerificationView: View {
                     Button {
                         Task {
                             await viewModel.resendEmail() { result in
+                                HapticManager.shared.trigger(.lightImpact)
                                 switch result {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     print("success sending verification email (VerificationView)")
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     print("Error sending verification email (VerificationView)")
                                 }
                             }
@@ -84,14 +87,17 @@ struct VerificationView: View {
                     .frame(height: 20)
                 VStack {
                     CustomButton(loading: loading, title: "Already Verified") {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation { loading = true }
                         Task {
                             await viewModel.checkVerification { result in
                                 switch result {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     DispatchQueue.main.async { onDone() }
                                     withAnimation { loading = false }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation { loading = false }
                                 }
                             }

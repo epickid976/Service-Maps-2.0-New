@@ -19,6 +19,8 @@ class SettingsViewModel: ObservableObject {
     @ObservedObject var authorizationProvider = AuthorizationProvider.shared
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
+    @ObservedObject private var viewModel = ColumnViewModel()
+    
     @Published var backAnimation = false
     @Published var progress: CGFloat = 0.0
     
@@ -97,6 +99,7 @@ class SettingsViewModel: ObservableObject {
                 
                 VStack {
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         self.showEditNamePopup = true
                     } label: {
                         Circle()
@@ -119,10 +122,12 @@ class SettingsViewModel: ObservableObject {
             
             
             CustomButton(loading: loading, title: NSLocalizedString("Logout", comment: "")) {
+                HapticManager.shared.trigger(.lightImpact)
                 Task {
                     let result = await self.authenticationManager.logout()
                     switch result {
                     case .success(_):
+                        HapticManager.shared.trigger(.success)
                         self.exitAdministrator()
                         if showBack {
                             onDone()
@@ -131,6 +136,7 @@ class SettingsViewModel: ObservableObject {
                         
                         
                     case .failure(let error):
+                        HapticManager.shared.trigger(.error)
                         print("logout failed")
                         self.errorText = error.asAFError?.localizedDescription ?? ""
                     }
@@ -164,6 +170,7 @@ class SettingsViewModel: ObservableObject {
                                         .fontWeight(.heavy)
                                         .hSpacing(.leading)
                                     CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
+                                        HapticManager.shared.trigger(.success)
                                         self.exitPhoneLogin()
                                         if showBack {
                                             onDone()
@@ -197,6 +204,7 @@ class SettingsViewModel: ObservableObject {
                             .imageScale(.large)
                             .padding(.horizontal)
                     }.onTapGesture {
+                        HapticManager.shared.trigger(.lightImpact)
                         self.phoneBookLogin = true
                     }
                     //.padding(.horizontal)
@@ -233,6 +241,7 @@ class SettingsViewModel: ObservableObject {
                                         .fontWeight(.heavy)
                                         .hSpacing(.leading)
                                     CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
+                                        HapticManager.shared.trigger(.success)
                                         self.exitAdministrator()
                                         self.synchronizationManager.startupProcess(synchronizing: true)
                                         if showBack {
@@ -265,6 +274,7 @@ class SettingsViewModel: ObservableObject {
                             .imageScale(.large)
                             .padding(.horizontal)
                     }.onTapGesture {
+                        HapticManager.shared.trigger(.lightImpact)
                         self.presentSheet = true
                     }
                     //.padding(.horizontal)
@@ -282,6 +292,7 @@ class SettingsViewModel: ObservableObject {
         VStack {
             HStack {
                 Button {
+                    HapticManager.shared.trigger(.lightImpact)
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                 } label: {
                     HStack {
@@ -315,6 +326,7 @@ class SettingsViewModel: ObservableObject {
     func infosView(mainWindowSize: CGSize) -> some View {
         VStack {
             Button {
+                HapticManager.shared.trigger(.lightImpact)
                 let url = URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103?l=fr-FR")
                 let av = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
                 
@@ -342,6 +354,7 @@ class SettingsViewModel: ObservableObject {
             .frame(minHeight: 50)
             
             Button {
+                HapticManager.shared.trigger(.lightImpact)
                 self.presentPolicy = true
             } label: {
                 HStack {
@@ -362,9 +375,8 @@ class SettingsViewModel: ObservableObject {
             
             
             Button {
-                DispatchQueue.main.async {
-                    self.requestReview = true
-                }
+                HapticManager.shared.trigger(.lightImpact)
+                self.requestReview = true
             } label: {
                 HStack {
                     HStack {
@@ -383,6 +395,7 @@ class SettingsViewModel: ObservableObject {
             .frame(minHeight: 50)
             
             Button {
+                HapticManager.shared.trigger(.lightImpact)
                 self.showAlert = true
                 
             } label: {
@@ -403,6 +416,7 @@ class SettingsViewModel: ObservableObject {
             .frame(minHeight: 50)
             
             Button {
+                HapticManager.shared.trigger(.lightImpact)
                 do {
                     try isUpdateAvailable { [self] (update, error) in
                         if let update {
@@ -430,6 +444,7 @@ class SettingsViewModel: ObservableObject {
                        }
                     }
                 } catch {
+                    HapticManager.shared.trigger(.error)
                         self.showUpdateToastMessage = error.localizedDescription
                         self.showUpdateToast = true
                 }
@@ -472,7 +487,10 @@ class SettingsViewModel: ObservableObject {
     @ViewBuilder
     func deleteCacheMenu(mainWindowSize: CGSize) -> some View {
         VStack {
+            
+            
             Button {
+                HapticManager.shared.trigger(.success)
                 ImagePipeline.shared.cache.removeAll()
                 DataLoader.sharedUrlCache.removeAllCachedResponses()
                 self.showToast = true
@@ -503,6 +521,7 @@ class SettingsViewModel: ObservableObject {
     func deleteAccount(mainWindowSize: CGSize) -> some View {
         VStack {
             Button {
+                HapticManager.shared.trigger(.lightImpact)
                 self.showDeletionAlert = true
             } label: {
                 HStack {

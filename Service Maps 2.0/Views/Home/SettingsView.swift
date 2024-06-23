@@ -15,6 +15,8 @@ struct SettingsView: View {
     @State var loading = false
     @State var alwaysLoading = true
     
+    @StateObject private var preferencesViewModel = ColumnViewModel()
+    
     init(showBackButton: Bool = false) {
         self.showBackButton = showBackButton
     }
@@ -49,6 +51,8 @@ struct SettingsView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 viewModel.languageLinkView(mainWindowSize: mainWindowSize)
+                Spacer().frame(height: 25)
+                preferencesView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
                 viewModel.infosView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
@@ -93,11 +97,16 @@ struct SettingsView: View {
             }
             
             .padding()
-            .fullScreenCover(isPresented: $viewModel.presentPolicy) {
-                NavigationStack {
-                    PrivacyPolicy(sheet: true)
+            .onChange(of: viewModel.presentPolicy) { value in
+                if value {
+                    BottomPopup_Document(viewModel: viewModel).showAndStack()
                 }
             }
+            //            .fullScreenCover(isPresented: $viewModel.presentPolicy) {
+            //                NavigationStack {
+            //                    PrivacyPolicy(sheet: true)
+            //                }
+            //            }
             .fullScreenCover(isPresented: $viewModel.phoneBookLogin) {
                 PhoneLoginScreen {
                     if showBackButton {
@@ -108,6 +117,12 @@ struct SettingsView: View {
                     
                 }
             }
+            .onChange(of: preferencesViewModel.isColumnViewEnabled) { value in
+                HapticManager.shared.trigger(.lightImpact)
+            }
+            .onChange(of: preferencesViewModel.hapticFeedback) { value in
+                HapticManager.shared.trigger(.lightImpact)
+            }
         }
         .scrollIndicators(.hidden)
         .navigationBarTitle("Settings", displayMode: .automatic)
@@ -116,12 +131,14 @@ struct SettingsView: View {
             ToolbarItemGroup(placement: .topBarLeading) {
                 if showBackButton {
                     HStack {
-                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 presentationMode.wrappedValue.dismiss()
                             }
-                        }).keyboardShortcut(.delete, modifiers: .command)
-                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                        })
+                        .keyboardShortcut(.delete, modifiers: .command)
+                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                        
                     }
                 }
             }
@@ -130,6 +147,7 @@ struct SettingsView: View {
                 HStack {
                     Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                        .disabled(viewModel.presentPolicy)
                 }
             }
         }
@@ -138,12 +156,66 @@ struct SettingsView: View {
         .onChange(of: viewModel.requestReview) { value in
             if value {
                 requestReview()
-                DispatchQueue.main.async {
-                    self.viewModel.requestReview = false
-                }
+                self.viewModel.requestReview = false
             }
         }
     }
+    
+    @ViewBuilder
+    func preferencesView(mainWindowSize: CGSize) -> some View {
+        VStack {
+            if UIDevice().userInterfaceIdiom == .pad {
+                HStack {
+                    HStack {
+                        Image(systemName: "text.word.spacing")
+                            .imageScale(.large)
+                            .padding(.horizontal)
+                            .foregroundColor(.blue)
+                        Text("iPad Column View")
+                            .font(.title3)
+                            .lineLimit(1)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                    }
+                    .hSpacing(.leading)
+                    VStack {
+                        Toggle(isOn: $preferencesViewModel.isColumnViewEnabled) {}
+                            .toggleStyle(CheckmarkToggleStyle(color: .blue))
+                        //.padding()
+                    }.hSpacing(.trailing)
+                }
+            }
+            
+            if !(UIDevice().userInterfaceIdiom == .pad) {
+                Grid(alignment: .leading) {
+                    GridRow {
+                        HStack {
+                            Image(systemName: "iphone.homebutton.radiowaves.left.and.right")
+                                .imageScale(.large)
+                                .padding(.horizontal)
+                            Text("Haptics")
+                                .font(.title3)
+                                .lineLimit(1)
+                                .foregroundColor(.primary)
+                                .fontWeight(.heavy)
+                        }
+                        .hSpacing(.leading)
+                        
+                        VStack {
+                            Toggle(isOn: $preferencesViewModel.hapticFeedback) {}
+                                .toggleStyle(CheckmarkToggleStyle(color: .blue))
+                            //.padding()
+                        }.hSpacing(.trailing).frame(maxWidth: 80)
+                        
+                    }
+                }
+            }
+        }.padding(10)
+            .frame(minWidth: mainWindowSize.width * 0.95)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+    
     
 }
 
@@ -168,6 +240,7 @@ struct CentrePopup_AboutApp: CentrePopup {
             .foregroundColor(.primary)
             .fontWeight(.bold)
             CustomBackButton(showImage: false, text: "Dismiss") {
+                HapticManager.shared.trigger(.lightImpact)
                 withAnimation {
                     self.viewModel.showAlert = false
                     dismiss()
@@ -221,16 +294,19 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
             
             HStack {
                 CustomBackButton(showImage: true, text: "Cancel") {
+                    HapticManager.shared.trigger(.lightImpact)
                     withAnimation {
                         self.viewModel.showDeletionConfirmationAlert = false
                         PopupManager.dismissAll()
                     }
                 }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
+                    HapticManager.shared.trigger(.lightImpact)
                     withAnimation { self.viewModel.loading = true }
                     Task {
                         switch await AuthenticationManager().deleteAccount() {
                         case .success(_):
+                            HapticManager.shared.trigger(.success)
                             withAnimation { self.viewModel.loading = false }
                             
                             self.viewModel.showDeletionConfirmationAlert = false
@@ -239,11 +315,12 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                                 onDone()
                             }
                         case .failure(_):
+                            HapticManager.shared.trigger(.error)
                             withAnimation { self.viewModel.loading = true }
                             self.viewModel.deletionError = "Error deleting account"
                         }
                     }
-                }) 
+                })
                 .hSpacing(.trailing)
                 //.frame(width: 100)
             }
@@ -285,13 +362,14 @@ struct CentrePopup_Deletion: CentrePopup {
             
             HStack {
                 CustomBackButton(showImage: true, text: "Cancel") {
+                    HapticManager.shared.trigger(.lightImpact)
                     self.viewModel.showDeletionAlert = false
                     dismiss()
                 }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
+                    HapticManager.shared.trigger(.lightImpact)
                     self.viewModel.showDeletionAlert = false
                     self.viewModel.showDeletionConfirmationAlert = true
-                    
                 })
                 .hSpacing(.trailing)
                 //.frame(width: 100)
@@ -337,12 +415,14 @@ struct CentrePopup_EditUsername: CentrePopup {
             HStack {
                 if !loading {
                     CustomBackButton() {
+                        HapticManager.shared.trigger(.lightImpact)
                         dismiss()
                         self.viewModel.showEditNamePopup = false
                     }
                 }
                 
                 CustomButton(loading: loading, title: "Edit") {
+                    HapticManager.shared.trigger(.lightImpact)
                     if !username.isEmpty {
                         withAnimation { loading = true }
                         
@@ -351,10 +431,12 @@ struct CentrePopup_EditUsername: CentrePopup {
                             
                             switch result {
                             case .success(_):
+                                HapticManager.shared.trigger(.success)
                                 withAnimation { loading = false }
                                 dismiss()
                                 self.viewModel.showEditNamePopup = false
                             case .failure(let error):
+                                HapticManager.shared.trigger(.error)
                                 withAnimation {
                                     loading = false
                                     self.error = NSLocalizedString("Error updating username", comment: "")
@@ -373,6 +455,7 @@ struct CentrePopup_EditUsername: CentrePopup {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
                 Button("Done") {
+                    HapticManager.shared.trigger(.lightImpact)
                     usernameFocus = false // Dismiss the keyboard when "Done" is tapped
                 }
                 .tint(.primary)
@@ -393,3 +476,62 @@ struct CentrePopup_EditUsername: CentrePopup {
     }
 }
 
+struct BottomPopup_Document: BottomPopup {
+    @ObservedObject var viewModel: SettingsViewModel
+    
+    func configurePopup(popup: BottomPopupConfig) -> BottomPopupConfig {
+        popup
+            .contentFillsWholeHeigh(true)
+            .dragGestureEnabled(false)
+    }
+    func createContent() -> some View {
+        VStack(spacing: 0) {
+            createBar()
+            Spacer.height(24)
+            createScrollView()
+            Spacer()
+            createConfirmButton()
+        }
+        .padding(.top, 20)
+        .padding(.bottom, 8)
+    }
+}
+
+private extension BottomPopup_Document {
+    func createBar() -> some View {
+        Capsule()
+            .fill(Color.onBackgroundTertiary)
+            .frame(width: 32, height: 6)
+            .hSpacing(.center)
+    }
+    func createScrollView() -> some View {
+        VStack {
+            PrivacyPolicy(sheet: true)
+        }
+    }
+    func createConfirmButton() -> some View {
+        Button {
+            HapticManager.shared.trigger(.lightImpact)
+            dismiss()
+            viewModel.presentPolicy = false
+        } label: {
+            Text("Dismiss")
+                .font(.headline)
+                .fontWeight(.heavy)
+                .foregroundColor(.white)
+                .frame(height: 44)
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .cornerRadius(40)
+                .padding(.horizontal, 28)
+        }
+    }
+}
+
+private extension BottomPopup_Document {
+    func createScrollViewText(_ text: String) -> some View {
+        Text(text)
+            .font(.interRegular(16))
+            .foregroundColor(.onBackgroundPrimary)
+    }
+}

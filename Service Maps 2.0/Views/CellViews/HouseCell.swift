@@ -7,10 +7,25 @@
 
 import SwiftUI
 import NukeUI
+import Combine
 
 struct HouseCell: View {
-    var house: HouseData
+    @ObservedObject var visitViewModel: VisitsViewModel
+    @State var house: HouseData {
+        didSet {
+            print(house)
+        }
+    }
     var mainWindowSize: CGSize
+    
+    init(house: HouseData, mainWindowSize: CGSize) {
+        
+        self._visitViewModel = ObservedObject(initialValue: VisitsViewModel(house: house.house))
+        self.house = house
+        self.mainWindowSize = mainWindowSize
+    }
+    
+    @State private var cancellable: AnyCancellable?
     
     var body: some View {
         HStack(spacing: 10) {
@@ -26,8 +41,8 @@ struct HouseCell: View {
                         .padding(.leading, 5)
                     
                     // Symbol
-                    Text("Symbol: \(house.visit?.symbol.localizedUppercase ?? "-")")
-                        .font(.headline)
+                    Text("\(NSLocalizedString( house.visit?.symbol.localizedUppercase ?? "-", comment: ""))")
+                        .font(.title3)
                         .lineLimit(2)
                         .foregroundColor(.primary)
                         .fontWeight(.bold)
@@ -35,19 +50,19 @@ struct HouseCell: View {
                         .padding(.trailing, 5)
                 }
                 // Date
-                Text("Date: \(house.visit != nil ? formattedDate(date: Date(timeIntervalSince1970: Double(house.visit!.date) / 1000)) : "N/A")")
+                Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(house.visit?.date ?? 0) / 1000)))")
                     .font(.subheadline)
                     .lineLimit(2)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.secondary)
                     .fontWeight(.bold)
                     .hSpacing(.leading
                     ).padding(.leading, 5)
                 
                 // Notes
-                Text("Note: \(house.visit?.notes ?? "No notes")")
+                Text("\(house.visit?.notes ?? "No notes")")
                     .font(.subheadline)
                     .lineLimit(4)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.secondary)
                     .fontWeight(.bold)
                     .padding(.leading, 5)
                     .multilineTextAlignment(.leading)
@@ -58,5 +73,22 @@ struct HouseCell: View {
         .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+        
+        .onAppear {
+                visitViewModel.getVisits()
+                    cancellable = visitViewModel.latestVisitUpdatePublisher
+                        .subscribe(on: DispatchQueue.main)
+                        .sink { newVisit in
+                            // Check if the update is for the correct house and if it's a new/different visit
+                            if newVisit.house == house.house.id, newVisit != house.visit {
+                                house.visit = newVisit  // Update the state with the new visit
+                            }
+                        }
+                }
+                .onDisappear {
+                    cancellable?.cancel()
+                }
     }
+        
+    
 }

@@ -109,6 +109,7 @@ extension CallsViewModel {
 
 struct CallCell: View {
     var call: PhoneCallData
+    var ipad: Bool = false
     @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         HStack(spacing: 10) {
@@ -117,9 +118,9 @@ struct CallCell: View {
                     HStack {
                         Text(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(call.phoneCall.date / 1000))))
                         //.frame(maxWidth: .infinity)
-                            .font(.title3)
-                            .lineLimit(1)
-                            .foregroundColor(.primary)
+                            .font(.headline)
+                            .lineLimit(3)
+                            .foregroundColor(.secondary)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
                     }
@@ -132,11 +133,11 @@ struct CallCell: View {
                     .foregroundColor(.primary)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
-                
+                Spacer().frame(height: 5)
                 Text(call.phoneCall.user)
-                    .font(.headline)
+                    .font(.subheadline)
                     .lineLimit(2)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.secondary)
                     .fontWeight(.heavy)
                     .hSpacing(.trailing)
                 
@@ -146,7 +147,7 @@ struct CallCell: View {
             
         }
         .padding(10)
-        .frame(minWidth: mainWindowSize.width * 0.95)
+        .frame(minWidth: ipad ? (mainWindowSize.width / 2) * 0.90 : mainWindowSize.width * 0.90)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }

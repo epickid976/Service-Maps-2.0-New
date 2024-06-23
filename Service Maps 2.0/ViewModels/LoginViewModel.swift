@@ -30,6 +30,7 @@ class LoginViewModel: ObservableObject {
     @Published var alertMessage = ""
     
     @Published var resetFeedback = false
+    @Published var resetError = false
     @Published var resetFeedbackText = ""
     @Published var passwordError = ""
     
@@ -158,12 +159,14 @@ class LoginViewModel: ObservableObject {
     func resetPassword(password: String, token: String ) async {
         switch await authenticationManager.resetPassword( password: password, token: token) {
         case .success(_):
+            HapticManager.shared.trigger(.success)
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 withAnimation {
                     UniversalLinksManager.shared.resetLink()
                 }
             }
         case .failure(let error):
+            HapticManager.shared.trigger(.error)
             if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
                 DispatchQueue.main.async {
                     self.loginErrorText =  NSLocalizedString("No Internet Connection. Please try again later.", comment: "")

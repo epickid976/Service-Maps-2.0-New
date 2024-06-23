@@ -144,7 +144,9 @@
 		82CEA0332C11568700F52DE9 /* NewUserNameForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CEA0322C11568700F52DE9 /* NewUserNameForm.swift */; };
 		82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526042A9290EE00B42916 /* AddTerritoryView.swift */; };
 		82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */; };
-		82DAEEDE2AAF597100465DA5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DAEEDD2AAF597100465DA5 /* HomeView.swift */; };
+		82DBE4DB2C249F3200C16B35 /* SplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DA2C249F3200C16B35 /* SplitView.swift */; };
+		82DBE4DD2C24B42C00C16B35 /* ColumnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DC2C24B42B00C16B35 /* ColumnView.swift */; };
+		82DBE4DF2C24FE7800C16B35 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */; };
 		82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBEA992A880B9E002048DC /* ResetPassword.swift */; };
 		82DDE2CD2C193BD4003B65A5 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */; };
 		82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EC3E922A9CFF68000E2926 /* HousesView.swift */; };
@@ -306,7 +308,9 @@
 		82CEA0322C11568700F52DE9 /* NewUserNameForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUserNameForm.swift; sourceTree = "<group>"; };
 		82D526042A9290EE00B42916 /* AddTerritoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryView.swift; sourceTree = "<group>"; };
 		82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryViewModel.swift; sourceTree = "<group>"; };
-		82DAEEDD2AAF597100465DA5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		82DBE4DA2C249F3200C16B35 /* SplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitView.swift; sourceTree = "<group>"; };
+		82DBE4DC2C24B42B00C16B35 /* ColumnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColumnView.swift; sourceTree = "<group>"; };
+		82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		82DBEA992A880B9E002048DC /* ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPassword.swift; sourceTree = "<group>"; };
 		82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		82EC3E922A9CFF68000E2926 /* HousesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesView.swift; sourceTree = "<group>"; };
@@ -552,7 +556,7 @@
 		823FD4D82A81632B0036A1DD /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				82DAEEDC2AAF596100465DA5 /* New Group */,
+				82DAEEDC2AAF596100465DA5 /* iPad */,
 				826B766F2A729FDE000A4BAA /* HomeTabView.swift */,
 				823FD4D42A7D6F2D0036A1DD /* TerritoryView.swift */,
 				82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */,
@@ -579,6 +583,7 @@
 				8288001D2AA6621D00725826 /* ReuploaderWorker.swift */,
 				8288001F2AA68BAA00725826 /* CDPublisher.swift */,
 				82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */,
+				82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -698,12 +703,13 @@
 			path = Add_Edit;
 			sourceTree = "<group>";
 		};
-		82DAEEDC2AAF596100465DA5 /* New Group */ = {
+		82DAEEDC2AAF596100465DA5 /* iPad */ = {
 			isa = PBXGroup;
 			children = (
-				82DAEEDD2AAF597100465DA5 /* HomeView.swift */,
+				82DBE4DA2C249F3200C16B35 /* SplitView.swift */,
+				82DBE4DC2C24B42B00C16B35 /* ColumnView.swift */,
 			);
-			path = "New Group";
+			path = iPad;
 			sourceTree = "<group>";
 		};
 		82F9130A2BDAE79100644A67 /* LinkViews */ = {
@@ -828,9 +834,9 @@
 				825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */,
 				824213662A82BF0200626DD5 /* StartupState.swift in Sources */,
 				82916C1D2A9944B3005133DE /* Symbols.swift in Sources */,
-				82DAEEDE2AAF597100465DA5 /* HomeView.swift in Sources */,
 				824213692A82C4CB00626DD5 /* AuthenticationManager.swift in Sources */,
 				82916C1B2A994387005133DE /* AddVisitViewModel.swift in Sources */,
+				82DBE4DD2C24B42C00C16B35 /* ColumnView.swift in Sources */,
 				828800202AA68BAA00725826 /* CDPublisher.swift in Sources */,
 				820933FB2A794D0C00AF3FF1 /* SynchronizationManager.swift in Sources */,
 				821C126A2A77F74D0050D106 /* AuthorizationProvider.swift in Sources */,
@@ -844,6 +850,7 @@
 				82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */,
 				82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */,
 				82FB3C232BF257990066B0B9 /* RecentData.swift in Sources */,
+				82DBE4DB2C249F3200C16B35 /* SplitView.swift in Sources */,
 				824213752A82E7D000626DD5 /* LoginViewModel.swift in Sources */,
 				823FD4D52A7D6F2D0036A1DD /* TerritoryView.swift in Sources */,
 				82916C172A990955005133DE /* ImagePickerView.swift in Sources */,
@@ -910,6 +917,7 @@
 				824E5CF62BC5ABF4001DE348 /* DatabaseManager.swift in Sources */,
 				82BC0F272A9CD94500B255BF /* AddHouseView.swift in Sources */,
 				825645A72BCE117500F18AC9 /* TerritoryObject.swift in Sources */,
+				82DBE4DF2C24FE7800C16B35 /* HapticManager.swift in Sources */,
 				824213722A82DB7300626DD5 /* SplashScreenView.swift in Sources */,
 				82A5B4642BD5B9D700F52F2F /* VisitData.swift in Sources */,
 				82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */,
@@ -1120,11 +1128,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.6;
+				MARKETING_VERSION = 2.7.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1153,11 +1162,12 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.6;
+				MARKETING_VERSION = 2.7.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

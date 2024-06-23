@@ -40,7 +40,7 @@ struct AddHouseView: View {
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
-                CustomField(text: $viewModel.number, isFocused: $numberFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Number", comment: ""))
+                CustomField(text: $viewModel.number, isFocused: $numberFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Number", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -50,11 +50,12 @@ struct AddHouseView: View {
                 
                 HStack {
                     if !viewModel.loading {
-                        CustomBackButton() { onDismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                        CustomBackButton() { onDismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
+                        HapticManager.shared.trigger(.lightImpact)
                         if viewModel.checkInfo() {
                             if house != nil {
                                 Task {
@@ -64,8 +65,10 @@ struct AddHouseView: View {
                                     let result = await viewModel.editHouse(house: house!)
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error updating house.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -78,8 +81,10 @@ struct AddHouseView: View {
                                     let result = await viewModel.addHouse()
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error adding house.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -99,6 +104,7 @@ struct AddHouseView: View {
                 ToolbarItemGroup(placement: .keyboard){
                     Spacer()
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             hideKeyboard()
                         }

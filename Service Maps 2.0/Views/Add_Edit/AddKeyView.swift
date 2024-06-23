@@ -85,6 +85,9 @@ struct AddKeyView: View {
                                 //.padding()
                             }
                         }
+                        .onChange(of: viewModel.servant) { _ in
+                            HapticManager.shared.trigger(.lightImpact)
+                        }
                         if keyData != nil {
                             Text(keyData!.key.name)
                                 .font(.headline)
@@ -92,7 +95,7 @@ struct AddKeyView: View {
                                 .hSpacing(.leading)
                                 .padding(.leading)
                         } else {
-                            CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Key Name", comment: ""))
+                            CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Key Name", comment: ""))
                         }
                         ScrollView {
                             LazyVStack {
@@ -104,11 +107,12 @@ struct AddKeyView: View {
                         
                         HStack {
                             if !viewModel.loading {
-                                CustomBackButton() { presentationMode.wrappedValue.dismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                                CustomBackButton() { presentationMode.wrappedValue.dismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
                             }
                             //.padding([.top])
                             
                             CustomButton(loading: viewModel.loading, title: NSLocalizedString(keyData != nil ? "Edit" : "Add", comment: "")) {
+                                HapticManager.shared.trigger(.lightImpact)
                                 if viewModel.checkInfo() {
                                     Task {
                                         withAnimation {
@@ -117,9 +121,11 @@ struct AddKeyView: View {
                                         let result = await viewModel.addToken()
                                         switch result {
                                         case .success(_):
+                                            HapticManager.shared.trigger(.success)
                                             onDone()
                                             presentationMode.wrappedValue.dismiss()
                                         case .failure(_):
+                                            HapticManager.shared.trigger(.error)
                                             viewModel.error = NSLocalizedString("Error adding/updating key.", comment: "")
                                             viewModel.loading = false
                                         }
@@ -139,13 +145,14 @@ struct AddKeyView: View {
 }
 
 struct CheckmarkToggleStyle: ToggleStyle {
+    var color: Color = .teal
     
     func makeBody(configuration: Configuration) -> some View {
         HStack {
             configuration.label
             Spacer()
             Rectangle()
-                .foregroundColor(configuration.isOn ? .teal : Color(UIColor.darkGray))
+                .foregroundColor(configuration.isOn ? color : Color(UIColor.darkGray))
                 .frame(width: 51, height: 31, alignment: .center)
                 .overlay(
                     Circle()
@@ -157,7 +164,7 @@ struct CheckmarkToggleStyle: ToggleStyle {
                                 .aspectRatio(contentMode: .fit)
                                 .font(Font.title.weight(.black))
                                 .frame(width: 8, height: 8, alignment: .center)
-                                .foregroundColor(configuration.isOn ? .teal : .gray)
+                                .foregroundColor(configuration.isOn ? color : .gray)
                         )
                         .offset(x: configuration.isOn ? 11 : -11, y: 0)
                         .animation(Animation.linear(duration: 0.1))
@@ -166,5 +173,4 @@ struct CheckmarkToggleStyle: ToggleStyle {
                 .onTapGesture { configuration.isOn.toggle() }
         }
     }
-    
 }

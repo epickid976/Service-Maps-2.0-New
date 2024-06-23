@@ -261,8 +261,6 @@ class DataUploaderManager: ObservableObject {
     
     func updateVisit(visit: VisitObject) async -> Result<Bool, Error> {
         
-        
-        
         var result: Result<Bool, Error>?
         
         if authorizationLevelManager.existsAdminCredentials() {
@@ -299,9 +297,7 @@ class DataUploaderManager: ObservableObject {
             let realm = try! await Realm()
             if let territoryToDelete = realm.objects(TerritoryObject.self).filter("id == %d", territory).first {
                 try await adminApi.deleteTerritory(territory: convertTerritoryToTerritoryModel(model: territoryToDelete))
-                DispatchQueue.main.async {
-                    self.synchronizationManager.startupProcess(synchronizing: true)
-                }
+                realmManager.deleteTerritory(territory: territoryToDelete)
                 return Result.success(true)
             }
             

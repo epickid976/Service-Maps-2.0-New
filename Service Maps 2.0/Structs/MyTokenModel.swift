@@ -18,6 +18,7 @@ struct MyTokenModel: Codable, Equatable, Identifiable, Hashable {
     var created_at: String
     var updated_at: String
     
+    
     static func == (lhs: MyTokenModel, rhs: MyTokenModel) -> Bool {
         return lhs.id == rhs.id &&
         lhs.name == rhs.name &&

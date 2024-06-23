@@ -75,12 +75,14 @@ struct ResetPassword: View {
                     HStack {
                         if !loading {
                             CustomBackButton(showImage: true, text: "Cancel") {
+                                HapticManager.shared.trigger(.lightImpact)
                                 withAnimation {
                                     universalLinksManager.resetLink()
                                 }
                             }.hSpacing(.trailing)
                         }
                         CustomButton(loading: loading, alwaysExpanded: true, title: "Reset") {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation { loading = true }
                             let validation = viewModel.validate(forReset: true)
                             if validation {
@@ -90,6 +92,7 @@ struct ResetPassword: View {
                                     //await authenticationManager.login(logInForm: LoginForm(email: dataStore.userEmail ?? "", password: dataStore.passTemp ?? ""))
                                 }
                             } else {
+                                HapticManager.shared.trigger(.error)
                                 withAnimation { viewModel.loginError = true }
                                 withAnimation { loading = false }
                             }
@@ -121,6 +124,7 @@ struct ResetPassword: View {
                     Spacer()
                     
                     Button("Done"){
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             passwordConfirmationFocus = false
                             passwordFocus = false

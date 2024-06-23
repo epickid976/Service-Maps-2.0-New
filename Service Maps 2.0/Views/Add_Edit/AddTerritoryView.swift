@@ -52,6 +52,7 @@ struct AddTerritoryView: View {
                                     .disabled(title == "Edit")
                                 if title != "Edit" {
                                     Stepper("", onIncrement: {
+                                        HapticManager.shared.trigger(.lightImpact)
                                         if viewModel.number != nil {
                                             viewModel.number! += 1
                                         } else {
@@ -59,6 +60,7 @@ struct AddTerritoryView: View {
                                         }
                                         
                                     }, onDecrement: {
+                                        HapticManager.shared.trigger(.softError)
                                         if viewModel.number != nil {
                                             if viewModel.number != 0 {
                                                 viewModel.number! -= 1
@@ -86,7 +88,7 @@ struct AddTerritoryView: View {
                         // .frame(alignment: .center)
                             .hSpacing(.leading)
                             .padding(.leading)
-                        CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Description", comment: ""))
+                        CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Description", comment: ""))
                             .animation(.spring, value: viewModel.description)
                             .padding(.bottom)
                         
@@ -102,6 +104,7 @@ struct AddTerritoryView: View {
                                 content
                                     .overlay(
                                         Button {
+                                            HapticManager.shared.trigger(.lightImpact)
                                             DispatchQueue.main.async {
                                                 viewModel.imageToSend = nil
                                                 viewModel.previewImage = nil
@@ -131,11 +134,12 @@ struct AddTerritoryView: View {
                         
                         HStack {
                             if !viewModel.loading {
-                                CustomBackButton() { dismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                                CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
                             }
                             //.padding([.top])
                             
                             CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
+                                HapticManager.shared.trigger(.lightImpact)
                                 if viewModel.checkInfo() {
                                     withAnimation { viewModel.loading = true }
                                     if territory != nil {
@@ -143,12 +147,14 @@ struct AddTerritoryView: View {
                                             let result = await viewModel.editTerritory(territory: territory!)
                                             switch result {
                                             case .success(_):
+                                                HapticManager.shared.trigger(.success)
                                                 withAnimation {
                                                     viewModel.loading = false
                                                 }
                                                 dismiss()
                                                 onDone()
                                             case .failure(_):
+                                                HapticManager.shared.trigger(.error)
                                                 viewModel.error = NSLocalizedString("Error updating territory.", comment: "")
                                                 viewModel.loading = false
                                             }
@@ -158,12 +164,14 @@ struct AddTerritoryView: View {
                                             let result = await viewModel.addTerritory()
                                             switch result {
                                             case .success(_):
+                                                HapticManager.shared.trigger(.success)
                                                 withAnimation {
                                                     viewModel.loading = false
                                                 }
                                                 dismiss()
                                                 onDone()
                                             case .failure(_):
+                                                HapticManager.shared.trigger(.error)
                                                 viewModel.error = NSLocalizedString("Error adding territory.", comment: "")
                                                 viewModel.loading = false
                                             }
@@ -184,6 +192,7 @@ struct AddTerritoryView: View {
                         ToolbarItemGroup(placement: .keyboard){
                             Spacer()
                             Button {
+                                HapticManager.shared.trigger(.lightImpact)
                                 DispatchQueue.main.async {
                                     hideKeyboard()
                                 }

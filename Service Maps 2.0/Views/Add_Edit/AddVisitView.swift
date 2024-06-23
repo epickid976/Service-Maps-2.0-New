@@ -79,7 +79,7 @@ struct AddVisitView: View {
                 }.hSpacing(.leading).padding(.leading, 16)
                 
                 
-                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, expanded: true, placeholder: NSLocalizedString("Notes", comment: ""))
+                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, expanded: true, placeholder: NSLocalizedString("Notes", comment: ""))
                     .padding(.bottom)
                 
                 if viewModel.error != "" {
@@ -90,11 +90,12 @@ struct AddVisitView: View {
                 
                 HStack {
                     if !viewModel.loading {
-                        CustomBackButton() { onDismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                        CustomBackButton() { onDismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
+                        HapticManager.shared.trigger(.lightImpact)
                         if viewModel.checkInfo() {
                             if visit != nil {
                                 Task {
@@ -104,8 +105,12 @@ struct AddVisitView: View {
                                     let result = await viewModel.editVisit(visit: visit!)
                                     switch result {
                                     case .success(_):
-                                        onDone()
+                                        HapticManager.shared.trigger(.success)
+                                        DispatchQueue.main.async {
+                                            onDone()
+                                        }
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error updating Visit.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -118,8 +123,12 @@ struct AddVisitView: View {
                                     let result = await viewModel.addVisit()
                                     switch result {
                                     case .success(_):
-                                        onDone()
+                                        HapticManager.shared.trigger(.success)
+                                        DispatchQueue.main.async {
+                                            onDone()
+                                        }
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error adding Visit.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -139,6 +148,7 @@ struct AddVisitView: View {
                 ToolbarItemGroup(placement: .keyboard){
                     Spacer()
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             hideKeyboard()
                         }

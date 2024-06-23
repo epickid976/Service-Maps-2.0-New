@@ -18,6 +18,8 @@ import MijickPopupView
 struct TerritoryAddressView: View {
     var territory: TerritoryModel
     
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
     @StateObject var viewModel: AddressViewModel
     init(territory: TerritoryModel, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
@@ -90,14 +92,29 @@ struct TerritoryAddressView: View {
                                     }
                                 } else {
                                     LazyVStack {
-                                        
                                         SwipeViewGroup {
-                                            ForEach(viewModel.addressData!) { addressData in
-                                                addressCell(addressData: addressData, mainWindowSize: proxy.size)
-                                                    .padding(.bottom, 2)
-                                                    .id(addressData.address.id)
+                                            if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled  {
+                                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                    ForEach(viewModel.addressData ?? [], id: \.address.id) { addressData in
+                                                        let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
+                                                        addressCell(addressData: addressData, mainWindowSize: proxy)
+                                                            .padding(.bottom, 2)
+                                                            .id(addressData.address.id)
+                                                            .transition(.customBackInsertion)
+                                                    }
+                                                }
+                                            } else {
+                                                LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                    ForEach(viewModel.addressData ?? [], id: \.address.id) { addressData in
+                                                        addressCell(addressData: addressData, mainWindowSize: proxy.size)
+                                                            .padding(.bottom, 2)
+                                                            .id(addressData.address.id)
+                                                            .transition(.customBackInsertion)
+                                                    }
+                                                }
                                             }
                                         }
+                                        .modifier(ScrollTransitionModifier())
                                     }
                                     .padding(.horizontal)
                                     .padding(.top)
@@ -144,10 +161,12 @@ struct TerritoryAddressView: View {
                     .coordinateSpace(name: "scroll")
                     .onChange(of: viewModel.territoryAddressIdToScrollTo) { id in
                         if let id = id {
+                            
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 withAnimation {
                                     scrollViewProxy.scrollTo(id, anchor: .center)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                        HapticManager.shared.trigger(.selectionChanged)
                                         highlightedTerritoryAddressId = id // Highlight after scrolling
                                     }
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -178,7 +197,7 @@ struct TerritoryAddressView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     HStack {
-                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 presentationMode.wrappedValue.dismiss()
                             }
@@ -219,11 +238,12 @@ struct TerritoryAddressView: View {
                                 .font(.headline)
                                 .fontWeight(.heavy)
                                 .foregroundColor(.primary)
+                                .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)
                             Text("Doors: \(addressData.houseQuantity)")
                                 .font(.body)
                                 .lineLimit(5)
-                                .foregroundColor(.primary)
+                                .foregroundColor(.secondary)
                                 .fontWeight(.bold)
                                 .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)
@@ -241,6 +261,7 @@ struct TerritoryAddressView: View {
                             content
                                 .contextMenu {
                                     Button {
+                                        HapticManager.shared.trigger(.lightImpact)
                                         DispatchQueue.main.async {
                                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
                                             //self.showAlert = true
@@ -256,6 +277,7 @@ struct TerritoryAddressView: View {
                                     }
                                     
                                     Button {
+                                        HapticManager.shared.trigger(.lightImpact)
                                         self.viewModel.currentAddress = addressData.address
                                         self.viewModel.presentSheet = true
                                     } label: {
@@ -271,7 +293,7 @@ struct TerritoryAddressView: View {
                         }
                     }
                     
-                }
+                }.onTapHaptic(.lightImpact)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16) // Same shape as the cell
                         .fill(highlightedTerritoryAddressId == addressData.address.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedTerritoryAddressId == addressData.address.id) // Fill with transparent gray if highlighted
@@ -282,6 +304,7 @@ struct TerritoryAddressView: View {
                         systemImage: "trash",
                         backgroundColor: .red
                     ) {
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             context.state.wrappedValue = .closed
                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
@@ -300,6 +323,7 @@ struct TerritoryAddressView: View {
                         systemImage: "pencil",
                         backgroundColor: Color.teal
                     ) {
+                        HapticManager.shared.trigger(.lightImpact)
                         context.state.wrappedValue = .closed
                         self.viewModel.currentAddress = addressData.address
                         self.viewModel.presentSheet = true
@@ -346,6 +370,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 //self.showAlert = false
                                 dismiss()
@@ -357,6 +382,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
@@ -364,8 +390,9 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                             if self.viewModel.addressToDelete.0 != nil && self.viewModel.addressToDelete.1 != nil {
                                 switch await self.viewModel.deleteAddress(address: self.viewModel.addressToDelete.0 ?? "") {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                        self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                                       // self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
                                         self.viewModel.getAddresses()
                                         self.viewModel.loading = false
                                         //self.viewModel.showAlert = false
@@ -378,6 +405,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                                         }
                                     }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }
@@ -417,7 +445,7 @@ struct CentrePopup_AddAddress: CentrePopup {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismiss()
-                viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                //viewModel.synchronizationManager.startupProcess(synchronizing: true)
                 viewModel.getAddresses()
                 viewModel.showAddedToast = true
                 
@@ -429,9 +457,10 @@ struct CentrePopup_AddAddress: CentrePopup {
             viewModel.presentSheet = false
             dismiss()
         })
-        .padding(.top, 10)
-        .padding(.bottom, 10)
-        .padding(.horizontal, 10)
+        .padding(.top, 15)
+        .padding(.bottom, 15)
+        .padding(.horizontal, 15)
+        .ignoresSafeArea(.keyboard)
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
         .simultaneousGesture(
             // Hide the keyboard on scroll
@@ -449,9 +478,7 @@ struct CentrePopup_AddAddress: CentrePopup {
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
         popup
             .horizontalPadding(24)
-            .cornerRadius(15)
+            .cornerRadius(20)
             .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }
-
-

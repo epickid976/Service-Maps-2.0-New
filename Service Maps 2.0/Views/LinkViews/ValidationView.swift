@@ -51,11 +51,13 @@ struct ValidationView: View {
                 HStack {
                     
                     CustomBackButton(showImage: true, text: "Cancel") {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             UniversalLinksManager.shared.resetLink()
                         }
                     }.hSpacing(.trailing)
                     CustomButton(loading: viewModel.loading, alwaysExpanded: true, title: "Retry", action: {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation { self.viewModel.loading = true }
                         Task {
                             await self.viewModel.activateEmail()
@@ -71,6 +73,7 @@ struct ValidationView: View {
         .navigationTransition(.zoom.combined(with: .fade(.in)))
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
+            HapticManager.shared.trigger(.impact)
             Task {
                 viewModel.loading = true
                 await viewModel.activateEmail()
@@ -96,12 +99,14 @@ class ValidationViewModel: ObservableObject {
         if universalLinksManager.determineDestination() == .ActivateEmail {
             switch await authenticationManager.activateEmail(token: universalLinksManager.dataFromUrl ?? "") {
             case .success(_):
+                HapticManager.shared.trigger(.success)
                 _ = await authenticationManager.login(logInForm: LoginForm(email: dataStore.userEmail ?? "", password: dataStore.passTemp ?? ""))
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     withAnimation { self.loading = false}
                     UniversalLinksManager.shared.resetLink()
                 }
             case .failure(let error):
+                HapticManager.shared.trigger(.error)
                 withAnimation { self.loading = false}
                 if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
                     DispatchQueue.main.async {

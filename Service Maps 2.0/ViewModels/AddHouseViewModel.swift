@@ -29,6 +29,7 @@ class AddHouseViewModel: ObservableObject {
             loading = true
         }
         let houseObject = HouseObject()
+        houseObject.id = "\(address.address)-\(number)"
         houseObject.number = number
         houseObject.territory_address = address.id
         houseObject.floor = nil

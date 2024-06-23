@@ -171,6 +171,7 @@ class AddressViewModel: ObservableObject {
 extension AddressViewModel {
     func getAddresses(territoryAddressIdToScrollTo: String? = nil) {
         databaseManager.getAddressData(territoryId: territory.id)
+            .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {

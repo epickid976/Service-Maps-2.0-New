@@ -40,7 +40,7 @@ struct AddCallView: View {
                         .hSpacing(.leading)
                         .padding(.leading)
                 }
-                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, textfieldAxis: .vertical, placeholder: NSLocalizedString("Notes", comment: ""))
+                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Notes", comment: ""))
                     .padding(.bottom)
                 
                 Text(viewModel.error)
@@ -50,11 +50,12 @@ struct AddCallView: View {
                 
                 HStack {
                     if !viewModel.loading {
-                        CustomBackButton() { onDismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                        CustomBackButton() { onDismiss();HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
+                        HapticManager.shared.trigger(.lightImpact)
                         if viewModel.checkInfo() {
                             if call != nil {
                                 Task {
@@ -64,8 +65,10 @@ struct AddCallView: View {
                                     let result = await viewModel.editCall(call: call!)
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error updating call.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -78,8 +81,10 @@ struct AddCallView: View {
                                     let result = await viewModel.addCall()
                                     switch result {
                                     case .success(_):
+                                        HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error adding call.", comment: "")
                                         viewModel.loading = false
                                     }
@@ -99,6 +104,7 @@ struct AddCallView: View {
                 ToolbarItemGroup(placement: .keyboard){
                     Spacer()
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             hideKeyboard()
                         }

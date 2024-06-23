@@ -56,6 +56,7 @@ struct HomeTabView: View {
                     Button(action: {
                         withAnimation(.spring) {
                             selectedTab = 0
+                            HapticManager.shared.trigger(.lightImpact)
                         }
                     }) {
                         Image(systemName: selectedTab == 0 ? "map.fill" : "map")
@@ -71,6 +72,7 @@ struct HomeTabView: View {
                         Button(action: {
                             withAnimation(.default) {
                                 selectedTab = 1
+                                HapticManager.shared.trigger(.lightImpact)
                             }
                         }) {
                             Image(systemName: selectedTab == 1 ? "phone.connection.fill" : "phone.connection")
@@ -92,6 +94,7 @@ struct HomeTabView: View {
                         Button(action: {
                             withAnimation(.default) {
                                 selectedTab = 2
+                                HapticManager.shared.trigger(.lightImpact)
                             }
                         }) {
                             Image(systemName: selectedTab == 2 ? "person.badge.key.fill" : "person.badge.key")
@@ -114,6 +117,7 @@ struct HomeTabView: View {
                     Button(action: {
                         withAnimation(.default) {
                             selectedTab = 3
+                            HapticManager.shared.trigger(.lightImpact)
                         }
                     }) {
                         Image(systemName: selectedTab == 3 ? "gearshape.fill" : "gearshape")

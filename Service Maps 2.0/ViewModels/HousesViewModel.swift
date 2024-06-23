@@ -16,13 +16,18 @@ import MijickPopupView
 @MainActor
 class HousesViewModel: ObservableObject {
     
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
     private var cancellables = Set<AnyCancellable>()
     //@ObservedObject var databaseManager = RealmManager.shared
-    @Published var houseData: Optional<[HouseData]> = nil
+    @Published var houseData: Optional<[HouseData]> = nil {
+        didSet {
+            print(houseData)
+        }
+    }
+    
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     init(territoryAddress: TerritoryAddressModel, houseIdToScrollTo: String? = nil) {
         self.territoryAddress = territoryAddress
@@ -88,8 +93,10 @@ class HousesViewModel: ObservableObject {
 extension HousesViewModel {
     func getHouses(houseIdToScrollTo: String? = nil) {
         RealmManager.shared.getHouseData(addressId: territoryAddress.id)
+            .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
+                
                 if case .failure(let error) = completion {
                     // Handle errors here
                     print("Error retrieving territory data: \(error)")

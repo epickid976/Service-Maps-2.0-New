@@ -41,6 +41,8 @@ struct AccessView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
     
     var body: some View {
         GeometryReader { proxy in
@@ -75,11 +77,21 @@ struct AccessView: View {
                             } else {
                                 LazyVStack {
                                     SwipeViewGroup {
-                                        ForEach(viewModel.keyData!, id: \.id) { keyData in
-                                            NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
-                                                keyCell(keyData: keyData)
+                                        if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                ForEach(viewModel.keyData!, id: \.id) { keyData in
+                                                    NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
+                                                        keyCell(keyData: keyData)
+                                                    }
+                                                }.modifier(ScrollTransitionModifier())
                                             }
-                                        }.modifier(ScrollTransitionModifier())
+                                        } else {
+                                            ForEach(viewModel.keyData!, id: \.id) { keyData in
+                                                NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
+                                                    keyCell(keyData: keyData)
+                                                }.onTapHaptic(.lightImpact)
+                                            }.modifier(ScrollTransitionModifier())
+                                        }
                                     }
                                 }
                                 .animation(.spring(), value: viewModel.keyData)
@@ -89,114 +101,115 @@ struct AccessView: View {
                             }
                         }
                     }.hSpacing(.center)
-                    .background(GeometryReader {
-                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                    }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                        let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                        if ( abs(offsetDifference) > minimumOffset) {
-                            if offsetDifference > 0 {
-                                print("Is scrolling up toward top.")
-                               debounceHideFloatingButton(false)
-                            } else {
-                                print("Is scrolling down toward bottom.")
-                                debounceHideFloatingButton(true)
-                            }
-                            self.previousViewOffset = currentOffset
-                        }
-                    }
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
-                    .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                    .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                    .navigationDestination(isPresented: $viewModel.presentSheet) {
-                        AddKeyView(keyData: keydataToEdit) {
-                            synchronizationManager.startupProcess(synchronizing: true)
-                            keydataToEdit = nil
-                            DispatchQueue.main.async {
-                                viewModel.showAddedToast = true
-                            }
-                            
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                viewModel.showAddedToast = false
-                            }
-                        }.environment(\.mainWindowSize, mainWindowSize)
-                            .simultaneousGesture(
-                                // Hide the keyboard on scroll
-                                DragGesture().onChanged { _ in
-                                    UIApplication.shared.sendAction(
-                                        #selector(UIResponder.resignFirstResponder),
-                                        to: nil,
-                                        from: nil,
-                                        for: nil
-                                    )
+                        .background(GeometryReader {
+                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                            if ( abs(offsetDifference) > minimumOffset) {
+                                if offsetDifference > 0 {
+                                    print("Is scrolling up toward top.")
+                                    debounceHideFloatingButton(false)
+                                } else {
+                                    print("Is scrolling down toward bottom.")
+                                    debounceHideFloatingButton(true)
                                 }
-                            )
-                    }
+                                self.previousViewOffset = currentOffset
+                            }
+                        }
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
+                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
+                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
+                        .navigationDestination(isPresented: $viewModel.presentSheet) {
+                            AddKeyView(keyData: keydataToEdit) {
+                                synchronizationManager.startupProcess(synchronizing: true)
+                                keydataToEdit = nil
+                                DispatchQueue.main.async {
+                                    viewModel.showAddedToast = true
+                                }
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    viewModel.showAddedToast = false
+                                }
+                            }.environment(\.mainWindowSize, mainWindowSize)
+                                .simultaneousGesture(
+                                    // Hide the keyboard on scroll
+                                    DragGesture().onChanged { _ in
+                                        UIApplication.shared.sendAction(
+                                            #selector(UIResponder.resignFirstResponder),
+                                            to: nil,
+                                            from: nil,
+                                            for: nil
+                                        )
+                                    }
+                                )
+                        }
                     
                     //.scrollIndicators(.hidden)
-                    .navigationBarTitle("Keys", displayMode: .automatic)
-                    .navigationBarBackButtonHidden(true)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .topBarTrailing) {
-                            HStack {
-                                Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
-                                    .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                        .navigationBarTitle("Keys", displayMode: .automatic)
+                        .navigationBarBackButtonHidden(true)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .topBarTrailing) {
+                                HStack {
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                }
                             }
                         }
-                    }
-                    .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-                    .navigationViewStyle(StackNavigationViewStyle())
+                        .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                        .navigationViewStyle(StackNavigationViewStyle())
                 }
                 
                 .coordinateSpace(name: "scroll")
-                    .scrollIndicators(.hidden)
-                    .refreshable {
-                        synchronizationManager.startupProcess(synchronizing: true)
+                .scrollIndicators(.hidden)
+                .refreshable {
+                    synchronizationManager.startupProcess(synchronizing: true)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        hideFloatingButton = false
+                    }
+                }
+                .onChange(of: viewModel.dataStore.synchronized) { value in
+                    if value {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            hideFloatingButton = false
+                            viewModel.getKeys()
+                            viewModel.getKeyUsers()
                         }
                     }
-                    .onChange(of: viewModel.dataStore.synchronized) { value in
-                        if value {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                viewModel.getKeys()
-                                viewModel.getKeyUsers()
-                            }
-                        }
-                    }
+                }
                 if viewModel.isAdmin {
                     
-                        MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
-                            keydataToEdit = nil
-                            self.viewModel.presentSheet = true
-                        }
-                        .offset(y: hideFloatingButton ? 150 : 0)
-                        .animation(.spring(), value:hideFloatingButton)
-                        .vSpacing(.bottom).hSpacing(.trailing)
-                        .padding()
-                        .keyboardShortcut("+", modifiers: .command)
+                    MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
+                        keydataToEdit = nil
+                        self.viewModel.presentSheet = true
+                    }
+                    .offset(y: hideFloatingButton ? 150 : 0)
+                    .animation(.spring(), value:hideFloatingButton)
+                    .vSpacing(.bottom).hSpacing(.trailing)
+                    .padding()
+                    .keyboardShortcut("+", modifiers: .command)
                 }
             }
         }
     }
     
     private func debounceHideFloatingButton(_ hide: Bool) {
-            scrollDebounceCancellable?.cancel()
-            scrollDebounceCancellable = Just(hide)
+        scrollDebounceCancellable?.cancel()
+        scrollDebounceCancellable = Just(hide)
             .throttle(for: .milliseconds(0), scheduler: RunLoop.main, latest: true)
-                .sink { shouldHide in
-                    withAnimation {
-                        self.hideFloatingButton = shouldHide
-                    }
+            .sink { shouldHide in
+                withAnimation {
+                    self.hideFloatingButton = shouldHide
                 }
-        }
+            }
+    }
     
     @ViewBuilder
     func keyCell(keyData: KeyData) -> some View {
         SwipeView {
-            TokenCell(keyData: keyData)
+            TokenCell(keyData: keyData, ipad: UIDevice().userInterfaceIdiom == .pad)
                 .padding(.bottom, 2)
                 .contextMenu {
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
                         CentrePopup_DeleteKey(viewModel: viewModel).showAndStack()
                     } label: {
@@ -207,6 +220,7 @@ struct AccessView: View {
                     }
                     if viewModel.isAdmin {
                         Button {
+                            HapticManager.shared.trigger(.lightImpact)
                             DispatchQueue.main.async {
                                 keydataToEdit = keyData
                                 viewModel.presentSheet = true
@@ -220,6 +234,7 @@ struct AccessView: View {
                         }
                     }
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         let url = URL(string: getShareLink(id: keyData.key.id))
                         let territories = keyData.territories.map { String($0.number) }
                         
@@ -249,6 +264,7 @@ struct AccessView: View {
                 systemImage: "trash",
                 backgroundColor: .red
             ) {
+                HapticManager.shared.trigger(.lightImpact)
                 context.state.wrappedValue = .closed
                 CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)).showAndStack()
             }
@@ -261,6 +277,7 @@ struct AccessView: View {
                     systemImage: "pencil",
                     backgroundColor: .teal
                 ) {
+                    HapticManager.shared.trigger(.lightImpact)
                     context.state.wrappedValue = .closed
                     keydataToEdit = keyData
                     viewModel.presentSheet = true
@@ -276,7 +293,17 @@ struct AccessView: View {
                 backgroundColor: Color.green
             ) {
                 
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    HapticManager.shared.trigger(.lightImpact)
+                }
                 
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    HapticManager.shared.trigger(.lightImpact)
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    HapticManager.shared.trigger(.lightImpact)
+                }
                 
                 let url = URL(string: getShareLink(id: keyData.key.id))
                 let territories = keyData.territories.map { String($0.number) }
@@ -286,12 +313,16 @@ struct AccessView: View {
                 let av = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.40) {
+                    HapticManager.shared.trigger(.lightImpact)
                     UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
                     
                     if UIDevice.current.userInterfaceIdiom == .pad {
                         av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
                         av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
                     }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.50) {
+                    HapticManager.shared.trigger(.lightImpact)
                 }
                 
                 context.state.wrappedValue = .closed
@@ -416,7 +447,9 @@ struct AccessViewUsersView: View {
                                                         .contextMenu {
                                                             if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
                                                                 Button {
+                                                                    HapticManager.shared.trigger(.lightImpact)
                                                                     DispatchQueue.main.async {
+                                                                        
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                         //self.showAlert = true
                                                                         CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
@@ -435,6 +468,7 @@ struct AccessViewUsersView: View {
                                                             systemImage: "nosign",
                                                             backgroundColor: .pink.opacity(0.5)
                                                         ) {
+                                                            HapticManager.shared.trigger(.lightImpact)
                                                             DispatchQueue.main.async {
                                                                 context.state.wrappedValue = .closed
                                                                 self.viewModel.userToDelete = (keyData.userId, keyData.blocked ? "false" : "true")
@@ -449,6 +483,7 @@ struct AccessViewUsersView: View {
                                                             systemImage: "trash",
                                                             backgroundColor: .red
                                                         ) {
+                                                            HapticManager.shared.trigger(.lightImpact)
                                                             DispatchQueue.main.async {
                                                                 context.state.wrappedValue = .closed
                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)
@@ -476,6 +511,7 @@ struct AccessViewUsersView: View {
                                                                 .contextMenu {
                                                                     if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
                                                                         Button {
+                                                                            HapticManager.shared.trigger(.lightImpact)
                                                                             DispatchQueue.main.async {
                                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                                 //self.showAlert = true
@@ -495,6 +531,7 @@ struct AccessViewUsersView: View {
                                                                     systemImage: "arrowshape.turn.up.left.2",
                                                                     backgroundColor: .green.opacity(0.5)
                                                                 ) {
+                                                                    HapticManager.shared.trigger(.lightImpact)
                                                                     DispatchQueue.main.async {
                                                                         self.viewModel.userToDelete = (keyData.userId, keyData.blocked ? "false" : "true")
                                                                         //self.showAlert = true
@@ -509,6 +546,7 @@ struct AccessViewUsersView: View {
                                                                     systemImage: "trash",
                                                                     backgroundColor: .red
                                                                 ) {
+                                                                    HapticManager.shared.trigger(.lightImpact)
                                                                     DispatchQueue.main.async {
                                                                         context.state.wrappedValue = .closed
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
@@ -573,6 +611,7 @@ struct AccessViewUsersView: View {
                 .padding(.bottom, 2)
                 .contextMenu {
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             self.viewModel.userToDelete = (keyData.id, keyData.name)
                             //self.showAlert = true
@@ -591,6 +630,8 @@ struct AccessViewUsersView: View {
                     systemImage: "trash",
                     backgroundColor: .red
                 ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    
                     DispatchQueue.main.async {
                         context.state.wrappedValue = .closed
                         self.viewModel.userToDelete = (keyData.id, keyData.name)
@@ -638,6 +679,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 dismiss()
                                 
@@ -647,6 +689,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
@@ -654,6 +697,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                             if self.keyToDelete.0 != nil && self.keyToDelete.1 != nil {
                                 switch await self.viewModel.deleteKey(key: self.keyToDelete.0 ?? "") {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         withAnimation {
                                             self.viewModel.loading = false
@@ -668,6 +712,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                                         }
                                     }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }
@@ -727,6 +772,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 dismiss()
                                 self.viewModel.userToDelete = (nil,nil)
@@ -736,6 +782,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
@@ -743,6 +790,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                             if self.viewModel.userToDelete.0 != nil && self.viewModel.userToDelete.1 != nil {
                                 switch await self.viewModel.deleteUser(user: self.viewModel.userToDelete.0 ?? "") {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         withAnimation {
                                             self.viewModel.loading = false
@@ -757,6 +805,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                                         }
                                     }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }
@@ -816,6 +865,7 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 dismiss()
                                 self.viewModel.userToDelete = (nil,nil)
@@ -826,6 +876,7 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: "\(viewModel.userToDelete.1 == "true" ? NSLocalizedString("Block", comment: "") : NSLocalizedString("Unblock", comment: ""))", color: viewModel.userToDelete.1 == "true" ? .red : .green) {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
@@ -833,6 +884,7 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                             if self.viewModel.userToDelete.0 != nil && self.viewModel.userToDelete.1 != nil {
                                 switch await self.viewModel.blockUnblockUserFromToken() {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     //SynchronizationManager.shared.startupProcess(synchronizing: true)
                                     withAnimation {
                                         
@@ -842,7 +894,7 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                                         }
                                         //self.viewModel.showAlert = false
                                         dismiss()
-                                       
+                                        
                                         if viewModel.userToDelete.1 == "true" {
                                             self.viewModel.showUserBlockAlert = true
                                         } else {
@@ -856,6 +908,7 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                                         self.viewModel.userToDelete = (nil,nil)
                                     }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }

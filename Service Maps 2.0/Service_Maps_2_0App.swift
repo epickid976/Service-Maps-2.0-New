@@ -154,3 +154,21 @@ struct Service_Maps_2_0App: App {
     
     
 }
+
+private struct ColumnViewPreferenceKey: EnvironmentKey {
+    static let defaultValue = true // Default to column view on
+}
+
+extension EnvironmentValues {
+    var columnViewPreference: Bool {
+        get { self[ColumnViewPreferenceKey.self] }
+        set { self[ColumnViewPreferenceKey.self] = newValue }
+    }
+}
+
+class ColumnViewModel: ObservableObject {
+    @AppStorage("columnViewPreference") var isColumnViewEnabled = true // Use @AppStorage for UserDefaults
+
+    @AppStorage("hapticFeedback") var hapticFeedback = true // Use @AppStorage for UserDefaults
+    // Add any other relevant view logic here
+}

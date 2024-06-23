@@ -57,7 +57,8 @@ struct WelcomeView: View {
                         Capsule()
                             .stroke(Color.gray, lineWidth: 2)
                     )
-                }
+                }.onTapHaptic(.lightImpact)
+                
                 .buttonStyle(.automatic)
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
@@ -70,7 +71,7 @@ struct WelcomeView: View {
                         .frame(maxWidth: .infinity)
                         .fontWeight(.heavy)
                     
-                }
+                }.onTapHaptic(.lightImpact)
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)

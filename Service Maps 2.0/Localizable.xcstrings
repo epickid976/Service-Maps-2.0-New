@@ -4,6 +4,9 @@
     "" : {
 
     },
+    "-" : {
+
+    },
     "(getElapsedMinutes()) minute(s)" : {
       "localizations" : {
         "es" : {
@@ -126,6 +129,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ Usuario"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Utilisateur"
           }
         }
       }
@@ -745,9 +754,6 @@
         }
       }
     },
-    "Date: %@" : {
-
-    },
     "Date: N/A" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1033,6 +1039,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Description"
+          }
+        }
+      }
+    },
+    "Dismiss" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retourner"
           }
         }
       }
@@ -1829,6 +1851,22 @@
         }
       }
     },
+    "Haptics" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibraciones"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vibrations"
+          }
+        }
+      }
+    },
     "House" : {
       "localizations" : {
         "es" : {
@@ -1905,6 +1943,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les informations d'identification sont incorrects"
+          }
+        }
+      }
+    },
+    "iPad Column View" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vista de Columna"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vue de Colonne sur iPad"
           }
         }
       }
@@ -2139,6 +2193,16 @@
         }
       }
     },
+    "Menu" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menu"
+          }
+        }
+      }
+    },
     "name" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2210,6 +2274,9 @@
         }
       }
     },
+    "No address selected" : {
+
+    },
     "No Data" : {
       "localizations" : {
         "es" : {
@@ -2225,6 +2292,9 @@
           }
         }
       }
+    },
+    "No house selected" : {
+
     },
     "No internet connection" : {
       "localizations" : {
@@ -2270,6 +2340,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pas de connexion à internet. Réessayez plus tard."
+          }
+        }
+      }
+    },
+    "No Notes" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de notes"
           }
         }
       }
@@ -2866,7 +2946,20 @@
       }
     },
     "Review App" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Evaluar la aplicación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Évaluer l'application"
+          }
+        }
+      }
     },
     "Save" : {
       "extractionState" : "manual",
@@ -3138,6 +3231,7 @@
       }
     },
     "Symbol: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {

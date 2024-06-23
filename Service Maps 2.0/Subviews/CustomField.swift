@@ -14,6 +14,7 @@ struct CustomField: View {
     var isFocused: FocusState<Bool>.Binding // Use FocusState for focus state
     var textfield: Bool
     var keyboardType: UIKeyboardType?
+    var keyboardContentType: UITextContentType?
     var textAlignment: TextAlignment?
     var textfieldAxis: Axis?
     @State var disabled: Bool?
@@ -43,6 +44,14 @@ struct CustomField: View {
                 .keyboardType(keyboardType ?? .default)
                 .multilineTextAlignment(textAlignment ?? .leading)
                 .frame(minHeight: 60)
+                .optionalViewModifier { content in
+                    if keyboardContentType != nil {
+                        content
+                            .textContentType(keyboardContentType!)
+                    } else {
+                        content
+                    }
+                }
                 .optionalViewModifier { content in
                     if formatAsPhone != nil {
                         if formatAsPhone! {

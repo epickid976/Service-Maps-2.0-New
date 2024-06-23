@@ -100,6 +100,7 @@ struct AdminLoginView: View {
                         // Handle tap action
                         emailFocus = true
                     })
+                    .textContentType(.username)
                 Text("Congregation Password")
                     .font(.headline)
                     .fontWeight(.semibold)
@@ -122,6 +123,7 @@ struct AdminLoginView: View {
                 
                 VStack {
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         openMail(emailTo: "epickid976@gmail.com",
                                      subject: "Congregation Login Creation Request",
                                      body: "")
@@ -137,11 +139,12 @@ struct AdminLoginView: View {
                 HStack {
                     if synchronizationManager.startupState != .AdminLogin {
                         if !loading {
-                            CustomBackButton() { dismiss() }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                            CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
                         }
                     }
                     
                     Button {
+                        HapticManager.shared.trigger(.lightImpact)
                         let validation = validate()
                         if validation {
                             Task {
@@ -151,6 +154,7 @@ struct AdminLoginView: View {
                                 
                                 switch await AuthenticationManager().signInAdmin(congregationSignInForm: CongregationSignInForm(id: Int64(username) ?? 0, password: password)) {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                         withAnimation {
                                             loading = false
@@ -158,6 +162,7 @@ struct AdminLoginView: View {
                                         onDone()
                                     }
                                 case .failure(let error):
+                                    HapticManager.shared.trigger(.error)
                                     if error.localizedDescription == "No Internet" {
                                         alertTitle = "No Internet Connection"
                                         alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
@@ -203,6 +208,7 @@ struct AdminLoginView: View {
                                 
                             }
                         } else {
+                            HapticManager.shared.trigger(.error)
                             withAnimation {
                                 loginError = true
                             }
@@ -253,6 +259,7 @@ struct AdminLoginView: View {
                 Spacer()
                 
                 Button("Done"){
+                    HapticManager.shared.trigger(.lightImpact)
                     DispatchQueue.main.async {
                         emailFocus = false
                         passwordFocus = false

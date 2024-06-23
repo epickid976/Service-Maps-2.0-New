@@ -18,7 +18,6 @@ import MijickPopupView
 
 
 struct TerritoryView: View {
-    
     @Environment(\.dismissSearch) private var dismissSearch
     
     @StateObject var viewModel: TerritoryViewModel
@@ -46,6 +45,8 @@ struct TerritoryView: View {
     let minimumOffset: CGFloat = 60
     
     @State private var highlightedTerritoryId: String?
+    
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
     
     //@Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
@@ -76,17 +77,17 @@ struct TerritoryView: View {
                                 }
                             } else {
                                 if viewModel.territoryData!.isEmpty {
-                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 250, height: 250)
-                                        } else {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 350, height: 350)
-                                        }
+                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                        LottieView(animation: .named("nodatapreview"))
+                                            .playing()
+                                            .resizable()
+                                            .frame(width: 250, height: 250)
+                                    } else {
+                                        LottieView(animation: .named("nodatapreview"))
+                                            .playing()
+                                            .resizable()
+                                            .frame(width: 350, height: 350)
+                                    }
                                     
                                     
                                 } else {
@@ -108,28 +109,46 @@ struct TerritoryView: View {
                                                             ForEach(viewModel.recentTerritoryData!, id: \.self) { territoryData in
                                                                 NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
                                                                     recentCell(territoryData: territoryData, mainWindowSize: proxy.size)
-                                                                }
+                                                                }.onTapHaptic(.lightImpact)
                                                             }
                                                         }
                                                     }.padding(.leading)
                                                     
                                                 }.modifier(ScrollTransitionModifier())
-                                                .animation(.default, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                                    .animation(.default, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
                                             }
                                         }
                                         
-                                        LazyVStack {
-                                            SwipeViewGroup {
-                                                ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
-                                                                territoryHeader(dataWithKeys: dataWithKeys)
-                                                                ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                                                                    territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                        .id(territoryData.territory.id)
-                                                                        
-                                                                }
-                                                }.modifier(ScrollTransitionModifier())
-                                            }
-                                        }.animation(.default, value: viewModel.territoryData!)
+                                        
+                                        SwipeViewGroup {
+                                            ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
+                                                if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                        territoryHeader(dataWithKeys: dataWithKeys)
+                                                            .modifier(ScrollTransitionModifier())
+                                                        ForEach(dataWithKeys.territoriesData, id: \.self) { territoryData in
+                                                            territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
+                                                                .id(territoryData.territory.id)
+                                                                .modifier(ScrollTransitionModifier())
+                                                                .transition(.customBackInsertion)
+                                                        }//.animation(.spring(), value: dataWithKeys.territoriesData)
+                                                    }
+                                                } else {
+                                                    LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                        territoryHeader(dataWithKeys: dataWithKeys)
+                                                            .modifier(ScrollTransitionModifier())
+                                                        ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+                                                            territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
+                                                                .id(territoryData.territory.id)
+                                                                .modifier(ScrollTransitionModifier())
+                                                                .transition(.customBackInsertion)
+                                                        }//.animation(.spring(), value: dataWithKeys.territoriesData)
+                                                    }
+                                                }
+                                            }.animation(.spring(), value: viewModel.territoryData!)
+                                            
+                                        }
+                                        
                                     }
                                 }
                             }
@@ -155,7 +174,11 @@ struct TerritoryView: View {
                         .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .navigationDestination(isPresented: $viewModel.presentSheet) {
                             AddTerritoryView(territory: viewModel.currentTerritory) {
-                                synchronizationManager.startupProcess(synchronizing: true)
+                                DispatchQueue.main.async {
+                                    withAnimation {
+                                        viewModel.getTerritories()
+                                    }
+                                }
                                 DispatchQueue.main.async {
                                     viewModel.showAddedToast = true
                                 }
@@ -175,7 +198,7 @@ struct TerritoryView: View {
                             ToolbarItemGroup(placement: .topBarLeading) {
                                 HStack {
                                     if viewModel.territoryIdToScrollTo != nil {
-                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                 presentationMode.wrappedValue.dismiss()
                                             }
@@ -186,16 +209,16 @@ struct TerritoryView: View {
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing"); synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                     if viewModel.territoryIdToScrollTo == nil {
-                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                 searchViewDestination = true
                                             }
                                         }).keyboardShortcut(.delete, modifiers: .command)
                                             .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                     }
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 }
                             }
                             
@@ -215,17 +238,18 @@ struct TerritoryView: View {
                         .onChange(of: viewModel.territoryIdToScrollTo) { id in
                             if let id = id {
                                 
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        withAnimation {
-                                            scrollViewProxy.scrollTo(id, anchor: .center)
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                                highlightedTerritoryId = id // Highlight after scrolling
-                                            }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                highlightedTerritoryId = nil
-                                            }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    withAnimation {
+                                        scrollViewProxy.scrollTo(id, anchor: .center)
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            highlightedTerritoryId = id // Highlight after scrolling
+                                            HapticManager.shared.trigger(.selectionChanged)
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            highlightedTerritoryId = nil
                                         }
                                     }
+                                }
                                 
                             }
                         }
@@ -237,7 +261,7 @@ struct TerritoryView: View {
                             }
                         }
                     
-                        
+                    
                 }
                 
                 if AuthorizationLevelManager().existsAdminCredentials() {
@@ -256,28 +280,28 @@ struct TerritoryView: View {
     }
     
     @ViewBuilder
-        func territoryHeader(dataWithKeys: TerritoryDataWithKeys) -> some View {
-            if !dataWithKeys.keys.isEmpty {
-                Text(self.viewModel.processData(dataWithKeys: dataWithKeys))
-                    .font(.title2)
-                    .lineLimit(1)
-                    .foregroundColor(.primary)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(5)
-                    .padding(.horizontal, 10)
-            } else {
-                Spacer()
-                    .frame(height: 20)
-            }
+    func territoryHeader(dataWithKeys: TerritoryDataWithKeys) -> some View {
+        if !dataWithKeys.keys.isEmpty {
+            Text(self.viewModel.processData(dataWithKeys: dataWithKeys))
+                .font(.title2)
+                .lineLimit(1)
+                .foregroundColor(.primary)
+                .fontWeight(.bold)
+                .hSpacing(.leading)
+                .padding(5)
+                .padding(.horizontal, 10)
+        } else {
+            Spacer()
+                .frame(height: 20)
         }
+    }
     
     @ViewBuilder
     func territoryCell(dataWithKeys: TerritoryDataWithKeys, territoryData: TerritoryData, mainViewSize: CGSize) -> some View {
         LazyVStack {
             SwipeView {
                 NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
-                    CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize)
+                    CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize).id(territoryData.territory.id)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16) // Same shape as the cell
                                 .fill(highlightedTerritoryId == territoryData.territory.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedTerritoryId == territoryData.territory.id) // Fill with transparent gray if highlighted
@@ -288,6 +312,7 @@ struct TerritoryView: View {
                                 content
                                     .contextMenu {
                                         Button {
+                                            HapticManager.shared.trigger(.lightImpact)
                                             DispatchQueue.main.async {
                                                 self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
                                                 CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).showAndStack()
@@ -300,6 +325,7 @@ struct TerritoryView: View {
                                         }
                                         
                                         Button {
+                                            HapticManager.shared.trigger(.lightImpact)
                                             self.viewModel.currentTerritory = territoryData.territory
                                             self.viewModel.presentSheet = true
                                         } label: {
@@ -313,13 +339,14 @@ struct TerritoryView: View {
                                 content
                             }
                         }
-                }
+                }.onTapHaptic(.lightImpact)
             } trailingActions: { context in
                 if territoryData.accessLevel == .Admin {
                     SwipeAction(
                         systemImage: "trash",
                         backgroundColor: .red
                     ) {
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             context.state.wrappedValue = .closed
                             self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
@@ -335,6 +362,7 @@ struct TerritoryView: View {
                         systemImage: "pencil",
                         backgroundColor: Color.teal
                     ) {
+                        HapticManager.shared.trigger(.lightImpact)
                         context.state.wrappedValue = .closed
                         self.viewModel.currentTerritory = territoryData.territory
                         self.viewModel.presentSheet = true
@@ -352,7 +380,7 @@ struct TerritoryView: View {
             .swipeMinimumDistance(territoryData.accessLevel != .User ? 25 : 1000)
         }.padding(.horizontal, 15)
     }
-
+    
 }
 
 
@@ -379,6 +407,7 @@ struct MainButton: View {
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
+                    HapticManager.shared.trigger(.lightImpact)
                     isPressed = true
                 }
                 .onEnded { _ in
@@ -450,6 +479,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 //self.viewModel.showAlert = false
                                 dismiss()
@@ -460,6 +490,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
@@ -467,7 +498,12 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                             if self.viewModel.territoryToDelete.0 != nil && self.viewModel.territoryToDelete.1 != nil {
                                 switch await self.viewModel.deleteTerritory(territory: self.viewModel.territoryToDelete.0 ?? "") {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
+                                    DispatchQueue.main.async {
+                                        viewModel.getTerritories()
+                                    }
                                     withAnimation {
+                                        
                                         withAnimation {
                                             self.viewModel.loading = false
                                         }
@@ -480,6 +516,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                                         }
                                     }
                                 case .failure(_):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }
@@ -528,5 +565,17 @@ struct ScrollTransitionModifier: ViewModifier {
                 content
             }
         }
+    }
+}
+
+extension AnyTransition {
+    static var customBackInsertion: AnyTransition {
+        AnyTransition.asymmetric(
+            insertion: AnyTransition.opacity
+                .combined(with: .scale(scale: 0.8, anchor: .center))
+                .combined(with: .move(edge: .bottom)),
+            removal: .opacity
+        )
+        .animation(.spring())
     }
 }

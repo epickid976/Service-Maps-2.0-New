@@ -19,6 +19,19 @@ class SynchronizationManager: ObservableObject {
     @Published var startupState: StartupState = .Unknown
     
     private var loaded = false
+    private var timer: Timer?
+    
+    func startSyncAndHaptics() {
+        HapticManager.shared.trigger(.lightImpact)
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            guard let self = self, !self.dataStore.synchronized else {
+                self?.timer?.invalidate()
+                return
+            }
+            HapticManager.shared.trigger(.lightImpact)
+        }
+    }
     
     func startupProcess(synchronizing: Bool, clearSynchronizing: Bool = false) {
         //allData()
@@ -105,6 +118,7 @@ class SynchronizationManager: ObservableObject {
     func synchronize() async {
         //databaseManager.refreshAll()
         dataStore.synchronized = false
+        startSyncAndHaptics()
         guard let realmDatabase = try? await Realm() else {
             print("REALM FAILED")
             return

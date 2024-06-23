@@ -49,11 +49,13 @@ struct RegisterKeyView: View {
                 HStack {
                     
                     CustomBackButton(showImage: true, text: "Cancel") {
+                        HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             UniversalLinksManager.shared.resetLink()
                         }
                     }.hSpacing(.trailing)
                     CustomButton(loading: loading, alwaysExpanded: true, title: "Retry", action: {
+                        HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             withAnimation { self.loading = true }
                         }
@@ -61,12 +63,14 @@ struct RegisterKeyView: View {
                             if viewModel.universalLinksManager.determineDestination() == .RegisterKeyView {
                                 switch await viewModel.registerKey() {
                                 case .success(_):
+                                    HapticManager.shared.trigger(.success)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         withAnimation { self.loading = false}
                                         UniversalLinksManager.shared.resetLink()
                                         SynchronizationManager.shared.startupProcess(synchronizing: true)
                                     }
                                 case .failure(let error):
+                                    HapticManager.shared.trigger(.error)
                                     withAnimation { self.loading = false}
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                         if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
@@ -93,6 +97,7 @@ struct RegisterKeyView: View {
         .navigationTransition(.zoom.combined(with: .fade(.in)))
         .navigationViewStyle(StackNavigationViewStyle())
         .onAppear {
+            HapticManager.shared.trigger(.impact)
             Task {
                 DispatchQueue.main.async {
                     self.loading = true
@@ -100,13 +105,14 @@ struct RegisterKeyView: View {
                 }
                 switch await viewModel.registerKey() {
                 case .success(_):
+                    HapticManager.shared.trigger(.success)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         withAnimation { self.loading = false}
                         UniversalLinksManager.shared.resetLink()
                         SynchronizationManager.shared.startupProcess(synchronizing: true)
                     }
                 case .failure(let error):
-                    
+                    HapticManager.shared.trigger(.error)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         withAnimation { self.loading = false}
                         if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {

@@ -170,17 +170,40 @@ struct SearchView: View {
 struct MySearchResultItem: View {
     var data: MySearchResult
     var mainWindowSize: CGSize
+    @ObservedObject var houseViewModel: HousesViewModel {
+        didSet {
+            houseViewModel.getHouses()
+        }
+    }
+    @State var index = 0
+    
+    init(data: MySearchResult, mainWindowSize: CGSize) {
+        self.data = data
+        self.mainWindowSize = mainWindowSize
+        if data.house != nil {
+            let houseViewModel = HousesViewModel(territoryAddress: data.address!)
+            
+            
+            self._houseViewModel = ObservedObject(initialValue: houseViewModel)
+            
+            
+        } else {
+            let houseViewModel = HousesViewModel(territoryAddress: TerritoryAddressModel(id: "", territory: "", address: "", created_at: "", updated_at: ""))
+            houseViewModel.getHouses()
+            self._houseViewModel = ObservedObject(initialValue: houseViewModel)
+        }
+    }
     
     var body: some View {
         VStack {
             switch data.type {
             case .Territory:
-                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).bold()
+                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(TerritoryView(territoryIdToScrollTo: data.territory!.id).implementPopupView()).implementPopupView()) {
                     CellView(territory: data.territory!, houseQuantity: 0, mainWindowSize: mainWindowSize)
-                }
+                }.onTapHaptic(.lightImpact)
             case .Address:
-                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).bold()
+                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: data.territory!, territoryAddressIdToScrollTo: data.address!.id).implementPopupView()).implementPopupView()) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
@@ -192,7 +215,7 @@ struct MySearchResultItem: View {
                             Text("Doors: \(AddressData(id: ObjectIdentifier(TerritoryAddressObject().createTerritoryAddressObject(from: data.address!)), address: data.address!, houseQuantity: 0, accessLevel: .User).houseQuantity)")
                                 .font(.body)
                                 .lineLimit(5)
-                                .foregroundColor(.primary)
+                                .foregroundColor(.secondary)
                                 .fontWeight(.bold)
                                 .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)
@@ -204,24 +227,25 @@ struct MySearchResultItem: View {
                     .frame(minWidth: mainWindowSize.width * 0.95)
                     .background(.thinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                }
+                }.onTapHaptic(.lightImpact)
             case .House:
-                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).bold()
+                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(HousesView(address: data.address!, houseIdToScrollTo: data.house!.id).implementPopupView()).implementPopupView()) {
-                    HouseCell(house: HouseData(id: UUID(), house: data.house!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: HouseObject().createHouseObject(from: data.house!)) ?? .User), mainWindowSize: mainWindowSize)
-                }
+                    
+                    HouseCell(house: HouseData(id: UUID(), house: data.house!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: HouseObject().createHouseObject(from: data.house!)) ?? .User), mainWindowSize: mainWindowSize).id(data.house!.id)
+                }.onTapHaptic(.lightImpact)
             case .Visit:
-                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).bold()
-                NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!, visitIdToScrollTo: data.visit!.id).implementPopupView()).implementPopupView()) {
+                Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
+                NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!, visitIdToScrollTo: data.visit!.id)).implementPopupView()) {
                     VisitCell(visit: VisitData(id: UUID(), visit: data.visit!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: VisitObject().createVisitObject(from: data.visit!)) ?? .User))
-                }
+                }.onTapHaptic(.lightImpact)
             case .PhoneTerritory:
-                Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()
+                Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(PhoneTerritoriesScreen(phoneTerritoryToScrollTo: data.phoneTerritory!.id).implementPopupView()).implementPopupView()) {
                     PhoneTerritoryCellView(territory: data.phoneTerritory!, numbers: 0, mainWindowSize: mainWindowSize)
-                }
+                }.onTapHaptic(.lightImpact)
             case .Number:
-                Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()
+                Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: data.phoneTerritory!, phoneNumberToScrollTo: data.number!.id).implementPopupView()).implementPopupView()) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
@@ -233,7 +257,7 @@ struct MySearchResultItem: View {
                             Text("House: \(PhoneNumbersData(id: UUID(), phoneNumber: data.number!, phoneCall: nil).phoneNumber.house ?? "N/A")")
                                 .font(.body)
                                 .lineLimit(5)
-                                .foregroundColor(.primary)
+                                .foregroundColor(.secondary)
                                 .fontWeight(.bold)
                                 .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)
@@ -270,12 +294,12 @@ struct MySearchResultItem: View {
                     .frame(minWidth: mainWindowSize.width * 0.95)
                     .background(.thinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                }
+                }.onTapHaptic(.lightImpact)
             case .Call:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()
                 NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: data.number!, callToScrollTo: data.call!.id).implementPopupView()).implementPopupView()) {
                     CallCell(call: PhoneCallData(id: UUID(), phoneCall: data.call!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: PhoneCallObject().createTerritoryObject(from: data.call!)) ?? .User))
-                }
+                }.onTapHaptic(.lightImpact)
             }
         }
     }
