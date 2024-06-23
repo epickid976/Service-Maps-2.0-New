@@ -70,10 +70,10 @@ class SignupViewModel: ObservableObject {
             return false
         }
         
-        if self.password.count < 8 {
+        if self.password.count < 6 {
             DispatchQueue.main.async {
                 withAnimation {
-                    self.loginErrorText =  NSLocalizedString("Password must be more than 8 characters.", comment: "")
+                    self.loginErrorText =  NSLocalizedString("Password must be more than 6 characters.", comment: "")
                     self.loginError = true
                 }
             }
