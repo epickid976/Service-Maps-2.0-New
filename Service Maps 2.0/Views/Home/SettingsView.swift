@@ -193,6 +193,7 @@ struct SettingsView: View {
                             Image(systemName: "iphone.homebutton.radiowaves.left.and.right")
                                 .imageScale(.large)
                                 .padding(.horizontal)
+                                .foregroundColor(.blue)
                             Text("Haptics")
                                 .font(.title3)
                                 .lineLimit(1)
