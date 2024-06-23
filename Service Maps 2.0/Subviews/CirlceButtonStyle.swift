@@ -40,6 +40,8 @@ struct CircleButtonStyle: ButtonStyle {
                     if #available(iOS 17, *) {
                         content
                             .symbolEffect(.bounce, options: .speed(3.0), value: animation)
+                    } else {
+                    	content
                     }
                 }
             )
