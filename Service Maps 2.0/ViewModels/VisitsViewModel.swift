@@ -93,12 +93,13 @@ extension VisitsViewModel {
                 }
             }, receiveValue: { visitData in
                     DispatchQueue.main.async {
-                        self.visitData = visitData
-                        
+                        let data = visitData.sorted { $0.visit.date > $1.visit.date }
+                       
                         if let  latestVisit = visitData.sorted(by: { $0.visit.date > $1.visit.date }).first?.visit {
                             self.latestVisitUpdatePublisher.send(latestVisit)
                         }
                         
+                        self.visitData = data
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             if let visitIdToScrollTo = visitIdToScrollTo {
                                 self.visitIdToScrollTo = visitIdToScrollTo

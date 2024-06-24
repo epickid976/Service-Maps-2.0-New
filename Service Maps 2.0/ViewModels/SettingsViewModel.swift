@@ -89,36 +89,20 @@ class SettingsViewModel: ObservableObject {
                         .foregroundColor(.primary)
                         .fontWeight(.heavy)
                         .hSpacing(.leading)
+                        
                     Text(dataStore.userEmail ?? "NO EMAIL")
                         .font(.subheadline)
                         .lineLimit(4)
                         .foregroundColor(.primary)
                         .fontWeight(.heavy)
                         .hSpacing(.leading)
+                        
                 }
                 
-                VStack {
-                    Button {
-                        HapticManager.shared.trigger(.lightImpact)
-                        self.showEditNamePopup = true
-                    } label: {
-                        Circle()
-                            .fill(Material.ultraThin)
-                            .overlay(Image(systemName: "pencil")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.primary)
-                                .padding(12)
-                            )
-                            .frame(width: 40, height: 40)
-                    }
-                }
+                    
             }
             
-            Text(errorText)
-                .fontWeight(.bold)
-                .foregroundColor(.red)
-                .vSpacing(.bottom)
+            
             
             
             CustomButton(loading: loading, title: NSLocalizedString("Logout", comment: "")) {
@@ -142,6 +126,12 @@ class SettingsViewModel: ObservableObject {
                     }
                 }
             }
+            
+            Text(errorText)
+                .fontWeight(.bold)
+                .foregroundColor(.red)
+                .vSpacing(.bottom)
+            
         }.padding(.bottom)
             .frame(maxWidth: .infinity)
     }
@@ -350,7 +340,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }.keyboardShortcut("j", modifiers: .command)
+            }//.keyboardShortcut("j", modifiers: .command)
             .frame(minHeight: 50)
             
             Button {
@@ -370,7 +360,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }.keyboardShortcut("p", modifiers: .command)
+            }//.keyboardShortcut("p", modifiers: .command)
             .frame(minHeight: 50)
             
             
@@ -391,7 +381,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }.keyboardShortcut("a", modifiers: [.command, .shift])
+            }//.keyboardShortcut("a", modifiers: [.command, .shift])
             .frame(minHeight: 50)
             
             Button {
@@ -412,7 +402,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }.keyboardShortcut("a", modifiers: [.command, .shift])
+            }//.keyboardShortcut("a", modifiers: [.command, .shift])
             .frame(minHeight: 50)
             
             Button {
@@ -475,7 +465,7 @@ class SettingsViewModel: ObservableObject {
                     .hSpacing(.trailing)
                     .frame(maxWidth: 70)
                 }
-            }.keyboardShortcut("u", modifiers: [.command, .shift])
+            }//.keyboardShortcut("u", modifiers: [.command, .shift])
             .frame(minHeight: 50)
         }
         .padding(10)

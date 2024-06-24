@@ -387,6 +387,41 @@ class DataUploaderManager: ObservableObject {
     }
     
     @MainActor
+    func editToken(token: String, territories: [TerritoryObject]) async -> Result<Bool, Error> {
+        do {
+            var territoriesToSend = [String]()
+            territories.forEach { territory in
+                territoriesToSend.append(territory.id)
+            }
+            
+            try await tokenApi.editToken(tokenId: token, territories: territoriesToSend.description)
+            
+            var tokenTerritories = [TokenTerritoryObject]()
+            
+            tokenTerritoryEntities.forEach { oldTokenTerritory in
+                if token == oldTokenTerritory.token {
+                    _ = realmManager.deleteTokenTerritory(tokenTerritory: oldTokenTerritory)
+                }
+            }
+            
+            territories.forEach { territory in
+                let newTokenTerritory = TokenTerritoryObject()
+                newTokenTerritory.token = token
+                newTokenTerritory.territory = territory.id
+                tokenTerritories.append(newTokenTerritory)
+            }
+            
+            tokenTerritories.forEach { tokenTerritory in
+                _ = realmManager.addModel(tokenTerritory)
+            }
+            
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
     func deleteToken(myToken: String) async -> Result<Bool, Error> {
         do {
             let realm = try! await Realm()
@@ -507,9 +542,7 @@ class DataUploaderManager: ObservableObject {
             let realm = try! await Realm()
             if let territoryToDelete = realm.objects(PhoneTerritoryObject.self).filter("id == %d", phoneTerritory).first {
                 try await adminApi.deletePhoneTerritory(territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territoryToDelete))
-                DispatchQueue.main.async {
-                    self.synchronizationManager.startupProcess(synchronizing: true)
-                }
+                realmManager.deletePhoneTerritory(phoneTerritory: territoryToDelete)
                 return Result.success(true)
             }
             
@@ -661,40 +694,7 @@ class DataUploaderManager: ObservableObject {
         }
     }
     
-    @MainActor
-    func editToken(token: String, territories: [TerritoryObject]) async -> Result<Bool, Error> {
-        do {
-            var territoriesToSend = [String]()
-            territories.forEach { territory in
-                territoriesToSend.append(territory.id)
-            }
-            
-            try await tokenApi.editToken(tokenId: token, territories: territoriesToSend.description)
-            
-            var tokenTerritories = [TokenTerritoryObject]()
-            
-            tokenTerritoryEntities.forEach { oldTokenTerritory in
-                if token == oldTokenTerritory.token {
-                    _ = realmManager.deleteTokenTerritory(tokenTerritory: oldTokenTerritory)
-                }
-            }
-            
-            territories.forEach { territory in
-                let newTokenTerritory = TokenTerritoryObject()
-                newTokenTerritory.token = token
-                newTokenTerritory.territory = territory.id
-                tokenTerritories.append(newTokenTerritory)
-            }
-            
-            tokenTerritories.forEach { tokenTerritory in
-                _ = realmManager.addModel(tokenTerritory)
-            }
-            
-            return Result.success(true)
-        } catch {
-            return Result.failure(error)
-        }
-    }
+    
     
     @MainActor
     func blockUnblockUserFromToken(userToken: String, blocked: Bool) async -> Result<Bool, Error> {

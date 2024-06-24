@@ -52,7 +52,7 @@ struct CellView: View {
                     Text("Doors: \(houseQuantity)")
                         .font(.body)
                         .lineLimit(2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.secondaryLabel)
                         .fontWeight(.bold)
                 }.padding(10)
                 .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
@@ -116,7 +116,7 @@ struct PhoneTerritoryCellView: View {
                 Text("Phone Numbers: \(numbers)")
                     .font(.body)
                     .lineLimit(2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.secondaryLabel)
                     .fontWeight(.bold)
             }.padding(10)
             .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
@@ -170,7 +170,7 @@ struct recentCell: View {
             
             Text("\(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(territoryData.lastVisit.date) / 1000), withTime: false))")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.secondary)
+                .foregroundColor(.secondaryLabel)
                 .frame(width: mainWindowSize.width * 0.20, alignment: .center)
                 .lineLimit(2)
         }
@@ -207,7 +207,7 @@ struct recentPhoneCell: View {
             
             Text("\(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(territoryData.lastCall.date) / 1000), withTime: false))")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.secondary)
+                .foregroundColor(.secondaryLabel)
                 .frame(width: mainWindowSize.width * 0.20, alignment: .center)
                 .lineLimit(2)
         }

@@ -38,7 +38,7 @@ struct PrivacyPolicy: View {
                                 universalLinksManager.resetLink()
                             }
                         })
-                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 39, height: 39, progress: $progress, animation: $backAnimation)).keyboardShortcut("\r", modifiers: [.command, .shift])
+                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 39, height: 39, progress: $progress, animation: $backAnimation))//.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                 }
             }

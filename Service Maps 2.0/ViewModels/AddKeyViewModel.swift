@@ -99,7 +99,7 @@ class AddKeyViewModel: ObservableObject {
                         self.selectedTerritories.append(territoryData)
                     }
                 }
-            CellView(territory: territoryData.territory., houseQuantity: territoryData.housesQuantity, width: 0.8, mainWindowSize: mainWindowSize)
+            CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, width: 0.8, mainWindowSize: mainWindowSize)
                 .padding(2)
                 .onTapGesture {
                     HapticManager.shared.trigger(.selectionChanged)

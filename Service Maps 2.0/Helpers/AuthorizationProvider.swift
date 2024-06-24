@@ -11,7 +11,7 @@ import SwiftUI
 class AuthorizationProvider: ObservableObject {
     let defaults = UserDefaults.standard
     
-    init() {
+    private init() {
         self.authorizationToken = defaults.string(forKey: authorizationTokenKey)
         self.token = defaults.string(forKey: tokenKey)
         self.congregationId = Int64(defaults.integer(forKey: congregationIdKey))

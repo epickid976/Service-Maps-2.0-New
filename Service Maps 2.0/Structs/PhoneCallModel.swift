@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import ModifiedCopy
 
+@Copyable
 struct PhoneCallModel: Codable, Equatable, Hashable, Identifiable{
     var id: String
     var phonenumber: String

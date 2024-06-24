@@ -63,3 +63,24 @@ func isInLastTwoWeeks(_ visitDate: Date) -> Bool {
   let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: today)!
   return twoWeeksAgo <= visitDate && visitDate <= today
 }
+extension Result where Success == Bool {
+
+    @discardableResult
+    func onSuccess(_ closure: (Bool) throws -> Success) rethrows -> Success? {
+        switch self {
+        case .success(let value):
+            return try closure(value) // Execute closure with the boolean value
+        case .failure:
+            return nil // Do nothing on failure
+        }
+    }
+
+    func onFailure(_ closure: (Error) -> Void) {
+        switch self {
+        case .success:
+            break // Do nothing on success
+        case .failure(let error):
+            closure(error) // Execute closure with the error
+        }
+    }
+}

@@ -50,7 +50,7 @@ struct AddHouseView: View {
                 
                 HStack {
                     if !viewModel.loading {
-                        CustomBackButton() { onDismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                        CustomBackButton() { onDismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
                     //.padding([.top])
                     
@@ -91,7 +91,7 @@ struct AddHouseView: View {
                                 }
                             }
                         }
-                    }.keyboardShortcut("\r", modifiers: .command)
+                    }//.keyboardShortcut("\r", modifiers: .command)
                 }
                 .padding([.horizontal, .bottom])
                 //.vSpacing(.bottom)

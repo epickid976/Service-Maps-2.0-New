@@ -19,6 +19,7 @@ class CallsViewModel: ObservableObject {
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
+    let latestCallUpdatePublisher = PassthroughSubject<PhoneCallModel, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     @Published var callsData: Optional<[PhoneCallData]> = nil
@@ -77,6 +78,7 @@ class CallsViewModel: ObservableObject {
 extension CallsViewModel {
     func getCalls(callToScrollTo: String? = nil) {
         RealmManager.shared.getPhoneCallData(phoneNumberId: phoneNumber.id)
+            .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
@@ -87,6 +89,11 @@ extension CallsViewModel {
                 if self.search.isEmpty {
                     DispatchQueue.main.async {
                         self.callsData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date}
+                        
+                        if let latestCall = callData.sorted(by: { $0.phoneCall.date > $1.phoneCall.date }).first?.phoneCall {
+                            self.latestCallUpdatePublisher.send(latestCall)
+                        }
+                        
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             if let callToScrollTo = callToScrollTo {
                                 self.callToScrollTo = callToScrollTo
@@ -120,7 +127,7 @@ struct CallCell: View {
                         //.frame(maxWidth: .infinity)
                             .font(.headline)
                             .lineLimit(3)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.secondaryLabel)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
                     }
@@ -137,7 +144,7 @@ struct CallCell: View {
                 Text(call.phoneCall.user)
                     .font(.subheadline)
                     .lineLimit(2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.secondaryLabel)
                     .fontWeight(.heavy)
                     .hSpacing(.trailing)
                 

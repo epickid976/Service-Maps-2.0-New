@@ -20,6 +20,7 @@ struct PhoneNumbersView: View {
     var territory: PhoneTerritoryModel
     
     @StateObject var viewModel: NumbersViewModel
+    //@StateObject var callsViewModel: CallsViewModel
     init(territory: PhoneTerritoryModel, phoneNumberToScrollTo: String? = nil) {
         self.territory = territory
         
@@ -56,7 +57,7 @@ struct PhoneNumbersView: View {
                             viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
                         }
                     } content: {
-                        VStack {
+                        LazyVStack {
                             if viewModel.phoneNumbersData == nil || viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
@@ -87,17 +88,19 @@ struct PhoneNumbersView: View {
                                         SwipeViewGroup {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                    ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
+                                                    ForEach(viewModel.phoneNumbersData!, id: \.phoneNumber.id) { numbersData in
                                                         let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
                                                         numbersCell(numbersData: numbersData, mainWindowSize: proxy).id(numbersData.phoneNumber.id)
                                                             .padding(.bottom, 2)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             } else {
-                                                ForEach(viewModel.phoneNumbersData!, id: \.self) { numbersData in
-                                                    numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id)
-                                                        .padding(.bottom, 2)
-                                                }.modifier(ScrollTransitionModifier())
+                                                LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                    ForEach(viewModel.phoneNumbersData!, id: \.phoneNumber.id) { numbersData in
+                                                        numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id)
+                                                            .padding(.bottom, 2)
+                                                    }.modifier(ScrollTransitionModifier())
+                                                }
                                             }
                                         }
                                     }
@@ -166,19 +169,9 @@ struct PhoneNumbersView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .keyboardShortcut("+", modifiers: .command)
+                   // //.keyboardShortcut("+", modifiers: .command)
                 }
-            }.simultaneousGesture(
-                // Hide the keyboard on scroll
-                DragGesture().onChanged { _ in
-                    UIApplication.shared.sendAction(
-                        #selector(UIResponder.resignFirstResponder),
-                        to: nil,
-                        from: nil,
-                        for: nil
-                    )
-                }
-            )
+            }
             .ignoresSafeArea()
             .navigationBarBackButtonHidden()
             .navigationBarTitle("Numbers", displayMode: .inline)
@@ -189,13 +182,13 @@ struct PhoneNumbersView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 presentationMode.wrappedValue.dismiss()
                             }
-                        }).keyboardShortcut(.delete, modifiers: .command)
+                        })//.keyboardShortcut(.delete, modifiers: .command)
                             .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     HStack {
-                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         //                    if viewModel.isAdmin {
                         //                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
@@ -217,107 +210,59 @@ struct PhoneNumbersView: View {
     
     @ViewBuilder
     func numbersCell(numbersData: PhoneNumbersData, mainWindowSize: CGSize) -> some View {
-        LazyVStack {
             SwipeView {
                 NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: numbersData.phoneNumber).implementPopupView()).implementPopupView()) {
-                    HStack(spacing: 10) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(numbersData.phoneNumber.number.formatPhoneNumber())")
-                                .font(.headline)
-                                .fontWeight(.heavy)
-                                .foregroundColor(.primary)
-                                .hSpacing(.leading)
-                            Text("House: \(numbersData.phoneNumber.house ?? "N/A")")
-                                .font(.body)
-                                .lineLimit(5)
-                                .foregroundColor(.secondary)
-                                .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
-                                .hSpacing(.leading)
-                            VStack {
-                                HStack {
-                                    if let call = numbersData.phoneCall  {
-                                        Text("\(call.notes)")
-                                            .font(.headline)
-                                            .lineLimit(2)
-                                            .foregroundColor(.secondary)
-                                            .fontWeight(.bold)
-                                            .multilineTextAlignment(.leading)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                            .hSpacing(.leading)
+                    PhoneNumberCell(numbersData: numbersData, mainWindowSize: mainWindowSize)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                                .fill(highlightedNumberId == numbersData.phoneNumber.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedNumberId == numbersData.phoneNumber.id) // Fill with transparent gray if highlighted
+                        )
+                        .optionalViewModifier { content in
+                            if AuthorizationLevelManager().existsAdminCredentials() {
+                                content
+                                    .contextMenu {
+                                        Button {
+                                            DispatchQueue.main.async {
+                                                self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
+                                                
+                                                CentrePopup_DeletePhoneNumber(viewModel: viewModel).showAndStack()
+                                            }
+                                        } label: {
+                                            HStack {
+                                                Image(systemName: "trash")
+                                                Text("Delete Number")
+                                            }
+                                        }
                                         
-                                    } else {
-                                        Text("No Notes")
-                                            .font(.headline)
-                                            .lineLimit(2)
-                                            .foregroundColor(.secondary)
-                                            .fontWeight(.bold)
-                                            .multilineTextAlignment(.leading)
-                                            .hSpacing(.leading)
-                                        
-                                    }
-                                }
+                                        Button {
+                                            self.viewModel.currentNumber = numbersData.phoneNumber
+                                            self.viewModel.presentSheet = true
+                                        } label: {
+                                            HStack {
+                                                Image(systemName: "pencil")
+                                                Text("Edit Number")
+                                            }
+                                        }
+                                        //TODO Trash and Pencil only if admin
+                                    }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
+                            } else if AuthorizationLevelManager().existsPhoneCredentials() {
+                                content
+                                    .contextMenu {
+                                        Button {
+                                            self.viewModel.currentNumber = numbersData.phoneNumber
+                                            self.viewModel.presentSheet = true
+                                        } label: {
+                                            HStack {
+                                                Image(systemName: "pencil")
+                                                Text("Edit Number")
+                                            }
+                                        }
+                                        //TODO Trash and Pencil only if admin
+                                    }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
+                            } else {
+                                content
                             }
-                            .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 75)
                         }
-                        .frame(maxWidth: mainWindowSize.width * 0.90)
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16) // Same shape as the cell
-                            .fill(highlightedNumberId == numbersData.phoneNumber.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedNumberId == numbersData.phoneNumber.id) // Fill with transparent gray if highlighted
-                    )
-                    //.id(territory.id)
-                    .padding(10)
-                    .frame(minWidth: mainWindowSize.width * 0.95)
-                    .background(.thinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .optionalViewModifier { content in
-                        if AuthorizationLevelManager().existsAdminCredentials() {
-                            content
-                                .contextMenu {
-                                    Button {
-                                        DispatchQueue.main.async {
-                                            self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
-                                            
-                                            CentrePopup_DeletePhoneNumber(viewModel: viewModel).showAndStack()
-                                        }
-                                    } label: {
-                                        HStack {
-                                            Image(systemName: "trash")
-                                            Text("Delete Number")
-                                        }
-                                    }
-                                    
-                                    Button {
-                                        self.viewModel.currentNumber = numbersData.phoneNumber
-                                        self.viewModel.presentSheet = true
-                                    } label: {
-                                        HStack {
-                                            Image(systemName: "pencil")
-                                            Text("Edit Number")
-                                        }
-                                    }
-                                    //TODO Trash and Pencil only if admin
-                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
-                        } else if AuthorizationLevelManager().existsPhoneCredentials() {
-                            content
-                                .contextMenu {
-                                    Button {
-                                        self.viewModel.currentNumber = numbersData.phoneNumber
-                                        self.viewModel.presentSheet = true
-                                    } label: {
-                                        HStack {
-                                            Image(systemName: "pencil")
-                                            Text("Edit Number")
-                                        }
-                                    }
-                                    //TODO Trash and Pencil only if admin
-                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
-                        } else {
-                            content
-                        }
-                    }
-                    
                 }.onTapHaptic(.lightImpact)
             } trailingActions: { context in
                 if self.viewModel.isAdmin {
@@ -355,7 +300,7 @@ struct PhoneNumbersView: View {
             .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
             .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
             .swipeMinimumDistance(self.viewModel.isAdmin ? 25:1000)
-        }
+        
     }
 }
 
@@ -369,6 +314,8 @@ class NumbersViewModel: ObservableObject {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @Published var phoneNumbersData: Optional<[PhoneNumbersData]> = nil
+    
+    
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     
@@ -517,6 +464,7 @@ class NumbersViewModel: ObservableObject {
 extension NumbersViewModel {
     func getNumbers(phoneNumberToScrollTo: String? = nil) {
         databaseManager.getPhoneNumbersData(phoneTerritoryId: territory.id)
+            .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
@@ -526,7 +474,10 @@ extension NumbersViewModel {
             }, receiveValue: { phoneNumbersData in
                 if self.search.isEmpty {
                     DispatchQueue.main.async {
-                        self.phoneNumbersData = phoneNumbersData.sorted { $0.phoneNumber.number < $1.phoneNumber.number }
+                        self.phoneNumbersData = phoneNumbersData
+                        
+                        
+                        
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             if let phoneNumberToScrollTo = phoneNumberToScrollTo {
                                 self.phoneNumberToScrollTo = phoneNumberToScrollTo
@@ -643,7 +594,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                        self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                                        //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
                                         self.viewModel.getNumbers()
                                         self.viewModel.loading = false
                                         dismiss()
@@ -696,7 +647,7 @@ struct CentrePopup_AddNumber: CentrePopup {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismiss()
-                viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                //viewModel.synchronizationManager.startupProcess(synchronizing: true)
                 viewModel.getNumbers()
                 viewModel.showAddedToast = true
                 
@@ -730,5 +681,84 @@ struct CentrePopup_AddNumber: CentrePopup {
             .horizontalPadding(24)
             .cornerRadius(15)
             .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+
+struct PhoneNumberCell: View {
+    @ObservedObject var callViewModel: CallsViewModel
+    @State var numbersData: PhoneNumbersData
+    var mainWindowSize: CGSize
+    @State private var cancellable: AnyCancellable?
+    
+    init(numbersData: PhoneNumbersData, mainWindowSize: CGSize) {
+        self._callViewModel = ObservedObject(initialValue: CallsViewModel(phoneNumber: numbersData.phoneNumber))
+        self.numbersData = numbersData
+        self.mainWindowSize = mainWindowSize
+    }
+    
+    var body: some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(numbersData.phoneNumber.number.formatPhoneNumber())")
+                    .font(.headline)
+                    .fontWeight(.heavy)
+                    .foregroundColor(.primary)
+                    .hSpacing(.leading)
+                Text("House: \(numbersData.phoneNumber.house ?? "N/A")")
+                    .font(.body)
+                    .lineLimit(5)
+                    .foregroundColor(.secondaryLabel)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.leading)
+                    .hSpacing(.leading)
+                VStack {
+                    HStack {
+                        if let call = numbersData.phoneCall  {
+                            Text("\(call.notes)")
+                                .font(.headline)
+                                .lineLimit(2)
+                                .foregroundColor(.secondaryLabel)
+                                .fontWeight(.bold)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .hSpacing(.leading)
+                            
+                        } else {
+                            Text("No Notes")
+                                .font(.headline)
+                                .lineLimit(2)
+                                .foregroundColor(.secondaryLabel)
+                                .fontWeight(.bold)
+                                .multilineTextAlignment(.leading)
+                                .hSpacing(.leading)
+                            
+                        }
+                    }
+                }
+                .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 75)
+            }
+            .frame(maxWidth: mainWindowSize.width * 0.90)
+        }
+        
+        .onAppear {
+            callViewModel.getCalls()
+            cancellable = callViewModel.latestCallUpdatePublisher
+                .subscribe(on: DispatchQueue.main)
+                .sink { newCall in
+                    // Check if the update is for the correct house and if it's a new/different visit
+                    if newCall.phonenumber == numbersData.phoneNumber.id, newCall != numbersData.phoneCall {
+                        numbersData.phoneCall = newCall  // Update the state with the new visit
+                    }
+                }
+        }
+        .onDisappear {
+            cancellable?.cancel()
+        }
+        //.id(territory.id)
+        .padding(10)
+        .frame(minWidth: mainWindowSize.width * 0.95)
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        
     }
 }

@@ -107,7 +107,7 @@ struct AddKeyView: View {
                         
                         HStack {
                             if !viewModel.loading {
-                                CustomBackButton() { presentationMode.wrappedValue.dismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                                CustomBackButton() { presentationMode.wrappedValue.dismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
                             }
                             //.padding([.top])
                             
@@ -132,7 +132,7 @@ struct AddKeyView: View {
                                     }
                                     
                                 }
-                            }.keyboardShortcut("\r", modifiers: .command)
+                            }//.keyboardShortcut("\r", modifiers: .command)
                         }
                         .padding([.horizontal, .bottom])
                     }

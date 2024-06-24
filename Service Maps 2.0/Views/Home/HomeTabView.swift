@@ -64,7 +64,7 @@ struct HomeTabView: View {
                             .foregroundColor(selectedTab == 0 ? .blue : .gray)
                             .scaleEffect(selectedTab == 0 ? 1.2 : 1.0) // Add scale effect
                     }
-                    .keyboardShortcut("1", modifiers: .command)
+                   // //.keyboardShortcut("1", modifiers: .command)
                     .frame(maxWidth: .infinity)
                     .hoverEffect()
                     
@@ -84,7 +84,7 @@ struct HomeTabView: View {
                         .optionalViewModifier { content in
                             if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
                                 content
-                                    .keyboardShortcut("2", modifiers: .command)
+                                   // //.keyboardShortcut("2", modifiers: .command)
                             }
                         }
                         .hoverEffect()
@@ -106,10 +106,10 @@ struct HomeTabView: View {
                         .optionalViewModifier { content in
                             if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
                                 content
-                                    .keyboardShortcut("3", modifiers: .command)
+                                   // //.keyboardShortcut("3", modifiers: .command)
                             } else {
                                 content
-                                    .keyboardShortcut("2", modifiers: .command)
+                                   // //.keyboardShortcut("2", modifiers: .command)
                             }
                         }
                         .hoverEffect()
@@ -129,10 +129,10 @@ struct HomeTabView: View {
                     .optionalViewModifier { content in
                         if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
                             content
-                                .keyboardShortcut("4", modifiers: .command)
+                                //.keyboardShortcut("4", modifiers: .command)
                         } else {
                             content
-                                .keyboardShortcut("3", modifiers: .command)
+                              //  //.keyboardShortcut("3", modifiers: .command)
                         }
                     }
                     .hoverEffect()

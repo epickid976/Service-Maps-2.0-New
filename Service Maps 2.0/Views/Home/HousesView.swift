@@ -81,7 +81,7 @@ struct HousesView: View {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                                                     let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
-                                                    ForEach(viewModel.houseData!, id: \.id) { houseData in
+                                                    ForEach(viewModel.houseData!, id: \.house.id) { houseData in
                                                         houseCellView(houseData: houseData, mainWindowSize: proxy).id(houseData.house.id).modifier(ScrollTransitionModifier())
                                                             .transition(.customBackInsertion)
                                                     }.modifier(ScrollTransitionModifier())
@@ -94,7 +94,7 @@ struct HousesView: View {
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             }
-                                        }.animation(.default, value: viewModel.houseData!)
+                                        }.animation(.spring(), value: viewModel.houseData!)
                                         .padding()
                                     
                                     
@@ -134,13 +134,13 @@ struct HousesView: View {
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             presentationMode.wrappedValue.dismiss()
                                         }
-                                    }).keyboardShortcut(.delete, modifiers: .command)
+                                    })//.keyboardShortcut(.delete, modifiers: .command)
                                         .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                 }
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                     
                                     Menu {
@@ -158,7 +158,7 @@ struct HousesView: View {
                                         }
                                         .pickerStyle(.menu)
                                     } label: {
-                                        Button("", action: { viewModel.optionsAnimation.toggle(); HapticManager.shared.trigger(.lightImpact);  print("Add") ; viewModel.presentSheet.toggle() }).keyboardShortcut(";", modifiers: .command)
+                                        Button("", action: { viewModel.optionsAnimation.toggle(); HapticManager.shared.trigger(.lightImpact);  print("Add") ; viewModel.presentSheet.toggle() })//.keyboardShortcut(";", modifiers: .command)
                                             .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                                     }
                                     
@@ -208,7 +208,7 @@ struct HousesView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .keyboardShortcut("+", modifiers: .command)
+                    //.keyboardShortcut("+", modifiers: .command)
                 }
                 
             }

@@ -86,7 +86,19 @@ class AccessViewModel: ObservableObject {
         if !isAdmin {
             switch await dataUploaderManager.unregisterToken(myToken: key) {
             case .success(_):
-                synchronizationManager.startupProcess(synchronizing: true)
+                //synchronizationManager.startupProcess(synchronizing: true)
+                
+                let realm = try! await Realm()
+                let tokenTerritoryEntities = realm.objects(TokenTerritoryObject.self)
+                if let keyToDelete = realm.objects(TokenObject.self).filter("id == %d", key).first {
+                    tokenTerritoryEntities.forEach { tokenTerritory in
+                        if keyToDelete.id == tokenTerritory.token {
+                            _ = RealmManager.shared.deleteTokenTerritory(tokenTerritory: tokenTerritory)
+                        }
+                    }
+                    _ = RealmManager.shared.deleteToken(token: keyToDelete)
+                }
+                
                 return Result.success(true)
             case .failure(let error):
                 return Result.failure(error)
@@ -131,6 +143,7 @@ class AccessViewModel: ObservableObject {
 extension AccessViewModel {
     func getKeys() {
         RealmManager.shared.getKeyData()
+            .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
@@ -161,6 +174,7 @@ extension AccessViewModel {
     func getKeyUsers() {
         if currentKey != nil {
             RealmManager.shared.getKeyUsers(token: currentKey!)
+                .subscribe(on: DispatchQueue.main)
                 .receive(on: DispatchQueue.main) // Update on main thread
                 .sink(receiveCompletion: { completion in
                     if case .failure(let error) = completion {

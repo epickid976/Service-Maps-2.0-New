@@ -187,7 +187,7 @@ struct TerritoryAddressView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .keyboardShortcut("+", modifiers: .command)
+                    //.keyboardShortcut("+", modifiers: .command)
                 }
             }
             
@@ -201,13 +201,13 @@ struct TerritoryAddressView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 presentationMode.wrappedValue.dismiss()
                             }
-                        }).keyboardShortcut(.delete, modifiers: .command)
+                        })//.keyboardShortcut(.delete, modifiers: .command)
                             .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     HStack {
-                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         //                    if viewModel.isAdmin {
                         //                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
@@ -243,7 +243,7 @@ struct TerritoryAddressView: View {
                             Text("Doors: \(addressData.houseQuantity)")
                                 .font(.body)
                                 .lineLimit(5)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.secondaryLabel)
                                 .fontWeight(.bold)
                                 .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)

@@ -44,6 +44,12 @@
 		821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12772A7811CD0050D106 /* AdminAPI.swift */; };
 		821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74C2BD9EA46001D092D /* AppDelegate.swift */; };
 		821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74E2BD9EB66001D092D /* apple-app-site-association */; };
+		8228B6022C28E54D002B7886 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6012C28E54D002B7886 /* RealmSwift */; };
+		8228B6032C28E5D1002B7886 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6012C28E54D002B7886 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		8228B6052C2901A7002B7886 /* RealtimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8228B6042C2901A7002B7886 /* RealtimeManager.swift */; };
+		8228B6082C29BB68002B7886 /* Ably in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6072C29BB68002B7886 /* Ably */; };
+		8228B6122C29C148002B7886 /* ModifiedCopy in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6112C29C148002B7886 /* ModifiedCopy */; };
+		8228B6142C29C148002B7886 /* ModifiedCopyClient in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6132C29C148002B7886 /* ModifiedCopyClient */; };
 		822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0732AA6B61C0008FA61 /* Lottie */; };
 		822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0762AA6B6230008FA61 /* Alamofire */; };
 		822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0792AA6B62B0008FA61 /* ScalingHeaderScrollView */; };
@@ -84,8 +90,6 @@
 		8255F1922C1944D000445A82 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1912C1944D000445A82 /* SearchView.swift */; };
 		8255F1942C19465200445A82 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1932C19465200445A82 /* SettingsView.swift */; };
 		8255F1962C1A79AF00445A82 /* EditTokenForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1952C1A79AF00445A82 /* EditTokenForm.swift */; };
-		825645A02BCE0FC000F18AC9 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 8256459F2BCE0FC000F18AC9 /* Realm */; };
-		825645A22BCE0FC000F18AC9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 825645A12BCE0FC000F18AC9 /* RealmSwift */; };
 		825645A52BCE104300F18AC9 /* HouseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645A42BCE104300F18AC9 /* HouseObject.swift */; };
 		825645A72BCE117500F18AC9 /* TerritoryObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645A62BCE117500F18AC9 /* TerritoryObject.swift */; };
 		825645A92BCE11EE00F18AC9 /* VisitObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645A82BCE11EE00F18AC9 /* VisitObject.swift */; };
@@ -182,6 +186,20 @@
 		82FB3C232BF257990066B0B9 /* RecentData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FB3C222BF257990066B0B9 /* RecentData.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		821456132C28E43000CC4D8F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8228B6032C28E5D1002B7886 /* RealmSwift in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		820933DD2A78425F00AF3FF1 /* CongregationAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationAPI.swift; sourceTree = "<group>"; };
 		820933DF2A78427E00AF3FF1 /* CongregationSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationSignInForm.swift; sourceTree = "<group>"; };
@@ -220,6 +238,7 @@
 		821C12772A7811CD0050D106 /* AdminAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAPI.swift; sourceTree = "<group>"; };
 		821DE74C2BD9EA46001D092D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		821DE74E2BD9EB66001D092D /* apple-app-site-association */ = {isa = PBXFileReference; lastKnownFileType = text; path = "apple-app-site-association"; sourceTree = "<group>"; };
+		8228B6042C2901A7002B7886 /* RealtimeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeManager.swift; sourceTree = "<group>"; };
 		822FA0A42AA7798A0008FA61 /* HousesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesViewModel.swift; sourceTree = "<group>"; };
 		822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CirlceButtonStyle.swift; sourceTree = "<group>"; };
 		822FA0A92AA77C8F0008FA61 /* HouseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseCell.swift; sourceTree = "<group>"; };
@@ -353,17 +372,19 @@
 			files = (
 				822FA0972AA6B6650008FA61 /* SwipeActions in Frameworks */,
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
+				8228B6022C28E54D002B7886 /* RealmSwift in Frameworks */,
 				82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */,
-				825645A22BCE0FC000F18AC9 /* RealmSwift in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
 				822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */,
 				822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */,
+				8228B6122C29C148002B7886 /* ModifiedCopy in Frameworks */,
+				8228B6082C29BB68002B7886 /* Ably in Frameworks */,
 				82B22C9A2C2099AA002E4EE8 /* MijickPopupView in Frameworks */,
+				8228B6142C29C148002B7886 /* ModifiedCopyClient in Frameworks */,
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
 				822FA07D2AA6B6320008FA61 /* Nuke in Frameworks */,
-				825645A02BCE0FC000F18AC9 /* Realm in Frameworks */,
 				82F769002BE92FA2001FA3CF /* FloatingButton in Frameworks */,
 				822FA07F2AA6B6320008FA61 /* NukeExtensions in Frameworks */,
 			);
@@ -584,6 +605,7 @@
 				8288001F2AA68BAA00725826 /* CDPublisher.swift */,
 				82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */,
 				82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */,
+				8228B6042C2901A7002B7886 /* RealtimeManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -733,6 +755,7 @@
 				826B76662A729FDE000A4BAA /* Sources */,
 				826B76672A729FDE000A4BAA /* Frameworks */,
 				826B76682A729FDE000A4BAA /* Resources */,
+				821456132C28E43000CC4D8F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -750,11 +773,13 @@
 				822FA0852AA6B6440008FA61 /* ActivityIndicatorView */,
 				822FA0962AA6B6650008FA61 /* SwipeActions */,
 				822FA09F2AA6B7800008FA61 /* NavigationTransitions */,
-				8256459F2BCE0FC000F18AC9 /* Realm */,
-				825645A12BCE0FC000F18AC9 /* RealmSwift */,
 				82A5B45F2BD482EB00F52F2F /* AlertKit */,
 				82F768FF2BE92FA2001FA3CF /* FloatingButton */,
 				82B22C992C2099AA002E4EE8 /* MijickPopupView */,
+				8228B6012C28E54D002B7886 /* RealmSwift */,
+				8228B6072C29BB68002B7886 /* Ably */,
+				8228B6112C29C148002B7886 /* ModifiedCopy */,
+				8228B6132C29C148002B7886 /* ModifiedCopyClient */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -794,10 +819,12 @@
 				822FA0842AA6B6440008FA61 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
 				822FA0952AA6B6650008FA61 /* XCRemoteSwiftPackageReference "SwipeActions" */,
 				822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
-				8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */,
 				82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */,
 				82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */,
+				8228B6002C28E54D002B7886 /* XCRemoteSwiftPackageReference "realm-swift" */,
+				8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */,
+				8228B6102C29C148002B7886 /* XCRemoteSwiftPackageReference "ModifiedCopyMacro" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -948,6 +975,7 @@
 				821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */,
 				827EF1A42AA7C2F0006C4631 /* DateFormat.swift in Sources */,
 				82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */,
+				8228B6052C2901A7002B7886 /* RealtimeManager.swift in Sources */,
 				820933ED2A785A9400AF3FF1 /* UserAPI.swift in Sources */,
 				825645AB2BCE125000F18AC9 /* TokenObject.swift in Sources */,
 				82F75C3A2BE2D1BA002CCAB0 /* CallsViewModel.swift in Sources */,
@@ -1200,6 +1228,30 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8228B6002C28E54D002B7886 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ably/ably-cocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.32;
+			};
+		};
+		8228B6102C29C148002B7886 /* XCRemoteSwiftPackageReference "ModifiedCopyMacro" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WilhelmOks/ModifiedCopyMacro.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.0;
+			};
+		};
 		822FA0722AA6B61C0008FA61 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -1256,14 +1308,6 @@
 				minimumVersion = 0.11.0;
 			};
 		};
-		8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparrowcode/AlertKit";
@@ -1291,6 +1335,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8228B6012C28E54D002B7886 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8228B6002C28E54D002B7886 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
+		8228B6072C29BB68002B7886 /* Ably */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */;
+			productName = Ably;
+		};
+		8228B6112C29C148002B7886 /* ModifiedCopy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8228B6102C29C148002B7886 /* XCRemoteSwiftPackageReference "ModifiedCopyMacro" */;
+			productName = ModifiedCopy;
+		};
+		8228B6132C29C148002B7886 /* ModifiedCopyClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8228B6102C29C148002B7886 /* XCRemoteSwiftPackageReference "ModifiedCopyMacro" */;
+			productName = ModifiedCopyClient;
+		};
 		822FA0732AA6B61C0008FA61 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 822FA0722AA6B61C0008FA61 /* XCRemoteSwiftPackageReference "lottie-ios" */;
@@ -1340,16 +1404,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
 			productName = NavigationTransitions;
-		};
-		8256459F2BCE0FC000F18AC9 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = Realm;
-		};
-		825645A12BCE0FC000F18AC9 /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8256459E2BCE0FC000F18AC9 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
 		};
 		82A5B45F2BD482EB00F52F2F /* AlertKit */ = {
 			isa = XCSwiftPackageProductDependency;

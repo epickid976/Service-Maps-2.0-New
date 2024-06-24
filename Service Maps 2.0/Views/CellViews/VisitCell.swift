@@ -10,7 +10,7 @@ import SwiftUI
 struct VisitCell: View {
     var visit: VisitData
     var ipad: Bool = false
-    @Environment(\.mainWindowSize) var mainWindowSize
+    var mainWindowSize: CGSize
     
     var body: some View {
         HStack(spacing: 10) {
@@ -21,7 +21,7 @@ struct VisitCell: View {
                             .font(.headline)
                             .lineLimit(3)
                             .multilineTextAlignment(.leading)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.secondaryLabel)
                             .fontWeight(.heavy)
                             .hSpacing(.leading)
                         Text(NSLocalizedString(visit.visit.symbol.localizedUppercase, comment: ""))
@@ -45,7 +45,7 @@ struct VisitCell: View {
                 Text(visit.visit.user)
                     .font(.subheadline)
                     .lineLimit(2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.secondaryLabel)
                     .fontWeight(.heavy)
                     .hSpacing(.trailing)
             }

@@ -16,7 +16,7 @@ import MijickPopupView
 
 struct VisitsView: View {
     
-    @StateObject var viewModel: VisitsViewModel
+    @ObservedObject var viewModel: VisitsViewModel
     var house: HouseModel
     
     @State var animationDone = false
@@ -29,10 +29,12 @@ struct VisitsView: View {
     @State var scrollOffset: CGFloat = 0.00
     @State private var isScrollingDown = false
     
+    @StateObject var realtimeManager = RealtimeManager.shared
+    
     init(house: HouseModel, visitIdToScrollTo: String? = nil) {
         self.house = house
         let initialViewModel = VisitsViewModel(house: house, visitIdToScrollTo: visitIdToScrollTo)
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
     }
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Visit Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
@@ -52,25 +54,17 @@ struct VisitsView: View {
             ZStack {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
-                        VStack {
+                        LazyVStack {
                             if viewModel.visitData == nil || viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
                                         .resizable()
-                                        .animationDidFinish { completed in
-                                            self.animationDone = completed
-                                        }
-                                        .getRealtimeAnimationProgress($animationProgressTime)
                                         .frame(width: 250, height: 250)
                                 } else {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
                                         .resizable()
-                                        .animationDidFinish { completed in
-                                            self.animationDone = completed
-                                        }
-                                        .getRealtimeAnimationProgress($animationProgressTime)
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
@@ -95,21 +89,23 @@ struct VisitsView: View {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                                                     ForEach(viewModel.visitData!, id: \.visit.id) { visitData in
-                                                        visitCellView(visitData: visitData, ipad: UIDevice().userInterfaceIdiom == .pad).id(visitData.visit.id)
+                                                        visitCellView(visitData: visitData, mainWindowSize: proxy.size, ipad: UIDevice().userInterfaceIdiom == .pad).id(visitData.visit.id)
+                                                            .modifier(ScrollTransitionModifier())
                                                             .transition(.customBackInsertion)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             } else {
                                                 LazyVGrid(columns: [GridItem(.flexible())]) {
                                                     ForEach(viewModel.visitData!, id: \.visit.id) { visitData in
-                                                        visitCellView(visitData: visitData).id(visitData.visit.id)
+                                                        visitCellView(visitData: visitData, mainWindowSize: proxy.size).id(visitData.visit.id)
+                                                            .modifier(ScrollTransitionModifier())
                                                             .transition(.customBackInsertion)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             }
                                             
                                         }
-                                    .animation(.spring(), value: viewModel.visitData)
+                                    .animation(.spring(), value: viewModel.visitData!)
                                         .padding()
                                     
                                     
@@ -148,13 +144,13 @@ struct VisitsView: View {
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             presentationMode.wrappedValue.dismiss()
                                         }
-                                    }).keyboardShortcut(.delete, modifiers: .command)
+                                    })//.keyboardShortcut(.delete, modifiers: .command)
                                         .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                 }
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 }
                             }
@@ -168,10 +164,16 @@ struct VisitsView: View {
                         }
                         .onChange(of: viewModel.dataStore.synchronized) { value in
                             if value {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                     viewModel.getVisits()
                                 }
                             }
+                        }
+                        .onChange(of: realtimeManager.lastMessage) { value in
+                            if value != nil {
+                                viewModel.getVisits()
+                            }
+                            
                         }
                     
                         .onChange(of: viewModel.visitIdToScrollTo) { id in
@@ -199,16 +201,16 @@ struct VisitsView: View {
                 .animation(.spring(), value: hideFloatingButton)
                 .vSpacing(.bottom).hSpacing(.trailing)
                 .padding()
-                .keyboardShortcut("+", modifiers: .command)
+               // //.keyboardShortcut("+", modifiers: .command)
                 
             }
         }
     }
     
     @ViewBuilder
-    func visitCellView(visitData: VisitData, ipad: Bool = false) -> some View {
+    func visitCellView(visitData: VisitData, mainWindowSize: CGSize, ipad: Bool = false) -> some View {
         SwipeView {
-            VisitCell(visit: visitData, ipad: ipad)
+            VisitCell(visit: visitData, ipad: ipad, mainWindowSize: mainWindowSize)
                 .padding(.bottom, 2)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16) // Same shape as the cell

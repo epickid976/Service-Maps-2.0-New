@@ -89,7 +89,11 @@ struct AddTerritoryView: View {
                             .hSpacing(.leading)
                             .padding(.leading)
                         CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Description", comment: ""))
-                            .animation(.spring, value: viewModel.description)
+                            .animation(.spring(), value: viewModel.description)
+                            .transition(.asymmetric(
+                                insertion: .scale.combined(with: .opacity).animation(.spring()),
+                                removal: .opacity.animation(.easeInOut)
+                            ))
                             .padding(.bottom)
                         
                         Text("Image")
@@ -134,7 +138,7 @@ struct AddTerritoryView: View {
                         
                         HStack {
                             if !viewModel.loading {
-                                CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                                CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
                             }
                             //.padding([.top])
                             
@@ -178,7 +182,7 @@ struct AddTerritoryView: View {
                                         }
                                     }
                                 }
-                            }.keyboardShortcut("\r", modifiers: .command)
+                            }//.keyboardShortcut("\r", modifiers: .command)
                         }
                         .padding([.horizontal, .bottom])
                         .vSpacing(.bottom)

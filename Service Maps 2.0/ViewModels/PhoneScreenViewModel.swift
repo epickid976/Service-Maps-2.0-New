@@ -79,6 +79,7 @@ class PhoneScreenViewModel: ObservableObject {
 extension PhoneScreenViewModel {
     func getTeritories(phoneTerritoryToScrollTo: String? = nil) {
         RealmManager.shared.getPhoneData()
+            .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
@@ -110,6 +111,7 @@ extension PhoneScreenViewModel {
     
     func getRecentTerritoryData() {
         RealmManager.shared.getRecentPhoneTerritoryData()
+            .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {

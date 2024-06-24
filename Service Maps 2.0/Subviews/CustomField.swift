@@ -21,6 +21,8 @@ struct CustomField: View {
     var formatAsPhone: Bool?
     var disableAutocorrect: Bool?
     var expanded: Bool?
+    var diableCapitalization: Bool?
+    
     
     let placeholder: String
     
@@ -30,6 +32,7 @@ struct CustomField: View {
             TextField(placeholder, text: $text, axis: textfieldAxis ?? .horizontal)
                 .disabled(disabled ?? false)
                 .autocorrectionDisabled(disableAutocorrect ?? false)
+                .textInputAutocapitalization(diableCapitalization ?? false ? .never : .sentences)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)
@@ -89,6 +92,7 @@ struct CustomField: View {
                     // Handle tap action
                     isFocused.wrappedValue = true // Use the isFocused binding property of FocusState
                 })
+                .textContentType(.oneTimeCode)
                 .keyboardType(keyboardType ?? .default)
                 .multilineTextAlignment(textAlignment ?? .leading)
                 .frame(minHeight: 40)

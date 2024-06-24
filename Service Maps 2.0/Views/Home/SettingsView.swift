@@ -33,6 +33,7 @@ struct SettingsView: View {
     @Environment(\.mainWindowSize) var mainWindowSize
     
     @Environment(\.requestReview) var requestReview
+    @StateObject var realtimeManager = RealtimeManager.shared
     
     var body: some View {
         let alertUpdate = AlertAppleMusic17View(title: viewModel.showUpdateToastMessage, subtitle: nil, icon: .custom(UIImage(systemName: "arrow.triangle.2.circlepath.circle")!))
@@ -92,7 +93,22 @@ struct SettingsView: View {
                     }
                     synchronizationManager.startupProcess(synchronizing: true)
                     viewModel.presentSheet = false
-                    
+                    Task {
+                        do {
+                            try await realtimeManager.initAblyConnection()
+                            print("Ably connection initialized")
+                            realtimeManager.subscribeToChanges {
+                                switch $0 {
+                                case .success:
+                                    print("Subscribed to changes")
+                                case .failure(let error):
+                                    print("Error: \(error)")
+                                }
+                            }
+                        } catch {
+                            print("Error: \(error)")
+                        }
+                    }
                 }
             }
             
@@ -136,18 +152,34 @@ struct SettingsView: View {
                                 presentationMode.wrappedValue.dismiss()
                             }
                         })
-                        .keyboardShortcut(.delete, modifiers: .command)
+                        //.keyboardShortcut(.delete, modifiers: .command)
                         .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                         
                     }
                 }
+                
             }
             
             ToolbarItemGroup(placement: .topBarTrailing) {
                 HStack {
-                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         .disabled(viewModel.presentPolicy)
+                    
+                    Button {
+                        HapticManager.shared.trigger(.lightImpact)
+                        self.viewModel.showEditNamePopup = true
+                    } label: {
+                        Circle()
+                            .fill(Material.ultraThin)
+                            .overlay(Image(systemName: "pencil")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundColor(.primary)
+                                .padding(12)
+                            )
+                            .frame(width: 40, height: 40)
+                    }
                 }
             }
         }
@@ -246,7 +278,7 @@ struct CentrePopup_AboutApp: CentrePopup {
                     self.viewModel.showAlert = false
                     dismiss()
                 }
-            }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
+            }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
             //.frame(width: 100)
         }
         .padding()
@@ -300,7 +332,7 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                         self.viewModel.showDeletionConfirmationAlert = false
                         PopupManager.dismissAll()
                     }
-                }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
+                }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
                     HapticManager.shared.trigger(.lightImpact)
                     withAnimation { self.viewModel.loading = true }
@@ -366,7 +398,7 @@ struct CentrePopup_Deletion: CentrePopup {
                     HapticManager.shared.trigger(.lightImpact)
                     self.viewModel.showDeletionAlert = false
                     dismiss()
-                }.hSpacing(.trailing).keyboardShortcut("\r", modifiers: [.command, .shift])
+                }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
                     HapticManager.shared.trigger(.lightImpact)
                     self.viewModel.showDeletionAlert = false

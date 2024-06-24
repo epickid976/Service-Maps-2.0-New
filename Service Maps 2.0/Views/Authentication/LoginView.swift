@@ -70,7 +70,7 @@ struct LoginView: View {
                         .hSpacing(.leading)
                         .padding(.leading)
                         .keyboardType(.emailAddress)
-                    CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true,keyboardContentType: .emailAddress, placeholder: "example@example.com")
+                    CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true,keyboardContentType: .emailAddress, diableCapitalization: true, placeholder: "example@example.com")
                     
                     Text("Password")
                         .font(.headline)
@@ -125,7 +125,7 @@ struct LoginView: View {
                                     dismiss()
                                     viewModel.username = ""
                                     viewModel.password = ""
-                                }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                                }//.keyboardShortcut("\r", modifiers: [.command, .shift])
                             }
                         }
                         CustomButton(loading: loading, title: "Login") {
@@ -160,7 +160,7 @@ struct LoginView: View {
                             }
                             
                             //withAnimation { loading = false }
-                        }.keyboardShortcut("\r", modifiers: .command)
+                        }//.keyboardShortcut("\r", modifiers: .command)
                     }
                     .padding()
                     

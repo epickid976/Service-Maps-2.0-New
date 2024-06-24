@@ -30,7 +30,7 @@ struct SearchBar: View {
                 }
         }
         .padding(8)
-        .background(Color.secondary.opacity(0.2))
+        .background(Color.secondaryLabel.opacity(0.2))
         .cornerRadius(10)
     }
 }

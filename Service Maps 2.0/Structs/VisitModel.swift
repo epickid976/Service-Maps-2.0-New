@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import ModifiedCopy
 
+@Copyable
 struct VisitModel: Codable, Equatable, Hashable, Identifiable {
     var id: String
     var house: String

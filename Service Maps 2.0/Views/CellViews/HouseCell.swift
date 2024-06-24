@@ -11,6 +11,7 @@ import Combine
 
 struct HouseCell: View {
     @ObservedObject var visitViewModel: VisitsViewModel
+    @StateObject var realtimeManager = RealtimeManager.shared
     @State var house: HouseData {
         didSet {
             print(house)
@@ -51,18 +52,18 @@ struct HouseCell: View {
                 }
                 // Date
                 Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(house.visit?.date ?? 0) / 1000)))")
-                    .font(.subheadline)
+                    .font(.body)
                     .lineLimit(2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.secondaryLabel)
                     .fontWeight(.bold)
                     .hSpacing(.leading
                     ).padding(.leading, 5)
                 
                 // Notes
                 Text("\(house.visit?.notes ?? "No notes")")
-                    .font(.subheadline)
+                    .font(.body)
                     .lineLimit(4)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.secondaryLabel)
                     .fontWeight(.bold)
                     .padding(.leading, 5)
                     .multilineTextAlignment(.leading)
@@ -73,7 +74,12 @@ struct HouseCell: View {
         .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        
+        .onChange(of: realtimeManager.lastMessage) { value in
+            if value != nil {
+                visitViewModel.getVisits()
+            }
+            
+        }
         .onAppear {
                 visitViewModel.getVisits()
                     cancellable = visitViewModel.latestVisitUpdatePublisher

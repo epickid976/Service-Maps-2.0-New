@@ -75,25 +75,27 @@ struct AccessView: View {
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
-                                LazyVStack {
                                     SwipeViewGroup {
                                         if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                ForEach(viewModel.keyData!, id: \.id) { keyData in
+                                                ForEach(viewModel.keyData!, id: \.key.id) { keyData in
                                                     NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
-                                                        keyCell(keyData: keyData)
+                                                        keyCell(keyData: keyData).id(keyData.id)
+                                                            .transition(.customBackInsertion)
                                                     }
                                                 }.modifier(ScrollTransitionModifier())
                                             }
                                         } else {
-                                            ForEach(viewModel.keyData!, id: \.id) { keyData in
-                                                NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
-                                                    keyCell(keyData: keyData)
-                                                }.onTapHaptic(.lightImpact)
-                                            }.modifier(ScrollTransitionModifier())
+                                            LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                ForEach(viewModel.keyData!, id: \.key.id) { keyData in
+                                                    NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
+                                                        keyCell(keyData: keyData).id(keyData.key.id)
+                                                            .transition(.customBackInsertion)
+                                                    }.onTapHaptic(.lightImpact)
+                                                }.modifier(ScrollTransitionModifier())
+                                            }
                                         }
                                     }
-                                }
                                 .animation(.spring(), value: viewModel.keyData)
                                 .padding()
                                 
@@ -101,27 +103,28 @@ struct AccessView: View {
                             }
                         }
                     }.hSpacing(.center)
-                        .background(GeometryReader {
-                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                            if ( abs(offsetDifference) > minimumOffset) {
-                                if offsetDifference > 0 {
-                                    print("Is scrolling up toward top.")
-                                    debounceHideFloatingButton(false)
-                                } else {
-                                    print("Is scrolling down toward bottom.")
-                                    debounceHideFloatingButton(true)
-                                }
-                                self.previousViewOffset = currentOffset
-                            }
-                        }
+//                        .background(GeometryReader {
+//                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+//                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+//                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+//                            if ( abs(offsetDifference) > minimumOffset) {
+//                                if offsetDifference > 0 {
+//                                    print("Is scrolling up toward top.")
+//                                    debounceHideFloatingButton(false)
+//                                } else {
+//                                    print("Is scrolling down toward bottom.")
+//                                    debounceHideFloatingButton(true)
+//                                }
+//                                self.previousViewOffset = currentOffset
+//                            }
+//                        }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
                         .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                         .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .navigationDestination(isPresented: $viewModel.presentSheet) {
                             AddKeyView(keyData: keydataToEdit) {
-                                synchronizationManager.startupProcess(synchronizing: true)
+                                //synchronizationManager.startupProcess(synchronizing: true)
+                                viewModel.getKeys()
                                 keydataToEdit = nil
                                 DispatchQueue.main.async {
                                     viewModel.showAddedToast = true
@@ -150,7 +153,7 @@ struct AccessView: View {
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 }
                             }
@@ -182,26 +185,26 @@ struct AccessView: View {
                         self.viewModel.presentSheet = true
                     }
                     .offset(y: hideFloatingButton ? 150 : 0)
-                    .animation(.spring(), value:hideFloatingButton)
+                    .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .keyboardShortcut("+", modifiers: .command)
+                    //.keyboardShortcut("+", modifiers: .command)
                 }
             }
         }
     }
     
-    private func debounceHideFloatingButton(_ hide: Bool) {
-        scrollDebounceCancellable?.cancel()
-        scrollDebounceCancellable = Just(hide)
-            .throttle(for: .milliseconds(0), scheduler: RunLoop.main, latest: true)
-            .sink { shouldHide in
-                withAnimation {
-                    self.hideFloatingButton = shouldHide
-                }
-            }
-    }
-    
+//    private func debounceHideFloatingButton(_ hide: Bool) {
+//        scrollDebounceCancellable?.cancel()
+//        scrollDebounceCancellable = Just(hide)
+//            .throttle(for: .milliseconds(0), scheduler: RunLoop.main, latest: true)
+//            .sink { shouldHide in
+//                //withAnimation {
+//                    self.hideFloatingButton = shouldHide
+//                //}
+//            }
+//    }
+//    
     @ViewBuilder
     func keyCell(keyData: KeyData) -> some View {
         SwipeView {
@@ -584,7 +587,7 @@ struct AccessViewUsersView: View {
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             presentationMode.wrappedValue.dismiss()
                                         }
-                                    }).keyboardShortcut(.delete, modifiers: .command)
+                                    })//.keyboardShortcut(.delete, modifiers: .command)
                                         .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                 }
                             }
@@ -681,8 +684,8 @@ struct CentrePopup_DeleteKey: CentrePopup {
                         CustomBackButton() {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
+                                self.viewModel.keyToDelete = (nil,nil)
                                 dismiss()
-                                
                             }
                         }
                     }
@@ -693,24 +696,28 @@ struct CentrePopup_DeleteKey: CentrePopup {
                         withAnimation {
                             self.viewModel.loading = true
                         }
+                       
+                        
                         Task {
+                            try await Task.sleep(nanoseconds: 1_500_000_000)
                             if self.keyToDelete.0 != nil && self.keyToDelete.1 != nil {
                                 switch await self.viewModel.deleteKey(key: self.keyToDelete.0 ?? "") {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
-                                    withAnimation {
-                                        withAnimation {
-                                            self.viewModel.loading = false
-                                            self.viewModel.getKeys()
-                                        }
-                                        //self.viewModel.showAlert = false
-                                        dismiss()
-                                        
-                                        self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showToast = false
-                                        }
+                                    DispatchQueue.main.async {
+                                        viewModel.getKeys()
                                     }
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                    }
+                                    dismiss()
+                                    self.viewModel.keyToDelete = (nil,nil)
+                                        //self.viewModel.showAlert = false
+                                     self.viewModel.showToast = true
+                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                        self.viewModel.showToast = false
+                                    }
+                                    
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
                                     withAnimation {

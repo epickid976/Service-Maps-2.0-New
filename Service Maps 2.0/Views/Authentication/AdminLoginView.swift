@@ -139,7 +139,7 @@ struct AdminLoginView: View {
                 HStack {
                     if synchronizationManager.startupState != .AdminLogin {
                         if !loading {
-                            CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                            CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
                         }
                     }
                     
@@ -227,7 +227,7 @@ struct AdminLoginView: View {
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
                     .controlSize(.large)
-                    .keyboardShortcut("\r", modifiers: .command)
+                    //.keyboardShortcut("\r", modifiers: .command)
                     //.padding([.bottom])
                 }
                 .padding()

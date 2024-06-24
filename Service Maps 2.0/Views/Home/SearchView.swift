@@ -55,14 +55,14 @@ struct SearchView: View {
                                     Text("Search for a Territory, Address, House, Visit")
                                         .font(.title)
                                         .fontWeight(.heavy)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.secondaryLabel)
                                         .multilineTextAlignment(.center)
                                         .padding(.top, -50)
                                 } else {
                                     Text("Search for a Phone Territory, Number, Call")
                                         .font(.title)
                                         .fontWeight(.heavy)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.secondaryLabel)
                                         .multilineTextAlignment(.center)
                                         .padding(.top, -50)
                                 }
@@ -85,7 +85,7 @@ struct SearchView: View {
                                 Text("Searching...")
                                     .font(.title)
                                     .fontWeight(.heavy)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.secondaryLabel)
                                     .multilineTextAlignment(.center)
                                     .padding(.top, -50)
                             }
@@ -106,7 +106,7 @@ struct SearchView: View {
                                     Text("No results found")
                                         .font(.title)
                                         .fontWeight(.heavy)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.secondaryLabel)
                                         .multilineTextAlignment(.center)
                                         .padding(.top, -50)
                                 }
@@ -157,7 +157,7 @@ struct SearchView: View {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     presentationMode.wrappedValue.dismiss()
                                 }
-                            }).keyboardShortcut(.delete, modifiers: .command)
+                            })//.keyboardShortcut(.delete, modifiers: .command)
                             .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $progress, animation: $backAnimation))
                         }
                     }
@@ -215,7 +215,7 @@ struct MySearchResultItem: View {
                             Text("Doors: \(AddressData(id: ObjectIdentifier(TerritoryAddressObject().createTerritoryAddressObject(from: data.address!)), address: data.address!, houseQuantity: 0, accessLevel: .User).houseQuantity)")
                                 .font(.body)
                                 .lineLimit(5)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.secondaryLabel)
                                 .fontWeight(.bold)
                                 .multilineTextAlignment(.leading)
                                 .hSpacing(.leading)
@@ -237,7 +237,7 @@ struct MySearchResultItem: View {
             case .Visit:
                 Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!, visitIdToScrollTo: data.visit!.id)).implementPopupView()) {
-                    VisitCell(visit: VisitData(id: UUID(), visit: data.visit!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: VisitObject().createVisitObject(from: data.visit!)) ?? .User))
+                    VisitCell(visit: VisitData(id: UUID(), visit: data.visit!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: VisitObject().createVisitObject(from: data.visit!)) ?? .User), mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .PhoneTerritory:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
@@ -247,53 +247,7 @@ struct MySearchResultItem: View {
             case .Number:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: data.phoneTerritory!, phoneNumberToScrollTo: data.number!.id).implementPopupView()).implementPopupView()) {
-                    HStack(spacing: 10) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(PhoneNumbersData(id: UUID(), phoneNumber: data.number!, phoneCall: nil).phoneNumber.number.formatPhoneNumber())")
-                                .font(.headline)
-                                .fontWeight(.heavy)
-                                .foregroundColor(.primary)
-                                .hSpacing(.leading)
-                            Text("House: \(PhoneNumbersData(id: UUID(), phoneNumber: data.number!, phoneCall: nil).phoneNumber.house ?? "N/A")")
-                                .font(.body)
-                                .lineLimit(5)
-                                .foregroundColor(.secondary)
-                                .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
-                                .hSpacing(.leading)
-                            VStack {
-                                HStack {
-                                    if let call = PhoneNumbersData(id: UUID(), phoneNumber: data.number!, phoneCall: nil).phoneCall  {
-                                            Text("Note: \(call.notes)")
-                                                .font(.headline)
-                                                .lineLimit(2)
-                                                .foregroundColor(.primary)
-                                                .fontWeight(.bold)
-                                                .multilineTextAlignment(.leading)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                                .hSpacing(.leading)
-                                        
-                                    } else {
-                                        Text("Note: N/A")
-                                            .font(.headline)
-                                            .lineLimit(2)
-                                            .foregroundColor(.primary)
-                                            .fontWeight(.bold)
-                                            .multilineTextAlignment(.leading)
-                                            .hSpacing(.leading)
-                                        
-                                    }
-                                }
-                            }
-                            .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 75)
-                        }
-                        .frame(maxWidth: mainWindowSize.width * 0.90)
-                    }
-                    //.id(territory.id)
-                    .padding(10)
-                    .frame(minWidth: mainWindowSize.width * 0.95)
-                    .background(.thinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    PhoneNumberCell(numbersData: PhoneNumbersData(id: UUID(), phoneNumber: data.number!), mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .Call:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()

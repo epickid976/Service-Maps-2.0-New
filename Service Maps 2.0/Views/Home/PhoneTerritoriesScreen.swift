@@ -118,7 +118,7 @@ struct PhoneTerritoriesScreen: View {
                                             SwipeViewGroup {
                                                 if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                        ForEach(viewModel.phoneData!, id: \.self) { phoneData in
+                                                        ForEach(viewModel.phoneData!, id: \.territory.id) { phoneData in
                                                    
                                                             let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
                                                             
@@ -126,9 +126,11 @@ struct PhoneTerritoriesScreen: View {
                                                         }.modifier(ScrollTransitionModifier())
                                                     }
                                                 } else {
-                                                    ForEach(viewModel.phoneData!, id: \.self) { phoneData in
-                                                        territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id)
-                                                    }.modifier(ScrollTransitionModifier())
+                                                    LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                        ForEach(viewModel.phoneData!, id: \.territory.id) { phoneData in
+                                                            territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id)
+                                                        }.modifier(ScrollTransitionModifier())
+                                                    }
                                                 }
                                                 //.animation(.default, value: viewModel.phoneData!)
                                                 
@@ -161,7 +163,8 @@ struct PhoneTerritoriesScreen: View {
                         .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .navigationDestination(isPresented: $viewModel.presentSheet) {
                             AddPhoneTerritoryView(territory: viewModel.currentTerritory) {
-                                synchronizationManager.startupProcess(synchronizing: true)
+                                //synchronizationManager.startupProcess(synchronizing: true)
+                                viewModel.getTeritories()
                                 DispatchQueue.main.async {
                                     viewModel.showAddedToast = true
                                 }
@@ -185,7 +188,7 @@ struct PhoneTerritoriesScreen: View {
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                 presentationMode.wrappedValue.dismiss()
                                             }
-                                        }).keyboardShortcut(.delete, modifiers: .command)
+                                        })//.keyboardShortcut(.delete, modifiers: .command)
                                             .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                     }
                                 }
@@ -197,10 +200,10 @@ struct PhoneTerritoriesScreen: View {
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                 searchViewDestination = true
                                             }
-                                        }).keyboardShortcut(.delete, modifiers: .command)
+                                        })//.keyboardShortcut(.delete, modifiers: .command)
                                             .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                     }
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) }).keyboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 }
                             }
@@ -248,7 +251,7 @@ struct PhoneTerritoriesScreen: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    .keyboardShortcut("+", modifiers: .command)
+                   // //.keyboardShortcut("+", modifiers: .command)
                 }
             }
         }
@@ -398,6 +401,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                                 switch await self.viewModel.deleteTerritory(territory: self.viewModel.territoryToDelete.0 ?? "") {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
+                                    viewModel.getTeritories()
                                     withAnimation {
                                         withAnimation {
                                             self.viewModel.loading = false

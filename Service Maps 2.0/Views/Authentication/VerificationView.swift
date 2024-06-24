@@ -102,7 +102,7 @@ struct VerificationView: View {
                                 }
                             }
                         }
-                    }.keyboardShortcut("\r", modifiers: .command)
+                    }//.keyboardShortcut("\r", modifiers: .command)
                 }
             }
             .alert(isPresented: $viewModel.showAlert) {

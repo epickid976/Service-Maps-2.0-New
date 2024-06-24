@@ -107,7 +107,7 @@ struct NoDataView: View {
                             Image(systemName: "gearshape")
                                 .font(.system(size: 20))
                                 .foregroundColor(colorScheme == .dark ? .white : .black)
-                        }.keyboardShortcut(.delete, modifiers: .command)
+                        }//.keyboardShortcut(.delete, modifiers: .command)
                         
                     }
                 }

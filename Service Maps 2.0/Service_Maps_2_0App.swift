@@ -22,12 +22,7 @@ struct Service_Maps_2_0App: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     @StateObject var universalLinksManager = UniversalLinksManager.shared
-    
-    init() {
-        //        BGTaskScheduler.shared.register(forTaskWithIdentifier: "￼com.serviceMaps.uploadPendingTasks", using: nil) { task in
-        //            ReuploaderWorker.shared.handleReupload(task: task as! BGProcessingTask)
-        //        }
-    }
+    @StateObject var realtimeManager = RealtimeManager.shared
     
     var body: some Scene {
         WindowGroup {
@@ -36,82 +31,99 @@ struct Service_Maps_2_0App: App {
             
             
             //GeometryReader { proxy in
-                NavigationStack {
-                    switch destination {
-                    case .SplashScreen:
-                        SplashScreenView()
-                    case .HomeScreen:
-                        HomeTabView().implementPopupView()
-                    case .WelcomeScreen:
-                        WelcomeView() {
-                            DispatchQueue.main.async {
-                                synchronizationManager.startupProcess(synchronizing: true)
-                            }
+            NavigationStack {
+                switch destination {
+                case .SplashScreen:
+                    SplashScreenView()
+                case .HomeScreen:
+                    HomeTabView().implementPopupView()
+                case .WelcomeScreen:
+                    WelcomeView() {
+                        DispatchQueue.main.async {
+                            synchronizationManager.startupProcess(synchronizing: true)
                         }
-                    case .LoginScreen:
-                        LoginView() {
-                            DispatchQueue.main.async {
-                                synchronizationManager.startupProcess(synchronizing: true)
-                            }
-                        }
-                    case .AdministratorLoginScreen:
-                        AdminLoginView() {
-                            DispatchQueue.main.async {
-                                synchronizationManager.startupProcess(synchronizing: true)
-                            }
-                        }
-                    case .PhoneLoginScreen:
-                        PhoneLoginScreen() {
-                            DispatchQueue.main.async {
-                                synchronizationManager.startupProcess(synchronizing: true)
-                            }
-                        }
-                        
-                    case .ValidationScreen:
-                        VerificationView() {
-                            DispatchQueue.main.async {
-                                synchronizationManager.startupProcess(synchronizing: true)
-                            }
-                        }
-                    case .LoadingScreen:
-                        LoadingView()
-                    case .NoDataScreen:
-                        NoDataView()
-                    case .ActivateEmail:
-                        //TO DO ADD VIEWs
-                        ValidationView()
-                    case .RegisterKeyView:
-                        RegisterKeyView()
-                        
-                    case .ResetPasswordView:
-                        ResetPassword()
-                        
-                    case .PrivacyPolicyView:
-                        PrivacyPolicy()
-                        
                     }
+                case .LoginScreen:
+                    LoginView() {
+                        DispatchQueue.main.async {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    }
+                case .AdministratorLoginScreen:
+                    AdminLoginView() {
+                        DispatchQueue.main.async {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    }
+                case .PhoneLoginScreen:
+                    PhoneLoginScreen() {
+                        DispatchQueue.main.async {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    }
+                    
+                case .ValidationScreen:
+                    VerificationView() {
+                        DispatchQueue.main.async {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    }
+                case .LoadingScreen:
+                    LoadingView()
+                case .NoDataScreen:
+                    NoDataView()
+                case .ActivateEmail:
+                    //TO DO ADD VIEWs
+                    ValidationView()
+                case .RegisterKeyView:
+                    RegisterKeyView()
+                    
+                case .ResetPasswordView:
+                    ResetPassword()
+                    
+                case .PrivacyPolicyView:
+                    PrivacyPolicy()
+                    
                 }
-                .onOpenURL(perform: { url in
-                    universalLinksManager.handleIncomingURL(url)
-                })
-                .animation(.easeIn(duration: 0.25), value: destination)
-                .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
-                .navigationTransition(
-                    .fade(.in)
-                )
+            }
+            .onOpenURL(perform: { url in
+                universalLinksManager.handleIncomingURL(url)
+            })
+            .animation(.easeIn(duration: 0.25), value: destination)
+            .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
+            .navigationTransition(
+                .fade(.in)
+            )
             //}
             
             
         }
-        
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 if isMoreThanAMinuteOld(date: StorageManager.shared.lastTime) {
                     synchronizationManager.startupProcess(synchronizing: true)
                 }
-                        
+                Task {
+                    do {
+                        try await realtimeManager.initAblyConnection()
+                        print("Ably connection initialized")
+                        realtimeManager.subscribeToChanges {
+                            switch $0 {
+                            case .success:
+                                print("Subscribed to changes")
+                            case .failure(let error):
+                                print("Error: \(error)")
+                            }
+                        }
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+            } else if newPhase == .background {
+                realtimeManager.unsubscribeToChanges()
             }
         }
+        
     }
     
     func instantiateDestination() -> DestinationEnum {

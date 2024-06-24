@@ -8,7 +8,7 @@
 import SwiftUI
 import ActivityIndicatorView
 import NavigationTransitions
-
+import Lottie
 struct LoadingView: View {
     @Environment(\.dismiss) private var dismiss
     
@@ -23,8 +23,11 @@ struct LoadingView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    LottieAnimationUIView(animationName: "LoadingAnimation", shouldLoop: true, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
+                    LottieView(animation: .named("LoadingAnimation"))
+                        .playing(loopMode: .loop)
+                        .resizable()
                         .frame(width: 350, height: 350)
+                    
                     
                     Text("Loading")
                         .bold()

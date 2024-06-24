@@ -134,7 +134,7 @@ struct AddPhoneTerritoryView: View {
                     
                     HStack {
                         if !viewModel.loading {
-                            CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }.keyboardShortcut("\r", modifiers: [.command, .shift])
+                            CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
                         }
                         //.padding([.top])
                         
@@ -178,7 +178,7 @@ struct AddPhoneTerritoryView: View {
                                     }
                                 }
                             }
-                        }.keyboardShortcut("\r", modifiers: .command)
+                        }//.keyboardShortcut("\r", modifiers: .command)
                     }
                     .padding([.horizontal, .bottom])
                     .vSpacing(.bottom)
@@ -258,6 +258,7 @@ class AddPhoneTerritoryViewModel: ObservableObject {
     func addTerritory() async -> Result<Bool, Error>{
         loading = true
         let territoryObject = PhoneTerritoryObject()
+        territoryObject.id = "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)"
         territoryObject.number = Int64(number!)
         territoryObject.territoryDescription = description
         territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)

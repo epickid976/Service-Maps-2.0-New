@@ -8,7 +8,7 @@
 import Foundation
 import RealmSwift
 import Combine
-
+import SwiftUI
 
 class RealmManager: ObservableObject {
     static let shared = RealmManager()
@@ -70,6 +70,46 @@ class RealmManager: ObservableObject {
     
     @Published var visitsPastTwoWeeks: Results<VisitObject>
     
+    
+    func getAllTerritoriesDirect() -> [TerritoryObject] {
+        return Array(realmDatabase.objects(TerritoryObject.self))
+    }
+    
+    func getAllAddressesDirect() -> [TerritoryAddressObject] {
+        return Array(realmDatabase.objects(TerritoryAddressObject.self))
+    }
+    
+    func getAllHousesDirect() -> [HouseObject] {
+        return Array(realmDatabase.objects(HouseObject.self))
+    }
+    
+    func getAllVisitsDirect() -> [VisitObject] {
+        return Array(realmDatabase.objects(VisitObject.self))
+    }
+    
+    func getAllTokensDirect() -> [TokenObject] {
+        return Array(realmDatabase.objects(TokenObject.self))
+    }
+    
+    func getAllTokenTerritoriesDirect() -> [TokenTerritoryObject] {
+        return Array(realmDatabase.objects(TokenTerritoryObject.self))
+    }
+    
+    func getAllPhoneTerritoriesDirect() -> [PhoneTerritoryObject] {
+        return Array(realmDatabase.objects(PhoneTerritoryObject.self))
+    }
+    
+    func getAllPhoneNumbersDirect() -> [PhoneNumberObject] {
+        return Array(realmDatabase.objects(PhoneNumberObject.self))
+    }
+    
+    func getAllPhoneCallsDirect() -> [PhoneCallObject] {
+        return Array(realmDatabase.objects(PhoneCallObject.self))
+    }
+    
+    func getAllUserTokensDirect() -> [UserTokenObject] {
+        return Array(realmDatabase.objects(UserTokenObject.self))
+    }
     
     
     func addModel<T: Object>(_ object: T) -> Result<Bool, Error> {
@@ -356,7 +396,8 @@ class RealmManager: ObservableObject {
             let realmDatabase = try Realm()
             if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
                 try realmDatabase.write {
-                    realmDatabase.delete(entity)
+                    
+                        realmDatabase.delete(entity)
                 }
             } else {
                 return .failure(CustomErrors.NotFound)
@@ -632,7 +673,7 @@ class RealmManager: ObservableObject {
     
     @MainActor
     func getVisitData(houseId: String) -> AnyPublisher<[VisitData], Never> {
-        return CurrentValueSubject(visitsFlow)
+        return Just(visitsFlow)
             .flatMap { visits -> AnyPublisher<[VisitData], Never> in
                 let email = self.dataStore.userEmail
                 let name = self.dataStore.userName
@@ -649,8 +690,8 @@ class RealmManager: ObservableObject {
                         )
                     )
                 }
-                data.sort { $0.visit.date > $1.visit.date }
-                return CurrentValueSubject(data).eraseToAnyPublisher()
+                
+                return Just(data).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
@@ -686,7 +727,7 @@ class RealmManager: ObservableObject {
                     )
                 }
                 
-                return Just(data).eraseToAnyPublisher()
+                return CurrentValueSubject(data.sorted { $0.key.name < $1.key.name }).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         return flow
@@ -715,7 +756,7 @@ class RealmManager: ObservableObject {
                     )
                 }
                 
-                return Just(data).eraseToAnyPublisher()
+                return CurrentValueSubject(data.sorted { $0.territory.number < $1.territory.number }).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         return flow
@@ -744,7 +785,7 @@ class RealmManager: ObservableObject {
                     )
                 }
                 
-                return Just(data).eraseToAnyPublisher()
+                return CurrentValueSubject(data.sorted { $0.phoneNumber.house ?? "0" < $1.phoneNumber.house ?? "0"}).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         return flow
@@ -771,7 +812,7 @@ class RealmManager: ObservableObject {
                 }
                 
                 data.sort { $0.phoneCall.date > $1.phoneCall.date }
-                return Just(data).eraseToAnyPublisher()
+                return CurrentValueSubject(data).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
