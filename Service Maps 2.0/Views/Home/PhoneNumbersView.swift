@@ -19,13 +19,13 @@ import MijickPopupView
 struct PhoneNumbersView: View {
     var territory: PhoneTerritoryModel
     
-    @StateObject var viewModel: NumbersViewModel
+    @ObservedObject var viewModel: NumbersViewModel
     //@StateObject var callsViewModel: CallsViewModel
     init(territory: PhoneTerritoryModel, phoneNumberToScrollTo: String? = nil) {
         self.territory = territory
         
         let initialViewModel = NumbersViewModel(territory: territory, phoneNumberToScrollTo: phoneNumberToScrollTo)
-        _viewModel = StateObject(wrappedValue: initialViewModel)
+        _viewModel = ObservedObject(wrappedValue: initialViewModel)
     }
     
     @State var highlightedNumberId: String?
@@ -90,14 +90,14 @@ struct PhoneNumbersView: View {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                                                     ForEach(viewModel.phoneNumbersData!, id: \.phoneNumber.id) { numbersData in
                                                         let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
-                                                        numbersCell(numbersData: numbersData, mainWindowSize: proxy).id(numbersData.phoneNumber.id)
+                                                        numbersCell(numbersData: numbersData, mainWindowSize: proxy).id(numbersData.phoneNumber.id).transition(.customBackInsertion)
                                                             .padding(.bottom, 2)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             } else {
                                                 LazyVGrid(columns: [GridItem(.flexible())]) {
                                                     ForEach(viewModel.phoneNumbersData!, id: \.phoneNumber.id) { numbersData in
-                                                        numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id)
+                                                        numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id).transition(.customBackInsertion)
                                                             .padding(.bottom, 2)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
@@ -158,7 +158,7 @@ struct PhoneNumbersView: View {
                     .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
                         synchronizationManager.startupProcess(synchronizing: true)
                     }
-                    .scrollIndicators(.hidden)
+                    .scrollIndicators(.never)
                     .coordinateSpace(name: "scroll")
                 }
                 if AuthorizationLevelManager().existsAdminCredentials() {
@@ -686,6 +686,7 @@ struct CentrePopup_AddNumber: CentrePopup {
 
 struct PhoneNumberCell: View {
     @ObservedObject var callViewModel: CallsViewModel
+    @StateObject var realtimeManager = RealtimeManager.shared
     @State var numbersData: PhoneNumbersData
     var mainWindowSize: CGSize
     @State private var cancellable: AnyCancellable?
@@ -694,6 +695,10 @@ struct PhoneNumberCell: View {
         self._callViewModel = ObservedObject(initialValue: CallsViewModel(phoneNumber: numbersData.phoneNumber))
         self.numbersData = numbersData
         self.mainWindowSize = mainWindowSize
+    }
+    
+    var isIpad: Bool {
+        return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
     
     var body: some View {
@@ -713,33 +718,26 @@ struct PhoneNumberCell: View {
                     .hSpacing(.leading)
                 VStack {
                     HStack {
-                        if let call = numbersData.phoneCall  {
-                            Text("\(call.notes)")
-                                .font(.headline)
-                                .lineLimit(2)
-                                .foregroundColor(.secondaryLabel)
-                                .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .hSpacing(.leading)
-                            
-                        } else {
-                            Text("No Notes")
-                                .font(.headline)
-                                .lineLimit(2)
-                                .foregroundColor(.secondaryLabel)
-                                .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
-                                .hSpacing(.leading)
-                            
-                        }
+                        Text("\(numbersData.phoneCall?.notes ?? "No Notes")")
+                            .font(.headline)
+                            .lineLimit(2)
+                            .foregroundColor(.secondaryLabel)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .hSpacing(.leading)
                     }
                 }
                 .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 75)
             }
             .frame(maxWidth: mainWindowSize.width * 0.90)
         }
-        
+        .onChange(of: realtimeManager.lastMessage) { value in
+            if value != nil {
+                callViewModel.getCalls()
+            }
+            
+        }
         .onAppear {
             callViewModel.getCalls()
             cancellable = callViewModel.latestCallUpdatePublisher
@@ -759,6 +757,13 @@ struct PhoneNumberCell: View {
         .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        
+        .optionalViewModifier { content in
+            if isIpad {
+                content
+                    .frame(maxHeight: .infinity)
+            } else {
+                content
+            }
+        }
     }
 }

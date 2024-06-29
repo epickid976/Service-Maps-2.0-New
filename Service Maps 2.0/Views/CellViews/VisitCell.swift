@@ -40,6 +40,7 @@ struct VisitCell: View {
                     .foregroundColor(.primary)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
+                    .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer().frame(height: 5)
                 Text(visit.visit.user)
@@ -53,6 +54,14 @@ struct VisitCell: View {
         .padding(10)
         .frame(minWidth: ipad ? (mainWindowSize.width / 2) * 0.90 : mainWindowSize.width * 0.90)
         .background(.thinMaterial)
+        .optionalViewModifier { content in
+            if ipad {
+                content
+                    .frame(maxHeight: .infinity)
+            } else {
+                content
+            }
+        }
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }

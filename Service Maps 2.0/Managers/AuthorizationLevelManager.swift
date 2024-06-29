@@ -32,7 +32,7 @@ class AuthorizationLevelManager: ObservableObject {
         } catch {
             if let error = error.asAFError {
                 if error.responseCode == 401 {
-                    authorizationProvider.authorizationToken = nil
+                    dataStore.userEmail = nil
                     return true
                 }
             }

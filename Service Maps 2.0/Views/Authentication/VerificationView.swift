@@ -63,29 +63,36 @@ struct VerificationView: View {
                 Spacer()
                 
                 VStack {
-                    Button {
-                        Task {
-                            await viewModel.resendEmail() { result in
-                                HapticManager.shared.trigger(.lightImpact)
-                                switch result {
-                                case .success(_):
-                                    HapticManager.shared.trigger(.success)
-                                    print("success sending verification email (VerificationView)")
-                                case .failure(_):
-                                    HapticManager.shared.trigger(.error)
-                                    print("Error sending verification email (VerificationView)")
+                    
+                        Button {
+                            Task {
+                                await viewModel.resendEmail() { result in
+                                    HapticManager.shared.trigger(.lightImpact)
+                                    switch result {
+                                    case .success(_):
+                                        HapticManager.shared.trigger(.success)
+                                        print("success sending verification email (VerificationView)")
+                                    case .failure(_):
+                                        HapticManager.shared.trigger(.error)
+                                        print("Error sending verification email (VerificationView)")
+                                    }
                                 }
                             }
+                        } label: {
+                            Text("Resend Verification")
+                                .bold()
                         }
-                    } label: {
-                        Text("Resend Verification")
-                            .bold()
-                    }
+                    
                 }
                 
                 Spacer()
                     .frame(height: 20)
                 VStack {
+                    HStack {
+                        CustomBackButton() {
+                            HapticManager.shared.trigger(.lightImpact)
+                            synchronizationManager.startupState = .Welcome
+                        }
                     CustomButton(loading: loading, title: "Already Verified") {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation { loading = true }
@@ -103,6 +110,7 @@ struct VerificationView: View {
                             }
                         }
                     }//.keyboardShortcut("\r", modifiers: .command)
+                    }.padding()
                 }
             }
             .alert(isPresented: $viewModel.showAlert) {

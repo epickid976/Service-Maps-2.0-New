@@ -83,3 +83,52 @@ extension NavigationLink {
     }
 }
 
+
+class NavigationHistoryManager: ObservableObject {
+    @Published var history: [ViewName] = []
+
+    func append(view: ViewName) {
+        history.append(view)
+    }
+
+    func removeLast() {
+        history.removeLast()
+    }
+
+    func remove(to view: ViewName) {
+        if let index = history.firstIndex(of: view) {
+            history = Array(history.prefix(upTo: index + 1))
+        }
+    }
+}
+
+enum ViewName: String {
+    case territories = "Territories"
+    case addresses = "Addresses"
+    case houses = "Houses"
+    case visits = "Visits"
+}
+
+struct CustomNavigationBackButton: View {
+    @EnvironmentObject var navigationHistoryManager: NavigationHistoryManager
+    @Environment(\.presentationMode) var presentationMode
+
+    var body: some View {
+        Menu {
+            ForEach(navigationHistoryManager.history, id: \.self) { view in
+                Button(action: {
+                    navigationHistoryManager.remove(to: view)
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text(view.rawValue)
+                }
+            }
+        } label: {
+            HStack {
+                Image(systemName: "chevron.left")
+                Text("Back")
+            }
+        }
+        .padding()
+    }
+}

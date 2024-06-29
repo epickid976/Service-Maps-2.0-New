@@ -125,4 +125,28 @@ class UserAPI {
             return Result.failure(error)
         }
     }
+    
+    func deleteCall(call: PhoneCallModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/delete", body: call)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func addCall(call: PhoneCallModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/add", body: call)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func updateCall(call: PhoneCallModel) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/update", body: call)
+        } catch {
+            throw error.self
+        }
+    }
 }

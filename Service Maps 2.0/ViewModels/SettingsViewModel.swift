@@ -30,6 +30,8 @@ class SettingsViewModel: ObservableObject {
     @Published var errorText = ""
     @Published var deletionError = ""
     
+    @Published var showSharePopup = false
+    
     func getCongregationName() -> String{
         return dataStore.congregationName ?? ""
     }
@@ -126,12 +128,12 @@ class SettingsViewModel: ObservableObject {
                     }
                 }
             }
-            
-            Text(errorText)
-                .fontWeight(.bold)
-                .foregroundColor(.red)
-                .vSpacing(.bottom)
-            
+            if errorText != "" {
+                Text(errorText)
+                    .fontWeight(.bold)
+                    .foregroundColor(.red)
+                    .vSpacing(.bottom)
+            }
         }.padding(.bottom)
             .frame(maxWidth: .infinity)
     }
@@ -193,12 +195,12 @@ class SettingsViewModel: ObservableObject {
                         Image(systemName: "arrowshape.right.circle.fill")
                             .imageScale(.large)
                             .padding(.horizontal)
-                    }.onTapGesture {
-                        HapticManager.shared.trigger(.lightImpact)
-                        self.phoneBookLogin = true
                     }
                     //.padding(.horizontal)
                 }
+            }.onTapGesture {
+                HapticManager.shared.trigger(.lightImpact)
+                self.phoneBookLogin = true
             }
             .padding(10)
             .frame(minWidth: mainWindowSize.width * 0.95, minHeight: 75)
@@ -263,12 +265,12 @@ class SettingsViewModel: ObservableObject {
                         Image(systemName: "arrowshape.right.circle.fill")
                             .imageScale(.large)
                             .padding(.horizontal)
-                    }.onTapGesture {
-                        HapticManager.shared.trigger(.lightImpact)
-                        self.presentSheet = true
                     }
                     //.padding(.horizontal)
                 }
+            }.onTapGesture {
+                HapticManager.shared.trigger(.lightImpact)
+                self.presentSheet = true
             }
             .padding(10)
             .frame(minWidth: mainWindowSize.width * 0.95, minHeight: 75)
@@ -317,15 +319,7 @@ class SettingsViewModel: ObservableObject {
         VStack {
             Button {
                 HapticManager.shared.trigger(.lightImpact)
-                let url = URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103?l=fr-FR")
-                let av = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
-                
-                UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
-                
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
-                    av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
-                }
+                self.showSharePopup = true
             } label: {
                 HStack {
                     HStack {

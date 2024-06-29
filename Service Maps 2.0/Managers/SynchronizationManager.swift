@@ -21,6 +21,8 @@ class SynchronizationManager: ObservableObject {
     private var loaded = false
     private var timer: Timer?
     
+    @Published var back_from_verification = false
+    
     func startSyncAndHaptics() {
         HapticManager.shared.trigger(.lightImpact)
         
@@ -66,7 +68,7 @@ class SynchronizationManager: ObservableObject {
         let territoryEntities = realmDatabase.objects(TerritoryObject.self)
         let phoneTerritoriesEntities = realmDatabase.objects(PhoneTerritoryObject.self)
         
-        if dataStore.userEmail == nil {
+        if dataStore.userEmail == nil || back_from_verification {
             return StartupState.Welcome
         }
         

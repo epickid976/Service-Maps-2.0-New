@@ -18,7 +18,7 @@ class RealmManager: ObservableObject {
     
     //var dataUploaderManager = DataUploaderManager()
     
-    init() {
+    private init() {
         realmDatabase = try! Realm()
         
         let territoryEntities = realmDatabase.objects(TerritoryObject.self)
@@ -117,7 +117,7 @@ class RealmManager: ObservableObject {
             let realmDatabase = try Realm()
 
             try realmDatabase.write {
-                realmDatabase.add(object)
+                realmDatabase.add(object, update: .all)
             }
             return Result.success(true)
         } catch {
@@ -306,7 +306,7 @@ class RealmManager: ObservableObject {
                     entity.user = phoneCall.user
                 }
             } else {
-                return .failure(CustomErrors.NotFound)
+                throw CustomErrors.NotFound
             }
             return .success(true)
         } catch {
@@ -797,7 +797,7 @@ class RealmManager: ObservableObject {
             .flatMap { phoneCalls -> AnyPublisher<[PhoneCallData], Never> in
                 let email = self.dataStore.userEmail
                 let name = self.dataStore.userName
-                
+                print("PHONE CALLS: \(phoneCalls)")
                 var data = [PhoneCallData]()
                 
                 phoneCalls.filter { $0.phoneNumber == phoneNumberId }.forEach { call in
@@ -811,8 +811,9 @@ class RealmManager: ObservableObject {
                     )
                 }
                 
-                data.sort { $0.phoneCall.date > $1.phoneCall.date }
-                return CurrentValueSubject(data).eraseToAnyPublisher()
+                //data.sort { $0.phoneCall.date > $1.phoneCall.date }
+                //data.filterInPlace(isIncluded: { $0.phoneCall.id != "0"})
+                return Just(data).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

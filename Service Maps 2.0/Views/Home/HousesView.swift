@@ -168,7 +168,7 @@ struct HousesView: View {
                         .navigationTransition(viewModel.presentSheet || viewModel.houseIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                         .navigationViewStyle(StackNavigationViewStyle())
                     }.coordinateSpace(name: "scroll")
-                        .scrollIndicators(.hidden)
+                        .scrollIndicators(.never)
                         .refreshable {
                             synchronizationManager.startupProcess(synchronizing: true)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

@@ -35,7 +35,7 @@ struct CustomField: View {
                 .textInputAutocapitalization(diableCapitalization ?? false ? .never : .sentences)
                 .padding()
                 .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
+                .cornerRadius(16)
                 .padding(.horizontal)
                 .font(.system(size: 16, weight: .regular))
                 .accentColor(.blue)

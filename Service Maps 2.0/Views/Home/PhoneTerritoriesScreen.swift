@@ -44,8 +44,21 @@ struct PhoneTerritoriesScreen: View {
     
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     
+    @State var isCircleExpanded = false
+    
+    @StateObject var dataStore = StorageManager.shared
+    
     var body: some View {
-        GeometryReader { proxy in
+        let transition: AnyNavigationTransition
+                if viewModel.presentSheet || viewModel.phoneTerritoryToScrollTo != nil {
+                    transition = AnyNavigationTransition.zoom.combined(with: .fade(.in))
+                } else if searchViewDestination {
+                    transition = AnyNavigationTransition.fade(.cross)
+                } else {
+                    transition = AnyNavigationTransition.slide.combined(with: .fade(.in))
+                }
+        
+        return GeometryReader { proxy in
             ZStack {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
@@ -101,9 +114,9 @@ struct PhoneTerritoriesScreen: View {
                                                         .padding(.horizontal, 10)
                                                     ScrollView(.horizontal, showsIndicators: false) {
                                                         LazyHStack {
-                                                            ForEach(viewModel.recentPhoneData!, id: \.self) { territoryData in
+                                                            ForEach(viewModel.recentPhoneData!, id: \.id) { territoryData in
                                                                 NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
-                                                                    recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size)
+                                                                    recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
                                                                 }.onTapHaptic(.lightImpact)
                                                             }
                                                         }
@@ -122,13 +135,13 @@ struct PhoneTerritoriesScreen: View {
                                                    
                                                             let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
                                                             
-                                                            territoryCell(phoneData: phoneData, mainViewSize: proxy).id(phoneData.territory.id)
+                                                            territoryCell(phoneData: phoneData, mainViewSize: proxy).id(phoneData.territory.id).transition(.customBackInsertion)
                                                         }.modifier(ScrollTransitionModifier())
                                                     }
                                                 } else {
                                                     LazyVGrid(columns: [GridItem(.flexible())]) {
                                                         ForEach(viewModel.phoneData!, id: \.territory.id) { phoneData in
-                                                            territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id)
+                                                            territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id).transition(.customBackInsertion)
                                                         }.modifier(ScrollTransitionModifier())
                                                     }
                                                 }
@@ -175,9 +188,14 @@ struct PhoneTerritoriesScreen: View {
                             }
                         }
                         .navigationDestination(isPresented: $searchViewDestination) {
-                            NavigationLazyView(SearchView(searchMode: .PhoneTerritories))
+                            NavigationLazyView(SearchView(searchMode: .PhoneTerritories) { DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                withAnimation(.spring()) {
+                                    isCircleExpanded = false
+                                    viewModel.backAnimation.toggle()
+                                }
+                            }})
                         }
-                        //.scrollIndicators(.hidden)
+                        //.scrollIndicators(.never)
                         .navigationBarTitle("Phone Territories", displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
@@ -195,23 +213,37 @@ struct PhoneTerritoriesScreen: View {
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    if viewModel.phoneTerritoryToScrollTo == nil {
-                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                searchViewDestination = true
-                                            }
-                                        })//.keyboardShortcut(.delete, modifiers: .command)
-                                            .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
-                                    }
+                                    
                                     Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime)).padding(.leading, viewModel.phoneData == nil || dataStore.synchronized ? 0 : 50)
+                                if viewModel.phoneData == nil || dataStore.synchronized {
+                                    if viewModel.phoneTerritoryToScrollTo == nil {
+                                        Button("", action: { HapticManager.shared.trigger(.lightImpact) ;
+                                            //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                                withAnimation(.spring()) {
+                                                    isCircleExpanded = true
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                        viewModel.backAnimation.toggle()
+                                                        searchViewDestination = true
+                                                    }
+                                                }
+                                                
+                                            }
+                                            //}
+                                            
+                                        }).scaleEffect(viewModel.phoneData == nil || dataStore.synchronized ? 1 : 0)
+                                        .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: !isCircleExpanded ? 40 : proxy.size.width * 4, height: !isCircleExpanded ? 40 : proxy.size.height * 4, progress: $viewModel.progress, animation: $viewModel.backAnimation)).transition(.scale).padding(.top, isCircleExpanded ? 1000 : 0).animation(.spring(), value: isCircleExpanded)
+                                    }
                                 }
+                                }.animation(.spring(), value: viewModel.phoneData == nil || viewModel.dataStore.synchronized)
                             }
                         }
-                        .navigationTransition(viewModel.presentSheet || searchViewDestination || viewModel.phoneTerritoryToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                        .navigationTransition(transition)
                         .navigationViewStyle(StackNavigationViewStyle())
                     }.coordinateSpace(name: "scroll")
-                        .scrollIndicators(.hidden)
+                        .scrollIndicators(.never)
                         .refreshable {
                             synchronizationManager.startupProcess(synchronizing: true)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

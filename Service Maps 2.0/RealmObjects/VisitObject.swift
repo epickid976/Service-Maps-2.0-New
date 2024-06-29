@@ -9,16 +9,12 @@ import Foundation
 import RealmSwift
 
 class VisitObject: Object, Identifiable {
-    @Persisted var id: String
+    @Persisted(primaryKey: true) var id: String
     @Persisted var house: String
     @Persisted var date: Int64
     @Persisted var symbol: String
     @Persisted var notes: String
     @Persisted var user: String
-    
-    override static func primaryKey() -> String? {
-        return "id"
-    }
 
     static func == (lhs: VisitObject, rhs: VisitModel) -> Bool {
         return lhs.id == rhs.id &&

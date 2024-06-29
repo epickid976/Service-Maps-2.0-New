@@ -306,19 +306,4 @@ class ModelToStruct {
   }
 }
 
-extension Array {
-    mutating func filterInPlace(isIncluded: (Element) throws -> Bool) rethrows {
-        var writeIndex = self.startIndex
-        for readIndex in self.indices {
-            let element = self[readIndex]
-            let include = try isIncluded(element)
-            if include {
-                if writeIndex != readIndex {
-                    self[writeIndex] = element
-                }
-                writeIndex = self.index(after: writeIndex)
-            }
-        }
-        self.removeLast(self.distance(from: writeIndex, to: self.endIndex))
-    }
-}
+

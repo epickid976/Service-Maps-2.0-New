@@ -18,6 +18,10 @@ struct CellView: View {
     
     @State private var cellHeight: CGFloat = 0
     
+    var ipad: Bool {
+        return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
+    }
+    
     var body: some View {
             HStack(spacing: 10) {
                 VStack {
@@ -62,6 +66,14 @@ struct CellView: View {
             .frame(minWidth: isIpad ? (mainWindowSize.width * width ) / 2 : mainWindowSize.width * width)
             .background(.thinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
+            .optionalViewModifier { content in
+                if ipad {
+                    content
+                        .frame(maxHeight: .infinity)
+                } else {
+                    content
+                }
+            }
             .background(GeometryReader { geometry in
                             Color.clear
                                 .onAppear {
@@ -81,6 +93,10 @@ struct PhoneTerritoryCellView: View {
     var mainWindowSize: CGSize
     
     @State private var cellHeight: CGFloat = 0
+    
+    var isIpad: Bool {
+        return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
+    }
     
     var body: some View {
         HStack(spacing: 10) {
@@ -136,6 +152,14 @@ struct PhoneTerritoryCellView: View {
                                 print("Cell height: \(self.cellHeight)")
                             }
                     })
+        .optionalViewModifier { content in
+            if isIpad {
+                content
+                    .frame(maxHeight: .infinity)
+            } else {
+                content
+            }
+        }
     }
     
 }

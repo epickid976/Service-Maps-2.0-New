@@ -147,7 +147,7 @@ struct AccessView: View {
                                 )
                         }
                     
-                    //.scrollIndicators(.hidden)
+                    //.scrollIndicators(.never)
                         .navigationBarTitle("Keys", displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
@@ -163,7 +163,7 @@ struct AccessView: View {
                 }
                 
                 .coordinateSpace(name: "scroll")
-                .scrollIndicators(.hidden)
+                .scrollIndicators(.never)
                 .refreshable {
                     synchronizationManager.startupProcess(synchronizing: true)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -595,7 +595,7 @@ struct AccessViewUsersView: View {
                         .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                         .navigationViewStyle(StackNavigationViewStyle())
                 }
-                .scrollIndicators(.hidden)
+                .scrollIndicators(.never)
             }
         }
         .onAppear {

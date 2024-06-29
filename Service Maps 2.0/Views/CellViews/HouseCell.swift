@@ -12,11 +12,7 @@ import Combine
 struct HouseCell: View {
     @ObservedObject var visitViewModel: VisitsViewModel
     @StateObject var realtimeManager = RealtimeManager.shared
-    @State var house: HouseData {
-        didSet {
-            print(house)
-        }
-    }
+    @State var house: HouseData
     var mainWindowSize: CGSize
     
     init(house: HouseData, mainWindowSize: CGSize) {
@@ -27,6 +23,10 @@ struct HouseCell: View {
     }
     
     @State private var cancellable: AnyCancellable?
+    
+    var isIpad: Bool {
+        return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
+    }
     
     var body: some View {
         HStack(spacing: 10) {
@@ -72,6 +72,15 @@ struct HouseCell: View {
         }
         .padding(10)
         .frame(minWidth: mainWindowSize.width * 0.95)
+        .optionalViewModifier { content in
+            if isIpad {
+                content
+                    .frame(maxHeight: .infinity)
+            } else {
+                content
+            }
+        }
+        
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .onChange(of: realtimeManager.lastMessage) { value in

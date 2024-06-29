@@ -22,7 +22,11 @@ class CallsViewModel: ObservableObject {
     let latestCallUpdatePublisher = PassthroughSubject<PhoneCallModel, Never>()
     private var cancellables = Set<AnyCancellable>()
     
-    @Published var callsData: Optional<[PhoneCallData]> = nil
+    @Published var callsData: Optional<[PhoneCallData]> = nil {
+        didSet {
+            print("Start of Array: \(callsData)")
+        }
+    }
     //@ObservedObject var databaseManager = RealmManager.shared
     
     init(phoneNumber: PhoneNumberModel, callToScrollTo: String? = nil) {
@@ -86,24 +90,17 @@ extension CallsViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { callData in
-                if self.search.isEmpty {
-                    DispatchQueue.main.async {
-                        self.callsData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date}
-                        
-                        if let latestCall = callData.sorted(by: { $0.phoneCall.date > $1.phoneCall.date }).first?.phoneCall {
-                            self.latestCallUpdatePublisher.send(latestCall)
-                        }
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            if let callToScrollTo = callToScrollTo {
-                                self.callToScrollTo = callToScrollTo
-                            }
-                        }
+                DispatchQueue.main.async {
+                    print("Calldata: \(callData)")
+                    self.callsData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date}
+                    
+                    if let latestCall = callData.sorted(by: { $0.phoneCall.date > $1.phoneCall.date }).first?.phoneCall {
+                        self.latestCallUpdatePublisher.send(latestCall)
                     }
-                } else {
-                    DispatchQueue.main.async {
-                        self.callsData = callData.filter { callData in
-                            callData.phoneCall.notes.lowercased().contains(self.search.lowercased())
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if let callToScrollTo = callToScrollTo {
+                            self.callToScrollTo = callToScrollTo
                         }
                     }
                 }
@@ -118,6 +115,11 @@ struct CallCell: View {
     var call: PhoneCallData
     var ipad: Bool = false
     @Environment(\.mainWindowSize) var mainWindowSize
+    
+    var isIpad: Bool {
+        return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
+    }
+
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
@@ -157,6 +159,14 @@ struct CallCell: View {
         .frame(minWidth: ipad ? (mainWindowSize.width / 2) * 0.90 : mainWindowSize.width * 0.90)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+        .optionalViewModifier { content in
+            if isIpad {
+                content
+                    .frame(maxHeight: .infinity)
+            } else {
+                content
+            }
+        }
     }
     
 }

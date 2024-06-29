@@ -29,6 +29,9 @@ struct SearchBar: View {
                     }
                 }
         }
+        .onAppear {
+            isFocused.wrappedValue = true
+        }
         .padding(8)
         .background(Color.secondaryLabel.opacity(0.2))
         .cornerRadius(10)

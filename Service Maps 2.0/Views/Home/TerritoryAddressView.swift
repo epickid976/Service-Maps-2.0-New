@@ -157,7 +157,7 @@ struct TerritoryAddressView: View {
                             hideFloatingButton = false
                         }
                     }
-                    .scrollIndicators(.hidden)
+                    .scrollIndicators(.never)
                     .coordinateSpace(name: "scroll")
                     .onChange(of: viewModel.territoryAddressIdToScrollTo) { id in
                         if let id = id {
@@ -229,6 +229,9 @@ struct TerritoryAddressView: View {
     
     @ViewBuilder
     func addressCell(addressData: AddressData, mainWindowSize: CGSize) -> some View {
+        var isIpad: Bool {
+            return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
+        }
         LazyVStack {
             SwipeView {
                 NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address).implementPopupView()).implementPopupView()) {
@@ -250,7 +253,14 @@ struct TerritoryAddressView: View {
                         }
                         .frame(maxWidth: mainWindowSize.width * 0.90)
                     }
-                    
+                    .optionalViewModifier { content in
+                        if isIpad {
+                            content
+                                .frame(maxHeight: .infinity)
+                        } else {
+                            content
+                        }
+                    }
                     //.id(territory.id)
                     .padding(10)
                     .frame(minWidth: mainWindowSize.width * 0.95)
@@ -260,6 +270,16 @@ struct TerritoryAddressView: View {
                         if AuthorizationLevelManager().existsAdminCredentials() {
                             content
                                 .contextMenu {
+                                    Button(action: {
+                                        copyToClipboard(text: addressData.address.address)
+                                    }) {
+                                        Text("Copy Address")
+                                            .padding()
+                                            .background(Color.green)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(8)
+                                    }
+                                    
                                     Button {
                                         HapticManager.shared.trigger(.lightImpact)
                                         DispatchQueue.main.async {

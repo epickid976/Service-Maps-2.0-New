@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 import SwiftUI
 
-class AdminAPI {
+class AdminAPI: ApiService {
     let baseURL = "admin/"
     
     //MARK: GET
@@ -299,5 +299,29 @@ class AdminAPI {
         } catch {
             throw error.self
         }
+    }
+}
+protocol ApiService {
+    var baseURL: String { get }
+    
+    func getRequest<T: Decodable>(url: String) async throws -> T
+    func postRequest<T: Encodable>(url: String, body: T) async throws
+    func uploadWithImage(url: String, withFile image: UIImage, parameters: [String: Any]) async throws
+}
+
+extension ApiService {
+    func getRequest<T: Decodable>(url: String) async throws -> T {
+        let response = try await ApiRequestAsync().getRequest(url: url)
+        let decoder = JSONDecoder()
+        let jsonData = response.data(using: .utf8)!
+        return try decoder.decode(T.self, from: jsonData)
+    }
+    
+    func postRequest<T: Encodable>(url: String, body: T) async throws {
+        _ = try await ApiRequestAsync().postRequest(url: url, body: body)
+    }
+    
+    func uploadWithImage(url: String, withFile image: UIImage, parameters: [String: Any]) async throws {
+        _ = try await ApiRequestAsync().uploadWithImage(url: url, withFile: image, parameters: parameters)
     }
 }

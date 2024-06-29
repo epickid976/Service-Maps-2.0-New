@@ -74,6 +74,11 @@ struct SettingsView: View {
                     CentrePopup_DeletionConfirmation(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true, showBack: showBackButton, onDone: { presentationMode.wrappedValue.dismiss() }).showAndReplace()
                 }
             }
+            .onChange(of: viewModel.showSharePopup) { value in
+                if value {
+                    CentrePopup_ShareApp(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).showAndReplace()
+                }
+            }
             .onChange(of: viewModel.showDeletionAlert) { value in
                 if value {
                     CentrePopup_Deletion(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).showAndReplace()
@@ -140,7 +145,7 @@ struct SettingsView: View {
                 HapticManager.shared.trigger(.lightImpact)
             }
         }
-        .scrollIndicators(.hidden)
+        .scrollIndicators(.never)
         .navigationBarTitle("Settings", displayMode: .automatic)
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -219,8 +224,7 @@ struct SettingsView: View {
             }
             
             if !(UIDevice().userInterfaceIdiom == .pad) {
-                Grid(alignment: .leading) {
-                    GridRow {
+                    HStack {
                         HStack {
                             Image(systemName: "iphone.homebutton.radiowaves.left.and.right")
                                 .imageScale(.large)
@@ -238,10 +242,9 @@ struct SettingsView: View {
                             Toggle(isOn: $preferencesViewModel.hapticFeedback) {}
                                 .toggleStyle(CheckmarkToggleStyle(color: .blue))
                             //.padding()
-                        }.hSpacing(.trailing).frame(maxWidth: 80)
+                        }.hSpacing(.trailing)
                         
                     }
-                }
             }
         }.padding(10)
             .frame(minWidth: mainWindowSize.width * 0.95)
@@ -269,7 +272,7 @@ struct CentrePopup_AboutApp: CentrePopup {
             This tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps.
             """)
             .font(usingLargeText ? .caption2 : .body)
-            .lineLimit(10)
+            .lineLimit(20)
             .foregroundColor(.primary)
             .fontWeight(.bold)
             CustomBackButton(showImage: false, text: "Dismiss") {
@@ -279,6 +282,95 @@ struct CentrePopup_AboutApp: CentrePopup {
                     dismiss()
                 }
             }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
+            //.frame(width: 100)
+        }
+        .padding()
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+
+struct CentrePopup_ShareApp: CentrePopup {
+    @ObservedObject var viewModel: SettingsViewModel
+    var usingLargeText: Bool
+    
+    func createContent() -> some View {
+        VStack {
+            Text("Share App")
+                .font(.title2)
+                .lineLimit(1)
+                .foregroundColor(.primary)
+                .fontWeight(.heavy)
+            Spacer().frame(height: 10)
+            Text("Android")
+                .font(.title3)
+                .lineLimit(10)
+                .foregroundColor(.primary)
+                .fontWeight(.heavy)
+            
+            Button {
+                HapticManager.shared.trigger(.lightImpact)
+                
+                let url = URL(string: "https://play.google.com/store/apps/details?id=com.smartsolutions.servicemaps")
+                let av = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
+                
+                UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
+                
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
+                    av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                }
+            } label: {
+                Image("android")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200, height: 200)
+                    .padding(.vertical, -70)
+                    
+            }
+            
+            Text("iOS")
+                .font(.title3)
+                .lineLimit(10)
+                .foregroundColor(.primary)
+                .fontWeight(.heavy)
+            
+            Button {
+                HapticManager.shared.trigger(.lightImpact)
+                let url = URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103?l=fr-FR")
+                let av = UIActivityViewController(activityItems: [url!], applicationActivities: nil)
+                
+                UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
+                
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
+                    av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                }
+            } label: {
+                Image("ios")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200, height: 200)
+                    .padding(.vertical, -70)
+            }
+
+            CustomBackButton(showImage: false, text: "Dismiss") {
+                HapticManager.shared.trigger(.lightImpact)
+                withAnimation {
+                    self.viewModel.showSharePopup = false
+                    dismiss()
+                }
+            }.hSpacing(.trailing)
+                .padding(.top, 10)//.keyboardShortcut("\r", modifiers: [.command, .shift])
             //.frame(width: 100)
         }
         .padding()
@@ -411,6 +503,7 @@ struct CentrePopup_Deletion: CentrePopup {
         .padding(.top, 10)
         .padding(.bottom, 10)
         .padding(.horizontal, 10)
+        
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
@@ -499,6 +592,7 @@ struct CentrePopup_EditUsername: CentrePopup {
         .padding(.bottom, 5)
         .padding(.horizontal, 5)
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
@@ -506,6 +600,7 @@ struct CentrePopup_EditUsername: CentrePopup {
             .horizontalPadding(24)
             .cornerRadius(15)
             .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+        
     }
 }
 

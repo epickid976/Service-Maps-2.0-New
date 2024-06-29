@@ -24,6 +24,8 @@ struct Service_Maps_2_0App: App {
     @StateObject var universalLinksManager = UniversalLinksManager.shared
     @StateObject var realtimeManager = RealtimeManager.shared
     
+    @StateObject private var navigationHistoryManager = NavigationHistoryManager()
+
     var body: some Scene {
         WindowGroup {
             

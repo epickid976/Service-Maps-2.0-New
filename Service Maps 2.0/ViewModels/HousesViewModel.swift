@@ -21,11 +21,7 @@ class HousesViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     //@ObservedObject var databaseManager = RealmManager.shared
-    @Published var houseData: Optional<[HouseData]> = nil {
-        didSet {
-            print(houseData)
-        }
-    }
+    @Published var houseData: Optional<[HouseData]> = nil
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     

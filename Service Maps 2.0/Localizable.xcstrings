@@ -4,6 +4,9 @@
     "" : {
 
     },
+    " %@" : {
+
+    },
     "-" : {
 
     },
@@ -13,6 +16,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "(getElapsedMinutes()) minuto(s)"
+          }
+        }
+      }
+    },
+    "**%@** - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "**%1$@** - %2$@"
           }
         }
       }
@@ -368,6 +381,9 @@
         }
       }
     },
+    "Android" : {
+
+    },
     "App is up to date!" : {
       "localizations" : {
         "es" : {
@@ -576,6 +592,22 @@
         }
       }
     },
+    "At least one field is required." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al menos un campo es obligatorio."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Au moins un champ est obligatoire."
+          }
+        }
+      }
+    },
     "Back" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -736,6 +768,9 @@
           }
         }
       }
+    },
+    "Copy Address" : {
+
     },
     "Date: " : {
       "extractionState" : "stale",
@@ -1867,6 +1902,38 @@
         }
       }
     },
+    "Hombre" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Man"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Homme"
+          }
+        }
+      }
+    },
+    "Hombre Volver" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Man Call Again"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Homme Revenir"
+          }
+        }
+      }
+    },
     "House" : {
       "localizations" : {
         "es" : {
@@ -1895,6 +1962,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maison: %@"
+          }
+        }
+      }
+    },
+    "HV" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MCA"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "HR"
           }
         }
       }
@@ -1946,6 +2029,9 @@
           }
         }
       }
+    },
+    "iOS" : {
+
     },
     "iPad Column View" : {
       "localizations" : {
@@ -2203,6 +2289,70 @@
         }
       }
     },
+    "Mujer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woman"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Femme"
+          }
+        }
+      }
+    },
+    "Mujer Volver" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woman Call Again"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Femme Revenir"
+          }
+        }
+      }
+    },
+    "MV" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WCA"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "FR"
+          }
+        }
+      }
+    },
+    "N" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "C"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "E"
+          }
+        }
+      }
+    },
     "name" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2274,8 +2424,37 @@
         }
       }
     },
+    "Niño" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Child"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Enfant"
+          }
+        }
+      }
+    },
     "No address selected" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna dirección seleccionada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune adresse sélectionné"
+          }
+        }
+      }
     },
     "No Data" : {
       "localizations" : {
@@ -2293,8 +2472,37 @@
         }
       }
     },
+    "No en casa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Home"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Absent"
+          }
+        }
+      }
+    },
     "No house selected" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna casa seleccionada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune maison sélectionné"
+          }
+        }
+      }
     },
     "No internet connection" : {
       "localizations" : {
@@ -2345,7 +2553,14 @@
       }
     },
     "No Notes" : {
+      "extractionState" : "stale",
       "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna nota"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2366,6 +2581,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Résultat pas trouvé"
+          }
+        }
+      }
+    },
+    "No Tocar" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don't Knock"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Pas Visiter"
           }
         }
       }
@@ -2589,6 +2820,7 @@
       }
     },
     "Number: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2642,6 +2874,38 @@
         }
       }
     },
+    "Ocupado" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Occupé(e)"
+          }
+        }
+      }
+    },
+    "Ocupado Volver" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Busy Call Again"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Occupé(e) Revenir"
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "es" : {
@@ -2654,6 +2918,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
+          }
+        }
+      }
+    },
+    "OV" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BCA"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "OR"
           }
         }
       }
@@ -2691,7 +2971,20 @@
       }
     },
     "Password must be more than 6 characters." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La contraseña tiene que ser más de 6 caracteres."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le mot de passe doit être plus de 6 caractères."
+          }
+        }
+      }
     },
     "Password must be more than 8 characters." : {
       "extractionState" : "stale",
@@ -3580,6 +3873,22 @@
         }
       }
     },
+    "V" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CA"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "R"
+          }
+        }
+      }
+    },
     "Verification" : {
       "localizations" : {
         "es" : {
@@ -3592,6 +3901,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vérification"
+          }
+        }
+      }
+    },
+    "Volver" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call Again"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Revenir"
           }
         }
       }

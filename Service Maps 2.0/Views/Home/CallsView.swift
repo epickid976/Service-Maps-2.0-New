@@ -18,7 +18,7 @@ import MijickPopupView
 struct CallsView: View {
     @StateObject var viewModel: CallsViewModel
     var phoneNumber: PhoneNumberModel
-    
+    @StateObject var realtimeManager = RealtimeManager.shared
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
@@ -35,8 +35,8 @@ struct CallsView: View {
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
-    let alertViewDeleted = AlertAppleMusic17View(title: "Visit Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    let alertViewAdded = AlertAppleMusic17View(title: "Visit Added", subtitle: nil, icon: .done)
+    let alertViewDeleted = AlertAppleMusic17View(title: "Call Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
+    let alertViewAdded = AlertAppleMusic17View(title: "Call Added", subtitle: nil, icon: .done)
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -91,24 +91,27 @@ struct CallsView: View {
                                     
                                 } else {
                                     
-                                    LazyVStack {
+                                    //LazyVStack {
                                         SwipeViewGroup {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                                                     ForEach(viewModel.callsData!, id: \.phoneCall.id) { callData in
                                                         callCellView(callData: callData).id(callData.phoneCall.id)
+                                                            .modifier(ScrollTransitionModifier())
+                                                            .transition(.customBackInsertion)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             } else {
                                                 LazyVGrid(columns: [GridItem(.flexible())]) {
                                                     ForEach(viewModel.callsData!, id: \.phoneCall.id) { callData in
                                                         callCellView(callData: callData).id(callData.phoneCall.id)
+                                                            .modifier(ScrollTransitionModifier())
+                                                            .transition(.customBackInsertion)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             }
                                             //.animation(.default, value: viewModel.callsData!)
-                                        }
-                                    }.animation(.default, value: viewModel.callsData)
+                                        }.animation(.spring(), value: viewModel.callsData!)
                                         .padding()
                                     
                                     
@@ -137,8 +140,8 @@ struct CallsView: View {
                                 CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber).showAndStack()
                             }
                         }
-                        //.scrollIndicators(.hidden)
-                        .navigationBarTitle("Number: \(viewModel.phoneNumber.number)", displayMode: .large)
+                        //.scrollIndicators(.never)
+                        .navigationBarTitle(" \(viewModel.phoneNumber.number.formatPhoneNumber())", displayMode: .large)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarLeading) {
@@ -165,7 +168,7 @@ struct CallsView: View {
                         .navigationTransition(viewModel.presentSheet || viewModel.callToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                         .navigationViewStyle(StackNavigationViewStyle())
                     }.coordinateSpace(name: "scroll")
-                        .scrollIndicators(.hidden)
+                        .scrollIndicators(.never)
                         .refreshable {
                             viewModel.synchronizationManager.startupProcess(synchronizing: true)
                         }
@@ -175,6 +178,12 @@ struct CallsView: View {
                                     viewModel.getCalls()
                                 }
                             }
+                        }
+                        .onChange(of: realtimeManager.lastMessage) { value in
+                            if value != nil {
+                                viewModel.getCalls()
+                            }
+                            
                         }
                         .onChange(of: viewModel.callToScrollTo) { id in
                             if let id = id {

@@ -7,9 +7,17 @@ class SearchViewModel: ObservableObject {
     @Published var dataStore = StorageManager.shared
     @Published var realmManager = RealmManager.shared
     @Published var searchResults: [MySearchResult] = []
-    @Published var searchQuery: String = ""
+    @Published var searchQuery: String = "" {
+        didSet {
+            searchQuery == "" ? searchState = .Idle : ()
+            searchQuery == "" ? scrollViewID = UUID() : ()
+            searchQuery == "" ? (searchResults = []) : ()
+            
+        }
+    }
     @Published var searchState: SearchState = .Idle
     @Published var searchMode: SearchMode = .Territories
+    @Published var scrollViewID = UUID()
     
     private var cancellables = Set<AnyCancellable>()
     

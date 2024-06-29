@@ -21,11 +21,7 @@ class VisitsViewModel: ObservableObject {
     let latestVisitUpdatePublisher = PassthroughSubject<VisitModel, Never>()
     var cancellables = Set<AnyCancellable>()
     
-    @Published var visitData: Optional<[VisitData]> = nil {
-        didSet {
-            print("VISIT DATA \(visitData)")
-        }
-    }
+    @Published var visitData: Optional<[VisitData]> = nil
     //@ObservedObject var databaseManager = RealmManager.shared
     
     init(house: HouseModel, visitIdToScrollTo: String? = nil) {

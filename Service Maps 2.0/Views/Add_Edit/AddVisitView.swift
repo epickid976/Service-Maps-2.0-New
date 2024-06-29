@@ -30,6 +30,8 @@ struct AddVisitView: View {
     
     @FocusState var notesFocus: Bool
     
+    @State var showOptions = false
+    
     var body: some View {
         ZStack {
             VStack {
@@ -43,51 +45,56 @@ struct AddVisitView: View {
                    
                 }
                 
-                HStack {
+//                HStack {
+//                            Text("Symbol: ")
+//                                .font(.subheadline)
+//                                .lineLimit(2)
+//                                .foregroundColor(.primary)
+//                                .fontWeight(.heavy)
+//                            Menu {
+//                                ForEach(Symbols.allCases, id: \.self) { option in
+//                                    Button(action: {
+//                                        viewModel.selectedOption = option
+//                                    }) {
+//                                        HStack {
+//                                            Text("**\(option.rawValue == "-" ? "" : option.rawValue)** - \(option.legend)")
+//                                            if viewModel.selectedOption == option {
+//                                                Spacer()
+//                                                Image(systemName: "checkmark")
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            } label: {
+//                                HStack {
+//                                    Text(viewModel.selectedOption.rawValue)
+//                                        .foregroundColor(.primary)
+//                                        .padding(10)
+//                                }
+//                                .background(
+//                                    RoundedRectangle(cornerRadius: 10)
+//                                        .fill(Color.gray.opacity(0.2))
+//                                )
+//                            }
+//                        }
+//                        .padding(.leading, 16)
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+                
+                CustomPickerView(viewModel: viewModel, showOptions: $showOptions)
+                    .padding(.bottom, !showOptions ? 0 : 16)
+                    .padding(.bottom, viewModel.error != "" ? 30 : 0)
+                
+                if !showOptions {
+                    CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, expanded: true, placeholder: NSLocalizedString("Notes", comment: ""))
+                        .padding(.bottom)
                     
-                    Text("Symbol: ")
-                        .font(.subheadline)
-                        .lineLimit(2)
-                        .foregroundColor(.primary)
-                        .fontWeight(.heavy)
-                    Menu { // Use a Menu instead of a Button
-                        ForEach(Symbols.allCases, id: \.self) { option in
-                                    Button(action: {
-                                        viewModel.selectedOption = option
-                                    }) {
-                                        HStack {
-                                            Text(option.rawValue)
-                                            if viewModel.selectedOption == option {
-                                                Spacer()
-                                                Image(systemName: "checkmark") // Add a checkmark for the selected option
-                                            }
-                                        }
-                                    }
-                                }
-                            } label: {
-                                HStack {
-                                    Text(viewModel.selectedOption.rawValue)
-                                        .foregroundColor(.primary)
-                                        .padding(10)
-                                    
-                                }
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(Color.gray.opacity(0.2))
-                                )
-                            }
-                }.hSpacing(.leading).padding(.leading, 16)
-                
-                
-                CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, expanded: true, placeholder: NSLocalizedString("Notes", comment: ""))
-                    .padding(.bottom)
-                
-                if viewModel.error != "" {
-                    Text(viewModel.error)
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
+                    if viewModel.error != "" {
+                        Text(viewModel.error)
+                            .padding(.top, 20)
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                    }
                 }
-                
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() { onDismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
@@ -179,3 +186,78 @@ struct AddVisitView: View {
 }
 
 
+struct CustomPickerView: View {
+    @ObservedObject var viewModel: AddVisitViewModel
+    @Binding var showOptions: Bool
+
+   
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Symbol: ")
+                    .font(.subheadline)
+                    .lineLimit(2)
+                    .foregroundColor(.primary)
+                    .fontWeight(.heavy)
+                Button(action: {
+                    withAnimation {
+                        showOptions.toggle()
+                    }
+                }) {
+                    HStack {
+                        Text(NSLocalizedString(viewModel.selectedOption.rawValue, comment: ""))
+                            .foregroundColor(.primary)
+                            .padding(10)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.opacity(0.2))
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+            .padding(.leading, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            if showOptions {
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(Symbols.allCases, id: \.self) { option in
+                        Button(action: {
+                            viewModel.selectedOption = option
+                            withAnimation {
+                                showOptions = false
+                            }
+                        }) {
+                            HStack {
+                                Text("**\(option.rawValue == "-" ? "" : NSLocalizedString(option.rawValue, comment: ""))** - \(option.legend)")
+                                    .foregroundColor(.primary)
+                                    .multilineTextAlignment(.leading)
+                                    .lineLimit(2)
+                                Spacer()
+                                if viewModel.selectedOption == option {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, minHeight: 50) // Ensure same height
+                            .background(
+                                RoundedRectangle(cornerRadius: 40)
+                                    .fill(Color.gray.opacity(0.1))
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                }
+                .padding(.leading, 16)
+                
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+}

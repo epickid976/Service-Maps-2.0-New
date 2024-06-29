@@ -41,9 +41,17 @@ class RealtimeManager: ObservableObject {
     }
 
     func initAblyConnection() async throws {
-        if let congregationId = authorizationProvider.congregationId.flatMap({ String($0) }) ?? self.realmManager.getAllTerritoriesDirect().first?.congregation {
+        let congregationId: String?
+        
+        if let authCongregationId = authorizationProvider.congregationId.flatMap({ String($0) }) {
+            congregationId = (authCongregationId == "0") ? self.realmManager.getAllTerritoriesDirect().first?.congregation : authCongregationId
+        } else {
+            congregationId = self.realmManager.getAllTerritoriesDirect().first?.congregation
+        }
+        
+        if let validCongregationId = congregationId {
             self.ably = ARTRealtime(key: ABLY_KEY_SUBSCRIBE_ONLY)
-            self.channel = self.ably?.channels.get(congregationId)
+            self.channel = self.ably?.channels.get(validCongregationId)
         } else {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No congregation ID found"])
         }
@@ -97,7 +105,8 @@ class RealtimeManager: ObservableObject {
         do {
             let response = try decoder.decode(UserWithDataResponse.self, from: Data(dataString.utf8))
             
-            let visit = try decoder.decode(VisitModel.self, from: Data(response.data.utf8))
+            var visit = try decoder.decode(VisitModel.self, from: Data(response.data.utf8))
+            visit.id = "\(visit.house)-\(visit.date)"
             
             let userWithVisit = UserWithVisit(email: response.email, visit: visit)
             
@@ -113,41 +122,45 @@ class RealtimeManager: ObservableObject {
     }
 
         private func doCall(_ message: ARTMessage) async throws {
-            guard let data = message.data as? Data else {
+            
+            guard let dataString = message.data as? String else {
                 throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Message data is not in expected format"])
             }
             
-            let response = try JSONDecoder().decode(UserWithDataResponse.self, from: data)
-            guard let callData = response.data.data(using: .utf8) else {
-                throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response data to Data"])
-            }
+            let decoder = JSONDecoder()
             
-            let call = try JSONDecoder().decode(PhoneCallModel.self, from: callData)
-            let userWithCall = UserWithCall(email: response.email, call: call)
-
-            var callToSave = call
-            if self.dataStorageProvider.userEmail == userWithCall.email {
-                callToSave = call.copy(user: self.dataStorageProvider.userEmail ?? call.user)
+            do {
+                let response = try decoder.decode(UserWithDataResponse.self, from: Data(dataString.utf8))
+                
+                var call = try decoder.decode(PhoneCallModel.self, from: Data(response.data.utf8))
+                call.id = "\(call.phonenumber)-\(call.date)"
+                
+                let userWithCall = UserWithCall(email: response.email, call: call)
+                
+                var callToSave = call
+                if self.dataStorageProvider.userEmail == userWithCall.email {
+                    callToSave = call.copy(user: self.dataStorageProvider.userEmail ?? call.user)
+                }
+                
+                await saveCallToRealm(callToSave)
+            } catch {
+                throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode message data: \(error.localizedDescription)"])
             }
-            
-            await saveCallToRealm(callToSave)
         }
 
     private func saveVisitToRealm(_ visit: VisitModel) async {
         await MainActor.run {
-            let visits = self.realmManager.getAllVisitsDirect()
-            if visits.contains(where: { $0.id == visit.id }) {
-                _ = self.realmManager.updateVisit(visit: visit)
+            if let visitToUpdate = realmManager.realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
+               _ = self.realmManager.updateVisit(visit: visit)
             } else {
-                _ = realmManager.addModel(VisitObject().createVisitObject(from: visit))
+              _ = realmManager.addModel(VisitObject().createVisitObject(from: visit))
             }
         }
     }
 
     private func saveCallToRealm(_ call: PhoneCallModel) async {
         await MainActor.run {
-            let calls = self.realmManager.getAllPhoneCallsDirect()
-            if calls.contains(where: { $0.id == call.id }) {
+            if let callToUpdate = realmManager.realmDatabase.objects(PhoneCallObject.self).filter("id == %d", call.id).first {
                 _ = self.realmManager.updatePhoneCall(phoneCall: call)
             } else {
                 _ = realmManager.addModel(PhoneCallObject().createTerritoryObject(from: call))

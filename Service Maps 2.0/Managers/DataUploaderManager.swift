@@ -292,17 +292,13 @@ class DataUploaderManager: ObservableObject {
     
     @MainActor
     func deleteTerritory(territory: String) async -> Result<Bool, Error> {
-        
         do {
             let realm = try! await Realm()
             if let territoryToDelete = realm.objects(TerritoryObject.self).filter("id == %d", territory).first {
                 try await adminApi.deleteTerritory(territory: convertTerritoryToTerritoryModel(model: territoryToDelete))
-                realmManager.deleteTerritory(territory: territoryToDelete)
-                return Result.success(true)
+                return realmManager.deleteTerritory(territory: territoryToDelete)
             }
-            
             return Result.failure(CustomErrors.NotFound)
-           //return realmManager.deleteTerritory(territory: territory)
         } catch {
             print("THIS IS THE ERROR FROM DELETE TERRITORY \(error)")
             return Result.failure(error)
@@ -542,8 +538,7 @@ class DataUploaderManager: ObservableObject {
             let realm = try! await Realm()
             if let territoryToDelete = realm.objects(PhoneTerritoryObject.self).filter("id == %d", phoneTerritory).first {
                 try await adminApi.deletePhoneTerritory(territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territoryToDelete))
-                realmManager.deletePhoneTerritory(phoneTerritory: territoryToDelete)
-                return Result.success(true)
+                return realmManager.deletePhoneTerritory(phoneTerritory: territoryToDelete)
             }
             
             return Result.failure(CustomErrors.NotFound)
@@ -595,26 +590,34 @@ class DataUploaderManager: ObservableObject {
     }
     
     func addCall(call: PhoneCallObject) async -> Result<Bool, Error> {
-        
-        
-        var result: Result<Bool, Error>?
-        
         do {
-            try await adminApi.addCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
-            result = Result.success(true)
+            if authorizationLevelManager.existsAdminCredentials() {
+                try await adminApi.addCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
+            } else {
+                try await userApi.addCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
+            }
+            return realmManager.addModel(call)
         } catch {
             print(error)
-            result = Result.failure(error)
+            return .failure(error)
         }
-        
-        switch result {
-        case .success(true):
-            return realmManager.addModel(call)
-        default:
-            print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
+    }
+    
+    @MainActor
+    func deleteCall(call: String) async -> Result<Bool, Error> {
+        do {
+            let realm = try await Realm()
+            guard let callToDelete = realm.objects(PhoneCallObject.self).filter("id == %d", call).first else {
+                return .failure(CustomErrors.NotFound)
+            }
+            
+            try await adminApi.deleteCall(call: convertPhoneCallModelToPhoneCallModel(model: callToDelete))
+            return realmManager.deletePhoneCall(phoneCall: callToDelete)
+                .map { _ in true }
+        } catch {
+            print("Error deleting call: \(error)")
+            return .failure(error)
         }
-        
-        return result ?? Result.failure(CustomErrors.ErrorUploading)
     }
     
     func updateNumber(number: PhoneNumberObject) async -> Result<Bool, Error> {
@@ -634,50 +637,28 @@ class DataUploaderManager: ObservableObject {
             return realmManager.updatePhoneNumber(phoneNumber: convertPhoneNumberModelToPhoneNumberModel(model: number))
         default:
             print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
+            return result ?? Result.failure(CustomErrors.ErrorUploading)
         }
         
-        return result ?? Result.failure(CustomErrors.ErrorUploading)
+        
     }
-    
+    @MainActor
     func updateCall(call: PhoneCallObject) async -> Result<Bool, Error> {
         
-        
-        var result: Result<Bool, Error>?
-        
         do {
-            try await adminApi.updateCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
-            result = Result.success(true)
-        } catch {
-            result = Result.failure(error)
-        }
-        
-        switch result {
-        case .success(true):
-            return realmManager.updatePhoneCall(phoneCall: convertPhoneCallModelToPhoneCallModel(model: call))
-        default:
-            print("Si no se pudo no se pudo (DatauploaderManager ADD HOUSE)")
-        }
-        
-        return result ?? Result.failure(CustomErrors.ErrorUploading)
-    }
-    
-    @MainActor
-    func deleteCall(call: String) async -> Result<Bool, Error> {
-        
-        do {
-            let realm = try! await Realm()
-            if let callToDelete = realm.objects(PhoneCallObject.self).filter("id == %d", call).first {
-                try await adminApi.deleteCall(call: convertPhoneCallModelToPhoneCallModel(model: callToDelete))
-                return realmManager.deletePhoneCall(phoneCall: callToDelete)
+            if authorizationLevelManager.existsAdminCredentials() {
+                try await adminApi.updateCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
+            } else {
+                try await userApi.updateCall(call: convertPhoneCallModelToPhoneCallModel(model: call))
             }
-            
-            return Result.failure(CustomErrors.NotFound)
-           //return realmManager.deleteTerritory(territory: territory)
+            return realmManager.updatePhoneCall(phoneCall: convertPhoneCallModelToPhoneCallModel(model: call))
+                .map { _ in true }
         } catch {
-            print("THIS IS THE ERROR FROM DELETE TERRITORY \(error)")
-            return Result.failure(error)
+            print(error)
+            return .failure(error)
         }
     }
+
     
     @MainActor
     func deleteUserFromToken(userToken: String) async -> Result<Bool, Error> {

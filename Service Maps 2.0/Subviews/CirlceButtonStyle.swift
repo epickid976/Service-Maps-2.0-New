@@ -20,7 +20,9 @@ struct CircleButtonStyle: ButtonStyle {
     @Binding var animation: Bool
     
     func makeBody(configuration: Configuration) -> some View {
+        
         Circle()
+            
             .optionalViewModifier { content in
                 if progress > 0.01 {
                     content
@@ -31,22 +33,24 @@ struct CircleButtonStyle: ButtonStyle {
                 }
             }
         
-            .overlay(Image(systemName: imageName)
+            .overlay(Image(systemName: imageName == "magnifyingglass" && animation == true ? "" : imageName)
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(foreground)
                 .padding(12)
+                .bold()
                 .optionalViewModifier { content in
                     if #available(iOS 17, *) {
                         content
                             .symbolEffect(.bounce, options: .speed(3.0), value: animation)
                     } else {
-                    	content
+                        content
                     }
                 }
             )
-            .frame(width: width, height: height)
         
+            .frame(width: width, height: height)
+            
     }
 }
 
@@ -87,7 +91,8 @@ struct PillButtonStyle: ButtonStyle {
                             displayText(NSLocalizedString("Now", comment: ""), fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
                         }
                     } else {
-                        displayText(NSLocalizedString("Syncing", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                        //displayText(NSLocalizedString("Syncing", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                        ProgressView()
                     }
                 }.optionalViewModifier { content in
                     if #available(iOS 17, *) {
@@ -96,15 +101,19 @@ struct PillButtonStyle: ButtonStyle {
                             .animation(.spring(duration: 0.5), value: timePassed)
                             .animation(.spring(duration: 0.5), value: synced)
                     } else {
-                    	content
+                        content
                     }
                 }
+                   
+                    .animation(.easeInOut, value: synced)
             )
-            .frame(width: width, height: height)
+            .frame(width: width, height: height, alignment: .trailing)
+            .animation(.spring(), value: synced)
             .padding(5)
             .onReceive(Timer.publish(every: 5, on: .main, in: .common).autoconnect()) { _ in
                 timePassed = getElapsedMinutes()
             }
+            
     }
     
     

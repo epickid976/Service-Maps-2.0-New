@@ -16,7 +16,7 @@ import MijickPopupView
 
 struct VisitsView: View {
     
-    @ObservedObject var viewModel: VisitsViewModel
+    @StateObject var viewModel: VisitsViewModel
     var house: HouseModel
     
     @State var animationDone = false
@@ -34,7 +34,7 @@ struct VisitsView: View {
     init(house: HouseModel, visitIdToScrollTo: String? = nil) {
         self.house = house
         let initialViewModel = VisitsViewModel(house: house, visitIdToScrollTo: visitIdToScrollTo)
-        _viewModel = ObservedObject(wrappedValue: initialViewModel)
+        _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Visit Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
@@ -134,13 +134,13 @@ struct VisitsView: View {
                                 CentrePopup_AddVisit(viewModel: viewModel, house: house).showAndStack()
                             }
                         }
-                        //.scrollIndicators(.hidden)
+                        //.scrollIndicators(.never)
                         .navigationBarTitle("House: \(viewModel.house.number)", displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarLeading) {
                                 HStack {
-                                    Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                                    Button("", action: { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) ;
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             presentationMode.wrappedValue.dismiss()
                                         }
@@ -158,7 +158,7 @@ struct VisitsView: View {
                         .navigationTransition(viewModel.presentSheet || viewModel.visitIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                         .navigationViewStyle(StackNavigationViewStyle())
                     }.coordinateSpace(name: "scroll")
-                        .scrollIndicators(.hidden)
+                        .scrollIndicators(.never)
                         .refreshable {
                             viewModel.synchronizationManager.startupProcess(synchronizing: true)
                         }

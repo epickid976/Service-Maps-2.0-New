@@ -9,15 +9,11 @@ import Foundation
 import RealmSwift
 
 class PhoneCallObject: Object, Identifiable {
-    @Persisted var id: String
+    @Persisted(primaryKey: true) var id: String
     @Persisted var phoneNumber: String
     @Persisted var date: Int64
     @Persisted var notes: String
     @Persisted var user: String
-    
-    override static func primaryKey() -> String? {
-        return "id"
-    }
     
     static func == (lhs: PhoneCallObject, rhs: PhoneCallModel) -> Bool {
         return lhs.id == rhs.id &&
