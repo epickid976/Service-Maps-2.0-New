@@ -50,7 +50,6 @@ struct TerritoryView: View {
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     
     @State var isCircleExpanded = false
-    @State private var isOffsetApplied = false
     //@Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         let transition: AnyNavigationTransition
@@ -239,7 +238,6 @@ struct TerritoryView: View {
                                                         
                                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                                                             withAnimation(.spring()) {
-                                                                isOffsetApplied = true
                                                                 isCircleExpanded = true
                                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                                                     viewModel.backAnimation.toggle()
