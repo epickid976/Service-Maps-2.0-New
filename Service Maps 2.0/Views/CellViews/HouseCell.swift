@@ -67,7 +67,7 @@ struct HouseCell: View {
                     .fontWeight(.bold)
                     .padding(.leading, 5)
                     .multilineTextAlignment(.leading)
-            }
+            }.vSpacing(.top)
             .frame(maxWidth: .infinity)
         }
         .padding(10)

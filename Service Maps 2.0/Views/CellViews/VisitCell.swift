@@ -33,7 +33,7 @@ struct VisitCell: View {
                             .gridColumnAlignment(.trailing)
                             .frame(maxWidth: 40)
                     }
-                }
+                }.vSpacing(.top)
                 Text(visit.visit.notes)
                     .font(.headline)
                     .lineLimit(4)
@@ -41,14 +41,14 @@ struct VisitCell: View {
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .fixedSize(horizontal: false, vertical: true).vSpacing(.top)
                 Spacer().frame(height: 5)
                 Text(visit.visit.user)
                     .font(.subheadline)
                     .lineLimit(2)
                     .foregroundColor(.secondaryLabel)
                     .fontWeight(.heavy)
-                    .hSpacing(.trailing)
+                    .hSpacing(.trailing).vSpacing(.bottom)
             }
         }
         .padding(10)

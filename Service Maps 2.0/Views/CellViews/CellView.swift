@@ -37,7 +37,7 @@ struct CellView: View {
                         
                         VStack {
                             Text("\(territory.number)")
-                                .font(.system(size: 20, weight: .bold))
+                                .font(.system(size:  25, weight: .heavy))
                                 .foregroundColor(.white)
                             
                         }
@@ -58,14 +58,23 @@ struct CellView: View {
                         .lineLimit(2)
                         .foregroundColor(.secondaryLabel)
                         .fontWeight(.bold)
-                }.padding(10)
+                }.padding(10).vSpacing(.top)
                 .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
             }
             .id(territory.id)
             
             .frame(minWidth: isIpad ? (mainWindowSize.width * width ) / 2 : mainWindowSize.width * width)
+            //.frame(minHeight: isIpad ? 100 : 20)
             .background(.thinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
+            
+            .background(GeometryReader { geometry in
+                            Color.clear
+                                .onAppear {
+                                    self.cellHeight = geometry.size.height
+                                    print("Cell height: \(self.cellHeight)")
+                                }
+                        })
             .optionalViewModifier { content in
                 if ipad {
                     content
@@ -74,13 +83,6 @@ struct CellView: View {
                     content
                 }
             }
-            .background(GeometryReader { geometry in
-                            Color.clear
-                                .onAppear {
-                                    self.cellHeight = geometry.size.height
-                                    print("Cell height: \(self.cellHeight)")
-                                }
-                        })
     }
     
 }
@@ -113,7 +115,7 @@ struct PhoneTerritoryCellView: View {
                     
                     VStack {
                         Text("\(territory.number)")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size:  25, weight: .heavy))
                             .foregroundColor(.white)
                         
                     }
@@ -137,7 +139,7 @@ struct PhoneTerritoryCellView: View {
             }.padding(10)
             .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
             //Image("testTerritoryImage")
-            
+            .vSpacing(.top)
             
         }
         //.id(territory.id)
