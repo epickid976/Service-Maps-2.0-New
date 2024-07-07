@@ -37,9 +37,8 @@ struct AddHouseView: View {
             VStack {
                 Text("\(title) House")
                     .font(.title3)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
+                    .fontWeight(.heavy)
+                    .hSpacing(.center)
                 CustomField(text: $viewModel.number, isFocused: $numberFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Number", comment: ""))
                     .padding(.bottom)
                 

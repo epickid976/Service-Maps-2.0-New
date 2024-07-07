@@ -70,6 +70,8 @@ class AuthorizationProvider: ObservableObject {
         token = nil
         congregationId = nil
         congregationPass = nil
+        phoneCongregationId = nil
+        phoneCongregationPass = nil
     }
     
     class var shared: AuthorizationProvider {

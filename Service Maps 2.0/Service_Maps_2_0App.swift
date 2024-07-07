@@ -25,6 +25,12 @@ struct Service_Maps_2_0App: App {
     @StateObject var realtimeManager = RealtimeManager.shared
     
     @StateObject private var navigationHistoryManager = NavigationHistoryManager()
+    
+    init() {
+        SynchronizationManager.shared.startupProcess(synchronizing: true)
+    }
+    
+    
 
     var body: some Scene {
         WindowGroup {
@@ -87,7 +93,7 @@ struct Service_Maps_2_0App: App {
                     PrivacyPolicy()
                     
                 }
-            }
+            }.environment(\.font, Font.system(.body, design: .rounded))
             .onOpenURL(perform: { url in
                 universalLinksManager.handleIncomingURL(url)
             })

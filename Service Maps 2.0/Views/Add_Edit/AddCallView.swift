@@ -36,9 +36,8 @@ struct AddCallView: View {
                 HStack {
                     Text("\(title) Call")
                         .font(.title3)
-                        .fontWeight(.bold)
-                        .hSpacing(.leading)
-                        .padding(.leading)
+                        .fontWeight(.heavy)
+                        .hSpacing(.center)
                 }
                 CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Notes", comment: ""))
                     .padding(.bottom)

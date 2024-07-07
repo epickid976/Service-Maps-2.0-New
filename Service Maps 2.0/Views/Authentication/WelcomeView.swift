@@ -36,7 +36,7 @@ struct WelcomeView: View {
                     .frame(height: 30)
                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                     LottieAnimationUIView(animationName: "WelcomeAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
-                        .frame(width: 250, height: 250)
+                        .frame(width: 150, height: 150)
                 } else {
                     LottieAnimationUIView(animationName: "WelcomeAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
                         .frame(width: 350, height: 350)

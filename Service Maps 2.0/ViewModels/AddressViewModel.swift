@@ -71,6 +71,8 @@ class AddressViewModel: ObservableObject {
     
     @Published var territoryAddressIdToScrollTo: String? = nil
     
+    @Published var showImageViewer = false
+    
     @ViewBuilder
     func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {
         VStack {
@@ -118,6 +120,7 @@ class AddressViewModel: ObservableObject {
         }
         
         .animation(.default, value: progress)
+        
     }
     
     @ViewBuilder

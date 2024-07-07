@@ -40,6 +40,16 @@
         }
       }
     },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
     "%@ Address" : {
       "localizations" : {
         "es" : {
@@ -770,7 +780,20 @@
       }
     },
     "Copy Address" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar Dirección"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier l'adresse"
+          }
+        }
+      }
     },
     "Date: " : {
       "extractionState" : "stale",
@@ -1910,6 +1933,12 @@
             "value" : "Man"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hombre"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -1924,6 +1953,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Man Call Again"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hombre Volver"
           }
         },
         "fr" : {
@@ -1972,6 +2007,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MCA"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HV"
           }
         },
         "fr" : {
@@ -2297,6 +2338,12 @@
             "value" : "Woman"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mujer"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -2311,6 +2358,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Woman Call Again"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mujer Volver"
           }
         },
         "fr" : {
@@ -2329,6 +2382,12 @@
             "value" : "WCA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MV"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -2343,6 +2402,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "C"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N"
           }
         },
         "fr" : {
@@ -2432,6 +2497,12 @@
             "value" : "Child"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niño"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -2479,6 +2550,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Not Home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No en casa"
           }
         },
         "fr" : {
@@ -2571,6 +2648,22 @@
         }
       }
     },
+    "No notes available." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay notas disponibles"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de notes disponibles"
+          }
+        }
+      }
+    },
     "No results found" : {
       "localizations" : {
         "es" : {
@@ -2593,6 +2686,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Don't Knock"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Tocar"
           }
         },
         "fr" : {
@@ -2884,6 +2983,12 @@
             "value" : "Busy"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocupado"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -2898,6 +3003,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Busy Call Again"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocupado Volver"
           }
         },
         "fr" : {
@@ -2930,6 +3041,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "BCA"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OV"
           }
         },
         "fr" : {
@@ -3883,6 +4000,12 @@
             "value" : "CA"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -3913,6 +4036,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Call Again"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver"
           }
         },
         "fr" : {

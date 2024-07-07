@@ -35,9 +35,8 @@ struct AddAddressView: View {
             VStack {
                 Text("\(title) Address")
                     .font(.title3)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
+                    .fontWeight(.heavy)
+                    .hSpacing(.center)
                 CustomField(text: $viewModel.addressText, isFocused: $addressTextFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Address", comment: ""))
                     .padding(.bottom)
                 

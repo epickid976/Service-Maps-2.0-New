@@ -36,9 +36,8 @@ struct AddPhoneNumberScreen: View {
             VStack {
                 Text("\(title) Phone Number")
                     .font(.title3)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
+                    .fontWeight(.heavy)
+                    .hSpacing(.center)
                 Text("Number")
                     .font(.headline)
                     .fontWeight(.semibold)

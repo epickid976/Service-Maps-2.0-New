@@ -49,7 +49,7 @@ struct VerificationView: View {
                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                     VStack {
                         LottieAnimationUIView(animationName: "VerificationAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
-                            .frame(width: 200, height: 200)
+                            .frame(width: 150, height: 150)
                             .padding(.bottom, -50)
                     }
                 } else {

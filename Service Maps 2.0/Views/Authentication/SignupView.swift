@@ -80,7 +80,7 @@ struct SignupView: View {
                         .fontWeight(.semibold)
                         .hSpacing(.leading)
                         .padding(.leading)
-                    CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true, keyboardContentType: .emailAddress, diableCapitalization: true, placeholder: "example@example.com")
+                    CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true, keyboardType: .emailAddress , keyboardContentType: .emailAddress, diableCapitalization: true, placeholder: "example@example.com")
                     
                     
                     Text("Password")

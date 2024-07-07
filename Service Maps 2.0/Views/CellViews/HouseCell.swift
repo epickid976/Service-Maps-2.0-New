@@ -16,7 +16,6 @@ struct HouseCell: View {
     var mainWindowSize: CGSize
     
     init(house: HouseData, mainWindowSize: CGSize) {
-        
         self._visitViewModel = ObservedObject(initialValue: VisitsViewModel(house: house.house))
         self.house = house
         self.mainWindowSize = mainWindowSize
@@ -42,7 +41,7 @@ struct HouseCell: View {
                         .padding(.leading, 5)
                     
                     // Symbol
-                    Text("\(NSLocalizedString( house.visit?.symbol.localizedUppercase ?? "-", comment: ""))")
+                    Text("\(NSLocalizedString(house.visit?.symbol.localizedUppercase ?? "-", comment: ""))")
                         .font(.title3)
                         .lineLimit(2)
                         .foregroundColor(.primary)
@@ -50,23 +49,47 @@ struct HouseCell: View {
                         .hSpacing(.trailing)
                         .padding(.trailing, 5)
                 }
-                // Date
-                Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(house.visit?.date ?? 0) / 1000)))")
-                    .font(.body)
-                    .lineLimit(2)
-                    .foregroundColor(Color.secondaryLabel)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading
-                    ).padding(.leading, 5)
+                if let visit = house.visit {
+                    let visitDateAsDate = Date(timeIntervalSince1970: Double(visit.date) / 1000)
+                            let days = daysSince(date: visitDateAsDate)
+                    // Date
+                    VStack {
+                            Text("\(formattedDate(date: visitDateAsDate)) \(days > 2 ? " (\(days) days ago)" : "")")
+                                .font(.footnote)
+                                .lineLimit(2)
+                                .foregroundColor(Color.secondaryLabel)
+                                .fontWeight(.bold)
+                                .hSpacing(.leading)
+                                .padding(.leading, 5)
+                        // Notes
+                        Text("\(visit.notes)")
+                            .font(.body)
+                            .lineLimit(4)
+                            .foregroundColor(.secondaryLabel)
+                            .fontWeight(.bold)
+                            .padding(.leading, 5)
+                            .multilineTextAlignment(.leading)
+                            .hSpacing(.leading)
+                    }.hSpacing(.leading).padding(10).background(Color.gray.opacity(0.2)) // Subtle background color
+                        .cornerRadius(16)
+                } else {
+                    HStack {
+                        Image(systemName: "text.word.spacing")
+                            .resizable()
+                            .imageScale(.medium)
+                            .foregroundColor(.secondaryLabel)
+                            .frame(width: 20, height: 20)
+                        Text(NSLocalizedString("No notes available.", comment: ""))
+                            .font(.body)
+                            .lineLimit(2)
+                            .foregroundColor(.secondaryLabel)
+                            .fontWeight(.bold)
+                            
+                    }.hSpacing(.leading).padding(.leading, 5).padding(10).background(Color.gray.opacity(0.2)) // Subtle background color
+                        .cornerRadius(16)
+                        
+                }
                 
-                // Notes
-                Text("\(house.visit?.notes ?? "No notes")")
-                    .font(.body)
-                    .lineLimit(4)
-                    .foregroundColor(.secondaryLabel)
-                    .fontWeight(.bold)
-                    .padding(.leading, 5)
-                    .multilineTextAlignment(.leading)
             }.vSpacing(.top)
             .frame(maxWidth: .infinity)
         }
@@ -105,5 +128,4 @@ struct HouseCell: View {
                 }
     }
         
-    
 }

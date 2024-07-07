@@ -14,6 +14,7 @@ import SwipeActions
 import Lottie
 import AlertKit
 import MijickPopupView
+import ImageViewerRemote
 
 struct TerritoryAddressView: View {
     var territory: TerritoryModel
@@ -23,6 +24,7 @@ struct TerritoryAddressView: View {
     @StateObject var viewModel: AddressViewModel
     init(territory: TerritoryModel, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
+        self.imageURL = territory.getImageURL()
         
         let initialViewModel = AddressViewModel(territory: territory, territoryAddressIdToScrollTo: territoryAddressIdToScrollTo)
         _viewModel = StateObject(wrappedValue: initialViewModel)
@@ -41,6 +43,7 @@ struct TerritoryAddressView: View {
     let minimumOffset: CGFloat = 60
     
     @State var highlightedTerritoryAddressId: String?
+    @State var imageURL = String()
     
     @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
@@ -50,7 +53,8 @@ struct TerritoryAddressView: View {
                     ScalingHeaderScrollView {
                         ZStack {
                             Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
-                            viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
+                            viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size) .onTapGesture { if !imageURL.isEmpty { viewModel.showImageViewer = true }}
+                                
                         }
                         
                     } content: {
@@ -195,24 +199,28 @@ struct TerritoryAddressView: View {
             .navigationBarBackButtonHidden()
             .navigationBarTitle("Addresses", displayMode: .inline)
             .toolbar {
-                ToolbarItemGroup(placement: .topBarLeading) {
-                    HStack {
-                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                presentationMode.wrappedValue.dismiss()
-                            }
-                        })//.keyboardShortcut(.delete, modifiers: .command)
+                if !viewModel.showImageViewer {
+                    ToolbarItemGroup(placement: .topBarLeading) {
+                        HStack {
+                            Button("", action: {withAnimation { viewModel.backAnimation.toggle();
+                                HapticManager.shared.trigger(.lightImpact) };
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    dismissAll()
+                                    presentationMode.wrappedValue.dismiss()
+                                }
+                            })//.keyboardShortcut(.delete, modifiers: .command)
                             .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                        }
                     }
-                }
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    HStack {
-                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                            .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                        //                    if viewModel.isAdmin {
-                        //                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
-                        //                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-                        //                    }
+                    ToolbarItemGroup(placement: .topBarTrailing) {
+                        HStack {
+                            Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                                .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                            //                    if viewModel.isAdmin {
+                            //                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                            //                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                            //                    }
+                        }
                     }
                 }
             }
@@ -224,7 +232,7 @@ struct TerritoryAddressView: View {
                     }
                 }
             }
-        }
+        }.overlay(ImageViewerRemote(imageURL: $imageURL, viewerShown: $viewModel.showImageViewer))
     }
     
     @ViewBuilder

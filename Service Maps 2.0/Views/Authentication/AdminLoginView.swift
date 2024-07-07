@@ -100,7 +100,8 @@ struct AdminLoginView: View {
                         // Handle tap action
                         emailFocus = true
                     })
-                    .textContentType(.username)
+                    .textContentType(.oneTimeCode)
+                
                 Text("Congregation Password")
                     .font(.headline)
                     .fontWeight(.semibold)
@@ -113,6 +114,7 @@ struct AdminLoginView: View {
                     .padding(.horizontal)
                     .font(.system(size: 16, weight: .regular))
                     .accentColor(.blue)
+                    .textContentType(.oneTimeCode)
                     .focused($passwordFocus)
                     .gesture(TapGesture().onEnded {
                         // Handle tap action

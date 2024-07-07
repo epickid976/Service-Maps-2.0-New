@@ -274,3 +274,11 @@ func openMaps(searchQuery: String) {
 func copyToClipboard(text: String) {
         UIPasteboard.general.string = text
     }
+
+func daysSince(date: Date) -> Int {
+    let calendar = Calendar.current
+    let currentDate = Date()
+    
+    let components = calendar.dateComponents([.day], from: date, to: currentDate)
+    return components.day ?? 0 // Default to 0 if the calculation fails
+}

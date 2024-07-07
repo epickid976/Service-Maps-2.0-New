@@ -154,6 +154,7 @@ struct SettingsView: View {
                     HStack {
                         Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                dismissAll()
                                 presentationMode.wrappedValue.dismiss()
                             }
                         })
@@ -243,7 +244,7 @@ struct SettingsView: View {
                                 .toggleStyle(CheckmarkToggleStyle(color: .blue))
                             //.padding()
                         }.hSpacing(.trailing)
-                        
+                            .frame(maxWidth: 100)
                     }
             }
         }.padding(10)

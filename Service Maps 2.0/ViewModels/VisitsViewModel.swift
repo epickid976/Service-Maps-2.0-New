@@ -88,20 +88,23 @@ extension VisitsViewModel {
                     print("Error retrieving visit data: \(error)")
                 }
             }, receiveValue: { visitData in
-                    DispatchQueue.main.async {
-                        let data = visitData.sorted { $0.visit.date > $1.visit.date }
-                       
-                        if let  latestVisit = visitData.sorted(by: { $0.visit.date > $1.visit.date }).first?.visit {
-                            self.latestVisitUpdatePublisher.send(latestVisit)
-                        }
-                        
-                        self.visitData = data
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            if let visitIdToScrollTo = visitIdToScrollTo {
-                                self.visitIdToScrollTo = visitIdToScrollTo
-                            }
+                DispatchQueue.main.async {
+                    let data = visitData.sorted { $0.visit.date > $1.visit.date }
+                    
+                    if let latestVisit = visitData
+                        .filter({ $0.visit.symbol != "nc" })
+                        .sorted(by: { $0.visit.date > $1.visit.date })
+                        .first?.visit {
+                        self.latestVisitUpdatePublisher.send(latestVisit)
+                    }
+                    
+                    self.visitData = data
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if let visitIdToScrollTo = visitIdToScrollTo {
+                            self.visitIdToScrollTo = visitIdToScrollTo
                         }
                     }
+                }
             })
             .store(in: &cancellables)
     }

@@ -31,8 +31,9 @@ class AuthorizationLevelManager: ObservableObject {
             _ = try await AuthenticationAPI().user()
         } catch {
             if let error = error.asAFError {
+                
                 if error.responseCode == 401 {
-                    dataStore.userEmail = nil
+                    authorizationProvider.authorizationToken = nil
                     return true
                 }
             }

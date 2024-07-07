@@ -19,6 +19,27 @@ class RealmManager: ObservableObject {
     //var dataUploaderManager = DataUploaderManager()
     
     private init() {
+        func migrationVersion() {
+            let config = Realm.Configuration(
+                schemaVersion: 6) { migration, oldSchemaVersion in
+                    
+                    if oldSchemaVersion < 5 {
+                        migration.enumerateObjects(ofType: TokenTerritoryObject.className()) { oldObject, newObject in
+                            newObject!["_id"] = ObjectId.generate()
+                        }
+                    }
+                    
+                    if oldSchemaVersion < 6 {
+                        migration.enumerateObjects(ofType: UserTokenObject.className()) { oldObject, newObject in
+                            newObject!["blocked"] = false
+                        }
+                    }
+                }
+            Realm.Configuration.defaultConfiguration = config
+        }
+        
+        migrationVersion()
+        
         realmDatabase = try! Realm()
         
         let territoryEntities = realmDatabase.objects(TerritoryObject.self)

@@ -38,10 +38,9 @@ struct AddVisitView: View {
                 HStack {
                     Text("\(title) Visit")
                         .font(.title3)
-                        .fontWeight(.bold)
-                        .hSpacing(.leading)
-                        .padding(.leading)
-                    
+                        .fontWeight(.heavy)
+                        .hSpacing(.center)
+                        
                    
                 }
                 
@@ -221,8 +220,8 @@ struct CustomPickerView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
             }
-            .padding(.leading, 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.trailing, 16)
+            .frame(maxWidth: .infinity, alignment: .trailing)
 
             if showOptions {
                 LazyVGrid(columns: columns, spacing: 16) {
@@ -236,19 +235,23 @@ struct CustomPickerView: View {
                             HStack {
                                 Text("**\(option.rawValue == "-" ? "" : NSLocalizedString(option.rawValue, comment: ""))** - \(option.legend)")
                                     .foregroundColor(.primary)
-                                    .multilineTextAlignment(.leading)
+                                    .multilineTextAlignment(.center)
                                     .lineLimit(2)
-                                Spacer()
-                                if viewModel.selectedOption == option {
-                                    Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
-                                }
-                            }
+                                    .font(.body)
+                                    .frame(alignment: .leading)
+                                    //.fontWeight(.bold)
+                                    
+                            }.hSpacing(.center).animation(.spring(), value: viewModel.selectedOption == option)
                             .padding()
                             .frame(maxWidth: .infinity, minHeight: 50) // Ensure same height
                             .background(
                                 RoundedRectangle(cornerRadius: 40)
-                                    .fill(Color.gray.opacity(0.1))
+                                    .fill(Color.gray.opacity( viewModel.selectedOption == option ? 0.2 : 0.1))
+                                    
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 40)
+                                    .stroke(viewModel.selectedOption == option ? Color.white : Color.clear, lineWidth: 1)
                             )
                         }
                         .buttonStyle(PlainButtonStyle())

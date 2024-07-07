@@ -49,11 +49,16 @@ class AuthenticationAPI {
         do {
             let response = try await ApiRequestAsync().getRequest(url: baseURL + "user")
             
+            if response.contains("Unauthenticated") {
+                throw AFError.responseValidationFailed(reason: .unacceptableStatusCode(code: 401))
+            }
+            
             let decoder = JSONDecoder()
             
             let jsonData = response.data(using: .utf8)!
             
             let userResponse = try decoder.decode(UserResponse.self, from: jsonData)
+            
             
             return userResponse
         } catch {

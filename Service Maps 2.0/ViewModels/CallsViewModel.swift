@@ -22,11 +22,7 @@ class CallsViewModel: ObservableObject {
     let latestCallUpdatePublisher = PassthroughSubject<PhoneCallModel, Never>()
     private var cancellables = Set<AnyCancellable>()
     
-    @Published var callsData: Optional<[PhoneCallData]> = nil {
-        didSet {
-            print("Start of Array: \(callsData)")
-        }
-    }
+    @Published var callsData: Optional<[PhoneCallData]> = nil
     //@ObservedObject var databaseManager = RealmManager.shared
     
     init(phoneNumber: PhoneNumberModel, callToScrollTo: String? = nil) {

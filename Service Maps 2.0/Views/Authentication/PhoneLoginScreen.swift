@@ -99,7 +99,7 @@ struct PhoneLoginScreen: View {
                         // Handle tap action
                         emailFocus = true
                     })
-                    .textContentType(.username)
+                    .textContentType(.oneTimeCode)
                 Text("Congregation Password")
                     .font(.headline)
                     .fontWeight(.semibold)
@@ -117,7 +117,7 @@ struct PhoneLoginScreen: View {
                         // Handle tap action
                         passwordFocus = true
                     })
-                
+                    .textContentType(.oneTimeCode)
                 Spacer()
                 
                 

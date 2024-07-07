@@ -56,7 +56,7 @@ struct LoginView: View {
                         .optionalViewModifier { content in
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 content
-                                    .frame(width: 250, height: 250)
+                                    .frame(width: 150, height: 150)
                             } else {
                                 content
                                     .frame(width: 400, height: 400)
@@ -70,14 +70,14 @@ struct LoginView: View {
                         .hSpacing(.leading)
                         .padding(.leading)
                         .keyboardType(.emailAddress)
-                    CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true,keyboardContentType: .emailAddress, diableCapitalization: true, placeholder: "example@example.com")
+                    CustomField(text: $viewModel.username, isFocused: $emailFocus, textfield: true, keyboardType: .emailAddress , keyboardContentType: .oneTimeCode, diableCapitalization: true, placeholder: "example@example.com")
                     
                     Text("Password")
                         .font(.headline)
                         .fontWeight(.semibold)
                         .hSpacing(.leading)
                         .padding(.leading)
-                    CustomField(text: $viewModel.password, isFocused: $passwordFocus, textfield: false, keyboardContentType: .password, placeholder: "****")
+                    CustomField(text: $viewModel.password, isFocused: $passwordFocus, textfield: false, keyboardContentType: .newPassword, placeholder: "****")
                     
                     Spacer()
                     

@@ -99,7 +99,7 @@ class SynchronizationManager: ObservableObject {
     
     private func verifyCredentials() async -> StartupState? {
         if await authorizationLevelManager.userNeedLogin() {
-            return StartupState.Login
+            return StartupState.Welcome
         }
         
         if await authorizationLevelManager.adminNeedLogin() {

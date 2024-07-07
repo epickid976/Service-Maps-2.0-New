@@ -180,6 +180,7 @@ struct PhoneNumbersView: View {
                     HStack {
                         Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                dismissAll()
                                 presentationMode.wrappedValue.dismiss()
                             }
                         })//.keyboardShortcut(.delete, modifiers: .command)
@@ -709,26 +710,57 @@ struct PhoneNumberCell: View {
                     .fontWeight(.heavy)
                     .foregroundColor(.primary)
                     .hSpacing(.leading)
+                    .padding(.leading, 5)
                 Text("House: \(numbersData.phoneNumber.house ?? "N/A")")
-                    .font(.body)
+                    .font(.footnote)
                     .lineLimit(5)
                     .foregroundColor(.secondaryLabel)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.leading)
                     .hSpacing(.leading)
-                VStack {
+                    .padding(.leading, 5)
+                if let call = numbersData.phoneCall {
+                    VStack {
+                        HStack {
+                            Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(call.date) / 1000)))")
+                                .font(.footnote)
+                                .lineLimit(2)
+                                .foregroundColor(.secondaryLabel)
+                                .fontWeight(.bold)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .hSpacing(.leading)
+                        }
+                        HStack {
+                            Text("\(call.notes)")
+                                .font(.body)
+                                .lineLimit(2)
+                                .foregroundColor(.secondaryLabel)
+                                .fontWeight(.bold)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .hSpacing(.leading)
+                        }
+                    }
+                    .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 75)
+                    .hSpacing(.leading).padding(10).background(Color.gray.opacity(0.2)) // Subtle background color
+                        .cornerRadius(16)
+                } else {
                     HStack {
-                        Text("\(numbersData.phoneCall?.notes ?? "No Notes")")
-                            .font(.headline)
+                        Image(systemName: "text.word.spacing")
+                            .resizable()
+                            .imageScale(.medium)
+                            .foregroundColor(.secondaryLabel)
+                            .frame(width: 20, height: 20)
+                        Text(NSLocalizedString("No notes available.", comment: ""))
+                            .font(.body)
                             .lineLimit(2)
                             .foregroundColor(.secondaryLabel)
                             .fontWeight(.bold)
-                            .multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .hSpacing(.leading)
-                    }
+                            
+                    }.hSpacing(.leading).padding(.leading, 5).padding(10).background(Color.gray.opacity(0.2)) // Subtle background color
+                        .cornerRadius(16)
                 }
-                .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 75)
             }
             .frame(maxWidth: mainWindowSize.width * 0.90)
         }
