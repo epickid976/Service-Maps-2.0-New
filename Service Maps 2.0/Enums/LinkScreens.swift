@@ -12,6 +12,7 @@ enum LinkScreens: String {
     case REGISTER_KEY = "https://servicemaps.ejvapps.online/app/registerkey/"
     case RESET_PASSWORD = "https://servicemaps.ejvapps.online/app/passwordreset/"
     case PRIVACY_POLICY = "https://servicemaps.ejvapps.online/privacy"
+    case LOGIN_EMAIL = "https://servicemaps.ejvapps.online/app/login/email"
     case OTHER = "Other"
 }
 
@@ -29,4 +30,5 @@ enum DestinationEnum: String {
     case RegisterKeyView = "RegisterKeyView"
     case ResetPasswordView = "ResetPasswordView"
     case PrivacyPolicyView = "PrivacyPolicyView"
+    case loginWithEmailView = "LoginWithEmailView"
 }

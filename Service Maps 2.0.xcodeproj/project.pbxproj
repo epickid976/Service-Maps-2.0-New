@@ -63,6 +63,7 @@
 		822FA0A52AA7798A0008FA61 /* HousesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A42AA7798A0008FA61 /* HousesViewModel.swift */; };
 		822FA0A72AA77A200008FA61 /* CirlceButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */; };
 		822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A92AA77C8F0008FA61 /* HouseCell.swift */; };
+		82370C102C3D92C7009A8D56 /* LoginWithEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82370C0F2C3D92C7009A8D56 /* LoginWithEmailView.swift */; };
 		823FD4C92A7B52560036A1DD /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4C82A7B52560036A1DD /* UIDeviceExtension.swift */; };
 		823FD4CB2A7BE3DA0036A1DD /* AdminLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4CA2A7BE3DA0036A1DD /* AdminLoginView.swift */; };
 		823FD4D02A7BF07B0036A1DD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4CF2A7BF07B0036A1DD /* LoadingView.swift */; };
@@ -240,6 +241,7 @@
 		822FA0A42AA7798A0008FA61 /* HousesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesViewModel.swift; sourceTree = "<group>"; };
 		822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CirlceButtonStyle.swift; sourceTree = "<group>"; };
 		822FA0A92AA77C8F0008FA61 /* HouseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseCell.swift; sourceTree = "<group>"; };
+		82370C0F2C3D92C7009A8D56 /* LoginWithEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWithEmailView.swift; sourceTree = "<group>"; };
 		823FD4C82A7B52560036A1DD /* UIDeviceExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		823FD4CA2A7BE3DA0036A1DD /* AdminLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminLoginView.swift; sourceTree = "<group>"; };
 		823FD4CF2A7BF07B0036A1DD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
@@ -733,6 +735,7 @@
 				82DBEA992A880B9E002048DC /* ResetPassword.swift */,
 				82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */,
 				82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */,
+				82370C0F2C3D92C7009A8D56 /* LoginWithEmailView.swift */,
 			);
 			path = LinkViews;
 			sourceTree = "<group>";
@@ -879,6 +882,7 @@
 				82FB3C212BF17E830066B0B9 /* AppVersionHelpers.swift in Sources */,
 				82CEA0292C114DB200F52DE9 /* SingleTokenForm.swift in Sources */,
 				822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */,
+				82370C102C3D92C7009A8D56 /* LoginWithEmailView.swift in Sources */,
 				82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */,
 				82F75C342BE29886002CCAB0 /* PhoneNumbersView.swift in Sources */,
 				82F75C3C2BE2D6D7002CCAB0 /* AddCallView.swift in Sources */,
@@ -1152,7 +1156,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.4;
+				MARKETING_VERSION = 3.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1186,7 +1190,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.4;
+				MARKETING_VERSION = 3.0.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

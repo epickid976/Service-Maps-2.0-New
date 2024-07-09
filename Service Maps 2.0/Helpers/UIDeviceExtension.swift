@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 
 public extension UIDevice {
+    
+    
 
     static let modelName: String = {
         var systemInfo = utsname()
@@ -111,5 +113,16 @@ public extension UIDevice {
 
         return mapToDevice(identifier: identifier)
     }()
-
+    
+    static let isCompactPhone: Bool = {
+        return modelName == "iPhone SE (2nd generation)" || modelName == "iPhone SE (3rd generation)"
+    }()
+    
+    static let isSimulator: Bool = {
+        return modelName.contains("Simulator")
+    }()
+    
+    static let isSimulatorCompactPhone: Bool = {
+        return isSimulator && modelName.contains("iPhone SE")
+    }()
 }

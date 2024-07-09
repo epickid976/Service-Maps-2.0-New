@@ -48,6 +48,23 @@ class AuthenticationManager: ObservableObject {
         }
     }
     
+    func loginEmail(email: String) async -> Result<Bool, Error> {
+        return await authenticationApi.loginEmail(email: email)
+    }
+    
+    func loginEmailToken(token: String) async -> Result<LoginResponse, Error> {
+        let result = await authenticationApi.loginEmailToken(token: token)
+        
+        if let loginResponse = try? result.get() {
+                self.dataStore.passTemp = nil
+                self.authorizationProvider.authorizationToken = loginResponse.access_token
+        }
+        
+        _ = await getUser()
+        
+        return result
+    }
+    
     func getUser() async -> Result<UserResponse, Error> {
         do {
             let userResponse = try await authenticationApi.user()

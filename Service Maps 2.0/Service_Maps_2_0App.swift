@@ -26,6 +26,8 @@ struct Service_Maps_2_0App: App {
     
     @StateObject private var navigationHistoryManager = NavigationHistoryManager()
     
+    @Environment(\.presentationMode) var presentationMode
+    
     init() {
         SynchronizationManager.shared.startupProcess(synchronizing: true)
     }
@@ -48,6 +50,7 @@ struct Service_Maps_2_0App: App {
                 case .WelcomeScreen:
                     WelcomeView() {
                         DispatchQueue.main.async {
+                            synchronizationManager.startupProcess(synchronizing: true)
                             synchronizationManager.startupProcess(synchronizing: true)
                         }
                     }
@@ -91,6 +94,9 @@ struct Service_Maps_2_0App: App {
                     
                 case .PrivacyPolicyView:
                     PrivacyPolicy()
+                    
+                case .loginWithEmailView:
+                    LoginWithEmailView()
                     
                 }
             }.environment(\.font, Font.system(.body, design: .rounded))

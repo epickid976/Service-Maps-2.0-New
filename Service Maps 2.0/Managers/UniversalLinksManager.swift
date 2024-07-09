@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import SwiftUI
 
 class UniversalLinksManager: ObservableObject {
     
     @Published var linkState: LinkScreens? = nil
     @Published var dataFromUrl: String? = nil
+    
     
     func handleIncomingURL(_ url: URL) {
         guard let host = url.host, host == "servicemaps.ejvapps.online" else {
@@ -36,14 +38,21 @@ class UniversalLinksManager: ObservableObject {
       } else if url.absoluteString.starts(with: LinkScreens.RESET_PASSWORD.rawValue) {
         // Handle password reset link
         print("Password reset link received, extract token from URL")
+          
           linkState = .RESET_PASSWORD
+          
         // Extract password reset token from URL (logic depends on your URL structure)
         // Navigate to password reset view with the token (your implementation)
       } else if url.absoluteString.starts(with: LinkScreens.PRIVACY_POLICY.rawValue) {
-        // Handle privacy policy link
-        print("Privacy policy link received")
+          // Handle privacy policy link
+          print("Privacy policy link received")
           linkState = .PRIVACY_POLICY
-        // Navigate to privacy policy view (your implementation)
+          // Navigate to privacy policy view (your implementation)
+      } else if url.absoluteString.starts(with: LinkScreens.LOGIN_EMAIL.rawValue) {
+          // Handle login email link
+          print("Login email link received")
+          linkState = .LOGIN_EMAIL
+          // Navigate to login email view (your implementation)
       } else {
         print("Unknown URL, we can't handle this one!")
           linkState = nil
@@ -67,6 +76,8 @@ class UniversalLinksManager: ObservableObject {
             return .ResetPasswordView
         case .PRIVACY_POLICY:
             return .PrivacyPolicyView
+        case .LOGIN_EMAIL:
+            return .loginWithEmailView
         default:
             return nil
         }

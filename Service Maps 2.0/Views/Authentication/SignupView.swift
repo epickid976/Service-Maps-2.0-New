@@ -46,10 +46,10 @@ struct SignupView: View {
                         .hSpacing(.leading)
                         .padding([.leading, .trailing])
                         //.padding(.bottom, -50)
-                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                        LottieAnimationUIView(animationName: "LoginAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
-                            .frame(minWidth: 100, maxWidth: 200, minHeight: 100, maxHeight: 200)
-                           .padding(.vertical, -30)
+                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" || UIDevice.isSimulatorCompactPhone {
+//                        LottieAnimationUIView(animationName: "LoginAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
+//                            .frame(minWidth: 100, maxWidth: 200, minHeight: 100, maxHeight: 200)
+//                           .padding(.vertical, -30)
                     } else {
                         LottieAnimationUIView(animationName: "LoginAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
                             .frame(minWidth: 100, maxWidth: 200, minHeight: 100, maxHeight: 200)
@@ -96,11 +96,13 @@ struct SignupView: View {
                         .hSpacing(.leading)
                         .padding(.leading)
                     CustomField(text: $viewModel.passwordConfirmation, isFocused: $confirmPasswordFocus, textfield: false, keyboardContentType: .newPassword, placeholder: "****")
-                    Spacer()
+                    
                     if viewModel.loginError {
+                        Spacer()
                         Text(viewModel.loginErrorText)
                             .fontWeight(.bold)
                             .foregroundColor(.red)
+                            
                     }
                     Spacer()
                     HStack {
@@ -113,6 +115,7 @@ struct SignupView: View {
                                 viewModel.username = ""
                                 viewModel.password = ""
                                 viewModel.passwordConfirmation = ""
+                                viewModel.loginError = false
                             }//.keyboardShortcut("\r", modifiers: [.command, .shift])
                         }
                         
@@ -143,11 +146,16 @@ struct SignupView: View {
                             }
                         }//.keyboardShortcut("\r", modifiers: .command)
                     }
-                    .padding()
+                    .padding([.horizontal, .top])
                 }
                 .modifier(KeyboardAdaptive(active: passwordFocus || confirmPasswordFocus))
                 .alert(isPresented: $viewModel.showAlert) {
                     Alert(title: Text("\(viewModel.alertTitle)"), message: Text("\(viewModel.alertMessage)"), dismissButton: .default(Text("OK")))
+                }
+                .onChange(of: viewModel.loginError) { newValue in
+                    if newValue {
+                        hideKeyboard()
+                    }
                 }
                 .padding()
                 .navigationBarBackButtonHidden(true)
@@ -166,22 +174,22 @@ struct SignupView: View {
             .navigationTransition(
                 .slide.combined(with: .fade(.in))
             )
-//           .toolbar{
-//                ToolbarItemGroup(placement: .keyboard){
-//                    Spacer()
-//                    Button("Done"){
-//                        HapticManager.shared.trigger(.lightImpact)
-//                        DispatchQueue.main.async {
-//                            firstNameFocus = false
-//                            lastNameFocus = false
-//                            emailFocus = false
-//                            confirmPasswordFocus = false
-//                            passwordFocus = false
-//                            hideKeyboard()
-//                        }
-//                    }
-//                }
-//            }
+           .toolbar{
+                ToolbarItemGroup(placement: .keyboard){
+                    Spacer()
+                    Button("Done"){
+                        HapticManager.shared.trigger(.lightImpact)
+                        DispatchQueue.main.async {
+                            firstNameFocus = false
+                            lastNameFocus = false
+                            emailFocus = false
+                            confirmPasswordFocus = false
+                            passwordFocus = false
+                            hideKeyboard()
+                        }
+                    }.tint(.primary).bold()
+                }
+            }
         }
     }
 }
@@ -204,7 +212,7 @@ struct KeyboardAdaptive: ViewModifier {
     var active = false
     func body(content: Content) -> some View {
         content
-            .padding(.bottom, active && UIDevice().userInterfaceIdiom == .phone ? keyboard.currentHeight : 0)
+            .padding(.bottom, active && UIDevice().userInterfaceIdiom == .phone ? keyboard.currentHeight - 140 : 0)
             .animation(.easeOut(duration: 0.16))
     }
 }

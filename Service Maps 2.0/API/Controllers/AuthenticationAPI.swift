@@ -27,6 +27,30 @@ class AuthenticationAPI {
         }
     }
     
+    func loginEmail(email: String) async -> Result<Bool, Error> {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "loginemail", body: LoginForm(email: email, password: ""))
+            
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    func loginEmailToken(token: String) async -> Result<LoginResponse, Error> {
+        do {
+            let response = try await ApiRequestAsync().postRequest(url: baseURL + "loginemailtoken", body: SingleTokenForm(token: token))
+            
+            let loginResponse = try JSONDecoder().decode(LoginResponse.self, from: Data(response.utf8))
+            
+            return Result.success(loginResponse)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    //MARK: SignUp
+    
     func signUp(name: String, email: String, password: String) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "signup", body: SignUpForm(name: name, email: email, password: password, password_confirmation: password))

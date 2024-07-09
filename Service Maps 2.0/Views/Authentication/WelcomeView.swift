@@ -34,7 +34,7 @@ struct WelcomeView: View {
                     .fontWeight(.semibold)
                 Spacer()
                     .frame(height: 30)
-                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" || UIDevice.isSimulatorCompactPhone {
                     LottieAnimationUIView(animationName: "WelcomeAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
                         .frame(width: 150, height: 150)
                 } else {
@@ -66,7 +66,7 @@ struct WelcomeView: View {
                 //.keyboardShortcut("s", modifiers: .command)
                 //.padding([.bottom])
                 
-                NavigationLink(destination: LoginView(onDone: onDone)) {
+                NavigationLink(destination: LoginDefaultScreen(onDone: onDone)) {
                     Text("Login")
                         .frame(maxWidth: .infinity)
                         .fontWeight(.heavy)
