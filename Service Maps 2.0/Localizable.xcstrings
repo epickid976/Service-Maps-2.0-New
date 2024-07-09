@@ -1648,10 +1648,36 @@
       }
     },
     "Error Logging in. Please try again later" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error iniciando sesión. Intente otra vez."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur pour se connecter. Réessayez"
+          }
+        }
+      }
     },
     "Error logging in..." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error iniciando sesión..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur pour se connecter..."
+          }
+        }
+      }
     },
     "Error Resetting Password. Please try again later" : {
       "localizations" : {
@@ -2273,7 +2299,20 @@
       }
     },
     "Logging in..." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciando sesión..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En train de se connecter..."
+          }
+        }
+      }
     },
     "Login" : {
       "localizations" : {
@@ -3986,7 +4025,20 @@
       }
     },
     "Use Password" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilizar Contraseña"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser Mot de Passe"
+          }
+        }
+      }
     },
     "Users" : {
       "localizations" : {
