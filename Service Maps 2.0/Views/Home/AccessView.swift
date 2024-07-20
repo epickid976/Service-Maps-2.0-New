@@ -49,7 +49,7 @@ struct AccessView: View {
             ZStack {
                 ScrollView {
                     VStack {
-                        if viewModel.keyData == nil || viewModel.dataStore.synchronized == false {
+                        if viewModel.keyData == nil && viewModel.dataStore.synchronized == false {
                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                 LottieView(animation: .named("loadsimple"))
                                     .playing(loopMode: .loop)
@@ -62,19 +62,20 @@ struct AccessView: View {
                                     .frame(width: 350, height: 350)
                             }
                         } else {
-                            if viewModel.keyData!.isEmpty {
-                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                    LottieView(animation: .named("nodatapreview"))
-                                        .playing()
-                                        .resizable()
-                                        .frame(width: 250, height: 250)
+                            if let data = viewModel.keyData {
+                                if data.isEmpty {
+                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                        LottieView(animation: .named("nodatapreview"))
+                                            .playing()
+                                            .resizable()
+                                            .frame(width: 250, height: 250)
+                                    } else {
+                                        LottieView(animation: .named("nodatapreview"))
+                                            .playing()
+                                            .resizable()
+                                            .frame(width: 350, height: 350)
+                                    }
                                 } else {
-                                    LottieView(animation: .named("nodatapreview"))
-                                        .playing()
-                                        .resizable()
-                                        .frame(width: 350, height: 350)
-                                }
-                            } else {
                                     SwipeViewGroup {
                                         if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
@@ -96,10 +97,11 @@ struct AccessView: View {
                                             }
                                         }
                                     }
-                                .animation(.spring(), value: viewModel.keyData)
-                                .padding()
-                                
-                                
+                                    .animation(.spring(), value: viewModel.keyData)
+                                    .padding()
+                                    
+                                    
+                                }
                             }
                         }
                     }.hSpacing(.center)

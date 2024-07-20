@@ -55,7 +55,8 @@ struct VisitsView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
                         LazyVStack {
-                            if viewModel.visitData == nil || viewModel.dataStore.synchronized == false {
+                        
+                            if viewModel.visitData == nil && viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
@@ -68,23 +69,24 @@ struct VisitsView: View {
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
-                                if viewModel.visitData!.isEmpty {
-                                    VStack {
-                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 250, height: 250)
-                                        } else {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 350, height: 350)
+                                if let data = viewModel.visitData {
+                                    if data.isEmpty {
+                                        VStack {
+                                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 250, height: 250)
+                                            } else {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 350, height: 350)
+                                            }
                                         }
-                                    }
-                                    
-                                } else {
-                                    //LazyVStack {
+                                        
+                                    } else {
+                                        //LazyVStack {
                                         SwipeViewGroup {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
@@ -105,10 +107,11 @@ struct VisitsView: View {
                                             }
                                             
                                         }
-                                    .animation(.spring(), value: viewModel.visitData!)
+                                        .animation(.spring(), value: viewModel.visitData!)
                                         .padding()
-                                    
-                                    
+                                        
+                                        
+                                    }
                                 }
                             }
                         }.background(GeometryReader {

@@ -58,7 +58,7 @@ struct PhoneNumbersView: View {
                         }
                     } content: {
                         LazyVStack {
-                            if viewModel.phoneNumbersData == nil || viewModel.dataStore.synchronized == false {
+                            if viewModel.phoneNumbersData == nil && viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
@@ -71,44 +71,46 @@ struct PhoneNumbersView: View {
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
-                                if viewModel.phoneNumbersData!.isEmpty {
-                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 250, height: 250)
+                                if let data = viewModel.phoneNumbersData {
+                                    if data.isEmpty {
+                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 250, height: 250)
+                                        } else {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 350, height: 350)
+                                        }
                                     } else {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 350, height: 350)
-                                    }
-                                } else {
-                                    LazyVStack {
-                                        SwipeViewGroup {
-                                            if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
-                                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                    ForEach(viewModel.phoneNumbersData!, id: \.phoneNumber.id) { numbersData in
-                                                        let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
-                                                        numbersCell(numbersData: numbersData, mainWindowSize: proxy).id(numbersData.phoneNumber.id).transition(.customBackInsertion)
-                                                            .padding(.bottom, 2)
-                                                    }.modifier(ScrollTransitionModifier())
-                                                }
-                                            } else {
-                                                LazyVGrid(columns: [GridItem(.flexible())]) {
-                                                    ForEach(viewModel.phoneNumbersData!, id: \.phoneNumber.id) { numbersData in
-                                                        numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id).transition(.customBackInsertion)
-                                                            .padding(.bottom, 2)
-                                                    }.modifier(ScrollTransitionModifier())
+                                        LazyVStack {
+                                            SwipeViewGroup {
+                                                if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                        ForEach(viewModel.phoneNumbersData!, id: \.phoneNumber.id) { numbersData in
+                                                            let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
+                                                            numbersCell(numbersData: numbersData, mainWindowSize: proxy).id(numbersData.phoneNumber.id).transition(.customBackInsertion)
+                                                                .padding(.bottom, 2)
+                                                        }.modifier(ScrollTransitionModifier())
+                                                    }
+                                                } else {
+                                                    LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                        ForEach(viewModel.phoneNumbersData!, id: \.phoneNumber.id) { numbersData in
+                                                            numbersCell(numbersData: numbersData, mainWindowSize: proxy.size).id(numbersData.phoneNumber.id).transition(.customBackInsertion)
+                                                                .padding(.bottom, 2)
+                                                        }.modifier(ScrollTransitionModifier())
+                                                    }
                                                 }
                                             }
                                         }
+                                        .padding(.horizontal)
+                                        .padding(.top)
+                                        .padding(.bottom)
+                                        .animation(.default, value: viewModel.phoneNumbersData)
+                                        
                                     }
-                                    .padding(.horizontal)
-                                    .padding(.top)
-                                    .padding(.bottom)
-                                    .animation(.default, value: viewModel.phoneNumbersData)
-                                    
                                 }
                             }
                         }.background(GeometryReader {

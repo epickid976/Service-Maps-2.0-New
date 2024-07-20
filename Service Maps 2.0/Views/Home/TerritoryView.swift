@@ -66,7 +66,7 @@ struct TerritoryView: View {
                     ScrollViewReader { scrollViewProxy in
                         ScrollView {
                             VStack {
-                                if viewModel.territoryData == nil || !viewModel.dataStore.synchronized {
+                                if viewModel.territoryData == nil && !viewModel.dataStore.synchronized {
                                     if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                         LottieView(animation: .named("loadsimple"))
                                             .playing(loopMode: .loop)
@@ -87,78 +87,78 @@ struct TerritoryView: View {
                                             .frame(width: 350, height: 350)
                                     }
                                 } else {
-                                    if viewModel.territoryData!.isEmpty {
-                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 250, height: 250)
-                                        } else {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 350, height: 350)
-                                        }
-                                        
-                                        
-                                    } else {
-                                        if viewModel.recentTerritoryData != nil {
-                                            if viewModel.recentTerritoryData!.count > 0 {
-                                                LazyVStack {
-                                                    
-                                                    Text("Recent Territories")
-                                                        .font(.title2)
-                                                        .lineLimit(1)
-                                                        .foregroundColor(.primary)
-                                                        .fontWeight(.bold)
-                                                        .hSpacing(.leading)
-                                                        .padding(5)
-                                                        .padding(.horizontal, 10)
-                                                    ScrollView(.horizontal, showsIndicators: false) {
-                                                        LazyHStack {
-                                                            ForEach(viewModel.recentTerritoryData!, id: \.id) { territoryData in
-                                                                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
-                                                                    recentCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
-                                                                }.onTapHaptic(.lightImpact)
-                                                            }
-                                                        }
-                                                    }.padding(.leading).scrollIndicators(.never)
-                                                    
-                                                }.modifier(ScrollTransitionModifier())
-                                                    .animation(.default, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                    if let data = viewModel.territoryData {
+                                        if data.isEmpty {
+                                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 250, height: 250)
+                                            } else {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 350, height: 350)
                                             }
-                                        }
-                                        
-                                        
-                                        SwipeViewGroup {
-                                            ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
-                                                if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
-                                                    territoryHeader(dataWithKeys: dataWithKeys)
-                                                        .modifier(ScrollTransitionModifier())
-                                                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                        } else {
+                                            if viewModel.recentTerritoryData != nil {
+                                                if viewModel.recentTerritoryData!.count > 0 {
+                                                    LazyVStack {
                                                         
-                                                        ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                                                            territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                .id(territoryData.territory.id)
-                                                                .modifier(ScrollTransitionModifier())
-                                                                .transition(.customBackInsertion)
-                                                        }//.animation(.spring(), value: dataWithKeys.territoriesData)
-                                                    }
-                                                } else {
-                                                    territoryHeader(dataWithKeys: dataWithKeys)
-                                                        .modifier(ScrollTransitionModifier())
-                                                    LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                        Text("Recent Territories")
+                                                            .font(.title2)
+                                                            .lineLimit(1)
+                                                            .foregroundColor(.primary)
+                                                            .fontWeight(.bold)
+                                                            .hSpacing(.leading)
+                                                            .padding(5)
+                                                            .padding(.horizontal, 10)
+                                                        ScrollView(.horizontal, showsIndicators: false) {
+                                                            LazyHStack {
+                                                                ForEach(viewModel.recentTerritoryData!, id: \.id) { territoryData in
+                                                                    NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                                        recentCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
+                                                                    }.onTapHaptic(.lightImpact)
+                                                                }
+                                                            }
+                                                        }.padding(.leading).scrollIndicators(.never)
                                                         
-                                                        ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                                                            territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                .id(territoryData.territory.id)
-                                                                .modifier(ScrollTransitionModifier())
-                                                                .transition(.customBackInsertion)
-                                                        }//.animation(.spring(), value: dataWithKeys.territoriesData)
-                                                    }
+                                                    }.modifier(ScrollTransitionModifier())
+                                                        .animation(.default, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
                                                 }
                                             }
                                             
+                                            
+                                            SwipeViewGroup {
+                                                ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
+                                                    if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                        territoryHeader(dataWithKeys: dataWithKeys)
+                                                            .modifier(ScrollTransitionModifier())
+                                                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                            
+                                                            ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+                                                                territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
+                                                                    .id(territoryData.territory.id)
+                                                                    .modifier(ScrollTransitionModifier())
+                                                                    .transition(.customBackInsertion)
+                                                            }//.animation(.spring(), value: dataWithKeys.territoriesData)
+                                                        }
+                                                    } else {
+                                                        territoryHeader(dataWithKeys: dataWithKeys)
+                                                            .modifier(ScrollTransitionModifier())
+                                                        LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                            
+                                                            ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+                                                                territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
+                                                                    .id(territoryData.territory.id)
+                                                                    .modifier(ScrollTransitionModifier())
+                                                                    .transition(.customBackInsertion)
+                                                            }//.animation(.spring(), value: dataWithKeys.territoriesData)
+                                                        }
+                                                    }
+                                                }
+                                                
+                                            }
                                         }
                                     }
                                 }

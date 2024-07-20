@@ -63,7 +63,7 @@ struct PhoneTerritoriesScreen: View {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
                         VStack {
-                            if viewModel.phoneData == nil || viewModel.dataStore.synchronized == false {
+                            if viewModel.phoneData == nil && viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
@@ -84,76 +84,78 @@ struct PhoneTerritoriesScreen: View {
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
-                                if viewModel.phoneData!.isEmpty {
-                                    VStack {
-                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 250, height: 250)
-                                        } else {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 350, height: 350)
+                                if let data = viewModel.phoneData {
+                                    if data.isEmpty {
+                                        VStack {
+                                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 250, height: 250)
+                                            } else {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 350, height: 350)
+                                            }
                                         }
-                                    }
-                                    
-                                } else {
-                                    LazyVStack {
-                                        if !(viewModel.recentPhoneData == nil) {
-                                            if viewModel.recentPhoneData!.count > 0 {
-                                                LazyVStack {
-                                                    Text("Recent Territories")
-                                                        .font(.title2)
-                                                        .lineLimit(1)
-                                                        .foregroundColor(.primary)
-                                                        .fontWeight(.bold)
-                                                        .hSpacing(.leading)
-                                                        .padding(5)
-                                                        .padding(.horizontal, 10)
-                                                    ScrollView(.horizontal, showsIndicators: false) {
-                                                        LazyHStack {
-                                                            ForEach(viewModel.recentPhoneData!, id: \.id) { territoryData in
-                                                                NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
-                                                                    recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
-                                                                }.onTapHaptic(.lightImpact)
+                                        
+                                    } else {
+                                        LazyVStack {
+                                            if !(viewModel.recentPhoneData == nil) {
+                                                if viewModel.recentPhoneData!.count > 0 {
+                                                    LazyVStack {
+                                                        Text("Recent Territories")
+                                                            .font(.title2)
+                                                            .lineLimit(1)
+                                                            .foregroundColor(.primary)
+                                                            .fontWeight(.bold)
+                                                            .hSpacing(.leading)
+                                                            .padding(5)
+                                                            .padding(.horizontal, 10)
+                                                        ScrollView(.horizontal, showsIndicators: false) {
+                                                            LazyHStack {
+                                                                ForEach(viewModel.recentPhoneData!, id: \.id) { territoryData in
+                                                                    NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                                        recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
+                                                                    }.onTapHaptic(.lightImpact)
+                                                                }
                                                             }
                                                         }
-                                                    }
-                                                    .padding(.leading)
-                                                    
-                                                }.modifier(ScrollTransitionModifier())
-                                                .animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
-                                            }
-                                        }
-                                        LazyVStack {
-                                            SwipeViewGroup {
-                                                if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
-                                                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                        ForEach(viewModel.phoneData!, id: \.territory.id) { phoneData in
-                                                   
-                                                            let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
-                                                            
-                                                            territoryCell(phoneData: phoneData, mainViewSize: proxy).id(phoneData.territory.id).transition(.customBackInsertion)
-                                                        }.modifier(ScrollTransitionModifier())
-                                                    }
-                                                } else {
-                                                    LazyVGrid(columns: [GridItem(.flexible())]) {
-                                                        ForEach(viewModel.phoneData!, id: \.territory.id) { phoneData in
-                                                            territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id).transition(.customBackInsertion)
-                                                        }.modifier(ScrollTransitionModifier())
-                                                    }
+                                                        .padding(.leading)
+                                                        
+                                                    }.modifier(ScrollTransitionModifier())
+                                                        .animation(.smooth, value: viewModel.recentPhoneData == nil || viewModel.recentPhoneData != nil)
                                                 }
-                                                //.animation(.default, value: viewModel.phoneData!)
-                                                
-                                                
                                             }
-                                        }.animation(.spring(), value: viewModel.phoneData)
+                                            LazyVStack {
+                                                SwipeViewGroup {
+                                                    if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                            ForEach(viewModel.phoneData!, id: \.territory.id) { phoneData in
+                                                                
+                                                                let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
+                                                                
+                                                                territoryCell(phoneData: phoneData, mainViewSize: proxy).id(phoneData.territory.id).transition(.customBackInsertion)
+                                                            }.modifier(ScrollTransitionModifier())
+                                                        }
+                                                    } else {
+                                                        LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                            ForEach(viewModel.phoneData!, id: \.territory.id) { phoneData in
+                                                                territoryCell(phoneData: phoneData, mainViewSize: proxy.size).id(phoneData.territory.id).transition(.customBackInsertion)
+                                                            }.modifier(ScrollTransitionModifier())
+                                                        }
+                                                    }
+                                                    //.animation(.default, value: viewModel.phoneData!)
+                                                    
+                                                    
+                                                }
+                                            }.animation(.spring(), value: viewModel.phoneData)
+                                        }
+                                        
+                                        
+                                        
                                     }
-                                    
-                                    
-                                    
                                 }
                             }
                         }.background(GeometryReader {

@@ -98,7 +98,6 @@ class AuthenticationAPI {
         } catch {
             return Result.failure(error)
         }
-        
     }
     
     func activateEmail(token: String) async -> Result<Bool, Error> {

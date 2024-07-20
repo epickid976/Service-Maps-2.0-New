@@ -59,7 +59,7 @@ struct TerritoryAddressView: View {
                         
                     } content: {
                         VStack {
-                            if viewModel.addressData == nil || viewModel.dataStore.synchronized == false {
+                            if viewModel.addressData == nil && viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
@@ -80,51 +80,53 @@ struct TerritoryAddressView: View {
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
-                                if viewModel.addressData!.isEmpty {
-                                    VStack {
-                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 250, height: 250)
-                                        } else {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 350, height: 350)
-                                        }
-                                    }
-                                } else {
-                                    LazyVStack {
-                                        SwipeViewGroup {
-                                            if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled  {
-                                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                    ForEach(viewModel.addressData ?? [], id: \.address.id) { addressData in
-                                                        let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
-                                                        addressCell(addressData: addressData, mainWindowSize: proxy)
-                                                            .padding(.bottom, 2)
-                                                            .id(addressData.address.id)
-                                                            .transition(.customBackInsertion)
-                                                    }
-                                                }
+                                if let data = viewModel.addressData {
+                                    if data.isEmpty {
+                                        VStack {
+                                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 250, height: 250)
                                             } else {
-                                                LazyVGrid(columns: [GridItem(.flexible())]) {
-                                                    ForEach(viewModel.addressData ?? [], id: \.address.id) { addressData in
-                                                        addressCell(addressData: addressData, mainWindowSize: proxy.size)
-                                                            .padding(.bottom, 2)
-                                                            .id(addressData.address.id)
-                                                            .transition(.customBackInsertion)
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 350, height: 350)
+                                            }
+                                        }
+                                    } else {
+                                        LazyVStack {
+                                            SwipeViewGroup {
+                                                if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled  {
+                                                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                        ForEach(viewModel.addressData ?? [], id: \.address.id) { addressData in
+                                                            let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
+                                                            addressCell(addressData: addressData, mainWindowSize: proxy)
+                                                                .padding(.bottom, 2)
+                                                                .id(addressData.address.id)
+                                                                .transition(.customBackInsertion)
+                                                        }
+                                                    }
+                                                } else {
+                                                    LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                        ForEach(viewModel.addressData ?? [], id: \.address.id) { addressData in
+                                                            addressCell(addressData: addressData, mainWindowSize: proxy.size)
+                                                                .padding(.bottom, 2)
+                                                                .id(addressData.address.id)
+                                                                .transition(.customBackInsertion)
+                                                        }
                                                     }
                                                 }
                                             }
+                                            .modifier(ScrollTransitionModifier())
                                         }
-                                        .modifier(ScrollTransitionModifier())
+                                        .padding(.horizontal)
+                                        .padding(.top)
+                                        .padding(.bottom)
+                                        .animation(.default, value: viewModel.addressData)
+                                        
                                     }
-                                    .padding(.horizontal)
-                                    .padding(.top)
-                                    .padding(.bottom)
-                                    .animation(.default, value: viewModel.addressData)
-                                    
                                 }
                             }
                         }.background(GeometryReader {

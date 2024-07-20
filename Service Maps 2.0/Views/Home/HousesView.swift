@@ -50,7 +50,7 @@ struct HousesView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
                         LazyVStack {
-                            if viewModel.houseData == nil || !viewModel.dataStore.synchronized {
+                            if viewModel.houseData == nil && !viewModel.dataStore.synchronized {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
@@ -63,7 +63,8 @@ struct HousesView: View {
                                         .frame(width: 350, height: 350)
                                 }
                             } else {
-                                if viewModel.houseData!.isEmpty {
+                                if let data = viewModel.houseData {
+                                    if data.isEmpty {
                                         if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                             LottieView(animation: .named("nodatapreview"))
                                                 .playing()
@@ -75,8 +76,8 @@ struct HousesView: View {
                                                 .resizable()
                                                 .frame(width: 350, height: 350)
                                         }
-                                    
-                                } else {
+                                        
+                                    } else {
                                         SwipeViewGroup {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
@@ -95,9 +96,10 @@ struct HousesView: View {
                                                 }
                                             }
                                         }.animation(.spring(), value: viewModel.houseData!)
-                                        .padding()
-                                    
-                                    
+                                            .padding()
+                                        
+                                        
+                                    }
                                 }
                             }
                         }
