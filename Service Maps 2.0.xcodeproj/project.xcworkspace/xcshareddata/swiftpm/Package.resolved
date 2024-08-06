@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Mijick/PopupView?tab=readme-ov-file",
       "state" : {
-        "revision" : "e18cbd9bff46eecaf1fdd5bcc1cd3666d5f05095",
-        "version" : "2.5.0"
+        "revision" : "70af749a8c12df9fce016d7da8f0dc0127dcca9b",
+        "version" : "2.6.0"
       }
     },
     {

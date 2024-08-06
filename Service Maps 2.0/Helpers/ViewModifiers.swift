@@ -30,6 +30,16 @@ extension View {
     
 }
 
+struct ExecuteCode : View {
+    init( _ codeToExec: () -> () ) {
+        codeToExec()
+    }
+    
+    var body: some View {
+        EmptyView()
+    }
+}
+
 extension Spacer {
     @ViewBuilder static func width(_ value: CGFloat?) -> some View {
         switch value {

@@ -528,98 +528,85 @@ class RealmManager: ObservableObject {
     }
     
     @MainActor
-        func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Never> {
-            
-            let flow = Publishers.CombineLatest3(
-                $territoriesFlow,
-                $addressesFlow,
-                $housesFlow
-            )
-                .flatMap { territoryData -> AnyPublisher<[TerritoryDataWithKeys], Never> in
-                    var data = [TerritoryData]()
-                    
-                    for territory in territoryData.0 {
-                        let currentAddresses = territoryData.1.filter { $0.territory == territory.id }
-                        
-                        let currentHouses = territoryData.1
-                            .filter { $0.territory == territory.id }
-                            .flatMap { address -> LazyFilterSequence<Results<HouseObject>> in
-                                return territoryData.2.filter { $0.territory_address == address.id }
-                            }
-                        
-                        let territoryDataEntry = TerritoryData(
-                            territory: convertTerritoryToTerritoryModel(model: territory) ,
-                            addresses: ModelToStruct().convertTerritoryAddressEntitiesToStructs(entities: Array(currentAddresses)) ,
-                            housesQuantity: currentHouses.count,
-                            accessLevel: AuthorizationLevelManager().getAccessLevel(model: territory) ?? .User // Implement your accessLevel logic
-                        )
-                        data.append(territoryDataEntry)
-                    }
-                    
-                    // Combine moderator and non-moderator data into a single array (corrected)
-                    let combinedData = data.sorted(by: { $0.territory.number < $1.territory.number })
-                    
-                    var dataWithKeys = [TerritoryDataWithKeys]()
-                    
-                    
-                    for territoryData in combinedData {
-                        var keys = [TokenObject]()
-                        let keysDao = self.realmDatabase.objects(TokenObject.self)
-                        
-                        let tokenTerritoriesOfKey = self.realmDatabase.objects(TokenTerritoryObject.self).filter({ $0.territory == territoryData.territory.id})
-                        
-                        for tokenTerritory in tokenTerritoriesOfKey {
-                            if let token = keysDao.first(where: { $0.id == tokenTerritory.token}) {
-                                keys.append(token)
-                            }
-                        }
-                        
-                        let founded = dataWithKeys.first { item in
-                            if keys.isEmpty {
-                                return item.keys.isEmpty
-                            } else {
-                                return self.containsSame(first: item.keys, second: ModelToStruct().convertTokenEntitiesToStructs(entities: keys) , getId: { $0.id })
-                            }
-                        }
-                        
-                        if founded != nil {
-                            var territoriesToReplace = founded!.territoriesData
-                            
-                            territoriesToReplace.append(territoryData)
-                            
-                            if let index = dataWithKeys.firstIndex(where: { $0.id == founded!.id}) {
-                                dataWithKeys.remove(at: index)
-                            }
-                            
-                            dataWithKeys.append(
-                                TerritoryDataWithKeys(
-                                    id: UUID(),
-                                    keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
-                                    territoriesData: territoriesToReplace.sorted { $0.territory.number < $1.territory.number }
-                                )
-                            )
-                        } else {
-                            dataWithKeys.append(
-                                TerritoryDataWithKeys(
-                                    id: UUID(),
-                                    keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
-                                    territoriesData: [territoryData]
-                                )
-                            )
-                        }
-                    }
-                    
-                    print("END OF REALM MANAGER FUNC \(dataWithKeys.sorted { $0.territoriesData.first?.territory.number ?? Int32(Int.max) < $1.territoriesData.first?.territory.number ?? Int32(Int.max) })")
-                    
-                    return CurrentValueSubject(dataWithKeys.sorted { $0.territoriesData.first?.territory.number ?? Int32(Int.max) < $1.territoriesData.first?.territory.number ?? Int32(Int.max) }).eraseToAnyPublisher()
-                    //.sorted { $0.territoriesData.first?.territory?.number ?? Int.max < $1.territoriesData.first?.territory?.number ?? Int.max }
-                    
+    func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Never> {
+        // Combine the flows
+        let combinedFlow = Publishers.CombineLatest3(
+            $territoriesFlow,
+            $addressesFlow,
+            $housesFlow
+        )
+        
+        // FlatMap to transform the data
+        let transformedFlow = combinedFlow.flatMap { territoryData -> AnyPublisher<[TerritoryDataWithKeys], Never> in
+            // Precompute territory addresses and houses
+            let territoryAddresses = Dictionary(grouping: territoryData.1, by: { $0.territory })
+            let territoryHouses = Dictionary(grouping: territoryData.2, by: { $0.territory_address })
+
+            // Map territories to TerritoryData
+            let data = territoryData.0.map { territory -> TerritoryData in
+                let currentAddresses = territoryAddresses[territory.id] ?? []
+                let currentHouses = currentAddresses.flatMap { address in
+                    territoryHouses[address.id] ?? []
                 }
+
+                return TerritoryData(
+                    territory: convertTerritoryToTerritoryModel(model: territory),
+                    addresses: ModelToStruct().convertTerritoryAddressEntitiesToStructs(entities: currentAddresses),
+                    housesQuantity: currentHouses.count,
+                    accessLevel: AuthorizationLevelManager().getAccessLevel(model: territory) ?? .User
+                )
+            }.sorted(by: { $0.territory.number < $1.territory.number })
+
+            // Combine TerritoryData with keys
+            let dataWithKeys = self.combineDataWithKeys(data: data)
+
+            // Return the sorted data
+            return Just(dataWithKeys)
                 .eraseToAnyPublisher()
-            
-            return flow
+        }
+        
+        return transformedFlow.eraseToAnyPublisher()
+    }
+
+    // Helper function to combine TerritoryData with keys
+    private func combineDataWithKeys(data: [TerritoryData]) -> [TerritoryDataWithKeys] {
+        var dataWithKeys = [TerritoryDataWithKeys]()
+        let keysDao = self.realmDatabase.objects(TokenObject.self)
+
+        for territoryData in data {
+            var keys = [TokenObject]()
+            let tokenTerritoriesOfKey = self.realmDatabase.objects(TokenTerritoryObject.self).filter({ $0.territory == territoryData.territory.id })
+
+            for tokenTerritory in tokenTerritoriesOfKey {
+                if let token = keysDao.first(where: { $0.id == tokenTerritory.token }) {
+                    keys.append(token)
+                }
+            }
+
+            let founded = dataWithKeys.first { item in
+                if keys.isEmpty {
+                    return item.keys.isEmpty
+                } else {
+                    return self.containsSame(first: item.keys, second: ModelToStruct().convertTokenEntitiesToStructs(entities: keys), getId: { $0.id })
+                }
+            }
+
+            if let founded = founded, let index = dataWithKeys.firstIndex(where: { $0.id == founded.id }) {
+                dataWithKeys[index].territoriesData.append(territoryData)
+                dataWithKeys[index].territoriesData.sort { $0.territory.number < $1.territory.number }
+            } else {
+                dataWithKeys.append(
+                    TerritoryDataWithKeys(
+                        id: UUID(),
+                        keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
+                        territoriesData: [territoryData]
+                    )
+                )
+            }
         }
 
+        return dataWithKeys.sorted { $0.territoriesData.first?.territory.number ?? Int32(Int.max) < $1.territoriesData.first?.territory.number ?? Int32(Int.max) }
+    }
     
     @MainActor
     func getAddressData(territoryId: String) -> AnyPublisher<[AddressData], Never> {
@@ -756,31 +743,37 @@ class RealmManager: ObservableObject {
     
     @MainActor
     func getPhoneData() -> AnyPublisher<[PhoneData], Never> {
-        
-        let flow = Publishers.CombineLatest(
-            $phoneTerritoriesFlow.share(),
-            $phoneNumbersFlow.share()
+        let combinedFlow = Publishers.CombineLatest(
+            $phoneTerritoriesFlow,
+            $phoneNumbersFlow
         )
-            .flatMap { keyData -> AnyPublisher<[PhoneData], Never> in
-                let phoneTerritories = keyData.0
-                let phoneNumbers = keyData.1
-                var data = [PhoneData]()
+        
+        let transformedFlow = combinedFlow.flatMap { keyData -> AnyPublisher<[PhoneData], Never> in
+            let phoneTerritories = keyData.0
+            let phoneNumbers = keyData.1
+
+            // Group phone numbers by territory
+            let phoneNumbersByTerritory = Dictionary(grouping: phoneNumbers, by: { $0.territory })
+
+            // Map phone territories to PhoneData
+            let phoneDataList = phoneTerritories.map { territory -> PhoneData in
+                let currentPhoneNumbers = phoneNumbersByTerritory[String(territory.id)] ?? []
                 
-                for territory in phoneTerritories {
-                    let currentPhoneNumbers = phoneNumbers.filter { $0.territory == String(territory.id) }
-                    
-                    data.append(
-                        PhoneData(
-                            id: UUID(),
-                            territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory),
-                            numbersQuantity: currentPhoneNumbers.count)
-                    )
-                }
-                
-                return CurrentValueSubject(data.sorted { $0.territory.number < $1.territory.number }).eraseToAnyPublisher()
+                return PhoneData(
+                    id: UUID(),
+                    territory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: territory),
+                    numbersQuantity: currentPhoneNumbers.count
+                )
             }
-            .eraseToAnyPublisher()
-        return flow
+
+            // Return the sorted phone data
+            let sortedPhoneData = phoneDataList.sorted { $0.territory.number < $1.territory.number }
+            
+            return CurrentValueSubject(sortedPhoneData)
+                .eraseToAnyPublisher()
+        }
+        
+        return transformedFlow.eraseToAnyPublisher()
     }
     
     @MainActor
@@ -818,7 +811,6 @@ class RealmManager: ObservableObject {
             .flatMap { phoneCalls -> AnyPublisher<[PhoneCallData], Never> in
                 let email = self.dataStore.userEmail
                 let name = self.dataStore.userName
-                print("PHONE CALLS: \(phoneCalls)")
                 var data = [PhoneCallData]()
                 
                 phoneCalls.filter { $0.phoneNumber == phoneNumberId }.forEach { call in

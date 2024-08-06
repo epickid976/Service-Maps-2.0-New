@@ -170,7 +170,7 @@ struct SettingsView: View {
                 HStack {
                     Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                        .disabled(viewModel.presentPolicy)
+                        .disabled(self.viewModel.showEditNamePopup || self.viewModel.presentPolicy || self.viewModel.showDeletionConfirmationAlert || self.viewModel.showDeletionAlert || self.viewModel.showSharePopup || self.viewModel.presentSheet || self.viewModel.showAlert)
                     
                     Button {
                         HapticManager.shared.trigger(.lightImpact)
@@ -185,7 +185,7 @@ struct SettingsView: View {
                                 .padding(12)
                             )
                             .frame(width: 40, height: 40)
-                    }
+                    }.disabled(self.viewModel.showEditNamePopup || self.viewModel.presentPolicy || self.viewModel.showDeletionConfirmationAlert || self.viewModel.showDeletionAlert || self.viewModel.showSharePopup || self.viewModel.presentSheet || self.viewModel.showAlert)
                 }
             }
         }
@@ -634,9 +634,9 @@ private extension BottomPopup_Document {
             .hSpacing(.center)
     }
     func createScrollView() -> some View {
-        VStack {
+        //VStack {
             PrivacyPolicy(sheet: true)
-        }
+        //}
     }
     func createConfirmButton() -> some View {
         Button {

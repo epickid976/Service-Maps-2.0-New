@@ -54,7 +54,11 @@ struct PhoneNumbersView: View {
                     ScalingHeaderScrollView {
                         ZStack {
                             Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
-                            viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
+                            if viewModel.noImage {
+                                viewModel.smallHeader.vSpacing(.bottom).padding()
+                            } else {
+                                viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size)
+                            }
                         }
                     } content: {
                         LazyVStack {
@@ -108,7 +112,7 @@ struct PhoneNumbersView: View {
                                         .padding(.horizontal)
                                         .padding(.top)
                                         .padding(.bottom)
-                                        .animation(.default, value: viewModel.phoneNumbersData)
+                                        .animation(.spring(), value: viewModel.phoneNumbersData)
                                         
                                     }
                                 }
@@ -154,7 +158,7 @@ struct PhoneNumbersView: View {
                             }
                         }
                     }
-                    .height(min: 180, max: 350.0)
+                    .height(min: 180, max: viewModel.noImage ? 200 : 350.0)
                     .allowsHeaderGrowth()
                     .collapseProgress($viewModel.progress)
                     .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
@@ -343,6 +347,7 @@ class NumbersViewModel: ObservableObject {
     @Published var showAlert = false
     @Published var ifFailed = false
     @Published var loading = false
+    @Published var noImage = false
     
     func deleteNumber(number: String) async -> Result<Bool,Error> {
         return await dataUploaderManager.deleteNumber(number: number)
@@ -382,11 +387,21 @@ class NumbersViewModel: ObservableObject {
                             ProgressView().progressViewStyle(.circular)
                             
                         } else if state.error != nil {
+                            ExecuteCode {
+                                DispatchQueue.main.async {
+                                    self.noImage = true
+                                }
+                            }
                             Image(uiImage: UIImage(named: "mapImage")!)
                                 .resizable()
                                 .frame(width: 100, height: 100)
                                 .padding(.bottom, 125)
                         } else {
+                            ExecuteCode {
+                                DispatchQueue.main.async {
+                                    self.noImage = true
+                                }
+                            }
                             Image(uiImage: UIImage(named: "mapImage")!)
                                 .resizable()
                                 .frame(width: 100, height: 100)
@@ -475,27 +490,13 @@ extension NumbersViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { phoneNumbersData in
-                if self.search.isEmpty {
-                    DispatchQueue.main.async {
-                        self.phoneNumbersData = phoneNumbersData
-                        
-                        
-                        
+                self.phoneNumbersData = phoneNumbersData
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             if let phoneNumberToScrollTo = phoneNumberToScrollTo {
                                 self.phoneNumberToScrollTo = phoneNumberToScrollTo
                             }
                         }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.phoneNumbersData = phoneNumbersData.filter { numberData in
-                            numberData.phoneNumber.number.lowercased().contains(self.search.lowercased()) ||
-                            numberData.phoneNumber.house?.lowercased().contains(self.search.lowercased()) ?? false ||
-                            numberData.phoneCall?.notes.lowercased().contains(self.search.lowercased()) ?? false
-                        }
-                    }
-                }
+                    
             })
             .store(in: &cancellables)
     }

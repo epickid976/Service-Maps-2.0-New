@@ -829,6 +829,22 @@
         }
       }
     },
+    "Decreasing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decreciente"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Décroissant"
+          }
+        }
+      }
+    },
     "Delete Account" : {
       "localizations" : {
         "es" : {
@@ -2087,6 +2103,22 @@
         }
       }
     },
+    "Increasing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creciente"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Croissant"
+          }
+        }
+      }
+    },
     "Invalid Credentials" : {
       "localizations" : {
         "es" : {
@@ -2750,6 +2782,9 @@
         }
       }
     },
+    "Normal" : {
+
+    },
     "Not a valid email." : {
       "localizations" : {
         "es" : {
@@ -3067,6 +3102,9 @@
         }
       }
     },
+    "Odd & Even" : {
+
+    },
     "OK" : {
       "localizations" : {
         "es" : {
@@ -3304,13 +3342,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por favor actualice la aplicación lo más rápido posible para acceder a las nuevas funciones. \\nQuisiera actualizar ahora?"
+            "value" : "Por favor actualice la aplicación lo más rápido posible para acceder a las nuevas funciones. \nQuisiera actualizar ahora?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "S'il vous plaît mettez à jour l'application pour accéder aux nouveautés. \\nVoulez vous mettre à jour maintenant?"
+            "value" : "S'il vous plaît mettez à jour l'application pour accéder aux nouveautés. \nVoulez vous mettre à jour maintenant?"
           }
         }
       }

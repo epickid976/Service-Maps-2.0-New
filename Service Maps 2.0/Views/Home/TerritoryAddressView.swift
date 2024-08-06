@@ -106,7 +106,7 @@ struct TerritoryAddressView: View {
                                                                 .padding(.bottom, 2)
                                                                 .id(addressData.address.id)
                                                                 .transition(.customBackInsertion)
-                                                        }
+                                                        }.modifier(ScrollTransitionModifier())
                                                     }
                                                 } else {
                                                     LazyVGrid(columns: [GridItem(.flexible())]) {
@@ -115,11 +115,11 @@ struct TerritoryAddressView: View {
                                                                 .padding(.bottom, 2)
                                                                 .id(addressData.address.id)
                                                                 .transition(.customBackInsertion)
-                                                        }
+                                                        }.modifier(ScrollTransitionModifier())
                                                     }
                                                 }
                                             }
-                                            .modifier(ScrollTransitionModifier())
+                                            
                                         }
                                         .padding(.horizontal)
                                         .padding(.top)

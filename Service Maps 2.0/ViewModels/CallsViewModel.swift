@@ -87,7 +87,6 @@ extension CallsViewModel {
                 }
             }, receiveValue: { callData in
                 DispatchQueue.main.async {
-                    print("Calldata: \(callData)")
                     self.callsData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date}
                     
                     if let latestCall = callData.sorted(by: { $0.phoneCall.date > $1.phoneCall.date }).first?.phoneCall {

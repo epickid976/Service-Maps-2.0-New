@@ -260,16 +260,16 @@ class SynchronizationManager: ObservableObject {
         
         //Comparing and Updating, adding or deleting data in database by server data
         await comparingAndSynchronizeTokens(apiList: tokensApi, dbList: tokensDb)
-        await comparingAndSynchronizeTokenTerritories(apiList: tokenTerritoriesApi, dbList: tokenTerritoriesDb)
-        await comparingAndSynchronizeTerritories(apiList: territoriesApi, dbList: territoriesDb)
-        await comparingAndSynchronizeTerritoryAddresses(apiList: territoriesAddressesApi, dbList: territoriesAddressesDb)
-        await comparingAndSynchronizeHouses(apiList: housesApi, dbList: housesDb)
-        await comparingAndSynchronizeVisits(apiList: visitsApi, dbList: visitsDb)
-        await comparingAndSynchronizePhoneTerritories(apiList: phoneTerritoriesApi, dbList: phoneTerritoriesDb)
-        await comparingAndSynchronizePhoneNumbers(apiList: phoneNumbersApi, dbList: phoneNumbersDb)
-        await comparingAndSynchronizePhoneCalls(apiList: phoneCallsApi, dbList: phoneCallsDb)
-        await comparingAndSynchronizeUserTokens(apiList: userTokensApi, dbList: userTokensDb)
-        
+//        await comparingAndSynchronizeTokenTerritories(apiList: tokenTerritoriesApi, dbList: tokenTerritoriesDb)
+//        await comparingAndSynchronizeTerritories(apiList: territoriesApi, dbList: territoriesDb)
+//        await comparingAndSynchronizeTerritoryAddresses(apiList: territoriesAddressesApi, dbList: territoriesAddressesDb)
+//        await comparingAndSynchronizeHouses(apiList: housesApi, dbList: housesDb)
+//        await comparingAndSynchronizeVisits(apiList: visitsApi, dbList: visitsDb)
+//        await comparingAndSynchronizePhoneTerritories(apiList: phoneTerritoriesApi, dbList: phoneTerritoriesDb)
+//        await comparingAndSynchronizePhoneNumbers(apiList: phoneNumbersApi, dbList: phoneNumbersDb)
+//        await comparingAndSynchronizePhoneCalls(apiList: phoneCallsApi, dbList: phoneCallsDb)
+//        await comparingAndSynchronizeUserTokens(apiList: userTokensApi, dbList: userTokensDb)
+//        
         
         startupProcess(synchronizing: false)
         DispatchQueue.main.async {
@@ -280,440 +280,537 @@ class SynchronizationManager: ObservableObject {
     
     @MainActor
     func comparingAndSynchronizeTokens(apiList: [MyTokenModel], dbList: [TokenObject]) async {
-        let tokensApi = apiList
-        var tokensDb = dbList
+        let tokensApi = Set(apiList.map { $0.id })
+        var tokensDb = Set(dbList.map { $0.id })
         
-        for myTokenApi in tokensApi {
-            // Find Token according to id
-            let myTokenDb = tokensDb.first { $0.id == myTokenApi.id }
-            
-            if myTokenDb != nil {
-                if (myTokenDb! == myTokenApi) == false {
-                    
-                    //Save the changes
-                    switch  realmManager.updateToken(token: myTokenApi) {
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
+        var updates: [MyTokenModel] = []
+        var additions: [MyTokenModel] = []
+        
+        // Collect updates and additions
+        for myTokenApi in apiList {
+            if let myTokenDb = dbList.first(where: { $0.id == myTokenApi.id }) {
+                if (myTokenDb == myTokenApi) == false {
+                    updates.append(myTokenApi)
                 }
-                if let index = tokensDb.firstIndex(of: myTokenDb!) {
-                    tokensDb.remove(at: index)
-                }
+                tokensDb.remove(myTokenDb.id)
             } else {
-                // If it does not exist (if it is Nil), create it
-                do {
-                    switch  realmManager.addModel(TokenObject().createTokenObject(from: myTokenApi)) {
-                    case .success(let success):
-                        print("Success Adding Token \(success)")
-                    case .failure(let error):
-                        print("There was an error adding Token \(error)")
-                    }
-                }
+                additions.append(myTokenApi)
             }
         }
         
-        // Finally, remove all tokens that don't exist on the server
-        for token in tokensDb {
-            switch  realmManager.deleteToken(token: token) {
+        // Perform updates
+        for myTokenApi in updates {
+            switch realmManager.updateToken(token: myTokenApi) {
             case .success(let success):
-                print("Success Deleting Token \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting Token \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for myTokenApi in additions {
+            switch realmManager.addModel(TokenObject().createTokenObject(from: myTokenApi)) {
+            case .success(let success):
+                print("Success Adding Token \(success)")
+            case .failure(let error):
+                print("There was an error adding Token \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for tokenId in tokensDb {
+            if let token = dbList.first(where: { $0.id == tokenId }) {
+                switch realmManager.deleteToken(token: token) {
+                case .success(let success):
+                    print("Success Deleting Token \(success)")
+                case .failure(let error):
+                    print("There was an error deleting Token \(error)")
+                }
             }
         }
     }
     
     @MainActor
     private func comparingAndSynchronizeTerritories(apiList: [TerritoryModel], dbList: [TerritoryObject]) async {
-        let territoriesApi = apiList
-        var territoriesDb = dbList
+        let territoriesApi = Set(apiList.map { $0.id })
+        var territoriesDb = Set(dbList.map { $0.id })
         
-        for territoryApi in territoriesApi {
-            //Find territory according to id
-            let territoryDb = territoriesDb.first { $0.id == territoryApi.id }
-            
-            //Check if territoryDb is Nil/ if it was found
-            if territoryDb != nil {
-                if (territoryDb! == territoryApi) == false {
-                    //If not the same, UPDATE it
-                    
-                    //Save the changes
-                    switch  realmManager.updateTerritory(territory: territoryApi){
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
+        var updates: [TerritoryModel] = []
+        var additions: [TerritoryModel] = []
+        
+        // Collect updates and additions
+        for territoryApi in apiList {
+            if let territoryDb = dbList.first(where: { $0.id == territoryApi.id }) {
+                if (territoryDb == territoryApi) == false {
+                    updates.append(territoryApi)
                 }
-                if let index = territoriesDb.firstIndex(of: territoryDb!) {
-                    territoriesDb.remove(at: index)
-                }
+                territoriesDb.remove(territoryDb.id)
             } else {
-                // If it does not exist (if it is Nil), create it
-                switch  realmManager.addModel(TerritoryObject().createTerritoryObject(from: territoryApi)) {
-                case .success(let success):
-                    print("Success Adding Territory \(success)")
-                    
-                case .failure(let error):
-                    print("There was an error adding Territory \(error)")
-                    
-                }
+                additions.append(territoryApi)
             }
-            
         }
         
-        // Finally, remove all Territories that don't exist on the server
-        for territory in territoriesDb {
-            switch  realmManager.deleteTerritory(territory: territory) {
+        // Perform updates
+        for territoryApi in updates {
+            switch realmManager.updateTerritory(territory: territoryApi) {
             case .success(let success):
-                print("Success Deleting Territory \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting Territory \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for territoryApi in additions {
+            switch realmManager.addModel(TerritoryObject().createTerritoryObject(from: territoryApi)) {
+            case .success(let success):
+                print("Success Adding Territory \(success)")
+            case .failure(let error):
+                print("There was an error adding Territory \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for territoryId in territoriesDb {
+            if let territory = dbList.first(where: { $0.id == territoryId }) {
+                switch realmManager.deleteTerritory(territory: territory) {
+                case .success(let success):
+                    print("Success Deleting Territory \(success)")
+                case .failure(let error):
+                    print("There was an error deleting Territory \(error)")
+                }
             }
         }
     }
     
     @MainActor
     private func comparingAndSynchronizeHouses(apiList: [HouseModel], dbList: [HouseObject]) async {
-        let housesApi = apiList
-        var housesDb = dbList
+        let housesApi = Set(apiList.map { $0.id })
+        var housesDb = Set(dbList.map { $0.id })
         
-        for houseApi in housesApi {
-            let houseDb = housesDb.first { $0.id == houseApi.id }
-            
-            if houseDb != nil {
-                if (houseDb! == houseApi) == false {
-                    //Save
-                    switch  realmManager.updateHouse(house: houseApi) {
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        print("I Don't know what to do if couldn't update \(error)")
-                    }
+        var updates: [HouseModel] = []
+        var additions: [HouseModel] = []
+        
+        // Collect updates and additions
+        for houseApi in apiList {
+            if let houseDb = dbList.first(where: { $0.id == houseApi.id }) {
+                if (houseDb == houseApi) == false {
+                    updates.append(houseApi)
                 }
-                
-                if let index = housesDb.firstIndex(of: houseDb!) {
-                    housesDb.remove(at: index)
-                }
+                housesDb.remove(houseDb.id)
             } else {
-                // If it does not exist, create it
-                switch  realmManager.addModel(HouseObject().createHouseObject(from: houseApi)) {
-                case .success(let success):
-                    print("Success Adding House \(success)")
-                case .failure(let error):
-                    print("There was an error adding house \(error)")
-                }
+                additions.append(houseApi)
             }
         }
         
-        for houseDb in housesDb {
-            switch  realmManager.deleteHouse(house: houseDb) {
+        // Perform updates
+        for houseApi in updates {
+            switch realmManager.updateHouse(house: houseApi) {
             case .success(let success):
-                print("Success Deleting House \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting house \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for houseApi in additions {
+            switch realmManager.addModel(HouseObject().createHouseObject(from: houseApi)) {
+            case .success(let success):
+                print("Success Adding House \(success)")
+            case .failure(let error):
+                print("There was an error adding house \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for houseId in housesDb {
+            if let house = dbList.first(where: { $0.id == houseId }) {
+                switch realmManager.deleteHouse(house: house) {
+                case .success(let success):
+                    print("Success Deleting House \(success)")
+                case .failure(let error):
+                    print("There was an error deleting house \(error)")
+                }
             }
         }
     }
     
     @MainActor
-    private func comparingAndSynchronizeVisits(apiList: [VisitModel], dbList: [VisitObject]) async{
-        let visitsApi = apiList
-        var visitsDb = dbList
+    private func comparingAndSynchronizeVisits(apiList: [VisitModel], dbList: [VisitObject]) async {
+        let visitsApi = Set(apiList.map { $0.id })
+        var visitsDb = Set(dbList.map { $0.id })
         
-        for visitApi in visitsApi {
-            let visitDb = visitsDb.first { $0.id == visitApi.id }
-            
-            if visitDb != nil {
-                if (visitDb! == visitApi) == false {
-                    switch  realmManager.updateVisit(visit: visitApi){
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
+        var updates: [VisitModel] = []
+        var additions: [VisitModel] = []
+        
+        // Collect updates and additions
+        for visitApi in apiList {
+            if let visitDb = dbList.first(where: { $0.id == visitApi.id }) {
+                if (visitDb == visitApi) == false {
+                    updates.append(visitApi)
                 }
-                
-                if let index = visitsDb.firstIndex(of: visitDb!) {
-                    visitsDb.remove(at: index)
-                }
+                visitsDb.remove(visitDb.id)
             } else {
-                switch  realmManager.addModel(VisitObject().createVisitObject(from: visitApi)) {
-                case .success(let success):
-                    print("Success Adding Visit \(success)")
-                case .failure(let error):
-                    print("There was an error adding Visit \(error)")
-                }
+                additions.append(visitApi)
             }
         }
         
-        for visitDb in visitsDb {
-            switch  realmManager.deleteVisit(visit: visitDb) {
+        // Perform updates
+        for visitApi in updates {
+            switch realmManager.updateVisit(visit: visitApi) {
             case .success(let success):
-                print("Success Deleting Visit \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting Visit \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for visitApi in additions {
+            switch realmManager.addModel(VisitObject().createVisitObject(from: visitApi)) {
+            case .success(let success):
+                print("Success Adding Visit \(success)")
+            case .failure(let error):
+                print("There was an error adding Visit \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for visitId in visitsDb {
+            if let visit = dbList.first(where: { $0.id == visitId }) {
+                switch realmManager.deleteVisit(visit: visit) {
+                case .success(let success):
+                    print("Success Deleting Visit \(success)")
+                case .failure(let error):
+                    print("There was an error deleting Visit \(error)")
+                }
             }
         }
     }
     
     @MainActor
-    private func comparingAndSynchronizeTokenTerritories(apiList: [TokenTerritoryModel], dbList: [TokenTerritoryObject]) async{
-        let tokenTerritoriesApi = apiList
-        var tokenTerritoriesDb = dbList
-        
-        for tokenTerritoryApi in tokenTerritoriesApi {
-            let tokenTerritoryDb = tokenTerritoriesDb.first { $0.token == tokenTerritoryApi.token && $0.territory == tokenTerritoryApi.territory }
-            
-            if tokenTerritoryDb != nil {
-                if (tokenTerritoryDb! == tokenTerritoryApi) == false {
-                    //Save the changes
-                    switch  realmManager.updateTokenTerritory(tokenTerritory: tokenTerritoryApi){
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
-                }
-                
-                if let index = tokenTerritoriesDb.firstIndex(of: tokenTerritoryDb!) {
-                    tokenTerritoriesDb.remove(at: index)
-                }
-            } else {
-                switch  realmManager.addModel(TokenTerritoryObject().createTokenTerritoryObject(from: tokenTerritoryApi)) {
-                case .success(let success):
-                    print("Success Adding TokenTerritory \(success)")
-                case .failure(let error):
-                    print("There was an error adding TokenTerritory \(error)")
-                }
-            }
-            
+    private func comparingAndSynchronizeTokenTerritories(apiList: [TokenTerritoryModel], dbList: [TokenTerritoryObject]) async {
+        struct TokenTerritoryKey: Hashable {
+            let token: String
+            let territory: String
         }
         
-        for tokenTerritory in tokenTerritoriesDb {
-            switch  realmManager.deleteTokenTerritory(tokenTerritory: tokenTerritory) {
+        let tokenTerritoriesApi = Set(apiList.map { TokenTerritoryKey(token: $0.token, territory: $0.territory) })
+        var tokenTerritoriesDb = Set(dbList.map { TokenTerritoryKey(token: $0.token, territory: $0.territory) })
+        
+        var updates: [TokenTerritoryModel] = []
+        var additions: [TokenTerritoryModel] = []
+        
+        // Collect updates and additions
+        for tokenTerritoryApi in apiList {
+            let key = TokenTerritoryKey(token: tokenTerritoryApi.token, territory: tokenTerritoryApi.territory)
+            
+            if let tokenTerritoryDb = dbList.first(where: { $0.token == tokenTerritoryApi.token && $0.territory == tokenTerritoryApi.territory }) {
+                if (tokenTerritoryDb == tokenTerritoryApi) == false {
+                    updates.append(tokenTerritoryApi)
+                }
+                tokenTerritoriesDb.remove(key)
+            } else {
+                additions.append(tokenTerritoryApi)
+            }
+        }
+        
+        // Perform updates
+        for tokenTerritoryApi in updates {
+            switch realmManager.updateTokenTerritory(tokenTerritory: tokenTerritoryApi) {
             case .success(let success):
-                print("Success Deleting TokenTerritory \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting TokenTerritory \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for tokenTerritoryApi in additions {
+            switch realmManager.addModel(TokenTerritoryObject().createTokenTerritoryObject(from: tokenTerritoryApi)) {
+            case .success(let success):
+                print("Success Adding TokenTerritory \(success)")
+            case .failure(let error):
+                print("There was an error adding TokenTerritory \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for tokenTerritoryKey in tokenTerritoriesDb {
+            if let tokenTerritory = dbList.first(where: { $0.token == tokenTerritoryKey.token && $0.territory == tokenTerritoryKey.territory }) {
+                switch realmManager.deleteTokenTerritory(tokenTerritory: tokenTerritory) {
+                case .success(let success):
+                    print("Success Deleting TokenTerritory \(success)")
+                case .failure(let error):
+                    print("There was an error deleting TokenTerritory \(error)")
+                }
             }
         }
     }
     
     @MainActor
-    private func comparingAndSynchronizeTerritoryAddresses(apiList: [TerritoryAddressModel], dbList: [TerritoryAddressObject]) async{
-        let territoryAddressesApi = apiList
-        var territoryAddressesDb = dbList
+    private func comparingAndSynchronizeTerritoryAddresses(apiList: [TerritoryAddressModel], dbList: [TerritoryAddressObject]) async {
+        let territoryAddressesApi = Set(apiList.map { $0.id })
+        var territoryAddressesDb = Set(dbList.map { $0.id })
         
-        for territoryAddressApi in territoryAddressesApi {
-            let territoryAddressDb = territoryAddressesDb.first { $0.id == territoryAddressApi.id }
-            
-            if territoryAddressDb != nil {
-                if (territoryAddressDb! == territoryAddressApi) == false {
-                    //Save the changes
-                    switch  realmManager.updateAddress(address: territoryAddressApi){
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
+        var updates: [TerritoryAddressModel] = []
+        var additions: [TerritoryAddressModel] = []
+        
+        // Collect updates and additions
+        for territoryAddressApi in apiList {
+            if let territoryAddressDb = dbList.first(where: { $0.id == territoryAddressApi.id }) {
+                if (territoryAddressDb == territoryAddressApi) == false {
+                    updates.append(territoryAddressApi)
                 }
-                
-                if let index = territoryAddressesDb.firstIndex(of: territoryAddressDb!) {
-                    territoryAddressesDb.remove(at: index)
-                }
+                territoryAddressesDb.remove(territoryAddressDb.id)
             } else {
-                switch  realmManager.addModel(TerritoryAddressObject().createTerritoryAddressObject(from: territoryAddressApi)) {
-                case .success(let success):
-                    print("Success Adding Address \(success)")
-                case .failure(let error):
-                    print("There was an error adding Address \(error)")
-                }
+                additions.append(territoryAddressApi)
             }
         }
         
-        
-        for territoryAddress in territoryAddressesDb {
-            switch  realmManager.deleteAddress(address: territoryAddress) {
+        // Perform updates
+        for territoryAddressApi in updates {
+            switch realmManager.updateAddress(address: territoryAddressApi) {
             case .success(let success):
-                print("Success Deleting TerritoryAddress \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting TerritoryAddress \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for territoryAddressApi in additions {
+            switch realmManager.addModel(TerritoryAddressObject().createTerritoryAddressObject(from: territoryAddressApi)) {
+            case .success(let success):
+                print("Success Adding Address \(success)")
+            case .failure(let error):
+                print("There was an error adding Address \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for territoryAddressId in territoryAddressesDb {
+            if let territoryAddress = dbList.first(where: { $0.id == territoryAddressId }) {
+                switch realmManager.deleteAddress(address: territoryAddress) {
+                case .success(let success):
+                    print("Success Deleting TerritoryAddress \(success)")
+                case .failure(let error):
+                    print("There was an error deleting TerritoryAddress \(error)")
+                }
             }
         }
     }
     
     @MainActor
-    private func comparingAndSynchronizePhoneTerritories(apiList: [PhoneTerritoryModel], dbList: [PhoneTerritoryObject]) async{
-        let territoriesApi = apiList
-        var territoriesDb = dbList
+    private func comparingAndSynchronizePhoneTerritories(apiList: [PhoneTerritoryModel], dbList: [PhoneTerritoryObject]) async {
+        let territoriesApi = Set(apiList.map { $0.id })
+        var territoriesDb = Set(dbList.map { $0.id })
         
-        for territoryApi in territoriesApi {
-            let territoryDb = territoriesDb.first { $0.id == territoryApi.id }
-            
-            if territoryDb != nil {
-                if (territoryDb! == territoryApi) == false {
-                    switch  realmManager.updatePhoneTerritory(phoneTerritory: territoryApi){
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
+        var updates: [PhoneTerritoryModel] = []
+        var additions: [PhoneTerritoryModel] = []
+        
+        // Collect updates and additions
+        for territoryApi in apiList {
+            if let territoryDb = dbList.first(where: { $0.id == territoryApi.id }) {
+                if (territoryDb == territoryApi) == false {
+                    updates.append(territoryApi)
                 }
-                
-                if let index = territoriesDb.firstIndex(of: territoryDb!) {
-                    territoriesDb.remove(at: index)
-                }
+                territoriesDb.remove(territoryDb.id)
             } else {
-                switch  realmManager.addModel(PhoneTerritoryObject ().createTerritoryObject(from: territoryApi)) {
-                case .success(let success):
-                    print("Success Adding Visit \(success)")
-                case .failure(let error):
-                    print("There was an error adding Visit \(error)")
-                }
+                additions.append(territoryApi)
             }
         }
         
-        for territoryDb in territoriesDb {
-            switch  realmManager.deletePhoneTerritory(phoneTerritory: territoryDb) {
+        // Perform updates
+        for territoryApi in updates {
+            switch realmManager.updatePhoneTerritory(phoneTerritory: territoryApi) {
             case .success(let success):
-                print("Success Deleting Visit \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting Visit \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for territoryApi in additions {
+            switch realmManager.addModel(PhoneTerritoryObject().createTerritoryObject(from: territoryApi)) {
+            case .success(let success):
+                print("Success Adding PhoneTerritory \(success)")
+            case .failure(let error):
+                print("There was an error adding PhoneTerritory \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for territoryId in territoriesDb {
+            if let territory = dbList.first(where: { $0.id == territoryId }) {
+                switch realmManager.deletePhoneTerritory(phoneTerritory: territory) {
+                case .success(let success):
+                    print("Success Deleting PhoneTerritory \(success)")
+                case .failure(let error):
+                    print("There was an error deleting PhoneTerritory \(error)")
+                }
             }
         }
     }
     
     @MainActor
-    private func comparingAndSynchronizePhoneNumbers(apiList: [PhoneNumberModel], dbList: [PhoneNumberObject]) async{
-        let numbersApi = apiList
-        var numbersDb = dbList
+    private func comparingAndSynchronizePhoneNumbers(apiList: [PhoneNumberModel], dbList: [PhoneNumberObject]) async {
+        let numbersApi = Set(apiList.map { $0.id })
+        var numbersDb = Set(dbList.map { $0.id })
         
-        for numberApi in numbersApi {
-            let numberDb = numbersDb.first { $0.id == numberApi.id }
-            
-            if numberDb != nil {
-                if (numberDb! == numberApi) == false {
-                    switch  realmManager.updatePhoneNumber(phoneNumber: numberApi){
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
+        var updates: [PhoneNumberModel] = []
+        var additions: [PhoneNumberModel] = []
+        
+        // Collect updates and additions
+        for numberApi in apiList {
+            if let numberDb = dbList.first(where: { $0.id == numberApi.id }) {
+                if (numberDb == numberApi) == false {
+                    updates.append(numberApi)
                 }
-                
-                if let index = numbersDb.firstIndex(of: numberDb!) {
-                    numbersDb.remove(at: index)
-                }
+                numbersDb.remove(numberDb.id)
             } else {
-                switch  realmManager.addModel(PhoneNumberObject().createTerritoryObject(from: numberApi)) {
-                case .success(let success):
-                    print("Success Adding Visit \(success)")
-                case .failure(let error):
-                    print("There was an error adding Visit \(error)")
-                }
+                additions.append(numberApi)
             }
         }
         
-        for numberDb in numbersDb {
-            switch  realmManager.deletePhoneNumber(phoneNumber: numberDb) {
+        // Perform updates
+        for numberApi in updates {
+            switch realmManager.updatePhoneNumber(phoneNumber: numberApi) {
             case .success(let success):
-                print("Success Deleting Visit \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting Visit \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for numberApi in additions {
+            switch realmManager.addModel(PhoneNumberObject().createTerritoryObject(from: numberApi)) {
+            case .success(let success):
+                print("Success Adding PhoneNumber \(success)")
+            case .failure(let error):
+                print("There was an error adding PhoneNumber \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for numberId in numbersDb {
+            if let number = dbList.first(where: { $0.id == numberId }) {
+                switch realmManager.deletePhoneNumber(phoneNumber: number) {
+                case .success(let success):
+                    print("Success Deleting PhoneNumber \(success)")
+                case .failure(let error):
+                    print("There was an error deleting PhoneNumber \(error)")
+                }
             }
         }
     }
     
     @MainActor
-    private func comparingAndSynchronizePhoneCalls(apiList: [PhoneCallModel], dbList: [PhoneCallObject]) async{
-        let callsApi = apiList
-        var callsDb = dbList
+    private func comparingAndSynchronizePhoneCalls(apiList: [PhoneCallModel], dbList: [PhoneCallObject]) async {
+        let callsApi = Set(apiList.map { $0.id })
+        var callsDb = Set(dbList.map { $0.id })
         
-        for callApi in callsApi {
-            let callDb = callsDb.first { $0.id == callApi.id }
-            
-            if callDb != nil {
-                if (callDb! == callApi) == false {
-                    switch  realmManager.updatePhoneCall(phoneCall: callApi){
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
+        var updates: [PhoneCallModel] = []
+        var additions: [PhoneCallModel] = []
+        
+        // Collect updates and additions
+        for callApi in apiList {
+            if let callDb = dbList.first(where: { $0.id == callApi.id }) {
+                if (callDb == callApi) == false {
+                    updates.append(callApi)
                 }
-                
-                if let index = callsDb.firstIndex(of: callDb!) {
-                    callsDb.remove(at: index)
-                }
+                callsDb.remove(callDb.id)
             } else {
-                switch  realmManager.addModel(PhoneCallObject().createTerritoryObject(from: callApi)) {
-                case .success(let success):
-                    print("Success Adding Visit \(success)")
-                case .failure(let error):
-                    print("There was an error adding Visit \(error)")
-                }
+                additions.append(callApi)
             }
         }
         
-        for callDb in callsDb {
-            switch  realmManager.deletePhoneCall(phoneCall: callDb) {
+        // Perform updates
+        for callApi in updates {
+            switch realmManager.updatePhoneCall(phoneCall: callApi) {
             case .success(let success):
-                print("Success Deleting Visit \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting Visit \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for callApi in additions {
+            switch realmManager.addModel(PhoneCallObject().createTerritoryObject(from: callApi)) {
+            case .success(let success):
+                print("Success Adding PhoneCall \(success)")
+            case .failure(let error):
+                print("There was an error adding PhoneCall \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for callId in callsDb {
+            if let call = dbList.first(where: { $0.id == callId }) {
+                switch realmManager.deletePhoneCall(phoneCall: call) {
+                case .success(let success):
+                    print("Success Deleting PhoneCall \(success)")
+                case .failure(let error):
+                    print("There was an error deleting PhoneCall \(error)")
+                }
             }
         }
     }
     
     @MainActor
-    private func comparingAndSynchronizeUserTokens(apiList: [UserTokenModel], dbList: [UserTokenObject]) async{
-        let userTokensApi = apiList
-        var userTokensDb = dbList
+    private func comparingAndSynchronizeUserTokens(apiList: [UserTokenModel], dbList: [UserTokenObject]) async {
+        let userTokensApi = Set(apiList.map { $0.id })
+        var userTokensDb = Set(dbList.map { $0.id })
         
-        for userTokenApi in userTokensApi {
-            let userTokenDb = userTokensDb.first { $0.id == userTokenApi.id }
-            
-            if userTokenDb != nil {
-                if (userTokenDb! == userTokenApi) == false {
-                    switch  realmManager.updateUserToken(userToken: userTokenApi){
-                    case .success(let success):
-                        print(success)
-                    case .failure(let error):
-                        //check what to do here becasuse I don't know. ELIER what should I do here??
-                        print("I Don't know what to do if couldn't update \(error)") //<--
-                    }
+        var updates: [UserTokenModel] = []
+        var additions: [UserTokenModel] = []
+        
+        // Collect updates and additions
+        for userTokenApi in apiList {
+            if let userTokenDb = dbList.first(where: { $0.id == userTokenApi.id }) {
+                if (userTokenDb == userTokenApi) == false {
+                    updates.append(userTokenApi)
                 }
-                
-                if let index = userTokensDb.firstIndex(of: userTokenDb!) {
-                    userTokensDb.remove(at: index)
-                }
+                userTokensDb.remove(userTokenDb.id)
             } else {
-                switch  realmManager.addModel(UserTokenObject().createUserTokenObject(from: userTokenApi)) {
-                case .success(let success):
-                    print("Success Adding Visit \(success)")
-                case .failure(let error):
-                    print("There was an error adding Visit \(error)")
-                }
+                additions.append(userTokenApi)
             }
         }
         
-        for userTokenDb in userTokensDb {
-            switch  realmManager.deleteUserToken(userToken: userTokenDb) {
+        // Perform updates
+        for userTokenApi in updates {
+            switch realmManager.updateUserToken(userToken: userTokenApi) {
             case .success(let success):
-                print("Success Deleting Visit \(success)")
+                print(success)
             case .failure(let error):
-                print("There was an error deleting Visit \(error)")
+                print("I Don't know what to do if couldn't update \(error)")
+            }
+        }
+        
+        // Perform additions
+        for userTokenApi in additions {
+            switch realmManager.addModel(UserTokenObject().createUserTokenObject(from: userTokenApi)) {
+            case .success(let success):
+                print("Success Adding UserToken \(success)")
+            case .failure(let error):
+                print("There was an error adding UserToken \(error)")
+            }
+        }
+        
+        // Perform deletions
+        for userTokenId in userTokensDb {
+            if let userToken = dbList.first(where: { $0.id == userTokenId }) {
+                switch realmManager.deleteUserToken(userToken: userToken) {
+                case .success(let success):
+                    print("Success Deleting UserToken \(success)")
+                case .failure(let error):
+                    print("There was an error deleting UserToken \(error)")
+                }
             }
         }
     }

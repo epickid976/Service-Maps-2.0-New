@@ -149,14 +149,14 @@ struct HousesView: View {
                                     Menu {
                                         Picker("Sort", selection: $viewModel.sortPredicate) {
                                             ForEach(HouseSortPredicate.allCases, id: \.self) { option in
-                                                Text(String(describing: option).capitalized)
+                                                Text(option.localized)
                                             }
                                         }
                                         .pickerStyle(.menu)
                                         
                                         Picker("Filter", selection: $viewModel.filterPredicate) {
                                             ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
-                                                Text(option.rawValue)
+                                                Text(option.localized)
                                             }
                                         }
                                         .pickerStyle(.menu)
