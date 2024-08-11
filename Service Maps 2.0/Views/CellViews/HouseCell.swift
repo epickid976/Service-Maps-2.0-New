@@ -118,8 +118,10 @@ struct HouseCell: View {
                         .subscribe(on: DispatchQueue.main)
                         .sink { newVisit in
                             // Check if the update is for the correct house and if it's a new/different visit
-                            if newVisit.house == house.house.id, newVisit != house.visit {
+                            if let newVisit = newVisit, newVisit.house == house.house.id, newVisit != house.visit {
                                 house.visit = newVisit  // Update the state with the new visit
+                            } else if newVisit == nil{
+                                house.visit = nil
                             }
                         }
                 }

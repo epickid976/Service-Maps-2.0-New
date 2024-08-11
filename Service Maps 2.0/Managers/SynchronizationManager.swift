@@ -9,6 +9,10 @@ import Foundation
 import Combine
 import RealmSwift
 
+@globalActor actor BackgroundActor: GlobalActor {
+    static var shared = BackgroundActor()
+}
+
 class SynchronizationManager: ObservableObject {
     @Published private var realmManager = RealmManager.shared
     @Published private var dataStore = StorageManager.shared
@@ -43,7 +47,7 @@ class SynchronizationManager: ObservableObject {
         }
         Task {
             if synchronizing {
-                await synchronize()
+                await self.synchronize()
             }
         }
         
@@ -116,12 +120,15 @@ class SynchronizationManager: ObservableObject {
         return nil
     }
     
-    @MainActor
+    //@MainActor
+    @BackgroundActor
     func synchronize() async {
         //databaseManager.refreshAll()
-        dataStore.synchronized = false
+        DispatchQueue.main.async {
+            self.dataStore.synchronized = false
+        }
         startSyncAndHaptics()
-        guard let realmDatabase = try? await Realm() else {
+        guard let realmDatabase = try? await Realm(actor: BackgroundActor.shared) else {
             print("REALM FAILED")
             return
         }
@@ -260,16 +267,16 @@ class SynchronizationManager: ObservableObject {
         
         //Comparing and Updating, adding or deleting data in database by server data
         await comparingAndSynchronizeTokens(apiList: tokensApi, dbList: tokensDb)
-//        await comparingAndSynchronizeTokenTerritories(apiList: tokenTerritoriesApi, dbList: tokenTerritoriesDb)
-//        await comparingAndSynchronizeTerritories(apiList: territoriesApi, dbList: territoriesDb)
-//        await comparingAndSynchronizeTerritoryAddresses(apiList: territoriesAddressesApi, dbList: territoriesAddressesDb)
-//        await comparingAndSynchronizeHouses(apiList: housesApi, dbList: housesDb)
-//        await comparingAndSynchronizeVisits(apiList: visitsApi, dbList: visitsDb)
-//        await comparingAndSynchronizePhoneTerritories(apiList: phoneTerritoriesApi, dbList: phoneTerritoriesDb)
-//        await comparingAndSynchronizePhoneNumbers(apiList: phoneNumbersApi, dbList: phoneNumbersDb)
-//        await comparingAndSynchronizePhoneCalls(apiList: phoneCallsApi, dbList: phoneCallsDb)
-//        await comparingAndSynchronizeUserTokens(apiList: userTokensApi, dbList: userTokensDb)
-//        
+        await comparingAndSynchronizeTokenTerritories(apiList: tokenTerritoriesApi, dbList: tokenTerritoriesDb)
+        await comparingAndSynchronizeTerritories(apiList: territoriesApi, dbList: territoriesDb)
+        await comparingAndSynchronizeTerritoryAddresses(apiList: territoriesAddressesApi, dbList: territoriesAddressesDb)
+        await comparingAndSynchronizeHouses(apiList: housesApi, dbList: housesDb)
+        await comparingAndSynchronizeVisits(apiList: visitsApi, dbList: visitsDb)
+        await comparingAndSynchronizePhoneTerritories(apiList: phoneTerritoriesApi, dbList: phoneTerritoriesDb)
+        await comparingAndSynchronizePhoneNumbers(apiList: phoneNumbersApi, dbList: phoneNumbersDb)
+        await comparingAndSynchronizePhoneCalls(apiList: phoneCallsApi, dbList: phoneCallsDb)
+        await comparingAndSynchronizeUserTokens(apiList: userTokensApi, dbList: userTokensDb)
+//
         
         startupProcess(synchronizing: false)
         DispatchQueue.main.async {
@@ -278,7 +285,8 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    //@MainActor
+    @BackgroundActor
     func comparingAndSynchronizeTokens(apiList: [MyTokenModel], dbList: [TokenObject]) async {
         let tokensApi = Set(apiList.map { $0.id })
         var tokensDb = Set(dbList.map { $0.id })
@@ -310,7 +318,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for myTokenApi in additions {
-            switch realmManager.addModel(TokenObject().createTokenObject(from: myTokenApi)) {
+            switch await realmManager.addModelAsync(TokenObject().createTokenObject(from: myTokenApi)) {
             case .success(let success):
                 print("Success Adding Token \(success)")
             case .failure(let error):
@@ -331,7 +339,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizeTerritories(apiList: [TerritoryModel], dbList: [TerritoryObject]) async {
         let territoriesApi = Set(apiList.map { $0.id })
         var territoriesDb = Set(dbList.map { $0.id })
@@ -363,7 +371,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for territoryApi in additions {
-            switch realmManager.addModel(TerritoryObject().createTerritoryObject(from: territoryApi)) {
+            switch await realmManager.addModelAsync(TerritoryObject().createTerritoryObject(from: territoryApi)) {
             case .success(let success):
                 print("Success Adding Territory \(success)")
             case .failure(let error):
@@ -384,7 +392,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizeHouses(apiList: [HouseModel], dbList: [HouseObject]) async {
         let housesApi = Set(apiList.map { $0.id })
         var housesDb = Set(dbList.map { $0.id })
@@ -416,7 +424,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for houseApi in additions {
-            switch realmManager.addModel(HouseObject().createHouseObject(from: houseApi)) {
+            switch await realmManager.addModelAsync(HouseObject().createHouseObject(from: houseApi)) {
             case .success(let success):
                 print("Success Adding House \(success)")
             case .failure(let error):
@@ -437,7 +445,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizeVisits(apiList: [VisitModel], dbList: [VisitObject]) async {
         let visitsApi = Set(apiList.map { $0.id })
         var visitsDb = Set(dbList.map { $0.id })
@@ -469,7 +477,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for visitApi in additions {
-            switch realmManager.addModel(VisitObject().createVisitObject(from: visitApi)) {
+            switch await realmManager.addModelAsync(VisitObject().createVisitObject(from: visitApi)) {
             case .success(let success):
                 print("Success Adding Visit \(success)")
             case .failure(let error):
@@ -490,7 +498,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizeTokenTerritories(apiList: [TokenTerritoryModel], dbList: [TokenTerritoryObject]) async {
         struct TokenTerritoryKey: Hashable {
             let token: String
@@ -529,7 +537,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for tokenTerritoryApi in additions {
-            switch realmManager.addModel(TokenTerritoryObject().createTokenTerritoryObject(from: tokenTerritoryApi)) {
+            switch await realmManager.addModelAsync(TokenTerritoryObject().createTokenTerritoryObject(from: tokenTerritoryApi)) {
             case .success(let success):
                 print("Success Adding TokenTerritory \(success)")
             case .failure(let error):
@@ -550,7 +558,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizeTerritoryAddresses(apiList: [TerritoryAddressModel], dbList: [TerritoryAddressObject]) async {
         let territoryAddressesApi = Set(apiList.map { $0.id })
         var territoryAddressesDb = Set(dbList.map { $0.id })
@@ -582,7 +590,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for territoryAddressApi in additions {
-            switch realmManager.addModel(TerritoryAddressObject().createTerritoryAddressObject(from: territoryAddressApi)) {
+            switch await realmManager.addModelAsync(TerritoryAddressObject().createTerritoryAddressObject(from: territoryAddressApi)) {
             case .success(let success):
                 print("Success Adding Address \(success)")
             case .failure(let error):
@@ -603,7 +611,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizePhoneTerritories(apiList: [PhoneTerritoryModel], dbList: [PhoneTerritoryObject]) async {
         let territoriesApi = Set(apiList.map { $0.id })
         var territoriesDb = Set(dbList.map { $0.id })
@@ -635,7 +643,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for territoryApi in additions {
-            switch realmManager.addModel(PhoneTerritoryObject().createTerritoryObject(from: territoryApi)) {
+            switch await realmManager.addModelAsync(PhoneTerritoryObject().createTerritoryObject(from: territoryApi)) {
             case .success(let success):
                 print("Success Adding PhoneTerritory \(success)")
             case .failure(let error):
@@ -656,7 +664,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizePhoneNumbers(apiList: [PhoneNumberModel], dbList: [PhoneNumberObject]) async {
         let numbersApi = Set(apiList.map { $0.id })
         var numbersDb = Set(dbList.map { $0.id })
@@ -688,7 +696,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for numberApi in additions {
-            switch realmManager.addModel(PhoneNumberObject().createTerritoryObject(from: numberApi)) {
+            switch await realmManager.addModelAsync(PhoneNumberObject().createTerritoryObject(from: numberApi)) {
             case .success(let success):
                 print("Success Adding PhoneNumber \(success)")
             case .failure(let error):
@@ -709,7 +717,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizePhoneCalls(apiList: [PhoneCallModel], dbList: [PhoneCallObject]) async {
         let callsApi = Set(apiList.map { $0.id })
         var callsDb = Set(dbList.map { $0.id })
@@ -741,7 +749,7 @@ class SynchronizationManager: ObservableObject {
         
         // Perform additions
         for callApi in additions {
-            switch realmManager.addModel(PhoneCallObject().createTerritoryObject(from: callApi)) {
+            switch await realmManager.addModelAsync(PhoneCallObject().createTerritoryObject(from: callApi)) {
             case .success(let success):
                 print("Success Adding PhoneCall \(success)")
             case .failure(let error):
@@ -762,55 +770,58 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @MainActor
+    @BackgroundActor
     private func comparingAndSynchronizeUserTokens(apiList: [UserTokenModel], dbList: [UserTokenObject]) async {
         let userTokensApi = Set(apiList.map { $0.id })
-        var userTokensDb = Set(dbList.map { $0.id })
+        let userTokensDb = Set(dbList.map { $0.id })
         
         var updates: [UserTokenModel] = []
         var additions: [UserTokenModel] = []
-        
+        var deletions: [String] = []
+        for token in dbList {
+            print(token)
+        }
         // Collect updates and additions
         for userTokenApi in apiList {
-            if let userTokenDb = dbList.first(where: { $0.id == userTokenApi.id }) {
-                if (userTokenDb == userTokenApi) == false {
+            if userTokensDb.contains(userTokenApi.token) && userTokensDb.contains(userTokenApi.userId) {
+                if !dbList.contains(where: { $0 == userTokenApi }) {
                     updates.append(userTokenApi)
                 }
-                userTokensDb.remove(userTokenDb.id)
             } else {
                 additions.append(userTokenApi)
             }
         }
         
+        // Collect deletions
+        deletions = Array(userTokensDb.subtracting(userTokensApi))
+        
         // Perform updates
         for userTokenApi in updates {
-            switch realmManager.updateUserToken(userToken: userTokenApi) {
+            switch await realmManager.updateUserTokenAsync(userToken: userTokenApi) {
             case .success(let success):
                 print(success)
             case .failure(let error):
-                print("I Don't know what to do if couldn't update \(error)")
+                print("Error updating UserToken: \(error)")
             }
         }
         
         // Perform additions
         for userTokenApi in additions {
-            switch realmManager.addModel(UserTokenObject().createUserTokenObject(from: userTokenApi)) {
+            switch await realmManager.addModelAsync(UserTokenObject().createUserTokenObject(from: userTokenApi)) {
             case .success(let success):
                 print("Success Adding UserToken \(success)")
             case .failure(let error):
-                print("There was an error adding UserToken \(error)")
+                print("Error adding UserToken: \(error)")
             }
         }
         
         // Perform deletions
-        for userTokenId in userTokensDb {
-            if let userToken = dbList.first(where: { $0.id == userTokenId }) {
-                switch realmManager.deleteUserToken(userToken: userToken) {
-                case .success(let success):
-                    print("Success Deleting UserToken \(success)")
-                case .failure(let error):
-                    print("There was an error deleting UserToken \(error)")
-                }
+        for userTokenId in deletions {
+            switch await realmManager.deleteUserTokenByIdAsync(id: userTokenId) {
+            case .success(let success):
+                print("Success Deleting UserToken \(success)")
+            case .failure(let error):
+                print("Error deleting UserToken: \(error)")
             }
         }
     }

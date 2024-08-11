@@ -124,41 +124,43 @@ struct TerritoryView: View {
                                                         }.padding(.leading).scrollIndicators(.never)
                                                         
                                                     }.modifier(ScrollTransitionModifier())
-                                                        .animation(.default, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                                        .animation(.smooth, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
                                                 }
                                             }
                                             
                                             
-                                            SwipeViewGroup {
-                                                ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
-                                                    if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
-                                                        territoryHeader(dataWithKeys: dataWithKeys)
-                                                            .modifier(ScrollTransitionModifier())
-                                                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                            
-                                                            ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                                                                territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                    .id(territoryData.territory.id)
-                                                                    .modifier(ScrollTransitionModifier())
-                                                                    .transition(.customBackInsertion)
-                                                            }//.animation(.spring(), value: dataWithKeys.territoriesData)
+                                                SwipeViewGroup {
+                                                    ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
+                                                        if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                            territoryHeader(dataWithKeys: dataWithKeys)
+                                                                .modifier(ScrollTransitionModifier())
+                                                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                                    
+                                                                    ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+                                                                        territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
+                                                                            .id(territoryData.territory.id)
+                                                                            .transition(.customBackInsertion)
+                                                                    }.modifier(ScrollTransitionModifier()).animation(.spring(), value: dataWithKeys.territoriesData)
+                                                                    
+                                                                }
+                                                            //.animation(.spring(), value: viewModel.territoryData)
+                                                        } else {
+                                                            territoryHeader(dataWithKeys: dataWithKeys)
+                                                                .modifier(ScrollTransitionModifier())
+                                                                LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                                    
+                                                                    ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+                                                                        territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
+                                                                            .id(territoryData.territory.id)
+                                                                            //.modifier(ScrollTransitionModifier())
+                                                                            .transition(.customBackInsertion)
+                                                                    }.modifier(ScrollTransitionModifier()).animation(.spring(), value: dataWithKeys.territoriesData)
+                                                                        
+                                                                }
                                                         }
-                                                    } else {
-                                                        territoryHeader(dataWithKeys: dataWithKeys)
-                                                            .modifier(ScrollTransitionModifier())
-                                                        LazyVGrid(columns: [GridItem(.flexible())]) {
-                                                            
-                                                            ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                                                                territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                    .id(territoryData.territory.id)
-                                                                    .modifier(ScrollTransitionModifier())
-                                                                    .transition(.customBackInsertion)
-                                                            }//.animation(.spring(), value: dataWithKeys.territoriesData)
-                                                        }
-                                                    }
+                                                    }//.transition(.customBackInsertion)
+                                                    
                                                 }
-                                                
-                                            }
                                         }
                                     }
                                 }
@@ -355,11 +357,14 @@ struct TerritoryView: View {
                                         Button(action: {
                                             copyToClipboard(text: territoryData.territory.description)
                                         }) {
-                                            Text("Copy Address")
-                                                .padding()
-                                                .background(Color.green)
-                                                .foregroundColor(.white)
-                                                .cornerRadius(8)
+                                            HStack {
+                                                Image(systemName: "doc.on.doc")
+                                                Text("Copy Address")
+                                                    .padding()
+                                                    .background(Color.green)
+                                                    .foregroundColor(.white)
+                                                    .cornerRadius(8)
+                                            }
                                         }
                                         
                                         Button {

@@ -20,8 +20,7 @@ class UserTokenObject: Object, Identifiable {
     }
     
     static func == (lhs: UserTokenObject, rhs: UserTokenModel) -> Bool {
-        return lhs.id == rhs.id &&
-               lhs.token == rhs.token &&
+        return lhs.token == rhs.token &&
                lhs.userId == rhs.userId &&
                lhs.name == rhs.name &&
                 lhs.blocked == rhs.blocked

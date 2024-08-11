@@ -15,6 +15,7 @@ enum CustomErrors: Error {
     case NoInternet
     case NoCongregation
     case GenericError
+    case Duplicate
     
     var localizedDescription: String {
         switch self {
@@ -32,6 +33,8 @@ enum CustomErrors: Error {
             return "No Congregation"
         case .GenericError:
             return "ERROR ERROR"
+        case .Duplicate:
+            return "Duplicate"
         }
     }
 }

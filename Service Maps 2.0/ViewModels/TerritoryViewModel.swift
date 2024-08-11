@@ -122,7 +122,7 @@ extension TerritoryViewModel {
                 }
             }, receiveValue: { territoryData in
                 print("Sinked territory data: \(territoryData)")
-                withAnimation {
+                withAnimation(.spring()) {
                     self.territoryData = territoryData
                 }
                 

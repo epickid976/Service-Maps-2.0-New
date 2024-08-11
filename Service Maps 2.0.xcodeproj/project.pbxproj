@@ -42,8 +42,6 @@
 		821C12782A7811CD0050D106 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12772A7811CD0050D106 /* AdminAPI.swift */; };
 		821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74C2BD9EA46001D092D /* AppDelegate.swift */; };
 		821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74E2BD9EB66001D092D /* apple-app-site-association */; };
-		8228B6022C28E54D002B7886 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6012C28E54D002B7886 /* RealmSwift */; };
-		8228B6032C28E5D1002B7886 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6012C28E54D002B7886 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		8228B6052C2901A7002B7886 /* RealtimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8228B6042C2901A7002B7886 /* RealtimeManager.swift */; };
 		8228B6082C29BB68002B7886 /* Ably in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6072C29BB68002B7886 /* Ably */; };
 		8228B6122C29C148002B7886 /* ModifiedCopy in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6112C29C148002B7886 /* ModifiedCopy */; };
@@ -147,6 +145,8 @@
 		82CEA0332C11568700F52DE9 /* NewUserNameForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CEA0322C11568700F52DE9 /* NewUserNameForm.swift */; };
 		82D526052A9290EE00B42916 /* AddTerritoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526042A9290EE00B42916 /* AddTerritoryView.swift */; };
 		82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */; };
+		82D5AFB92C65A53900D65F6C /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82D5AFB82C65A53900D65F6C /* RealmSwift */; };
+		82D5AFBD2C65A6A300D65F6C /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 82D5AFB82C65A53900D65F6C /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		82DBE4DB2C249F3200C16B35 /* SplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DA2C249F3200C16B35 /* SplitView.swift */; };
 		82DBE4DD2C24B42C00C16B35 /* ColumnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DC2C24B42B00C16B35 /* ColumnView.swift */; };
 		82DBE4DF2C24FE7800C16B35 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */; };
@@ -192,7 +192,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				8228B6032C28E5D1002B7886 /* RealmSwift in Embed Frameworks */,
+				82D5AFBD2C65A6A300D65F6C /* RealmSwift in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -368,12 +368,12 @@
 			files = (
 				822FA0972AA6B6650008FA61 /* SwipeActions in Frameworks */,
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
-				8228B6022C28E54D002B7886 /* RealmSwift in Frameworks */,
 				82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */,
 				828C4CD62C3A31CC00E147C3 /* ImageViewer in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
 				822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */,
+				82D5AFB92C65A53900D65F6C /* RealmSwift in Frameworks */,
 				822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */,
 				828C4CD82C3A31CC00E147C3 /* ImageViewerRemote in Frameworks */,
 				8228B6122C29C148002B7886 /* ModifiedCopy in Frameworks */,
@@ -771,12 +771,12 @@
 				82A5B45F2BD482EB00F52F2F /* AlertKit */,
 				82F768FF2BE92FA2001FA3CF /* FloatingButton */,
 				82B22C992C2099AA002E4EE8 /* MijickPopupView */,
-				8228B6012C28E54D002B7886 /* RealmSwift */,
 				8228B6072C29BB68002B7886 /* Ably */,
 				8228B6112C29C148002B7886 /* ModifiedCopy */,
 				8228B6132C29C148002B7886 /* ModifiedCopyClient */,
 				828C4CD52C3A31CC00E147C3 /* ImageViewer */,
 				828C4CD72C3A31CC00E147C3 /* ImageViewerRemote */,
+				82D5AFB82C65A53900D65F6C /* RealmSwift */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -819,10 +819,10 @@
 				82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */,
 				82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */,
 				82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */,
-				8228B6002C28E54D002B7886 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */,
 				8228B6102C29C148002B7886 /* XCRemoteSwiftPackageReference "ModifiedCopyMacro" */,
 				828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */,
+				82D5AFB52C65A53900D65F6C /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1156,7 +1156,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.8;
+				MARKETING_VERSION = 3.0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1190,7 +1190,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.8;
+				MARKETING_VERSION = 3.0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1223,14 +1223,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8228B6002C28E54D002B7886 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ably/ably-cocoa";
@@ -1327,6 +1319,14 @@
 				minimumVersion = 2.4.0;
 			};
 		};
+		82D5AFB52C65A53900D65F6C /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/exyte/FloatingButton";
@@ -1338,11 +1338,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8228B6012C28E54D002B7886 /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8228B6002C28E54D002B7886 /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
-		};
 		8228B6072C29BB68002B7886 /* Ably */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */;
@@ -1427,6 +1422,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */;
 			productName = MijickPopupView;
+		};
+		82D5AFB82C65A53900D65F6C /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82D5AFB52C65A53900D65F6C /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		82F768FF2BE92FA2001FA3CF /* FloatingButton */ = {
 			isa = XCSwiftPackageProductDependency;

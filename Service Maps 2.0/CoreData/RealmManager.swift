@@ -132,12 +132,449 @@ class RealmManager: ObservableObject {
         return Array(realmDatabase.objects(UserTokenObject.self))
     }
     
+    @BackgroundActor
+    func addModelAsync<T: Object>(_ object: T) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                realmDatabase.add(object, update: .all)
+            }
+            return Result.success(true)
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updateTerritoryAsync(territory: TerritoryModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                if let territoryToUpdate = realmDatabase.objects(TerritoryObject.self).filter("id == %d", territory.id).first {
+                    territoryToUpdate.congregation = territory.congregation
+                    territoryToUpdate.number = territory.number
+                    territoryToUpdate.territoryDescription = territory.description
+                    territoryToUpdate.image = territory.image
+                } else {
+                    // Handle case where no territory was found (e.g., throw specific error)
+                    print("no territory found")
+                    throw CustomErrors.NotFound
+                }
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updateAddressAsync(address: TerritoryAddressModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                if let entity = realmDatabase.objects(TerritoryAddressObject.self).filter("id == %d", address.id).first {
+                    entity.territory = address.territory
+                    entity.address = address.address
+                    entity.floors = address.floors
+                } else {
+                    // Handle case where no address was found (e.g., throw specific error)
+                    print("no address found")
+                    throw CustomErrors.NotFound
+                }
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updateHouseAsync(house: HouseModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                if let entity = realmDatabase.objects(HouseObject.self).filter("id == %d", house.id).first {
+                    entity.territory_address = house.territory_address
+                    entity.number = house.number
+                    if let floorString = house.floor{
+                        entity.floor = floorString
+                    }
+                } else {
+                    // Handle case where no house was found (e.g., throw specific error)
+                    print("no house found")
+                    throw CustomErrors.NotFound
+                }
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updateVisitAsync(visit: VisitModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
+                    
+                        entity.house = visit.house
+                        entity.date = visit.date // Assuming date is a unix timestamp
+                        entity.symbol = visit.symbol
+                        entity.notes = visit.notes
+                        entity.user = visit.user
+                    
+                } else {
+                    throw CustomErrors.NotFound
+                }
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updateTokenAsync(token: MyTokenModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(TokenObject.self).filter("id == %d", token.id).first {
+                try await realmDatabase.asyncWrite {
+                    entity.name = token.name
+                    entity.owner = token.owner
+                    entity.congregation = token.congregation
+                    entity.moderator = token.moderator
+                    entity.expire = token.expire ?? 0
+                    entity.user = token.user
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updateTokenTerritoryAsync(tokenTerritory: TokenTerritoryModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(TokenTerritoryObject.self)
+                .filter("token == %@ && territory == %@", tokenTerritory.token, tokenTerritory.territory)
+                .first {
+                try await realmDatabase.asyncWrite {
+                    entity.token = tokenTerritory.token
+                    entity.territory = tokenTerritory.territory
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updatePhoneTerritoryAsync(phoneTerritory: PhoneTerritoryModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(PhoneTerritoryObject.self)
+                .filter("id == %d", phoneTerritory.id)
+                .first {
+                try await realmDatabase.asyncWrite {
+                    entity.congregation = phoneTerritory.congregation
+                    entity.image = phoneTerritory.image
+                    entity.territoryDescription = phoneTerritory.description
+                    entity.number = phoneTerritory.number
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updatePhoneNumberAsync(phoneNumber: PhoneNumberModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(PhoneNumberObject.self)
+                .filter("id == %d", phoneNumber.id)
+                .first {
+                try await realmDatabase.asyncWrite {
+                    entity.congregation = phoneNumber.congregation
+                    entity.house = phoneNumber.house
+                    entity.territory = phoneNumber.territory
+                    entity.number = phoneNumber.number
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updatePhoneCallAsync(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(PhoneCallObject.self)
+                .filter("id == %d", phoneCall.id)
+                .first {
+                try await realmDatabase.asyncWrite {
+                    entity.date = phoneCall.date
+                    entity.notes = phoneCall.notes
+                    entity.phoneNumber = phoneCall.phonenumber
+                    entity.user = phoneCall.user
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updateUserTokenAsync(userToken: UserTokenModel) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(UserTokenObject.self)
+                .filter("id == %d", userToken.id)
+                .first {
+                try await realmDatabase.asyncWrite {
+                    entity.token = userToken.token
+                    entity.userId = userToken.userId
+                    entity.name = userToken.name
+                    entity.blocked = userToken.blocked
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteTerritoryAsync(territory: TerritoryObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                if let territoryToDelete = realmDatabase.objects(TerritoryObject.self).filter("id == %d", territory.id).first {
+                    print(territoryToDelete)
+                    realmDatabase.delete(territoryToDelete)
+                } else {
+                    // Handle case where no territory was found (e.g., throw specific error)
+                    print("no territory found")
+                    throw CustomErrors.NotFound
+                }
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteAddressAsync(address: TerritoryAddressObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                if let entity = realmDatabase.objects(TerritoryAddressObject.self).filter("id == %d", address.id).first {
+                    realmDatabase.delete(entity)
+                } else {
+                    // Handle case where no address was found (e.g., throw specific error)
+                    print("no address found")
+                    throw CustomErrors.NotFound
+                }
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteHouseAsync(house: HouseObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                if let entity = realmDatabase.objects(HouseObject.self).filter("id == %d", house.id).first {
+                    realmDatabase.delete(entity)
+                } else {
+                    // Handle case where no house was found (e.g., throw specific error)
+                    print("no house found")
+                    throw CustomErrors.NotFound
+                }
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteVisitAsync(visit: VisitObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
+                try await realmDatabase.asyncWrite {
+                    
+                        realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteTokenAsync(token: TokenObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(TokenObject.self).filter("id == %d", token  .id).first {
+                try await realmDatabase.asyncWrite {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteTokenTerritoryAsync(tokenTerritory: TokenTerritoryObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(TokenTerritoryObject.self)
+                .filter("token == %@ && territory == %@", tokenTerritory.token, tokenTerritory.territory)
+                .first {
+                try await realmDatabase.asyncWrite {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deletePhoneTerritoryAsync(phoneTerritory: PhoneTerritoryObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(PhoneTerritoryObject.self).filter("id == %d", phoneTerritory.id).first {
+                try await realmDatabase.asyncWrite {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deletePhoneNumberAsync(phoneNumber: PhoneNumberObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(PhoneNumberObject.self).filter("id == %d", phoneNumber.id).first {
+                try await realmDatabase.asyncWrite {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deletePhoneCallAsync(phoneCall: PhoneCallObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(PhoneCallObject.self).filter("id == %d", phoneCall.id).first {
+                try await realmDatabase.asyncWrite {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteUserTokenAsync(userToken: UserTokenObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(UserTokenObject.self).filter("id == %d", userToken.id).first {
+                try await realmDatabase.asyncWrite {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteUserTokenByIdAsync(id: String) async -> Result<String, Error> {
+        
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+                guard let userToken = realmDatabase.object(ofType: UserTokenObject.self, forPrimaryKey: id) else {
+                    throw NSError(domain: "RealmManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "UserToken not found"])
+                }
+                try await realmDatabase.asyncWrite {
+                    realmDatabase.delete(userToken)
+                }
+            return .success("Successfully deleted UserToken with id: \(id)")
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    
+    
     
     func addModel<T: Object>(_ object: T) -> Result<Bool, Error> {
         do {
             let realmDatabase = try Realm()
-
+            if let object = object as? VisitObject {
+                if realmDatabase.objects(VisitObject.self).filter("id == %d", object.id).first != nil {
+                    print("Duplicate visit found")
+                    return Result.success(false)
+                }
+            }
             try realmDatabase.write {
+                print("THIS IS THE ITEM TO ADD: \(object)")
                 realmDatabase.add(object, update: .all)
             }
             return Result.success(true)
@@ -1026,6 +1463,8 @@ class RealmManager: ObservableObject {
 
         return combinedPublisher
     }
+    
+    
 
     
     func phoneCallAccessLevel(call: PhoneCallObject, email: String) -> AccessLevel {
