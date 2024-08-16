@@ -98,6 +98,7 @@
 		825645B12BCE13BD00F18AC9 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B02BCE13BD00F18AC9 /* RealmManager.swift */; };
 		825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B42BD04E9F00F18AC9 /* AddressData.swift */; };
 		825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */; };
+		82659D7A2C6FBD8700580BE6 /* MijickPopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 82659D792C6FBD8700580BE6 /* MijickPopupView */; };
 		826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */; };
 		826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766F2A729FDE000A4BAA /* HomeTabView.swift */; };
 		826B76722A729FE1000A4BAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826B76712A729FE1000A4BAA /* Assets.xcassets */; };
@@ -128,7 +129,6 @@
 		82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4672BD815A200F52F2F /* AddKeyViewModel.swift */; };
 		82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4692BD820BB00F52F2F /* AddKeyView.swift */; };
 		82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */; };
-		82B22C9A2C2099AA002E4EE8 /* MijickPopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 82B22C992C2099AA002E4EE8 /* MijickPopupView */; };
 		82BC0F1B2A9BEFCB00B255BF /* TerritoryAddressModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1A2A9BEFCB00B255BF /* TerritoryAddressModel.swift */; };
 		82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1C2A9BF53900B255BF /* DataUploaderManager.swift */; };
 		82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1E2A9BF55B00B255BF /* AuthorizationLevelManager.swift */; };
@@ -378,8 +378,8 @@
 				828C4CD82C3A31CC00E147C3 /* ImageViewerRemote in Frameworks */,
 				8228B6122C29C148002B7886 /* ModifiedCopy in Frameworks */,
 				8228B6082C29BB68002B7886 /* Ably in Frameworks */,
-				82B22C9A2C2099AA002E4EE8 /* MijickPopupView in Frameworks */,
 				8228B6142C29C148002B7886 /* ModifiedCopyClient in Frameworks */,
+				82659D7A2C6FBD8700580BE6 /* MijickPopupView in Frameworks */,
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
 				822FA07D2AA6B6320008FA61 /* Nuke in Frameworks */,
@@ -770,13 +770,13 @@
 				822FA09F2AA6B7800008FA61 /* NavigationTransitions */,
 				82A5B45F2BD482EB00F52F2F /* AlertKit */,
 				82F768FF2BE92FA2001FA3CF /* FloatingButton */,
-				82B22C992C2099AA002E4EE8 /* MijickPopupView */,
 				8228B6072C29BB68002B7886 /* Ably */,
 				8228B6112C29C148002B7886 /* ModifiedCopy */,
 				8228B6132C29C148002B7886 /* ModifiedCopyClient */,
 				828C4CD52C3A31CC00E147C3 /* ImageViewer */,
 				828C4CD72C3A31CC00E147C3 /* ImageViewerRemote */,
 				82D5AFB82C65A53900D65F6C /* RealmSwift */,
+				82659D792C6FBD8700580BE6 /* MijickPopupView */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -818,11 +818,11 @@
 				822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
 				82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */,
 				82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */,
-				82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */,
 				8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */,
 				8228B6102C29C148002B7886 /* XCRemoteSwiftPackageReference "ModifiedCopyMacro" */,
 				828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */,
 				82D5AFB52C65A53900D65F6C /* XCRemoteSwiftPackageReference "realm-swift" */,
+				82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1156,7 +1156,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.10;
+				MARKETING_VERSION = 3.0.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1190,7 +1190,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.10;
+				MARKETING_VERSION = 3.0.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1295,6 +1295,14 @@
 				minimumVersion = 0.11.0;
 			};
 		};
+		82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Mijick/PopupView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.0;
+			};
+		};
 		828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Jake-Short/swiftui-image-viewer";
@@ -1309,14 +1317,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.1.9;
-			};
-		};
-		82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Mijick/PopupView?tab=readme-ov-file";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.4.0;
 			};
 		};
 		82D5AFB52C65A53900D65F6C /* XCRemoteSwiftPackageReference "realm-swift" */ = {
@@ -1403,6 +1403,11 @@
 			package = 822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
 			productName = NavigationTransitions;
 		};
+		82659D792C6FBD8700580BE6 /* MijickPopupView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = MijickPopupView;
+		};
 		828C4CD52C3A31CC00E147C3 /* ImageViewer */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */;
@@ -1417,11 +1422,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */;
 			productName = AlertKit;
-		};
-		82B22C992C2099AA002E4EE8 /* MijickPopupView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 82B22C982C2099AA002E4EE8 /* XCRemoteSwiftPackageReference "PopupView" */;
-			productName = MijickPopupView;
 		};
 		82D5AFB82C65A53900D65F6C /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;

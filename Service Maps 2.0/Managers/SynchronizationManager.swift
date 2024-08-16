@@ -244,7 +244,6 @@ class SynchronizationManager: ObservableObject {
                         self.dataStore.synchronized = true
                     }
                 }
-                
             }
             
         } catch {

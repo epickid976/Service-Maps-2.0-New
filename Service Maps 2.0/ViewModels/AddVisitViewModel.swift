@@ -34,9 +34,10 @@ class AddVisitViewModel: ObservableObject {
             loading = true
         }
         let visitObject = VisitObject()
-        visitObject.id = "\(house.id)-\(Date.now.millisecondsSince1970)"
+        let date = Date.now.millisecondsSince1970
+        visitObject.id = "\(house.id)-\(date)"
         visitObject.house = house.id
-        visitObject.date = (Date.now.millisecondsSince1970)
+        visitObject.date = (date)
         visitObject.notes = notes
         visitObject.user = StorageManager.shared.userName ?? ""
         visitObject.symbol = selectedOption.forServer

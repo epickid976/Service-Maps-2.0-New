@@ -65,9 +65,8 @@ struct PillButtonStyle: ButtonStyle {
     @Binding var animation: Bool
     @Binding var synced: Bool
     @Binding var lastTime: Date?
-    //@Binding var text: String
     
-    @State var timePassed = getElapsedMinutes()
+    @State var timePassed = getFormattedElapsedTime()
     
     func makeBody(configuration: Configuration) -> some View {
         RoundedRectangle(cornerSize: CGSize(width: 100.0, height: 100.0), style: .continuous)
@@ -83,18 +82,13 @@ struct PillButtonStyle: ButtonStyle {
             .overlay(
                 VStack {
                     if synced {
-                        if isMoreThanAMinuteOld(date: lastTime) {
-                            displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
-                            displayText(NSLocalizedString("\(getElapsedMinutes()) minute(s)", comment: ""), fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
-                        } else {
-                            displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
-                            displayText(NSLocalizedString("Now", comment: ""), fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
-                        }
+                        displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                        displayText(NSLocalizedString("\(timePassed)", comment: ""), fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
                     } else {
-                        //displayText(NSLocalizedString("Syncing", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
                         ProgressView()
                     }
-                }.optionalViewModifier { content in
+                }
+                .optionalViewModifier { content in
                     if #available(iOS 17, *) {
                         content
                             .contentTransition(.numericText())
@@ -104,18 +98,15 @@ struct PillButtonStyle: ButtonStyle {
                         content
                     }
                 }
-                   
-                    .animation(.easeInOut, value: synced)
+                .animation(.easeInOut, value: synced)
             )
             .frame(width: width, height: height, alignment: .trailing)
             .animation(.spring(), value: synced)
             .padding(5)
             .onReceive(Timer.publish(every: 5, on: .main, in: .common).autoconnect()) { _ in
-                timePassed = getElapsedMinutes()
+                timePassed = getFormattedElapsedTime()
             }
-            
     }
-    
     
     func displayText(_ text: String, fontWeight: Font.Weight = .bold, fontSize: Font = .caption, foregroundColor: Color) -> some View {
         Text(text)
@@ -123,15 +114,25 @@ struct PillButtonStyle: ButtonStyle {
             .font(fontSize)
             .foregroundColor(foregroundColor)
             .multilineTextAlignment(.center)
-            
-        
     }
 }
 
-func getElapsedMinutes() -> Int {
-    guard let startTime = StorageManager.shared.lastTime else { return 0 } // Handle no start time
-    let elapsedTime = floor(Date().timeIntervalSince(startTime) / 60.0)
-    return Int(elapsedTime)
+func getFormattedElapsedTime() -> String {
+    guard let startTime = StorageManager.shared.lastTime else { return NSLocalizedString("Never", comment: "Indicates that no time has been recorded") }
+    let elapsedTime = Date().timeIntervalSince(startTime)
+
+    if elapsedTime < 60 {
+        return NSLocalizedString("Now", comment: "Indicates that something happened less than a minute ago")
+    } else if elapsedTime < 3600 {
+        let minutes = Int(elapsedTime / 60)
+        return String(format: NSLocalizedString("%d minute(s)", comment: "Indicates how many minutes have passed"), minutes)
+    } else if elapsedTime < 86400 {
+        let hours = Int(elapsedTime / 3600)
+        return String(format: NSLocalizedString("%d hour(s)", comment: "Indicates how many hours have passed"), hours)
+    } else {
+        let days = Int(elapsedTime / 86400)
+        return String(format: NSLocalizedString("%d day(s)", comment: "Indicates how many days have passed"), days)
+    }
 }
 
 func isMoreThanAMinuteOld(date: Date?) -> Bool {
@@ -141,3 +142,9 @@ func isMoreThanAMinuteOld(date: Date?) -> Bool {
     return date < oneMinuteAgo
 }
 
+func isMoreThanFiveMinutesOld(date: Date?) -> Bool {
+    guard let date = date else { return true }
+    let calendar = Calendar.current
+    let fiveMinutesAgo = calendar.date(byAdding: .minute, value: -5, to: Date())!
+    return date < fiveMinutesAgo
+}

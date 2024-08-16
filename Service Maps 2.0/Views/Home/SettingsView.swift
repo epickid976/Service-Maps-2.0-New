@@ -201,30 +201,36 @@ struct SettingsView: View {
     
     @ViewBuilder
     func preferencesView(mainWindowSize: CGSize) -> some View {
-        VStack {
+        VStack(spacing: 16) {
             if UIDevice().userInterfaceIdiom == .pad {
-                HStack {
+                Button(action: {}) {
                     HStack {
-                        Image(systemName: "text.word.spacing")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                            .foregroundColor(.blue)
-                        Text("iPad Column View")
-                            .font(.title3)
-                            .lineLimit(1)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
+                        HStack {
+                            Image(systemName: "text.word.spacing")
+                                .imageScale(.large)
+                                .padding(.horizontal)
+                                .foregroundColor(.blue)
+                            Text("iPad Column View")
+                                .font(.title3)
+                                .lineLimit(2)
+                                .foregroundColor(.primary)
+                                .fontWeight(.heavy)
+                        }
+                        .hSpacing(.leading)
+                        
+                        HStack {
+                            Toggle(isOn: $preferencesViewModel.isColumnViewEnabled) {}
+                                .toggleStyle(CheckmarkToggleStyle(color: .blue))
+                        }
+                        .hSpacing(.trailing)
+                        .frame(maxWidth: 100)
                     }
-                    .hSpacing(.leading)
-                    VStack {
-                        Toggle(isOn: $preferencesViewModel.isColumnViewEnabled) {}
-                            .toggleStyle(CheckmarkToggleStyle(color: .blue))
-                        //.padding()
-                    }.hSpacing(.trailing)
                 }
+                .frame(minHeight: 50)
             }
-            
+
             if !(UIDevice().userInterfaceIdiom == .pad) {
+                Button(action: {}) {
                     HStack {
                         HStack {
                             Image(systemName: "iphone.homebutton.radiowaves.left.and.right")
@@ -233,24 +239,27 @@ struct SettingsView: View {
                                 .foregroundColor(.blue)
                             Text("Haptics")
                                 .font(.title3)
-                                .lineLimit(1)
+                                .lineLimit(2)
                                 .foregroundColor(.primary)
                                 .fontWeight(.heavy)
                         }
                         .hSpacing(.leading)
                         
-                        VStack {
+                        HStack {
                             Toggle(isOn: $preferencesViewModel.hapticFeedback) {}
                                 .toggleStyle(CheckmarkToggleStyle(color: .blue))
-                            //.padding()
-                        }.hSpacing(.trailing)
-                            .frame(maxWidth: 100)
+                        }
+                        .hSpacing(.trailing)
+                        .frame(maxWidth: 100)
                     }
+                }
+                .frame(minHeight: 50)
             }
-        }.padding(10)
-            .frame(minWidth: mainWindowSize.width * 0.95)
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+        .padding(10)
+        .frame(minWidth: mainWindowSize.width * 0.95)
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
     
@@ -426,7 +435,7 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                         PopupManager.dismissAll()
                     }
                 }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
-                CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
+                CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red, action: {
                     HapticManager.shared.trigger(.lightImpact)
                     withAnimation { self.viewModel.loading = true }
                     Task {
@@ -492,7 +501,7 @@ struct CentrePopup_Deletion: CentrePopup {
                     self.viewModel.showDeletionAlert = false
                     dismiss()
                 }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
-                CustomButton(loading: viewModel.loading, title: "Delete", color: .red, action: {
+                CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red, action: {
                     HapticManager.shared.trigger(.lightImpact)
                     self.viewModel.showDeletionAlert = false
                     self.viewModel.showDeletionConfirmationAlert = true

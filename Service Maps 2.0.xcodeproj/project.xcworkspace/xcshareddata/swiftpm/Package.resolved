@@ -1,5 +1,5 @@
 {
-  "originHash" : "7a24b2ba30467860d499d6dc4849b95757125f51b0017f04865297c533f9f6e3",
+  "originHash" : "8ad8ba05191dcb6cde12bb64b92f51012f07300f187778e5182f10633dc3c8c5",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -92,12 +92,12 @@
       }
     },
     {
-      "identity" : "popupview?tab=readme-ov-file",
+      "identity" : "popupview",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Mijick/PopupView?tab=readme-ov-file",
+      "location" : "https://github.com/Mijick/PopupView.git",
       "state" : {
-        "revision" : "70af749a8c12df9fce016d7da8f0dc0127dcca9b",
-        "version" : "2.6.0"
+        "revision" : "eee37c28d75dcbb4eebbb40b76067f1c1528bd8c",
+        "version" : "2.7.0"
       }
     },
     {

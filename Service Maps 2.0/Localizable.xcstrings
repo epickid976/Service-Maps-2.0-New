@@ -10,7 +10,41 @@
     "-" : {
 
     },
+    "((days) days ago)" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(hace (days) días)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(il y a (days) jours)"
+          }
+        }
+      }
+    },
+    "(%d days ago)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(hace %d días)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(il y a %d jours)"
+          }
+        }
+      }
+    },
     "(getElapsedMinutes()) minute(s)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -19,6 +53,9 @@
           }
         }
       }
+    },
+    "(timePassed)" : {
+
     },
     "**%@** - %@" : {
       "localizations" : {
@@ -190,6 +227,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%d"
+          }
+        }
+      }
+    },
+    "%d day(s)" : {
+      "comment" : "Indicates how many days have passed",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d día(s)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d jour(s)"
+          }
+        }
+      }
+    },
+    "%d hour(s)" : {
+      "comment" : "Indicates how many hours have passed",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d hora(s)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d heure(s)"
+          }
+        }
+      }
+    },
+    "%d minute(s)" : {
+      "comment" : "Indicates how many minutes have passed",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d minuto(s)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d minute(s)"
           }
         }
       }
@@ -841,6 +929,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Décroissant"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
           }
         }
       }
@@ -2569,6 +2673,9 @@
         }
       }
     },
+    "Never" : {
+      "comment" : "Indicates that no time has been recorded"
+    },
     "Niño" : {
       "localizations" : {
         "en" : {
@@ -2902,6 +3009,7 @@
       }
     },
     "Now" : {
+      "comment" : "Indicates that something happened less than a minute ago",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3103,7 +3211,20 @@
       }
     },
     "Odd & Even" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pares & Nones"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pairs & Impairs"
+          }
+        }
+      }
     },
     "OK" : {
       "localizations" : {
@@ -3769,6 +3890,7 @@
       }
     },
     "Syncing" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {

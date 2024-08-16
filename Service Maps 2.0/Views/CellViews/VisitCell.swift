@@ -12,6 +12,7 @@ struct VisitCell: View {
     var ipad: Bool = false
     var mainWindowSize: CGSize
     
+    
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 3) {

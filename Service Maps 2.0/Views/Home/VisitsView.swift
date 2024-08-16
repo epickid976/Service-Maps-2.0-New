@@ -323,7 +323,7 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
                         withAnimation {
                             self.viewModel.loading = true
                         }

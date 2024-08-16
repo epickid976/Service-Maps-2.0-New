@@ -101,7 +101,7 @@ struct AddTerritoryView: View {
                             .fontWeight(.semibold)
                             .hSpacing(.center)
                         VStack {
-                            ImagePickerView(title: NSLocalizedString("Drag & Drop", comment: ""), subTitle: NSLocalizedString("Tap to add an image", comment: ""), systemImage: "square.and.arrow.up", tint: .blue, previewImage: $viewModel.previewImage) { image in
+                            ImagePickerView(title: NSLocalizedString("Drag & Drop", comment: ""), subTitle: NSLocalizedString("Tap to add an image", comment: ""), systemImage: "person.crop.square.badge.camera", tint: .blue, previewImage: $viewModel.previewImage) { image in
                                 viewModel.imageToSend = image
                             }
                             .optionalViewModifier { content in

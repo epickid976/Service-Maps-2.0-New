@@ -114,7 +114,7 @@ struct Service_Maps_2_0App: App {
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                if isMoreThanAMinuteOld(date: StorageManager.shared.lastTime) {
+                if isMoreThanFiveMinutesOld(date: StorageManager.shared.lastTime) {
                     synchronizationManager.startupProcess(synchronizing: true)
                 }
                 Task {

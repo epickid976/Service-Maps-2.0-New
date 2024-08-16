@@ -694,7 +694,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
@@ -791,7 +791,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true

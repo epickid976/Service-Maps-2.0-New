@@ -92,20 +92,29 @@ extension VisitsViewModel {
                     print("Error retrieving visit data: \(error)")
                 }
             }, receiveValue: { visitData in
-                DispatchQueue.main.async {
-                    let data = visitData.sorted { $0.visit.date > $1.visit.date }
-                    
-                    if let latestVisit = visitData
-                        .filter({ $0.visit.symbol != "nc" })
-                        .sorted(by: { $0.visit.date > $1.visit.date })
-                        .first?.visit {
-                        self.latestVisitUpdatePublisher.send(latestVisit)
-                    }
-                    
-                    self.visitData = data
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        if let visitIdToScrollTo = visitIdToScrollTo {
-                            self.visitIdToScrollTo = visitIdToScrollTo
+                DispatchQueue.global(qos: .userInitiated).async { // Use a background thread for heavy tasks
+                    // Sort and filter visitData in the background thread
+                    let sortedData = visitData.sorted { $0.visit.date > $1.visit.date }
+
+                    // Determine the latest visit based on the conditions
+                    let latestVisit = sortedData.first { $0.visit.symbol != "nc" }?.visit ?? sortedData.first?.visit
+
+                    // Update UI on the main queue
+                    DispatchQueue.main.async {
+                        // If sortedData is empty, set latestVisit to nil
+                        if sortedData.isEmpty || latestVisit == nil {
+                            self.latestVisitUpdatePublisher.send(nil)
+                        } else {
+                            self.latestVisitUpdatePublisher.send(latestVisit)
+                        }
+
+                        self.visitData = sortedData
+
+                        // Scroll to the specified visit after a delay
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if let visitIdToScrollTo = visitIdToScrollTo {
+                                self.visitIdToScrollTo = visitIdToScrollTo
+                            }
                         }
                     }
                 }

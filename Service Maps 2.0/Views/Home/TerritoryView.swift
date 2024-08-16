@@ -550,7 +550,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                     }
                     //.padding([.top])
                     
-                    CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
@@ -637,63 +637,4 @@ extension AnyTransition {
         )
         .animation(.spring())
     }
-}
-
-struct TableViewWrapper<Content: View>: UIViewRepresentable {
-    var items: [YourDataType]
-    var content: (YourDataType) -> Content
-    
-    class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
-        var parent: TableViewWrapper
-        
-        init(parent: TableViewWrapper) {
-            self.parent = parent
-        }
-        
-        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return parent.items.count
-        }
-        
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-            let item = parent.items[indexPath.row]
-            
-            let hostingController = UIHostingController(rootView: parent.content(item))
-            hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-            hostingController.view.backgroundColor = .clear
-            
-            cell.contentView.subviews.forEach { $0.removeFromSuperview() }
-            cell.contentView.addSubview(hostingController.view)
-            
-            NSLayoutConstraint.activate([
-                hostingController.view.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
-                hostingController.view.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
-                hostingController.view.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
-                hostingController.view.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
-            ])
-            
-            return cell
-        }
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
-    }
-    
-    func makeUIView(context: Context) -> UITableView {
-        let tableView = UITableView()
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        tableView.dataSource = context.coordinator
-        tableView.delegate = context.coordinator
-        return tableView
-    }
-    
-    func updateUIView(_ uiView: UITableView, context: Context) {
-        uiView.reloadData()
-    }
-}
-
-struct YourDataType: Identifiable {
-    var id: String
-    // Add other properties
 }

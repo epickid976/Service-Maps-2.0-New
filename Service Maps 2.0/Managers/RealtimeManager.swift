@@ -114,7 +114,7 @@ class RealtimeManager: ObservableObject {
             if self.dataStorageProvider.userEmail == userWithVisit.email {
                 visitToSave = visit.copy(user: self.dataStorageProvider.userEmail ?? visit.user)
             }
-            
+            print("Visit to save: \(visitToSave)")
             await saveVisitToRealm(visitToSave)
         } catch {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode message data: \(error.localizedDescription)"])
@@ -150,7 +150,7 @@ class RealtimeManager: ObservableObject {
 
     private func saveVisitToRealm(_ visit: VisitModel) async {
         await MainActor.run {
-            if let visitToUpdate = realmManager.realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
+            if realmManager.realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first != nil {
                _ = self.realmManager.updateVisit(visit: visit)
             } else {
               _ = realmManager.addModel(VisitObject().createVisitObject(from: visit))
@@ -160,7 +160,7 @@ class RealtimeManager: ObservableObject {
 
     private func saveCallToRealm(_ call: PhoneCallModel) async {
         await MainActor.run {
-            if let callToUpdate = realmManager.realmDatabase.objects(PhoneCallObject.self).filter("id == %d", call.id).first {
+            if realmManager.realmDatabase.objects(PhoneCallObject.self).filter("id == %d", call.id).first != nil {
                 _ = self.realmManager.updatePhoneCall(phoneCall: call)
             } else {
                 _ = realmManager.addModel(PhoneCallObject().createTerritoryObject(from: call))

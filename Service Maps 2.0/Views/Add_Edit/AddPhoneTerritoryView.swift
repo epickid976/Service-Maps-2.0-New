@@ -97,7 +97,7 @@ struct AddPhoneTerritoryView: View {
                         .fontWeight(.semibold)
                         .hSpacing(.center)
                     VStack {
-                        ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue, previewImage: $viewModel.previewImage) { image in
+                        ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "person.crop.square.badge.camera", tint: .blue, previewImage: $viewModel.previewImage) { image in
                             viewModel.imageToSend = image
                         }
                         .optionalViewModifier { content in
