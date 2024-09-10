@@ -10,10 +10,12 @@ import NukeUI
 import Combine
 
 struct HouseCell: View {
+    @State var revisitView: Bool = false
     @StateObject private var visitViewModel: VisitsViewModel
     @StateObject private var realtimeManager = RealtimeManager.shared
     @State private var house: HouseData
     @State private var cancellable: AnyCancellable?
+    
     
     var mainWindowSize: CGSize
     
@@ -21,10 +23,11 @@ struct HouseCell: View {
         return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
     
-    init(house: HouseData, mainWindowSize: CGSize) {
-        _visitViewModel = StateObject(wrappedValue: VisitsViewModel(house: house.house))
+    init(revisitView: Bool = false , house: HouseData, mainWindowSize: CGSize) {
+        _visitViewModel = StateObject(wrappedValue: VisitsViewModel(house: house.house, revisitView: revisitView))
         _house = State(initialValue: house)
         self.mainWindowSize = mainWindowSize
+        _revisitView = State(initialValue: revisitView)
     }
     
     var body: some View {
@@ -131,7 +134,7 @@ struct HouseCell: View {
     
     // MARK: - Lifecycle Methods
     private func onAppear() {
-        visitViewModel.getVisits()
+        visitViewModel.getVisits(revisitView: revisitView)
         
         cancellable = visitViewModel.latestVisitUpdatePublisher
             .subscribe(on: DispatchQueue.main)
@@ -139,15 +142,17 @@ struct HouseCell: View {
                 // Check if the update is for the correct house and if it's a new/different visit
                 if let newVisit = newVisit, newVisit.house == house.house.id, newVisit != house.visit {
                     house.visit = newVisit  // Update the state with the new visit
+                    print("New visit for house \(house.house.number): \(newVisit)")
                 } else if newVisit == nil {
                     house.visit = nil
+                    print("No visit for house \(house.house.number)")
                 }
             }
     }
     
     private func onMessageChange(_ value: Date?) {
         if value != nil {
-            visitViewModel.getVisits()
+            visitViewModel.getVisits(revisitView: revisitView)
         }
     }
     

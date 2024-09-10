@@ -66,7 +66,7 @@ struct PillButtonStyle: ButtonStyle {
     @Binding var synced: Bool
     @Binding var lastTime: Date?
     
-    @State var timePassed = getFormattedElapsedTime()
+    @State private var timePassed = getFormattedElapsedTime(from: StorageManager.shared.lastTime)
     
     func makeBody(configuration: Configuration) -> some View {
         RoundedRectangle(cornerSize: CGSize(width: 100.0, height: 100.0), style: .continuous)
@@ -103,9 +103,28 @@ struct PillButtonStyle: ButtonStyle {
             .frame(width: width, height: height, alignment: .trailing)
             .animation(.spring(), value: synced)
             .padding(5)
-            .onReceive(Timer.publish(every: 5, on: .main, in: .common).autoconnect()) { _ in
-                timePassed = getFormattedElapsedTime()
+            .onAppear {
+                // When the view appears, calculate the time passed
+                updateElapsedTime()
             }
+            .onChange(of: synced) { _ in
+                // Immediately update the time when synced becomes true
+                if synced {
+                    updateElapsedTime(instant: true) // Force an instant update to "Now"
+                }
+            }
+            .onReceive(Timer.publish(every: 5, on: .main, in: .common).autoconnect()) { _ in
+                updateElapsedTime() // Update time passed every 5 seconds
+            }
+    }
+    
+    func updateElapsedTime(instant: Bool = false) {
+        // If it's an instant update (sync just happened), force "Now"
+        if instant {
+            timePassed = NSLocalizedString("Now", comment: "Indicates that something just synced")
+        } else {
+            timePassed = getFormattedElapsedTime(from: lastTime)
+        }
     }
     
     func displayText(_ text: String, fontWeight: Font.Weight = .bold, fontSize: Font = .caption, foregroundColor: Color) -> some View {
@@ -117,8 +136,9 @@ struct PillButtonStyle: ButtonStyle {
     }
 }
 
-func getFormattedElapsedTime() -> String {
-    guard let startTime = StorageManager.shared.lastTime else { return NSLocalizedString("Never", comment: "Indicates that no time has been recorded") }
+// Updated function to calculate elapsed time from a passed Date value
+func getFormattedElapsedTime(from lastTime: Date?) -> String {
+    guard let startTime = lastTime else { return NSLocalizedString("Now", comment: "Indicates that no time has been recorded") }
     let elapsedTime = Date().timeIntervalSince(startTime)
 
     if elapsedTime < 60 {

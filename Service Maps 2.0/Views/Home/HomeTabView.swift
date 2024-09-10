@@ -36,13 +36,20 @@ struct HomeTabView: View {
                             Text("Tab 2")
                         }
                 } else if selectedTab == 2 {
-                    AccessView()
+                    RecallsView()
                         .tag(1)
                         .tabItem {
                             Image(systemName: "2.circle")
                             Text("Tab 2")
                         }
                 } else if selectedTab == 3 {
+                    AccessView()
+                        .tag(1)
+                        .tabItem {
+                            Image(systemName: "2.circle")
+                            Text("Tab 2")
+                        }
+                } else if selectedTab == 4 {
                     SettingsView()
                         .tag(2)
                         .tabItem {
@@ -90,17 +97,29 @@ struct HomeTabView: View {
                         .hoverEffect()
                         
                     }
+                    
+                    Button(action: {
+                        withAnimation(.default) {
+                            selectedTab = 2
+                            HapticManager.shared.trigger(.lightImpact)
+                        }
+                    }) {
+                        Image(systemName: selectedTab == 2 ? "person.2.fill" : "person.2")
+                            .imageScale(.large)
+                            .foregroundColor(selectedTab == 2 ? .blue : .gray)
+                            .scaleEffect(selectedTab == 2 ? 1.2 : 1.0) // Add scale effect
+                    }.frame(maxWidth: .infinity).hoverEffect()
                    
                         Button(action: {
                             withAnimation(.default) {
-                                selectedTab = 2
+                                selectedTab = 3
                                 HapticManager.shared.trigger(.lightImpact)
                             }
                         }) {
-                            Image(systemName: selectedTab == 2 ? "person.badge.key.fill" : "person.badge.key")
+                            Image(systemName: selectedTab == 3 ? "key.horizontal.fill" : "key.horizontal")
                                 .imageScale(.large)
-                                .foregroundColor(selectedTab == 2 ? .blue : .gray)
-                                .scaleEffect(selectedTab == 2 ? 1.2 : 1.0) // Add scale effect
+                                .foregroundColor(selectedTab == 3 ? .blue : .gray)
+                                .scaleEffect(selectedTab == 3 ? 1.2 : 1.0) // Add scale effect
                         }
                         .frame(maxWidth: .infinity)
                         .optionalViewModifier { content in
@@ -116,14 +135,14 @@ struct HomeTabView: View {
                     
                     Button(action: {
                         withAnimation(.default) {
-                            selectedTab = 3
+                            selectedTab = 4
                             HapticManager.shared.trigger(.lightImpact)
                         }
                     }) {
-                        Image(systemName: selectedTab == 3 ? "gearshape.fill" : "gearshape")
+                        Image(systemName: selectedTab == 4 ? "gearshape.fill" : "gearshape")
                             .imageScale(.large)
-                            .scaleEffect(selectedTab == 3 ? 1.2 : 1.0) // Add scale effect
-                            .foregroundColor(selectedTab == 3 ? .blue : .gray)
+                            .scaleEffect(selectedTab == 4 ? 1.2 : 1.0) // Add scale effect
+                            .foregroundColor(selectedTab == 4 ? .blue : .gray)
                     }
                     .frame(maxWidth: .infinity)
                     .optionalViewModifier { content in

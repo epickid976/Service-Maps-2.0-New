@@ -21,17 +21,14 @@ class VisitsViewModel: ObservableObject {
     let latestVisitUpdatePublisher = CurrentValueSubject<VisitModel?, Never>(nil)
     var cancellables = Set<AnyCancellable>()
     
-    @Published var visitData: Optional<[VisitData]> = nil {
-        didSet {
-            print("visitData: \(visitData)")
-        }
-    }
+    @Published var visitData: Optional<[VisitData]> = nil
     //@ObservedObject var databaseManager = RealmManager.shared
     
-    init(house: HouseModel, visitIdToScrollTo: String? = nil) {
+    init(house: HouseModel, visitIdToScrollTo: String? = nil, revisitView: Bool = false) {
         self.house = house
         
-        getVisits(visitIdToScrollTo: visitIdToScrollTo)
+        getVisits(visitIdToScrollTo: visitIdToScrollTo, revisitView: revisitView)
+        recallAdded = RealmManager.shared.isHouseRecall(house: house.id)
     }
     
     @Published var visitIdToScrollTo: String?
@@ -51,7 +48,14 @@ class VisitsViewModel: ObservableObject {
         }
     }
     
+    @Published var recallAdded = false {
+        didSet {
+            print("Recall added: \(recallAdded)")
+        }
+    }
+    
     @Published var visitToDelete: String?
+    
     
     @Published var showAlert = false
     @Published var ifFailed = false
@@ -59,6 +63,7 @@ class VisitsViewModel: ObservableObject {
     
     @Published var showToast = false
     @Published var showAddedToast = false
+    @Published var showRecallAddedToast = false
     
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
@@ -71,18 +76,26 @@ class VisitsViewModel: ObservableObject {
     
     @Published var searchActive = false
     
+    @Published var revisitAnimation = false
+    @Published var revisitAnimationprogress: CGFloat = 0.0
+    
     func deleteVisit(visit: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteVisit(visit: visit)
     }
     
+    func addRecall(user: String, house: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.addRecall(user: user, house: house)
+    }
     
-    
+    func deleteRecall(user: String, house: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteRecall(recall: Recall(id: Date.now.millisecondsSince1970, user: user, house: house, created_at: "", updated_at: ""))
+    }
     
 }
 
 @MainActor
 extension VisitsViewModel {
-    func getVisits(visitIdToScrollTo: String? = nil) {
+    func getVisits(visitIdToScrollTo: String? = nil, revisitView: Bool = false) {
         RealmManager.shared.getVisitData(houseId: house.id)
             .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
@@ -97,8 +110,15 @@ extension VisitsViewModel {
                     let sortedData = visitData.sorted { $0.visit.date > $1.visit.date }
 
                     // Determine the latest visit based on the conditions
-                    let latestVisit = sortedData.first { $0.visit.symbol != "nc" }?.visit ?? sortedData.first?.visit
-
+                    let latestVisit: VisitModel?
+                    if revisitView {
+                        latestVisit = sortedData.first?.visit
+                        print("Latest visit: \(latestVisit)")
+                    } else {
+                        latestVisit = sortedData.first { $0.visit.symbol != "nc" }?.visit ?? sortedData.first?.visit
+                        print("Latest visit: \(latestVisit)")
+                    }
+                    
                     // Update UI on the main queue
                     DispatchQueue.main.async {
                         // If sortedData is empty, set latestVisit to nil

@@ -285,6 +285,22 @@
     "%lld" : {
 
     },
+    "%lld/255" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/255"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/255"
+          }
+        }
+      }
+    },
     "A new update for the app is available!" : {
       "localizations" : {
         "es" : {
@@ -395,6 +411,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ajouter une Clé"
+          }
+        }
+      }
+    },
+    "Add Recall" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir Revisita"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter Revisite"
           }
         }
       }
@@ -690,6 +722,22 @@
         }
       }
     },
+    "Are you sure you want to remove the selected recall?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Esta seguro de que quiere borrar la revisita?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sur de vouloir supprimer la revisite?"
+          }
+        }
+      }
+    },
     "At least one field is required." : {
       "localizations" : {
         "es" : {
@@ -799,6 +847,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "en bloquant"
+          }
+        }
+      }
+    },
+    "By adding this house as a recall, it will be displayed in the recalls tab and you will be able to access it more easily." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al añadir esta casa como revisita, sera mostrada en la pagina de revisitas y podrá acceder a ella más fácilmente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En ajoutant cette maison comme revisite, elle s'ajoutera a la page de revisites et vous pourrez la voir plus facilement. "
+          }
+        }
+      }
+    },
+    "By removing this house as a recall, it will be removed from the recalls tab." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al remover esta casa como revisita, sera removida de la pagina de revisitas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En supprimant cette maison comme revisite, elle sera supprimé de la page de revisites.  "
           }
         }
       }
@@ -1575,6 +1655,22 @@
         }
       }
     },
+    "Error adding recall, please try again later" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al añadir revisita, por favor intente más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une erreur est survenu en supprimant la revisite, essayez plus tard."
+          }
+        }
+      }
+    },
     "Error adding territory." : {
       "localizations" : {
         "es" : {
@@ -1795,6 +1891,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erreur pour se connecter..."
+          }
+        }
+      }
+    },
+    "Error removing recall, please try again later" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al remover revisita, por favor intente más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une erreur est survenu en supprimant la revisite, essayez plus tard."
           }
         }
       }
@@ -2673,9 +2785,6 @@
         }
       }
     },
-    "Never" : {
-      "comment" : "Indicates that no time has been recorded"
-    },
     "Niño" : {
       "localizations" : {
         "en" : {
@@ -3009,7 +3118,7 @@
       }
     },
     "Now" : {
-      "comment" : "Indicates that something happened less than a minute ago",
+      "comment" : "Indicates that no time has been recorded\n   Indicates that something happened less than a minute ago\n   Indicates that something just synced",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3490,6 +3599,22 @@
         }
       }
     },
+    "Recalls" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisitas"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisites"
+          }
+        }
+      }
+    },
     "Recent Territories" : {
       "localizations" : {
         "es" : {
@@ -3534,6 +3659,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registration de la Clé..."
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        }
+      }
+    },
+    "Remove Recall" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover Revisita"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer Revisite"
           }
         }
       }

@@ -22,6 +22,7 @@ struct CustomField: View {
     var disableAutocorrect: Bool?
     var expanded: Bool?
     var diableCapitalization: Bool?
+    var maxValue: Int? = 255
     
     
     let placeholder: String
@@ -48,6 +49,17 @@ struct CustomField: View {
                 .keyboardType(keyboardType ?? .default)
                 .multilineTextAlignment(textAlignment ?? .leading)
                 .frame(minHeight: 60)
+                .optionalViewModifier { content in
+                    if maxValue != nil {
+                        content.onChange(of: text) { newValue in
+                            if newValue.count > maxValue! {
+                                text = String(newValue.prefix(maxValue!))
+                            }
+                        }
+                    } else {
+                        content
+                    }
+                }
                 .optionalViewModifier { content in
                     if keyboardContentType != nil {
                         content

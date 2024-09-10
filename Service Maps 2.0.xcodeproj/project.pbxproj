@@ -105,6 +105,9 @@
 		826B76752A729FE1000A4BAA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826B76742A729FE1000A4BAA /* Preview Assets.xcassets */; };
 		826B76772A729FE1000A4BAA /* NSManagedObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B76762A729FE1000A4BAA /* NSManagedObjectExtension.swift */; };
 		826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 826B76802A729FF6000A4BAA /* Service_Maps.xcdatamodeld */; };
+		82795D4F2C8E5D2F00E28C02 /* Recall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82795D4E2C8E5D2F00E28C02 /* Recall.swift */; };
+		82795D512C8E5DC100E28C02 /* RecallObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82795D502C8E5DC100E28C02 /* RecallObject.swift */; };
+		82795D532C8E63EC00E28C02 /* RecallsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82795D522C8E63EC00E28C02 /* RecallsView.swift */; };
 		827E35C62BE4453200FC0C64 /* HouseSortPredicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827E35C52BE4453200FC0C64 /* HouseSortPredicate.swift */; };
 		827EF1A22AA7B7E3006C4631 /* VisitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827EF1A12AA7B7E3006C4631 /* VisitsView.swift */; };
 		827EF1A62AA8C628006C4631 /* ModelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827EF1A52AA8C628006C4631 /* ModelExtensions.swift */; };
@@ -285,6 +288,9 @@
 		826B76742A729FE1000A4BAA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		826B76762A729FE1000A4BAA /* NSManagedObjectExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSManagedObjectExtension.swift; sourceTree = "<group>"; };
 		826B76812A729FF6000A4BAA /* Service_Maps.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Service_Maps.xcdatamodel; sourceTree = "<group>"; };
+		82795D4E2C8E5D2F00E28C02 /* Recall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recall.swift; sourceTree = "<group>"; };
+		82795D502C8E5DC100E28C02 /* RecallObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecallObject.swift; sourceTree = "<group>"; };
+		82795D522C8E63EC00E28C02 /* RecallsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecallsView.swift; sourceTree = "<group>"; };
 		827E35C52BE4453200FC0C64 /* HouseSortPredicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseSortPredicate.swift; sourceTree = "<group>"; };
 		827EF1A12AA7B7E3006C4631 /* VisitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitsView.swift; sourceTree = "<group>"; };
 		827EF1A52AA8C628006C4631 /* ModelExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelExtensions.swift; sourceTree = "<group>"; };
@@ -415,6 +421,7 @@
 				82F75C2F2BE27919002CCAB0 /* PhoneCallData.swift */,
 				82FB3C222BF257990066B0B9 /* RecentData.swift */,
 				82CEA02E2C114FC000F52DE9 /* UserTokenModel.swift */,
+				82795D4E2C8E5D2F00E28C02 /* Recall.swift */,
 			);
 			path = Structs;
 			sourceTree = "<group>";
@@ -583,6 +590,7 @@
 				82F75C332BE29886002CCAB0 /* PhoneNumbersView.swift */,
 				82F75C372BE2D1A8002CCAB0 /* CallsView.swift */,
 				8255F1912C1944D000445A82 /* SearchView.swift */,
+				82795D522C8E63EC00E28C02 /* RecallsView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -651,6 +659,7 @@
 				82F75C1F2BE13885002CCAB0 /* PhoneNumberObject.swift */,
 				82F75C212BE138FC002CCAB0 /* PhoneCallObject.swift */,
 				82CEA0302C11504000F52DE9 /* UserTokenObject.swift */,
+				82795D502C8E5DC100E28C02 /* RecallObject.swift */,
 			);
 			path = RealmObjects;
 			sourceTree = "<group>";
@@ -952,6 +961,7 @@
 				82F75C182BE1333E002CCAB0 /* PhoneTerritoryModel.swift in Sources */,
 				82F75C1C2BE134D3002CCAB0 /* PhoneCallModel.swift in Sources */,
 				824213702A82DAEA00626DD5 /* NoDataView.swift in Sources */,
+				82795D532C8E63EC00E28C02 /* RecallsView.swift in Sources */,
 				821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */,
 				82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */,
 				82F75C2E2BE27698002CCAB0 /* PhoneNumbersData.swift in Sources */,
@@ -959,12 +969,14 @@
 				826B76822A729FF6000A4BAA /* Service_Maps.xcdatamodeld in Sources */,
 				82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */,
 				82A5B4622BD5B31600F52F2F /* HouseData.swift in Sources */,
+				82795D4F2C8E5D2F00E28C02 /* Recall.swift in Sources */,
 				8228B6162C2B1F2C002B7886 /* Extensions.swift in Sources */,
 				82DDE2CD2C193BD4003B65A5 /* SearchViewModel.swift in Sources */,
 				82CEA0312C11504000F52DE9 /* UserTokenObject.swift in Sources */,
 				82BC0F232A9C24AC00B255BF /* ChangeType.swift in Sources */,
 				82F75C1A2BE1343A002CCAB0 /* PhoneNumberModel.swift in Sources */,
 				82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */,
+				82795D512C8E5DC100E28C02 /* RecallObject.swift in Sources */,
 				8255F1942C19465200445A82 /* SettingsView.swift in Sources */,
 				821111B62A7315B600F94662 /* AuthenticationAPI.swift in Sources */,
 				826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */,
@@ -1156,7 +1168,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.11;
+				MARKETING_VERSION = 3.0.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1190,7 +1202,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.11;
+				MARKETING_VERSION = 3.0.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

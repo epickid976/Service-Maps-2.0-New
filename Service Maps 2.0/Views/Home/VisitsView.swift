@@ -17,6 +17,7 @@ import MijickPopupView
 struct VisitsView: View {
     
     @StateObject var viewModel: VisitsViewModel
+    
     var house: HouseModel
     
     @State var animationDone = false
@@ -39,6 +40,8 @@ struct VisitsView: View {
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Visit Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
     let alertViewAdded = AlertAppleMusic17View(title: "Visit Added", subtitle: nil, icon: .done)
+    
+    let alertRecallAdded = AlertAppleMusic17View(title: "Recall Added", subtitle: nil, icon: .done)
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -132,6 +135,7 @@ struct VisitsView: View {
                         .animation(.easeInOut(duration: 0.25), value: viewModel.visitData == nil || viewModel.visitData != nil)
                         .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                         .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
+                        .alert(isPresent: $viewModel.showRecallAddedToast, view: alertRecallAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
                                 CentrePopup_AddVisit(viewModel: viewModel, house: house).showAndStack()
@@ -156,6 +160,15 @@ struct VisitsView: View {
                                 HStack {
                                     Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                    Button("", action: { 
+                                        viewModel.revisitAnimation.toggle()
+                                        if viewModel.recallAdded {
+                                            CentrePopup_DeleteRecall(viewModel: viewModel, house: house.id).showAndStack()
+                                        } else {
+                                            CentrePopup_AddRecall(viewModel: viewModel, house: house.id).showAndStack()
+                                        }
+                                    })
+                                    .buttonStyle(CircleButtonStyle(imageName: viewModel.recallAdded ? "person.fill.checkmark"  : "person.badge.plus.fill", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.revisitAnimationprogress, animation: $viewModel.revisitAnimation))
                                 }
                             }
                         }
@@ -426,6 +439,158 @@ struct CentrePopup_AddVisit: CentrePopup {
         popup
             .horizontalPadding(24)
             .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+
+struct CentrePopup_AddRecall: CentrePopup {
+    @ObservedObject var viewModel: VisitsViewModel
+    let house: String
+    let user = StorageManager.shared.userEmail
+    
+    func createContent() -> some View {
+        VStack {
+            Text("Add Recall")
+                .font(.title2)
+                .fontWeight(.heavy)
+                .hSpacing(.center)
+                .padding(.leading)
+            Text("By adding this house as a recall, it will be displayed in the recalls tab and you will be able to access it more easily.")
+                .font(.headline)
+                .fontWeight(.bold)
+                .hSpacing(.leading)
+                .padding(.leading)
+            if viewModel.ifFailed {
+                Text("Error adding recall, please try again later")
+                    .fontWeight(.bold)
+                    .foregroundColor(.red)
+            }
+            //.vSpacing(.bottom)
+            
+            HStack {
+                if !viewModel.loading {
+                    CustomBackButton() {
+                        withAnimation {
+                            //self.viewModel.showAlert = false
+                            dismiss()
+                            
+                        }
+                    }
+                }
+                //.padding([.top])
+                
+                CustomButton(loading: viewModel.loading, title: NSLocalizedString("Add", comment: "")) {
+                    withAnimation {
+                        self.viewModel.loading = true
+                        
+                    }
+                    Task {
+                        switch await viewModel.addRecall(user: user ?? "", house: house) {
+                        case .success(let success):
+                            
+                            
+                            viewModel.loading = false
+                            dismiss()
+                            viewModel.showRecallAddedToast = true
+                            withAnimation {
+                                DispatchQueue.main.async {
+                                    self.viewModel.recallAdded = true
+                                }
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                viewModel.showRecallAddedToast = false
+                            }
+                        case .failure(let failure):
+                            viewModel.ifFailed = true
+                        }
+                    }
+                    
+                }
+            }
+            .padding([.horizontal])
+            //.vSpacing(.bottom)
+        }.padding(10)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(16)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+}
+
+struct CentrePopup_DeleteRecall: CentrePopup {
+    @ObservedObject var viewModel: VisitsViewModel
+    let house: String
+    let user = StorageManager.shared.userEmail
+    
+    func createContent() -> some View {
+        VStack {
+            Text("Remove Recall")
+                .font(.title2)
+                .fontWeight(.heavy)
+                .hSpacing(.center)
+                .padding(.leading)
+            Text("By removing this house as a recall, it will be removed from the recalls tab.")
+                .font(.headline)
+                .fontWeight(.bold)
+                .hSpacing(.leading)
+                .padding(.leading)
+            if viewModel.ifFailed {
+                Text("Error removing recall, please try again later")
+                    .fontWeight(.bold)
+                    .foregroundColor(.red)
+            }
+            //.vSpacing(.bottom)
+            
+            HStack {
+                if !viewModel.loading {
+                    CustomBackButton() {
+                        withAnimation {
+                            //self.viewModel.showAlert = false
+                            dismiss()
+                            
+                        }
+                    }
+                }
+                //.padding([.top])
+                
+                CustomButton(loading: viewModel.loading, title: NSLocalizedString("Remove", comment: ""), color: .red) {
+                    withAnimation {
+                        self.viewModel.loading = true
+                        
+                    }
+                    Task {
+                        switch await viewModel.deleteRecall(user: user ?? "", house: house) {
+                        case .success(let success):
+                            viewModel.loading = false
+                            dismiss()
+                            viewModel.showRecallAddedToast = true
+                            withAnimation {
+                                DispatchQueue.main.async {
+                                    self.viewModel.recallAdded = false
+                                }
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                viewModel.showRecallAddedToast = false
+                            }
+                        case .failure(let failure):
+                            viewModel.ifFailed = true
+                        }
+                    }
+                    
+                }
+            }
+            .padding([.horizontal])
+            //.vSpacing(.bottom)
+        }.padding(10)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(16)
             .backgroundColour(Color(UIColor.systemGray6).opacity(85))
     }
 }

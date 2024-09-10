@@ -44,42 +44,7 @@ struct AddVisitView: View {
                    
                 }
                 
-//                HStack {
-//                            Text("Symbol: ")
-//                                .font(.subheadline)
-//                                .lineLimit(2)
-//                                .foregroundColor(.primary)
-//                                .fontWeight(.heavy)
-//                            Menu {
-//                                ForEach(Symbols.allCases, id: \.self) { option in
-//                                    Button(action: {
-//                                        viewModel.selectedOption = option
-//                                    }) {
-//                                        HStack {
-//                                            Text("**\(option.rawValue == "-" ? "" : option.rawValue)** - \(option.legend)")
-//                                            if viewModel.selectedOption == option {
-//                                                Spacer()
-//                                                Image(systemName: "checkmark")
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            } label: {
-//                                HStack {
-//                                    Text(viewModel.selectedOption.rawValue)
-//                                        .foregroundColor(.primary)
-//                                        .padding(10)
-//                                }
-//                                .background(
-//                                    RoundedRectangle(cornerRadius: 10)
-//                                        .fill(Color.gray.opacity(0.2))
-//                                )
-//                            }
-//                        }
-//                        .padding(.leading, 16)
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-                
-                CustomPickerView(viewModel: viewModel, showOptions: $showOptions)
+                CustomPickerView(viewModel: viewModel, showOptions: $showOptions, text: $viewModel.notes)
                     .padding(.bottom, !showOptions ? 0 : 16)
                     .padding(.bottom, viewModel.error != "" ? 30 : 0)
                 
@@ -188,7 +153,7 @@ struct AddVisitView: View {
 struct CustomPickerView: View {
     @ObservedObject var viewModel: AddVisitViewModel
     @Binding var showOptions: Bool
-
+    @Binding var text: String
    
     let columns = [
         GridItem(.flexible()),
@@ -198,6 +163,13 @@ struct CustomPickerView: View {
     var body: some View {
         VStack {
             HStack {
+                Text("\(text.count)/255")
+                    .font(.subheadline)
+                    .lineLimit(2)
+                    .foregroundColor(.primary)
+                    .fontWeight(.heavy)
+                    .padding(.leading, 10)
+                Spacer()
                 Text("Symbol: ")
                     .font(.subheadline)
                     .lineLimit(2)

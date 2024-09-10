@@ -693,4 +693,29 @@ class DataUploaderManager: ObservableObject {
             return Result.failure(error)
         }
     }
+    
+    @MainActor
+    func addRecall(user: String, house: String) async -> Result<Bool, Error> {
+        do {
+            let recall = Recall(id: Date.now.millisecondsSince1970, user: user, house: house, created_at: "", updated_at: "")
+            try await userApi.addRecall(recall: recall)
+            
+            
+            
+            return await realmManager.addModelAsync(RecallObject().createRecallObject(from: recall))
+        } catch {
+            return Result.failure(error)
+        }
+    }
+    
+    @MainActor
+    func deleteRecall(recall: Recall) async -> Result<Bool, Error> {
+        do {
+            try await userApi.removeRecall(recall: recall)
+           
+            return realmManager.deleteRecall(house: recall.house)
+        } catch {
+            return Result.failure(error)
+        }
+    }
 }

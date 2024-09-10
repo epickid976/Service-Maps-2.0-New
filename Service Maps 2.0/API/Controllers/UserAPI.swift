@@ -149,4 +149,37 @@ class UserAPI {
             throw error.self
         }
     }
+    
+    func getRecalls() async throws -> [Recall] {
+        do {
+            let response = try await ApiRequestAsync().getRequest(url: baseURL + "recalls")
+            
+            let decoder = JSONDecoder()
+            
+            let jsonData = response.data(using: .utf8)!
+            
+            let reply = try decoder.decode([Recall].self, from: jsonData)
+            
+            return reply
+        } catch {
+            print(error)
+            throw error.self
+        }
+    }
+    
+    func addRecall(recall: Recall) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "addRecall", body: recall)
+        } catch {
+            throw error.self
+        }
+    }
+    
+    func removeRecall(recall: Recall) async throws {
+        do {
+            _ = try await ApiRequestAsync().postRequest(url: baseURL + "removeRecall", body: recall)
+        } catch {
+            throw error.self
+        }
+    }
 }

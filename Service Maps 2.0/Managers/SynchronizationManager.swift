@@ -143,6 +143,7 @@ class SynchronizationManager: ObservableObject {
         let phoneNumberEntities = realmDatabase.objects(PhoneNumberObject.self)
         let phoneCallEntities = realmDatabase.objects(PhoneCallObject.self)
         let userTokenEntities = realmDatabase.objects(UserTokenObject.self)
+        let recallEntities = realmDatabase.objects(RecallObject.self)
         
         //Server Data
         var tokensApi = [MyTokenModel]()
@@ -155,6 +156,7 @@ class SynchronizationManager: ObservableObject {
         var phoneNumbersApi = [PhoneNumberModel]()
         var phoneCallsApi = [PhoneCallModel]()
         var userTokensApi = [UserTokenModel]()
+        var recallsApi = [Recall]()
         
         //Database Data
         var tokensDb = [TokenObject]()
@@ -167,6 +169,7 @@ class SynchronizationManager: ObservableObject {
         var phoneNumbersDb = [PhoneNumberObject]()
         var phoneCallsDb = [PhoneCallObject]()
         var userTokensDb = [UserTokenObject]()
+        var recallsDb = [RecallObject]()
         
         //MARK: Fetching data from server
         let tokenApi = TokenAPI()
@@ -246,6 +249,9 @@ class SynchronizationManager: ObservableObject {
                 }
             }
             
+            recallsApi = try await UserAPI().getRecalls()
+            
+            
         } catch {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.dataStore.synchronized = true
@@ -263,6 +269,7 @@ class SynchronizationManager: ObservableObject {
         phoneCallsDb = Array(phoneCallEntities)
         phoneNumbersDb = Array(phoneNumberEntities)
         userTokensDb = Array(userTokenEntities)
+        recallsDb = Array(recallEntities)
         
         //Comparing and Updating, adding or deleting data in database by server data
         await comparingAndSynchronizeTokens(apiList: tokensApi, dbList: tokensDb)
@@ -275,8 +282,9 @@ class SynchronizationManager: ObservableObject {
         await comparingAndSynchronizePhoneNumbers(apiList: phoneNumbersApi, dbList: phoneNumbersDb)
         await comparingAndSynchronizePhoneCalls(apiList: phoneCallsApi, dbList: phoneCallsDb)
         await comparingAndSynchronizeUserTokens(apiList: userTokensApi, dbList: userTokensDb)
+        await comparingAndSynchronizeRecalls(apiList: recallsApi, dbList: recallsDb)
 //
-        
+        print("FINISHEED ALL COMPARISONS")
         startupProcess(synchronizing: false)
         DispatchQueue.main.async {
             self.dataStore.lastTime = Date.now
@@ -821,6 +829,74 @@ class SynchronizationManager: ObservableObject {
                 print("Success Deleting UserToken \(success)")
             case .failure(let error):
                 print("Error deleting UserToken: \(error)")
+            }
+        }
+    }
+    
+    @BackgroundActor
+    private func comparingAndSynchronizeRecalls(apiList: [Recall], dbList: [RecallObject]) async {
+        struct RecallKey: Hashable {
+            let user: String
+            let house: String
+        }
+
+        // Create sets of keys for API and DB recalls
+        let recallsApi = Set(apiList.map { RecallKey(user: $0.user, house: $0.house) })
+        var recallsDb = Set(dbList.map { RecallKey(user: $0.user, house: $0.house) })
+
+        var updates: [Recall] = []
+        var additions: [Recall] = []
+
+        // Collect updates and additions
+        for recallApi in apiList {
+            let key = RecallKey(user: recallApi.user, house: recallApi.house)
+            
+            // Check if the Recall already exists in the DB
+            if let recallDb = dbList.first(where: { $0.user == recallApi.user && $0.house == recallApi.house }) {
+                // If it exists, compare and add to updates if different
+                if  (recallDb == recallApi) == false {
+                    updates.append(recallApi)
+                }
+                recallsDb.remove(key) // Remove from DB set since we have processed it
+            } else {
+                // If it doesn't exist, it's a new addition
+                additions.append(recallApi)
+            }
+        }
+        
+        print("recallsDb: \(recallsDb.count)")
+
+        // Perform updates
+        for recallApi in updates {
+            let recallObject = RecallObject().createRecallObject(from: recallApi)
+            switch await realmManager.updateRecallAsync(recall: recallObject) {
+            case .success(let success):
+                print(success)
+            case .failure(let error):
+                print("Error updating Recall: \(error)")
+            }
+        }
+
+        // Perform additions
+        for recallApi in additions {
+            let recallObject = RecallObject().createRecallObject(from: recallApi)
+            switch await realmManager.addModelAsync(recallObject) {
+            case .success(let success):
+                print("Success adding Recall: \(success)")
+            case .failure(let error):
+                print("Error adding Recall: \(error)")
+            }
+        }
+
+        // Perform deletions for remaining recalls in the DB that weren't matched with API list
+        for recallKey in recallsDb {
+            if let recall = dbList.first(where: { $0.user == recallKey.user && $0.house == recallKey.house }) {
+                switch await realmManager.deleteRecallAsync(house: recall.house) {
+                case .success(let success):
+                    print("Success deleting Recall: \(success)")
+                case .failure(let error):
+                    print("Error deleting Recall: \(error)")
+                }
             }
         }
     }

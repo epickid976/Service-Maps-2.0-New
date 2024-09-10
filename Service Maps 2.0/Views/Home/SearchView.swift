@@ -254,7 +254,7 @@ struct MySearchResultItem: View {
         }
     }
     
-    func buildPath(territory: TerritoryModel?, address: TerritoryAddressModel?, house: HouseModel?) -> String {
+    public func buildPath(territory: TerritoryModel?, address: TerritoryAddressModel?, house: HouseModel?) -> String {
         let territoryString = "Territory \(territory?.number ?? 0)"
         let addressString: String? = {
             guard let address = address else { return nil }

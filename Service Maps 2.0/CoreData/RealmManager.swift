@@ -67,6 +67,10 @@ class RealmManager: ObservableObject {
         let userTokensEntities = realmDatabase.objects(UserTokenObject.self)
         userTokensFlow = userTokensEntities
         
+        let recallEntities = realmDatabase.objects(RecallObject.self)
+        recallsFlow = recallEntities
+        
+        
         let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date())!
         
         
@@ -87,49 +91,65 @@ class RealmManager: ObservableObject {
     
     @Published var userTokensFlow: Results<UserTokenObject>
     
+    @Published var recallsFlow: Results<RecallObject>
+    
     @Published var dataStore = StorageManager.shared
     
     @Published var visitsPastTwoWeeks: Results<VisitObject>
     
-    
+    @MainActor
     func getAllTerritoriesDirect() -> [TerritoryObject] {
         return Array(realmDatabase.objects(TerritoryObject.self))
     }
     
+    @MainActor
     func getAllAddressesDirect() -> [TerritoryAddressObject] {
         return Array(realmDatabase.objects(TerritoryAddressObject.self))
     }
     
+    @MainActor
     func getAllHousesDirect() -> [HouseObject] {
         return Array(realmDatabase.objects(HouseObject.self))
     }
     
+    @MainActor
     func getAllVisitsDirect() -> [VisitObject] {
         return Array(realmDatabase.objects(VisitObject.self))
     }
     
+    @MainActor
     func getAllTokensDirect() -> [TokenObject] {
         return Array(realmDatabase.objects(TokenObject.self))
     }
     
+    @MainActor
     func getAllTokenTerritoriesDirect() -> [TokenTerritoryObject] {
         return Array(realmDatabase.objects(TokenTerritoryObject.self))
     }
     
+    @MainActor
     func getAllPhoneTerritoriesDirect() -> [PhoneTerritoryObject] {
         return Array(realmDatabase.objects(PhoneTerritoryObject.self))
     }
     
+    @MainActor
     func getAllPhoneNumbersDirect() -> [PhoneNumberObject] {
         return Array(realmDatabase.objects(PhoneNumberObject.self))
     }
     
+    @MainActor
     func getAllPhoneCallsDirect() -> [PhoneCallObject] {
         return Array(realmDatabase.objects(PhoneCallObject.self))
     }
     
+    @MainActor
     func getAllUserTokensDirect() -> [UserTokenObject] {
         return Array(realmDatabase.objects(UserTokenObject.self))
+    }
+    
+    @MainActor
+    func getAllRecallsDirect() -> [RecallObject] {
+        return Array(realmDatabase.objects(RecallObject.self))
     }
     
     @BackgroundActor
@@ -138,6 +158,7 @@ class RealmManager: ObservableObject {
             let realmDatabase = try await Realm(actor: BackgroundActor.shared)
             try await realmDatabase.asyncWrite {
                 realmDatabase.add(object, update: .all)
+                print("THIS IS THE ITEM TO ADD: \(object)")
             }
             return Result.success(true)
         } catch {
@@ -218,11 +239,11 @@ class RealmManager: ObservableObject {
             try await realmDatabase.asyncWrite {
                 if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
                     
-                        entity.house = visit.house
-                        entity.date = visit.date // Assuming date is a unix timestamp
-                        entity.symbol = visit.symbol
-                        entity.notes = visit.notes
-                        entity.user = visit.user
+                    entity.house = visit.house
+                    entity.date = visit.date // Assuming date is a unix timestamp
+                    entity.symbol = visit.symbol
+                    entity.notes = visit.notes
+                    entity.user = visit.user
                     
                 } else {
                     throw CustomErrors.NotFound
@@ -429,7 +450,7 @@ class RealmManager: ObservableObject {
             if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
                 try await realmDatabase.asyncWrite {
                     
-                        realmDatabase.delete(entity)
+                    realmDatabase.delete(entity)
                 }
             } else {
                 return .failure(CustomErrors.NotFound)
@@ -549,20 +570,68 @@ class RealmManager: ObservableObject {
         
         do {
             let realmDatabase = try await Realm(actor: BackgroundActor.shared)
-                guard let userToken = realmDatabase.object(ofType: UserTokenObject.self, forPrimaryKey: id) else {
-                    throw NSError(domain: "RealmManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "UserToken not found"])
-                }
-                try await realmDatabase.asyncWrite {
-                    realmDatabase.delete(userToken)
-                }
+            guard let userToken = realmDatabase.object(ofType: UserTokenObject.self, forPrimaryKey: id) else {
+                throw NSError(domain: "RealmManager", code: 404, userInfo: [NSLocalizedDescriptionKey: "UserToken not found"])
+            }
+            try await realmDatabase.asyncWrite {
+                realmDatabase.delete(userToken)
+            }
             return .success("Successfully deleted UserToken with id: \(id)")
         } catch {
             return .failure(error)
         }
     }
     
+    @BackgroundActor
+    func updateRecallAsync(recall: RecallObject) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            try await realmDatabase.asyncWrite {
+                if let entity = realmDatabase.objects(RecallObject.self).filter("user == %@ && house == %@", recall.user, recall.house).first {
+                    entity.user = recall.user
+                    entity.house = recall.house
+                } else {
+                    throw CustomErrors.NotFound
+                }
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
     
+    @BackgroundActor
+    func deleteRecallAsync(house: String) async -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try await Realm(actor: BackgroundActor.shared)
+            if let entity = realmDatabase.objects(RecallObject.self).filter("house == %@", house).first {
+                try await realmDatabase.asyncWrite {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
     
+    func deleteRecall(house: String) -> Result<Bool, Error> {
+        do {
+            let realmDatabase = try Realm()
+            if let entity = realmDatabase.objects(RecallObject.self).filter("house == %@", house).first {
+                try realmDatabase.write {
+                    realmDatabase.delete(entity)
+                }
+            } else {
+                return .failure(CustomErrors.NotFound)
+            }
+            return .success(true)
+        } catch {
+            return .failure(error)
+        }
+    }
     
     func addModel<T: Object>(_ object: T) -> Result<Bool, Error> {
         do {
@@ -653,11 +722,11 @@ class RealmManager: ObservableObject {
             try realmDatabase.write {
                 if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
                     
-                        entity.house = visit.house
-                        entity.date = visit.date // Assuming date is a unix timestamp
-                        entity.symbol = visit.symbol
-                        entity.notes = visit.notes
-                        entity.user = visit.user
+                    entity.house = visit.house
+                    entity.date = visit.date // Assuming date is a unix timestamp
+                    entity.symbol = visit.symbol
+                    entity.notes = visit.notes
+                    entity.user = visit.user
                     
                 } else {
                     throw CustomErrors.NotFound
@@ -855,7 +924,7 @@ class RealmManager: ObservableObject {
             if let entity = realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first {
                 try realmDatabase.write {
                     
-                        realmDatabase.delete(entity)
+                    realmDatabase.delete(entity)
                 }
             } else {
                 return .failure(CustomErrors.NotFound)
@@ -964,6 +1033,11 @@ class RealmManager: ObservableObject {
         }
     }
     
+    func isHouseRecall(house: String) -> Bool {
+        let realmDatabase = try! Realm()
+        return realmDatabase.objects(RecallObject.self).filter("house == %@", house).count > 0
+    }
+    
     @MainActor
     func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Never> {
         // Combine the flows
@@ -978,14 +1052,14 @@ class RealmManager: ObservableObject {
             // Precompute territory addresses and houses
             let territoryAddresses = Dictionary(grouping: territoryData.1, by: { $0.territory })
             let territoryHouses = Dictionary(grouping: territoryData.2, by: { $0.territory_address })
-
+            
             // Map territories to TerritoryData
             let data = territoryData.0.map { territory -> TerritoryData in
                 let currentAddresses = territoryAddresses[territory.id] ?? []
                 let currentHouses = currentAddresses.flatMap { address in
                     territoryHouses[address.id] ?? []
                 }
-
+                
                 return TerritoryData(
                     territory: convertTerritoryToTerritoryModel(model: territory),
                     addresses: ModelToStruct().convertTerritoryAddressEntitiesToStructs(entities: currentAddresses),
@@ -993,10 +1067,10 @@ class RealmManager: ObservableObject {
                     accessLevel: AuthorizationLevelManager().getAccessLevel(model: territory) ?? .User
                 )
             }.sorted(by: { $0.territory.number < $1.territory.number })
-
+            
             // Combine TerritoryData with keys
             let dataWithKeys = self.combineDataWithKeys(data: data)
-
+            
             // Return the sorted data
             return Just(dataWithKeys)
                 .eraseToAnyPublisher()
@@ -1004,22 +1078,22 @@ class RealmManager: ObservableObject {
         
         return transformedFlow.eraseToAnyPublisher()
     }
-
+    
     // Helper function to combine TerritoryData with keys
     private func combineDataWithKeys(data: [TerritoryData]) -> [TerritoryDataWithKeys] {
         var dataWithKeys = [TerritoryDataWithKeys]()
         let keysDao = self.realmDatabase.objects(TokenObject.self)
-
+        
         for territoryData in data {
             var keys = [TokenObject]()
             let tokenTerritoriesOfKey = self.realmDatabase.objects(TokenTerritoryObject.self).filter({ $0.territory == territoryData.territory.id })
-
+            
             for tokenTerritory in tokenTerritoriesOfKey {
                 if let token = keysDao.first(where: { $0.id == tokenTerritory.token }) {
                     keys.append(token)
                 }
             }
-
+            
             let founded = dataWithKeys.first { item in
                 if keys.isEmpty {
                     return item.keys.isEmpty
@@ -1027,7 +1101,7 @@ class RealmManager: ObservableObject {
                     return self.containsSame(first: item.keys, second: ModelToStruct().convertTokenEntitiesToStructs(entities: keys), getId: { $0.id })
                 }
             }
-
+            
             if let founded = founded, let index = dataWithKeys.firstIndex(where: { $0.id == founded.id }) {
                 dataWithKeys[index].territoriesData.append(territoryData)
                 dataWithKeys[index].territoriesData.sort { $0.territory.number < $1.territory.number }
@@ -1041,7 +1115,7 @@ class RealmManager: ObservableObject {
                 )
             }
         }
-
+        
         return dataWithKeys.sorted { $0.territoriesData.first?.territory.number ?? Int32(Int.max) < $1.territoriesData.first?.territory.number ?? Int32(Int.max) }
     }
     
@@ -1188,10 +1262,10 @@ class RealmManager: ObservableObject {
         let transformedFlow = combinedFlow.flatMap { keyData -> AnyPublisher<[PhoneData], Never> in
             let phoneTerritories = keyData.0
             let phoneNumbers = keyData.1
-
+            
             // Group phone numbers by territory
             let phoneNumbersByTerritory = Dictionary(grouping: phoneNumbers, by: { $0.territory })
-
+            
             // Map phone territories to PhoneData
             let phoneDataList = phoneTerritories.map { territory -> PhoneData in
                 let currentPhoneNumbers = phoneNumbersByTerritory[String(territory.id)] ?? []
@@ -1202,7 +1276,7 @@ class RealmManager: ObservableObject {
                     numbersQuantity: currentPhoneNumbers.count
                 )
             }
-
+            
             // Return the sorted phone data
             let sortedPhoneData = phoneDataList.sorted { $0.territory.number < $1.territory.number }
             
@@ -1268,20 +1342,20 @@ class RealmManager: ObservableObject {
             .eraseToAnyPublisher()
     }
     
-   
+    
     @MainActor
     func getRecentTerritoryData() -> AnyPublisher<[RecentTerritoryData], Never> {
         let territoriesPublisher = $territoriesFlow.share()
-
+        
         // 1. Create Dictionaries for Efficient Lookups
         let addressDictPublisher = $addressesFlow.share().map { addresses in
             Dictionary(uniqueKeysWithValues: addresses.map { ($0.id, $0) })
         }.eraseToAnyPublisher()
-
+        
         let houseDictPublisher = $housesFlow.share().map { houses in
             Dictionary(uniqueKeysWithValues: houses.map { ($0.id, $0) })
         }.eraseToAnyPublisher()
-
+        
         // 2. Combine Only Relevant Publishers
         return Publishers.CombineLatest3(
             territoriesPublisher,
@@ -1309,13 +1383,13 @@ class RealmManager: ObservableObject {
         }
         .eraseToAnyPublisher()
     }
-
-
+    
+    
     
     @MainActor
     func getRecentPhoneTerritoryData() -> AnyPublisher<[RecentPhoneData], Never> {
         let territoriesPublisher = $phoneTerritoriesFlow.share()
-
+        
         // 1. Create Dictionary for Phone Numbers
         let numberDictPublisher = $phoneNumbersFlow.share().map { numbers in
             Dictionary(uniqueKeysWithValues: numbers.map { ($0.id, $0) })
@@ -1348,9 +1422,9 @@ class RealmManager: ObservableObject {
         }
         .eraseToAnyPublisher()
     }
-
-
-
+    
+    
+    
     @MainActor
     func getKeyUsers(token: MyTokenModel) -> AnyPublisher<[UserTokenModel], Never> {
         return Just(userTokensFlow)
@@ -1370,6 +1444,74 @@ class RealmManager: ObservableObject {
     }
     
     @MainActor
+    func getRecalls() -> AnyPublisher<[RecallData], Never> {
+        return Just(recallsFlow)
+            .flatMap { recalls -> AnyPublisher<[RecallData], Never> in
+                var data = [RecallData]()
+                var houses = RealmManager.shared.getAllHousesDirect()
+                var addresses = RealmManager.shared.getAllAddressesDirect()
+                var territories = RealmManager.shared.getAllTerritoriesDirect()
+                var visits = RealmManager.shared.getAllVisitsDirect()
+                
+                for recall in recalls {
+                    let house = houses.filter({ $0.id == recall.house }).first
+                    let address = addresses.filter({ $0.id == house?.territory_address }).first
+                    let territory = territories.filter({ $0.id == address?.territory }).first
+                    let visit = visits.filter({ $0.house == house?.id }).first
+                    data.append(RecallData(recall: RecallObject().createRecall(from: recall), territory: convertTerritoryToTerritoryModel(model: territory!), territoryAddress: convertTerritoryToTerritoryAddressModel(model: address!), house: convertHouseToHouseModel(model: house!), visit: visit != nil ? convertVisitToVisitModel(model: visit!) : nil))
+                }
+                
+                var dataWithKeys = [RecallsWithKey]()
+                
+                for recall in data {
+                    var keys = [TokenObject]()
+                    
+                    //Find tokens by territory
+                    let tokenTerritoriesOfKey = RealmManager.shared.getAllTokenTerritoriesDirect().filter({ $0.territory == recall.territory.id })
+                    
+                    for tokenTerritory in tokenTerritoriesOfKey {
+                        if let token = RealmManager.shared.getAllTokensDirect().first(where: { $0.id == tokenTerritory.token }) {
+                            keys.append(token)
+                        }
+                    }
+                    
+                    var founded = dataWithKeys.first { item in
+                        if keys.isEmpty {
+                            return item.keys.isEmpty
+                        } else {
+                            return self.containsSame(first: item.keys, second: ModelToStruct().convertTokenEntitiesToStructs(entities: keys), getId: { $0.id })
+                        }
+                    }
+                    
+                    if let founded = founded {
+                        var recallsToReplace = founded.recalls
+                        
+                        recallsToReplace.append(recall)
+                        
+                        dataWithKeys.removeAll { $0 == founded }
+                        
+                        dataWithKeys.append(
+                            RecallsWithKey(
+                                keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
+                                recalls: recallsToReplace.sorted { $0.territory.number < $1.territory.number }
+                            )
+                        )
+                    } else {
+                        dataWithKeys.append(
+                            RecallsWithKey(
+                                keys: ModelToStruct().convertTokenEntitiesToStructs(entities: keys),
+                                recalls: [recall]
+                            )
+                        )
+                    }
+                    
+                }
+                return Just(data).eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    @MainActor
     func searchEverywhere(query: String, searchMode: SearchMode) -> AnyPublisher<[MySearchResult], Never> {
         let territoriesPublisher = $territoriesFlow.eraseToAnyPublisher()
         let addressesPublisher = $addressesFlow.eraseToAnyPublisher()
@@ -1378,7 +1520,7 @@ class RealmManager: ObservableObject {
         let phoneTerritoriesPublisher = $phoneTerritoriesFlow.eraseToAnyPublisher()
         let numbersPublisher = $phoneNumbersFlow.eraseToAnyPublisher()
         let callsPublisher = $phoneCallsFlow.eraseToAnyPublisher()
-
+        
         let combinedPublisher: AnyPublisher<[MySearchResult], Never>
         
         switch searchMode {
@@ -1391,7 +1533,7 @@ class RealmManager: ObservableObject {
             )
             .map { (territories, addresses, houses, visits) -> [MySearchResult] in
                 var results: [MySearchResult] = []
-
+                
                 territories.forEach { territory in
                     if String(territory.number).localizedCaseInsensitiveContains(query) || territory.territoryDescription.localizedCaseInsensitiveContains(query) {
                         results.append(MySearchResult(type: .Territory, territory: convertTerritoryToTerritoryModel(model: territory)))
@@ -1421,11 +1563,11 @@ class RealmManager: ObservableObject {
                         results.append(MySearchResult(type: .Visit, territory: convertTerritoryToTerritoryModel(model: territory), address: convertTerritoryToTerritoryAddressModel(model: address), house: convertHouseToHouseModel(model: house), visit: convertVisitToVisitModel(model: visit)))
                     }
                 }
-
+                
                 return results
             }
             .eraseToAnyPublisher()
-
+            
         case .PhoneTerritories:
             combinedPublisher = Publishers.CombineLatest3(
                 phoneTerritoriesPublisher,
@@ -1434,20 +1576,20 @@ class RealmManager: ObservableObject {
             )
             .map { (phoneTerritories, numbers, calls) -> [MySearchResult] in
                 var results: [MySearchResult] = []
-
+                
                 phoneTerritories.forEach { phoneTerritory in
                     if String(phoneTerritory.number).localizedCaseInsensitiveContains(query) || phoneTerritory.description.localizedCaseInsensitiveContains(query) {
                         results.append(MySearchResult(type: .PhoneTerritory, phoneTerritory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: phoneTerritory)))
                     }
                 }
-
+                
                 numbers.forEach { number in
                     if number.number.localizedCaseInsensitiveContains(query),
                        let phoneTerritory = phoneTerritories.first(where: { $0.id == number.territory }) {
                         results.append(MySearchResult(type: .Number, phoneTerritory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: phoneTerritory), number: convertPhoneNumberModelToPhoneNumberModel(model: number)))
                     }
                 }
-
+                
                 calls.forEach { call in
                     if call.notes.localizedCaseInsensitiveContains(query) || call.user.localizedCaseInsensitiveContains(query),
                        let number = numbers.first(where: { $0.id == call.phoneNumber }),
@@ -1455,17 +1597,17 @@ class RealmManager: ObservableObject {
                         results.append(MySearchResult(type: .Call, phoneTerritory: convertPhoneTerritoryModelToPhoneTerritoryModel(model: phoneTerritory), number: convertPhoneNumberModelToPhoneNumberModel(model: number), call: convertPhoneCallModelToPhoneCallModel(model: call)))
                     }
                 }
-
+                
                 return results
             }
             .eraseToAnyPublisher()
         }
-
+        
         return combinedPublisher
     }
     
     
-
+    
     
     func phoneCallAccessLevel(call: PhoneCallObject, email: String) -> AccessLevel {
         if AuthorizationLevelManager().existsAdminCredentials() {
@@ -1504,7 +1646,7 @@ extension Array {
                 arrayOrdered.append(value)
             }
         }
-
+        
         return arrayOrdered
     }
 }
