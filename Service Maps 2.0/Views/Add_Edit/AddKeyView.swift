@@ -34,7 +34,7 @@ struct AddKeyView: View {
     var body: some View {
         GeometryReader { proxy in
             VStack {
-                if viewModel.territoryData == nil || dataStore.synchronized == false {
+                if viewModel.territoryData == nil && !dataStore.synchronized {
                     if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                         LottieView(animation: .named("loadsimple"))
                             .playing()

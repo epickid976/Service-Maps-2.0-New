@@ -7,9 +7,6 @@
     " %@" : {
 
     },
-    "-" : {
-
-    },
     "((days) days ago)" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -53,9 +50,6 @@
           }
         }
       }
-    },
-    "(timePassed)" : {
-
     },
     "**%@** - %@" : {
       "localizations" : {
@@ -3118,7 +3112,7 @@
       }
     },
     "Now" : {
-      "comment" : "Indicates that no time has been recorded\n   Indicates that something happened less than a minute ago\n   Indicates that something just synced",
+      "comment" : "Indicates that no time has been recorded\nIndicates that something happened less than a minute ago\nIndicates that something just synced",
       "localizations" : {
         "es" : {
           "stringUnit" : {

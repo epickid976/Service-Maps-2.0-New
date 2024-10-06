@@ -68,6 +68,40 @@ extension Array {
     }
 }
 
+extension Array {
+    /// Splits the array into chunks of a specified size.
+    /// - Parameter size: The size of each chunk.
+    /// - Returns: An array of arrays where each inner array contains a chunk of the original array.
+    func chunked(into size: Int) -> [[Element]] {
+        var chunks: [[Element]] = []
+        var startIndex = 0
+        
+        while startIndex < self.count {
+            let endIndex = Swift.min(startIndex + size, self.count)
+            chunks.append(Array(self[startIndex..<endIndex]))
+            startIndex += size
+        }
+        
+        return chunks
+    }
+}
+
+extension Array {
+    func divideIn(_ smallSize: Int) -> [[Element]] {
+        var sublistList = [[Element]]()
+        var start = 0
+        
+        while start < self.count {
+            let end = Swift.min(start + smallSize, self.count)
+            let actual = Array(self[start..<end])
+            sublistList.append(actual)
+            start += smallSize
+        }
+        
+        return sublistList
+    }
+}
+
 extension String {
     func isValidPhoneNumber() -> Bool {
         // Use a regular expression to match a valid phone number format
@@ -139,8 +173,8 @@ extension AnyNavigationTransition {
     }
 }
 
-struct Zoom: NavigationTransition {
-    var body: some NavigationTransition {
+struct Zoom: NavigationTransitions.NavigationTransition {
+    var body: some NavigationTransitions.NavigationTransition {
         MirrorPush {
             Scale(0.5)
             OnInsertion {

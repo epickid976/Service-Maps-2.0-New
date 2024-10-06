@@ -62,6 +62,8 @@
 		822FA0A72AA77A200008FA61 /* CirlceButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */; };
 		822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A92AA77C8F0008FA61 /* HouseCell.swift */; };
 		82370C102C3D92C7009A8D56 /* LoginWithEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82370C0F2C3D92C7009A8D56 /* LoginWithEmailView.swift */; };
+		8239F98F2C99C5130067DE0A /* s8NEW.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8239F98E2C99C5120067DE0A /* s8NEW.pdf */; };
+		8239F9912C99C9290067DE0A /* form.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8239F9902C99C9290067DE0A /* form.pdf */; };
 		823FD4C92A7B52560036A1DD /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4C82A7B52560036A1DD /* UIDeviceExtension.swift */; };
 		823FD4CB2A7BE3DA0036A1DD /* AdminLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4CA2A7BE3DA0036A1DD /* AdminLoginView.swift */; };
 		823FD4D02A7BF07B0036A1DD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FD4CF2A7BF07B0036A1DD /* LoadingView.swift */; };
@@ -80,6 +82,7 @@
 		824213792A83335B00626DD5 /* CustomBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824213782A83335B00626DD5 /* CustomBackButton.swift */; };
 		8242137B2A83357600626DD5 /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242137A2A83357600626DD5 /* CustomButton.swift */; };
 		8242137D2A84810300626DD5 /* SignupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8242137C2A84810300626DD5 /* SignupViewModel.swift */; };
+		824DAF932C987AAE00FAED0C /* BackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824DAF922C987AAE00FAED0C /* BackupManager.swift */; };
 		824E5CEE2BC37962001DE348 /* VisitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CED2BC37962001DE348 /* VisitsViewModel.swift */; };
 		824E5CF02BC43012001DE348 /* VisitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CEF2BC43012001DE348 /* VisitCell.swift */; };
 		824E5CF22BC57B6B001DE348 /* AccessViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */; };
@@ -150,6 +153,7 @@
 		82D526072A9292B100B42916 /* AddTerritoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */; };
 		82D5AFB92C65A53900D65F6C /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82D5AFB82C65A53900D65F6C /* RealmSwift */; };
 		82D5AFBD2C65A6A300D65F6C /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 82D5AFB82C65A53900D65F6C /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		82DB760D2C98E80D004EB68F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 82DB760C2C98E80D004EB68F /* ZIPFoundation */; };
 		82DBE4DB2C249F3200C16B35 /* SplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DA2C249F3200C16B35 /* SplitView.swift */; };
 		82DBE4DD2C24B42C00C16B35 /* ColumnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DC2C24B42B00C16B35 /* ColumnView.swift */; };
 		82DBE4DF2C24FE7800C16B35 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */; };
@@ -245,6 +249,8 @@
 		822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CirlceButtonStyle.swift; sourceTree = "<group>"; };
 		822FA0A92AA77C8F0008FA61 /* HouseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseCell.swift; sourceTree = "<group>"; };
 		82370C0F2C3D92C7009A8D56 /* LoginWithEmailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWithEmailView.swift; sourceTree = "<group>"; };
+		8239F98E2C99C5120067DE0A /* s8NEW.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = s8NEW.pdf; path = ../../../../../../../../Desktop/s8NEW.pdf; sourceTree = "<group>"; };
+		8239F9902C99C9290067DE0A /* form.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = form.pdf; path = ../../../../Android/StudioProjects/ServiceMapsAndroid/app/src/main/res/raw/form.pdf; sourceTree = "<group>"; };
 		823FD4C82A7B52560036A1DD /* UIDeviceExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		823FD4CA2A7BE3DA0036A1DD /* AdminLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminLoginView.swift; sourceTree = "<group>"; };
 		823FD4CF2A7BF07B0036A1DD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
@@ -263,6 +269,7 @@
 		824213782A83335B00626DD5 /* CustomBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBackButton.swift; sourceTree = "<group>"; };
 		8242137A2A83357600626DD5 /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 		8242137C2A84810300626DD5 /* SignupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupViewModel.swift; sourceTree = "<group>"; };
+		824DAF922C987AAE00FAED0C /* BackupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupManager.swift; sourceTree = "<group>"; };
 		824E5CED2BC37962001DE348 /* VisitsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitsViewModel.swift; sourceTree = "<group>"; };
 		824E5CEF2BC43012001DE348 /* VisitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitCell.swift; sourceTree = "<group>"; };
 		824E5CF12BC57B6B001DE348 /* AccessViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessViewModel.swift; sourceTree = "<group>"; };
@@ -391,6 +398,7 @@
 				822FA07D2AA6B6320008FA61 /* Nuke in Frameworks */,
 				82F769002BE92FA2001FA3CF /* FloatingButton in Frameworks */,
 				822FA07F2AA6B6320008FA61 /* NukeExtensions in Frameworks */,
+				82DB760D2C98E80D004EB68F /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -608,6 +616,7 @@
 				82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */,
 				82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */,
 				8228B6042C2901A7002B7886 /* RealtimeManager.swift */,
+				824DAF922C987AAE00FAED0C /* BackupManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -700,6 +709,8 @@
 				820933FC2A795FC900AF3FF1 /* Enums */,
 				821111B42A73159400F94662 /* CoreData */,
 				826B76712A729FE1000A4BAA /* Assets.xcassets */,
+				8239F98E2C99C5120067DE0A /* s8NEW.pdf */,
+				8239F9902C99C9290067DE0A /* form.pdf */,
 				826B76732A729FE1000A4BAA /* Preview Content */,
 			);
 			path = "Service Maps 2.0";
@@ -786,6 +797,7 @@
 				828C4CD72C3A31CC00E147C3 /* ImageViewerRemote */,
 				82D5AFB82C65A53900D65F6C /* RealmSwift */,
 				82659D792C6FBD8700580BE6 /* MijickPopupView */,
+				82DB760C2C98E80D004EB68F /* ZIPFoundation */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -832,6 +844,7 @@
 				828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */,
 				82D5AFB52C65A53900D65F6C /* XCRemoteSwiftPackageReference "realm-swift" */,
 				82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */,
+				82DB760B2C98E80D004EB68F /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -849,7 +862,9 @@
 			files = (
 				826B76752A729FE1000A4BAA /* Preview Assets.xcassets in Resources */,
 				826B76722A729FE1000A4BAA /* Assets.xcassets in Resources */,
+				8239F98F2C99C5130067DE0A /* s8NEW.pdf in Resources */,
 				82F75C142BDC98B7002CCAB0 /* Localizable.xcstrings in Resources */,
+				8239F9912C99C9290067DE0A /* form.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1006,6 +1021,7 @@
 				825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */,
 				82A5B4592BD1A48500F52F2F /* TerritoryDataWithKeys.swift in Sources */,
 				820933E92A7852B400AF3FF1 /* TerritoryModel.swift in Sources */,
+				824DAF932C987AAE00FAED0C /* BackupManager.swift in Sources */,
 				82F75C222BE138FC002CCAB0 /* PhoneCallObject.swift in Sources */,
 				82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */,
 				8228B6182C2B1FC6002B7886 /* ViewModifiers.swift in Sources */,
@@ -1304,7 +1320,7 @@
 			repositoryURL = "https://github.com/davdroman/swiftui-navigation-transitions";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.11.0;
+				minimumVersion = 0.13.4;
 			};
 		};
 		82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */ = {
@@ -1337,6 +1353,14 @@
 			requirement = {
 				branch = master;
 				kind = branch;
+			};
+		};
+		82DB760B2C98E80D004EB68F /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
 			};
 		};
 		82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */ = {
@@ -1439,6 +1463,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82D5AFB52C65A53900D65F6C /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
+		};
+		82DB760C2C98E80D004EB68F /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82DB760B2C98E80D004EB68F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
 		};
 		82F768FF2BE92FA2001FA3CF /* FloatingButton */ = {
 			isa = XCSwiftPackageProductDependency;

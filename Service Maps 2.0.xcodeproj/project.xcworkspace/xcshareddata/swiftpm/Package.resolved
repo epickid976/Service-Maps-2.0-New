@@ -1,5 +1,5 @@
 {
-  "originHash" : "8ad8ba05191dcb6cde12bb64b92f51012f07300f187778e5182f10633dc3c8c5",
+  "originHash" : "bb05b480aa04b811bcb8a221ad0a20a2a309653a8be521eca19b243fc9f367ca",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Mijick/PopupView.git",
       "state" : {
-        "revision" : "eee37c28d75dcbb4eebbb40b76067f1c1528bd8c",
-        "version" : "2.7.0"
+        "revision" : "60ebc93bbcf06d78b0123389e641c3a451c80f65",
+        "version" : "2.7.1"
       }
     },
     {
@@ -123,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/exyte/ScalingHeaderScrollView",
       "state" : {
-        "revision" : "77274e1936b654322e736b43d63b548cea10eb30",
-        "version" : "1.1.3"
+        "revision" : "57631d0885bc55991126b932c106540273d6131c",
+        "version" : "1.1.4"
       }
     },
     {
@@ -150,8 +150,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/siteline/swiftui-introspect",
       "state" : {
-        "revision" : "668a65735751432b640260c56dfa621cec568368",
-        "version" : "1.2.0"
+        "revision" : "807f73ce09a9b9723f12385e592b4e0aaebd3336",
+        "version" : "1.3.0"
       }
     },
     {
@@ -159,8 +159,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/davdroman/swiftui-navigation-transitions",
       "state" : {
-        "revision" : "a6a3c70ad5d771bd1e927fb55897231cd9592024",
-        "version" : "0.13.3"
+        "revision" : "ad6ecab3f275fd0ff30959150dec0f14a5b7a245",
+        "version" : "0.13.4"
       }
     },
     {
@@ -179,6 +179,15 @@
       "state" : {
         "revision" : "ccab89ad1cedb04f25dd4df1776dd8c8583b914a",
         "version" : "2.2.5"
+      }
+    },
+    {
+      "identity" : "zipfoundation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/weichsel/ZIPFoundation",
+      "state" : {
+        "revision" : "02b6abe5f6eef7e3cbd5f247c5cc24e246efcfe0",
+        "version" : "0.9.19"
       }
     }
   ],

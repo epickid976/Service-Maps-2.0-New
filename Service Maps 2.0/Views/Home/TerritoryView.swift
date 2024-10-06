@@ -317,6 +317,26 @@ struct TerritoryView: View {
                     }
                     
                 }
+//                .onAppear {
+//                    Task {
+//                        let backupManager = BackupManager()
+//                        let url = await backupManager.backupFiles()
+//                        switch url {
+//                            case .success(let url):
+//                            
+//                            let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+//
+//                            UIApplication.shared.windows.first?.rootViewController?.present(activityViewController, animated: true, completion: nil)
+//                            
+//                            if UIDevice.current.userInterfaceIdiom == .pad {
+//                                activityViewController.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
+//                                activityViewController.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+//                            }
+//                            case .failure(let error):
+//                                print("Error backing up files: \(error)")
+//                        }
+//                    }
+//                }
             }
         }
     }
