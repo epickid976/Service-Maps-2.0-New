@@ -9,13 +9,15 @@ import SwiftUI
 import NavigationTransitions
 import AlertKit
 import MijickPopupView
-
+import Lottie
 
 struct SettingsView: View {
     @State var loading = false
     @State var alwaysLoading = true
-    
+    @State var backingUp = false
     @StateObject private var preferencesViewModel = ColumnViewModel()
+    
+    
     
     init(showBackButton: Bool = false) {
         self.showBackButton = showBackButton
@@ -54,6 +56,8 @@ struct SettingsView: View {
                 viewModel.languageLinkView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
                 preferencesView(mainWindowSize: mainWindowSize)
+                Spacer().frame(height: 25)
+                backupView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
                 viewModel.infosView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
@@ -123,11 +127,6 @@ struct SettingsView: View {
                     BottomPopup_Document(viewModel: viewModel).showAndStack()
                 }
             }
-            //            .fullScreenCover(isPresented: $viewModel.presentPolicy) {
-            //                NavigationStack {
-            //                    PrivacyPolicy(sheet: true)
-            //                }
-            //            }
             .fullScreenCover(isPresented: $viewModel.phoneBookLogin) {
                 PhoneLoginScreen {
                     if showBackButton {
@@ -202,6 +201,7 @@ struct SettingsView: View {
     @ViewBuilder
     func preferencesView(mainWindowSize: CGSize) -> some View {
         VStack(spacing: 16) {
+            
             if UIDevice().userInterfaceIdiom == .pad {
                 Button(action: {}) {
                     HStack {
@@ -228,7 +228,7 @@ struct SettingsView: View {
                 }
                 .frame(minHeight: 50)
             }
-
+            
             if !(UIDevice().userInterfaceIdiom == .pad) {
                 Button(action: {}) {
                     HStack {
@@ -261,6 +261,37 @@ struct SettingsView: View {
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
+    
+    @ViewBuilder
+    func backupView(mainWindowSize: CGSize) -> some View {
+        VStack(spacing: 16) {
+            Button {
+                HapticManager.shared.trigger(.lightImpact)
+                CentrePopup_Backup(viewModel: viewModel, backingUp: $backingUp).showAndStack()
+            } label: {
+                HStack {
+                    HStack {
+                        Image(systemName: "folder.fill")
+                            .imageScale(.large)
+                            .padding(.horizontal)
+                        Text("Backup")
+                            .font(.title3)
+                            .lineLimit(2)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                    }
+                    .hSpacing(.leading)
+                }
+            }//.keyboardShortcut("j", modifiers: .command)
+            .frame(minHeight: 50)
+        }
+        .padding(10)
+        .frame(minWidth: mainWindowSize.width * 0.95)
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+    
+    
     
     
 }
@@ -309,6 +340,144 @@ struct CentrePopup_AboutApp: CentrePopup {
     }
 }
 
+struct CentrePopup_Backup: CentrePopup {
+    @ObservedObject var viewModel: SettingsViewModel
+    @State var error = ""
+    @Binding var backingUp: Bool
+    @State var backupUrl: URL?
+    @State var shareBackup: Bool = false
+    
+    @ObservedObject var backupManager = BackupManager.shared
+    
+    func createContent() -> some View {
+        VStack {
+            Text("Backup")
+                .font(.title2)
+                .lineLimit(1)
+                .foregroundColor(.primary)
+                .fontWeight(.heavy)
+            Spacer().frame(height: 10)
+            if backingUp {
+                LottieView(animation: .named("compresing"))
+                    .playing(loopMode: .loop)
+                    .resizable()
+                    .frame(width: 200, height: 200)
+                Text("Creating Backup...")
+                    .font(.headline)
+                    .lineLimit(10)
+                    .foregroundColor(.primary)
+                    .fontWeight(.heavy)
+                ProgressView(value: backupManager.progress, total: 1.0)
+                    .progressViewStyle(LinearProgressViewStyle())
+                    .padding()
+                    .frame(height: 20)
+            } else {
+                if let backupUrl {
+                    HStack {
+                            Image(systemName: "doc.zipper")  // File icon
+                                .font(.system(size: 24))
+                                .foregroundColor(.blue)
+                            
+                            Text(backupUrl.lastPathComponent)  // Display the file name from the URL
+                                .font(.headline)
+                                .lineLimit(1)
+                                .foregroundColor(.primary)
+                                .fontWeight(.heavy)
+                        }
+                        .padding(.vertical, 10)
+                } else {
+                    Text("A backup copy of all the territories, addresses, houses, and visits that are in the app will be made. A zip file will be generated that will contain the folders and forms for each address. Please note that only the last visit will be exported. The process may take some time.")
+                        .font(.headline)
+                        .lineLimit(10)
+                        .foregroundColor(.primary)
+                        .fontWeight(.heavy)
+                }
+            }
+            
+            if !error.isEmpty {
+                Text(error)
+                    .font(.footnote)
+                    .fontWeight(.bold)
+                    .foregroundColor(.red)
+                    .lineLimit(10)
+                    .multilineTextAlignment(.center)
+            }
+            
+            HStack {
+                CustomBackButton(showImage: true, text: "Cancel") {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation {
+                        self.viewModel.showDeletionConfirmationAlert = false
+                        DispatchQueue.main.async {
+                            BackupManager.shared.cancelBackup()  // Call cancel
+                        }
+                        backingUp = false  // Stop backing up UI
+                        PopupManager.dismissAll()
+                    }
+                }.hSpacing(.trailing)
+                
+                if let backupUrl {
+                    CustomButton(loading: shareBackup, alwaysExpanded: true,  title: NSLocalizedString("Share Backup", comment: ""), active: !viewModel.loading, action: {
+                        HapticManager.shared.trigger(.lightImpact)
+                        presentActivityViewController(with: backupUrl)
+                    })
+                    .hSpacing(.trailing)
+                } else {
+                    CustomButton(loading: backingUp, alwaysExpanded: true,  title: NSLocalizedString("Back up", comment: ""), active: !viewModel.loading, action: {
+                        HapticManager.shared.trigger(.lightImpact)
+                        backingUp = true
+                        self.backingUp = true
+                        BackupManager.shared.backupTask = Task {
+                            let result = await BackupManager.shared.backupFiles()
+                            
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success(let url):
+                                    self.error = ""
+                                    self.backingUp = false
+                                    self.backupUrl = url
+                                    presentActivityViewController(with: url)
+                                    
+                                case .failure(let error):
+                                    self.error = error.localizedDescription
+                                    self.backingUp = false
+                                }
+                                self.viewModel.loading = false
+                            }
+                        }
+                    })
+                    .hSpacing(.trailing)
+                }
+                //.frame(width: 100)
+            }
+        }
+        .padding()
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+    }
+    
+    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
+        popup
+            .horizontalPadding(24)
+            .cornerRadius(15)
+            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    }
+    
+    func presentActivityViewController(with url: URL) {
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+            rootVC.present(activityViewController, animated: true, completion: nil)
+            
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                activityViewController.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
+                activityViewController.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+            }
+        }
+    }
+}
+
 struct CentrePopup_ShareApp: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
     var usingLargeText: Bool
@@ -345,7 +514,7 @@ struct CentrePopup_ShareApp: CentrePopup {
                     .scaledToFit()
                     .frame(width: 200, height: 200)
                     .padding(.vertical, -70)
-                    
+                
             }
             
             Text("iOS")
@@ -372,7 +541,7 @@ struct CentrePopup_ShareApp: CentrePopup {
                     .frame(width: 200, height: 200)
                     .padding(.vertical, -70)
             }
-
+            
             CustomBackButton(showImage: false, text: "Dismiss") {
                 HapticManager.shared.trigger(.lightImpact)
                 withAnimation {
@@ -644,7 +813,7 @@ private extension BottomPopup_Document {
     }
     func createScrollView() -> some View {
         //VStack {
-            PrivacyPolicy(sheet: true)
+        PrivacyPolicy(sheet: true)
         //}
     }
     func createConfirmButton() -> some View {

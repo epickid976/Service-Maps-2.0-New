@@ -153,6 +153,31 @@ class RealmManager: ObservableObject {
     }
     
     @BackgroundActor
+    func getAllTerritoriesDirectAsync() async -> [TerritoryObject] {
+        let realm = try! await Realm(actor: BackgroundActor.shared)
+        return Array(realm.objects(TerritoryObject.self))
+    }
+    
+    @BackgroundActor
+    func getAllAddressesDirectAsync() async -> [TerritoryAddressObject] {
+        let realm = try! await Realm(actor: BackgroundActor.shared)
+        return Array(realm.objects(TerritoryAddressObject.self))
+    }
+    
+    @BackgroundActor
+    func getAllHousesDirectAsync() async -> [HouseObject] {
+        let realm = try! await Realm(actor: BackgroundActor.shared)
+        return Array(realm.objects(HouseObject.self))
+    }
+    
+    @BackgroundActor
+    func getAllVisitsDirectAsync() async -> [VisitObject] {
+        let realm = try! await Realm(actor: BackgroundActor.shared)
+        return Array(realm.objects(VisitObject.self))
+    }
+    
+    
+    @BackgroundActor
     func addModelAsync<T: Object>(_ object: T) async -> Result<Bool, Error> {
         do {
             let realmDatabase = try await Realm(actor: BackgroundActor.shared)

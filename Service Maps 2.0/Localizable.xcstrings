@@ -295,6 +295,22 @@
         }
       }
     },
+    "A backup copy of all the territories, addresses, houses, and visits that are in the app will be made. A zip file will be generated that will contain the folders and forms for each address. Please note that only the last visit will be exported. The process may take some time." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se realizará una copia de seguridad de todos los territorios, direcciones, casas y visitas que están en la aplicación. Se generará un archivo zip que contendrá las carpetas y formularios para cada dirección. Tenga en cuenta que solo se exportará la última visita. El proceso puede tardar algún tiempo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une copie de sauvegarde de tous les territoires, adresses, maisons et visites présentes dans l’application sera effectuée. Un fichier zip sera généré, contenant les dossiers et formulaires pour chaque adresse. Veuillez noter que seule la dernière visite sera exportée. Le processus peut prendre un certain temps."
+          }
+        }
+      }
+    },
     "A new update for the app is available!" : {
       "localizations" : {
         "es" : {
@@ -765,6 +781,38 @@
         }
       }
     },
+    "Back up" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respaldar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegarder"
+          }
+        }
+      }
+    },
+    "Backup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respaldo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegarde"
+          }
+        }
+      }
+    },
     "Become Administrator" : {
       "localizations" : {
         "es" : {
@@ -953,6 +1001,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copier l'adresse"
+          }
+        }
+      }
+    },
+    "Creating Backup..." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creando copia de seguridad…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En train de créer la copie…"
           }
         }
       }
@@ -3905,6 +3969,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Partager l'Application"
+          }
+        }
+      }
+    },
+    "Share Backup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager"
           }
         }
       }

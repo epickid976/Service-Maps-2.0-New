@@ -14,6 +14,7 @@ struct CustomButton: View {
     var alwaysExpanded: Bool = false
     var title: String
     var color: Color?
+    var active: Bool = true
     var action: () -> Void
     
     
@@ -43,5 +44,6 @@ struct CustomButton: View {
         .buttonBorderShape(.capsule)
         .tint(color ?? .accentColor)
         .controlSize(.large)
+        .disabled(!active)
     }
 }

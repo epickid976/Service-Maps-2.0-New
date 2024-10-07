@@ -209,6 +209,7 @@ class StructToModel {
 
 import Foundation
 
+
 class ModelToStruct {
   
   //MARK: Converting MYTOKEN to MYTOKENMODEL
@@ -304,6 +305,21 @@ class ModelToStruct {
     
     return structs
   }
+    
+    func convertVisitEntitiesToStructsBackup(entities: [VisitObject]) -> [VisitModel] {
+      var structs: [VisitModel] = []
+      
+      for entity in entities {
+          let myStruct = VisitModel(id: entity.id,
+                                    house: entity.house, date: Int64(entity.date),
+                                    symbol: entity.symbol == "uk" ? "-" : entity.symbol.uppercased() , notes: entity.notes,
+                                    user: entity.user,
+                                  created_at: "", updated_at: "")
+        structs.append(myStruct)
+      }
+      
+      return structs
+    }
 }
 
 

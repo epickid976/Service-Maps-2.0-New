@@ -302,7 +302,6 @@
 		827EF1A12AA7B7E3006C4631 /* VisitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitsView.swift; sourceTree = "<group>"; };
 		827EF1A52AA8C628006C4631 /* ModelExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelExtensions.swift; sourceTree = "<group>"; };
 		827EF1A72AA8C644006C4631 /* TerritoryData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryData.swift; sourceTree = "<group>"; };
-		8288001C2AA65DE800725826 /* Service-Maps-2-0-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Service-Maps-2-0-Info.plist"; sourceTree = SOURCE_ROOT; };
 		8288001D2AA6621D00725826 /* ReuploaderWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReuploaderWorker.swift; sourceTree = "<group>"; };
 		8288001F2AA68BAA00725826 /* CDPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDPublisher.swift; sourceTree = "<group>"; };
 		82916C162A990955005133DE /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
@@ -694,7 +693,6 @@
 			children = (
 				82F75C132BDC98B7002CCAB0 /* Localizable.xcstrings */,
 				82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */,
-				8288001C2AA65DE800725826 /* Service-Maps-2-0-Info.plist */,
 				821DE74E2BD9EB66001D092D /* apple-app-site-association */,
 				826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */,
 				821DE74C2BD9EA46001D092D /* AppDelegate.swift */,
@@ -1174,11 +1172,13 @@
 				INFOPLIST_FILE = "Service-Maps-2-0-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Service Maps";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSFileProviderDomainUsageDescription = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1208,11 +1208,13 @@
 				INFOPLIST_FILE = "Service-Maps-2-0-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Service Maps";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSFileProviderDomainUsageDescription = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

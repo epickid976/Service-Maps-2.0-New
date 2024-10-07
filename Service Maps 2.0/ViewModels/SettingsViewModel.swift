@@ -24,9 +24,9 @@ class SettingsViewModel: ObservableObject {
     @Published var backAnimation = false
     @Published var progress: CGFloat = 0.0
     
-    @State var loading = false
-    @State var alwaysLoading = true
-    
+    @Published var loading = false
+    @Published var alwaysLoading = true
+    @Published var backingUp = false
     @Published var errorText = ""
     @Published var deletionError = ""
     
@@ -317,6 +317,7 @@ class SettingsViewModel: ObservableObject {
     @ViewBuilder
     func infosView(mainWindowSize: CGSize) -> some View {
         VStack {
+            
             Button {
                 HapticManager.shared.trigger(.lightImpact)
                 self.showSharePopup = true
