@@ -169,7 +169,9 @@ class SettingsViewModel: ObservableObject {
                                                 self.exitPhoneLogin() // Immediate UI update
                                             }
                                             Task {
-                                                self.synchronizationManager.startupProcess(synchronizing: true)
+                                                DispatchQueue.main.async {
+                                                    self.synchronizationManager.startupProcess(synchronizing: true)
+                                                }
                                             }
                                         }
                                     }
@@ -243,7 +245,9 @@ class SettingsViewModel: ObservableObject {
                                                 self.exitAdministrator() // Immediate UI update
                                             }
                                             Task {
-                                                self.synchronizationManager.startupProcess(synchronizing: true)
+                                                DispatchQueue.main.async {
+                                                    self.synchronizationManager.startupProcess(synchronizing: true)
+                                                }
                                             }
                                         }
                                         if showBack {

@@ -22,7 +22,7 @@ class SynchronizationManager: ObservableObject {
     @Published private var authorizationLevelManager = AuthorizationLevelManager()
     @Published var startupState: StartupState = .Unknown
     @Published var back_from_verification = false
-    private var startupTask: Task<Void, Never>? // Track the current startup task
+    private var syncTask: Task<Void, Never>? = nil // Track the current startup task
     
     // MARK: - Private Properties
     private var authenticationManager = AuthenticationManager()
@@ -32,22 +32,6 @@ class SynchronizationManager: ObservableObject {
     // MARK: - Start Synchronization with Haptics
     private var syncTimer: DispatchSourceTimer?
     
-    /// MARK: - Cancel and Restart Startup Process
-    @SyncActor
-    func cancelAndRestartStartupProcess(synchronizing: Bool, clearSynchronizing: Bool = false) {
-        // Cancel the current startup task if it's running
-        startupTask?.cancel()
-        
-        // Reset state before restarting
-        startupState = .Unknown
-        dataStore.synchronized = false
-        loaded = false
-        
-        // Start a new startup task
-        startupTask = Task {
-            self.startupProcess(synchronizing: synchronizing, clearSynchronizing: clearSynchronizing)
-        }
-    }
     
     @SyncActor
     func startSyncAndHaptics() {
@@ -73,7 +57,8 @@ class SynchronizationManager: ObservableObject {
             loaded = false
             dataStore.synchronized = false
         }
-        startupTask = Task {
+        
+        syncTask = Task {
             Task {
                 if synchronizing {
                     await self.synchronize()
@@ -154,6 +139,10 @@ class SynchronizationManager: ObservableObject {
     
     @SyncActor
     func synchronize() async {
+        // Store initial admin and phone credentials at the start
+            let initialIsAdmin = await AuthorizationLevelManager().existsAdminCredentials()
+            let initialHasPhoneCredentials = await AuthorizationLevelManager().existsPhoneCredentials()
+        
         // Mark synchronization as not completed
         DispatchQueue.main.async {
             self.dataStore.synchronized = false
@@ -164,6 +153,14 @@ class SynchronizationManager: ObservableObject {
         
         // Fetch server data
         do {
+            
+            // Periodically check if credentials have changed
+                    try await periodicCheckForCredentialChanges(
+                        initialIsAdmin: initialIsAdmin,
+                        initialHasPhoneCredentials: initialHasPhoneCredentials
+                    )
+            
+            
             let (tokensApi, userTokensApi, tokenTerritoriesApi) = try await fetchTokensFromServer()
             let (territoriesApi, housesApi, visitsApi, territoriesAddressesApi) = try await fetchTerritoriesFromServer()
             let (phoneTerritoriesApi, phoneNumbersApi, phoneCallsApi) = try await fetchPhoneTerritoryDataFromServer()
@@ -277,9 +274,13 @@ class SynchronizationManager: ObservableObject {
                 self.dataStore.synchronized = true
             }
             
+        } catch SynchronizationError.credentialsChanged {
+            // Resynchronize if the credentials changed
+            print("Credentials changed during sync, restarting synchronization.")
+            await synchronize() // Restart the synchronization with the updated credentials
         } catch {
-            // Handle error during synchronization
-            print(error)
+            // Handle other synchronization errors
+            print("Synchronization failed with error: \(error.localizedDescription)")
             await MainActor.run {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.dataStore.synchronized = true
@@ -307,9 +308,16 @@ class SynchronizationManager: ObservableObject {
         }
         if await AuthorizationLevelManager().existsAdminCredentials() {
             for token in tokensApi {
-                let users = try await tokenApi.usersOfToken(token: token.id)
-                for user in users {
-                    userTokensApi.append(UserToken(id: UUID().uuidString, token: token.id, userId: String(user.id), name: user.name, blocked: user.blocked))
+                let usersResult = await tokenApi.usersOfToken(token: token.id)
+                
+                switch usersResult {
+                case .success(let users):
+                    for user in users {
+                        userTokensApi.append(UserToken(id: UUID().uuidString, token: token.id, userId: String(user.id), name: user.name, blocked: user.blocked))
+                    }
+                case .failure(let error):
+                    print("Failed to fetch users for token \(token.id): \(error)")
+                    // Optionally handle the error or log it
                 }
             }
         }
@@ -425,6 +433,25 @@ class SynchronizationManager: ObservableObject {
     }
     
     @SyncActor
+    private func periodicCheckForCredentialChanges(initialIsAdmin: Bool, initialHasPhoneCredentials: Bool) async throws {
+        for _ in 0..<5 { // Periodically check 5 times (adjust as needed)
+            try await Task.sleep(nanoseconds: 1_000_000_000) // Check every 1 second
+            
+            let currentIsAdmin = await AuthorizationLevelManager().existsAdminCredentials()
+            let currentHasPhoneCredentials = await AuthorizationLevelManager().existsPhoneCredentials()
+            
+            // If credentials changed, throw an error to restart sync
+            if currentIsAdmin != initialIsAdmin || currentHasPhoneCredentials != initialHasPhoneCredentials {
+                throw SynchronizationError.credentialsChanged
+            }
+        }
+    }
+
+    // Custom error for when the credentials change during sync
+    enum SynchronizationError: Error {
+        case credentialsChanged
+    }
+    
     func handleResult<T>(_ result: Result<[T], Error>) throws -> [T] {
         switch result {
         case .success(let data):

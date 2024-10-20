@@ -23,12 +23,7 @@ class TerritoryViewModel: ObservableObject {
     private var recentCancellables = Set<AnyCancellable>()
     
     // Published variables to update the UI
-    @Published var territoryData: [TerritoryDataWithKeys]? = nil {
-        didSet {
-            // Trigger an update when data changes
-            print("Territory Data:", territoryData?.description)
-        }
-    }
+    @Published var territoryData: [TerritoryDataWithKeys]? = nil 
     @Published var recentTerritoryData: [RecentTerritoryData]? = nil
     @Published var currentTerritory: Territory?
 

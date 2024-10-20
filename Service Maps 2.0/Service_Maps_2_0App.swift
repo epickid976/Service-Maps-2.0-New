@@ -29,7 +29,7 @@ struct Service_Maps_2_0App: App {
     @Environment(\.presentationMode) var presentationMode
     
     init() {
-        
+        SynchronizationManager.shared.startupProcess(synchronizing: true)
     }
     
     
@@ -61,14 +61,14 @@ struct Service_Maps_2_0App: App {
                     }
                 case .AdministratorLoginScreen:
                     AdminLoginView() {
-                        Task.detached {
-                            await synchronizationManager.startupProcess(synchronizing: true)
+                        Task {
+                             synchronizationManager.startupProcess(synchronizing: true)
                         }
                     }
                 case .PhoneLoginScreen:
                     PhoneLoginScreen() {
-                        Task.detached {
-                            await synchronizationManager.startupProcess(synchronizing: true)
+                        Task {
+                             synchronizationManager.startupProcess(synchronizing: true)
                         }
                     }
                     
@@ -107,10 +107,6 @@ struct Service_Maps_2_0App: App {
             .navigationTransition(
                 .fade(.in)
             )
-            //}
-            .onAppear {
-                SynchronizationManager.shared.startupProcess(synchronizing: true)
-            }
             
         }
         .onChange(of: scenePhase) { newPhase in

@@ -117,7 +117,7 @@ class TokenAPI {
         }
     }
     
-    func usersOfToken(token: String) async throws -> [UserSimpleResponse] {
+    func usersOfToken(token: String) async  -> Result<[UserSimpleResponse], Error> {
         do {
             let response = try await ApiRequestAsync().postRequest(url: baseURL + "tokenusers", body: DeleteTokenForm(token: token))
             
@@ -127,9 +127,9 @@ class TokenAPI {
             
             let reply = try decoder.decode([UserSimpleResponse].self, from: jsonData)
             
-            return reply
+            return Result.success(reply)
         } catch {
-            throw error.self
+            return .failure(error)
         }
     }
     

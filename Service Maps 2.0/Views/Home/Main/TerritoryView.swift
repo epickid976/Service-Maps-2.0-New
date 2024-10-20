@@ -20,7 +20,7 @@ import MijickPopupView
 struct TerritoryView: View {
     @Environment(\.dismissSearch) private var dismissSearch
     
-    @ObservedObject var viewModel: TerritoryViewModel
+    @StateObject var viewModel: TerritoryViewModel
     
     //@Environment(\.managedObjectContext) private var viewContext
     
@@ -35,7 +35,7 @@ struct TerritoryView: View {
     
     init(territoryIdToScrollTo: String? = nil) {
         let viewModel = TerritoryViewModel(territoryIdToScrollTo: territoryIdToScrollTo)
-        _viewModel = ObservedObject(wrappedValue: viewModel)
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     let alertViewDeleted = AlertAppleMusic17View(title: "Territory Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
@@ -66,7 +66,7 @@ struct TerritoryView: View {
                     ScrollViewReader { scrollViewProxy in
                         ScrollView {
                             VStack {
-                                if viewModel.territoryData == nil && viewModel.dataStore.synchronized == false {
+                                if viewModel.territoryData == nil && !viewModel.dataStore.synchronized {
                                     if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                         LottieView(animation: .named("loadsimple"))
                                             .playing(loopMode: .loop)
