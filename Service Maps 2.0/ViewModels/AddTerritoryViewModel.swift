@@ -40,25 +40,17 @@ class AddTerritoryViewModel: ObservableObject {
     
     func addTerritory() async -> Result<Bool, Error>{
         loading = true
-        let territoryObject = TerritoryObject()
-        territoryObject.id = "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)"
-        territoryObject.number = Int32(number!)
-        territoryObject.territoryDescription = description
-        territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
+        let territoryObject = Territory(id: "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)", congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int32(number!), description: description)
         return await dataUploader.addTerritory(territory: territoryObject, image: imageToSend)
     }
     
-    func editTerritory(territory: TerritoryModel) async -> Result<Bool, Error> {
+    func editTerritory(territory: Territory) async -> Result<Bool, Error> {
         loading = true
-        let territoryObject = TerritoryObject()
-        territoryObject.id = territory.id
-        territoryObject.number = Int32(number!)
-        territoryObject.territoryDescription = description
-        territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
+        let territoryObject = Territory(id: territory.id, congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int32(number!), description: description)
         return await dataUploader.updateTerritory(territory: territoryObject, image: imageToSend)
     }
     
-    init(territory: TerritoryModel? = nil) {
+    init(territory: Territory? = nil) {
         Task {
             if let territory = territory {
                 if let imageLink = URL(string: territory.getImageURL()) {

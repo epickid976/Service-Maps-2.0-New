@@ -24,20 +24,20 @@ class UniversalLinksManager: ObservableObject {
 
         if url.absoluteString.starts(with: LinkScreens.VALIDATE_EMAIL.rawValue) {
         // Handle account confirmation
-        print("Confirmation link received, extract token from URL")
+        
             linkState = .VALIDATE_EMAIL
             
         // Extract confirmation token from URL (logic depends on your URL structure)
         // Navigate to confirmation view with the token (your implementation)
       } else if url.absoluteString.starts(with: LinkScreens.REGISTER_KEY.rawValue) {
         // Handle registration key link
-        print("Registration key link received, extract key from URL")
+        
           linkState = .REGISTER_KEY
         // Extract registration key from URL (logic depends on your URL structure)
         // Navigate to registration view with the key (your implementation)
       } else if url.absoluteString.starts(with: LinkScreens.RESET_PASSWORD.rawValue) {
         // Handle password reset link
-        print("Password reset link received, extract token from URL")
+        
           
           linkState = .RESET_PASSWORD
           
@@ -45,16 +45,16 @@ class UniversalLinksManager: ObservableObject {
         // Navigate to password reset view with the token (your implementation)
       } else if url.absoluteString.starts(with: LinkScreens.PRIVACY_POLICY.rawValue) {
           // Handle privacy policy link
-          print("Privacy policy link received")
+          
           linkState = .PRIVACY_POLICY
           // Navigate to privacy policy view (your implementation)
       } else if url.absoluteString.starts(with: LinkScreens.LOGIN_EMAIL.rawValue) {
           // Handle login email link
-          print("Login email link received")
+          
           linkState = .LOGIN_EMAIL
           // Navigate to login email view (your implementation)
       } else {
-        print("Unknown URL, we can't handle this one!")
+        
           linkState = nil
       }
         

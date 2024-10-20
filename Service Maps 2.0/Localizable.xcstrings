@@ -830,6 +830,7 @@
       }
     },
     "block" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -846,6 +847,7 @@
       }
     },
     "Block" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -878,6 +880,7 @@
       }
     },
     "blocking" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4352,6 +4355,7 @@
       }
     },
     "unblock" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4368,6 +4372,7 @@
       }
     },
     "Unblock" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4384,6 +4389,7 @@
       }
     },
     "unblocking" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4432,6 +4438,7 @@
       }
     },
     "Users" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {

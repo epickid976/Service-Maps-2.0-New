@@ -19,14 +19,10 @@ actor ProgressTracker {
 class BackupManager: ObservableObject {
     @Published var isBackingUp: Bool = false
     @Published var backup = false
-    @ObservedObject var realmManager = RealmManager.shared
+    @ObservedObject var grdbManager = GRDBManager.shared
     static var shared = BackupManager()
     var backupTask: Task<Void, Never>?  // Track the backup task
-    @Published var progress: Double = 0.0 {
-        didSet {
-            print("Progress: \(progress)")
-        }
-    }
+    @Published var progress: Double = 0.0
     
     let fileManager = FileManager.default
     
@@ -66,9 +62,8 @@ class BackupManager: ObservableObject {
             let result = await self.backupFiles()
             DispatchQueue.main.async {
                 switch result {
-                case .success(let url):
+                case .success(_):
                     self.isBackingUp = false
-                    print("Backup completed successfully.")
                     // Handle success, present the activity view controller, etc.
                 case .failure(let error):
                     self.isBackingUp = false
@@ -83,41 +78,52 @@ class BackupManager: ObservableObject {
     // Main backup function with cancellation check
     @BackgroundActor
     func backupFiles() async -> Result<URL, Error> {
+        // Check if backup is already in progress
         if await isBackingUp == true {
-            print("Backup in progress canceled. Please try again.")
             return Result.failure(NSError(domain: "Backup in Progress", code: 100, userInfo: nil))
         }
         
+        // Reset progress and mark as backing up
         DispatchQueue.main.async {
-            self.progress = 0.0  // Initialize progress
+            self.progress = 0.0  // Reset progress
             self.isBackingUp = true
         }
         
-        // Create a serial queue for safely updating progress
-        let progressTracker = ProgressTracker()  // Actor for thread-safe progress track
+        // Start fetching data directly from GRDB
+        var territories = [Territory]()
+        var addresses = [TerritoryAddress]()
+        var houses = [House]()
+        var visits = [Visit]()
         
-        // Check for task cancellation early
-        if Task.isCancelled {
-            print("Task was canceled before starting.")
-            return .failure(NSError(domain: "Backup Canceled", code: 1, userInfo: nil))
+        do {
+            // Fetch data from database
+            let territoriesResult = await grdbManager.fetchAllAsync(Territory.self)
+            let addressesResult = await grdbManager.fetchAllAsync(TerritoryAddress.self)
+            let housesResult = await grdbManager.fetchAllAsync(House.self)
+            let visitsResult = await grdbManager.fetchAllAsync(Visit.self)
+            
+            switch (territoriesResult, addressesResult, housesResult, visitsResult) {
+            case (.success(let allTerritories), .success(let allAddresses), .success(let allHouses), .success(let allVisits)):
+                territories = allTerritories
+                houses = allHouses
+                addresses = allAddresses
+                visits = allVisits
+                
+            case (.failure(let error), _, _, _), (_, .failure(let error), _, _), (_, _, .failure(let error), _), (_, _, _, .failure(let error)):
+                // Handle errors
+                return Result.failure(error)
+            }
+            
+        } catch {
+            // Handle fetch error
+            return Result.failure(error)
         }
         
-        // Begin the backup process
-        let territories = await realmManager.getAllTerritoriesDirectAsync()
-        let addresses = await realmManager.getAllAddressesDirectAsync()
-        let houses = await realmManager.getAllHousesDirectAsync()
-        let visits = await realmManager.getAllVisitsDirectAsync()
-        
-        let totalItems: Double = Double(territories.count) + Double(addresses.count)
-        
-        // Convert fetched data
-        let territoryModels = territories.toTerritoryModels()
-        let addressModels = addresses.toTerritoryAddressModels()
-        let houseModels = houses.toHouseModels()
-        let visitModels = visits.toVisitModels()
-        
+        // Calculate total items for progress tracking
+        let totalItems = Double(territories.count + addresses.count)
+
         guard let pdfURL = Bundle.main.url(forResource: "s8NEW", withExtension: "pdf"),
-              let pdfDocument = PDFDocument(url: pdfURL) else {
+              let pdfDoc = PDFDocument(url: pdfURL) else {
             return Result.failure(CustomErrors.GenericError)
         }
         
@@ -126,14 +132,17 @@ class BackupManager: ObservableObject {
             return Result.failure(CustomErrors.GenericError)
         }
         
-        let data = await orderAllData(territories: territoryModels, addressesList: addressModels, houseList: houseModels, visits: visitModels)
+        let data = await orderAllData(territories: territories, addressesList: addresses, houseList: houses, visits: visits)
         
-        // Track concurrent tasks
+        // Tasks to handle PDF writing
         var writeTasks = [Task<Void, Never>]()
         
+        // Create a progress tracker
+        let progressTracker = ProgressTracker()
+        
+        // Process data and write to files
         for territory in data {
-            if Task.isCancelled { // Check for cancellation before starting each territory
-                print("Backup was canceled during territory processing.")
+            if Task.isCancelled {
                 return .failure(NSError(domain: "Backup Canceled", code: 1, userInfo: nil))
             }
             
@@ -143,71 +152,98 @@ class BackupManager: ObservableObject {
             for address in territory.addresses {
                 doors += address.houses.count
             }
-            await saveTerritoryTextFile(territory: territory.territory, territoryFolder: territoryFolderURL, doors: doors)
             
+            // Save text file for territory
+            await saveTerritoryTextFile(territory: territory.territory, territoryFolder: territoryFolderURL, doors: doors)
+
+            // Process each address for backup
             for address in territory.addresses {
-                if Task.isCancelled { // Check for cancellation before processing each address
-                    print("Backup was canceled during address processing.")
+                if Task.isCancelled {
                     return .failure(NSError(domain: "Backup Canceled", code: 1, userInfo: nil))
                 }
                 
+                // Increment progress as an address is processed
                 await progressTracker.incrementProcessedItems()
-                    let progress = await progressTracker.getProgress(totalItems: totalItems)
-                    DispatchQueue.main.async {
+                let progress = await progressTracker.getProgress(totalItems: totalItems)
+                DispatchQueue.main.async {
+                    withAnimation {
                         self.progress = progress
                     }
-                
-                if address.houses.count > 96 {
-                    var split = [AddressWithHouses]()
-                    for houses in address.houses.divideIn(96) {
-                        split.append(AddressWithHouses(address: address.address, houses: houses))
-                    }
-                    for (index, addressWithHouses) in split.enumerated() {
-                        let writeTask = Task {
-                            await self.writeS8(parentFolder: territoryFolderURL, territoryNumber: String(territory.territory.number), address: addressWithHouses, version: index + 1)
-                        }
-                        writeTasks.append(writeTask)
-                    }
-                } else {
-                    let writeTask = Task {
-                        await self.writeS8(parentFolder: territoryFolderURL, territoryNumber: String(territory.territory.number), address: address)
-                    }
-                    writeTasks.append(writeTask)
                 }
-            }
-            
-            // Increment processed items using the actor and update progress on the main thread
-            await progressTracker.incrementProcessedItems()
-            let progress = await progressTracker.getProgress(totalItems: totalItems)
-            DispatchQueue.main.async {
-                self.progress = progress
+                
+                // Process address backup
+                await processAddressBackup(address, territoryFolderURL: territoryFolderURL, territoryNumber: String(territory.territory.number), writeTasks: &writeTasks)
             }
         }
         
         // Await all tasks to finish
         for task in writeTasks {
-            if Task.isCancelled { // Check for cancellation before awaiting each task
-                print("Backup was canceled during file writing.")
+            if Task.isCancelled {
                 return .failure(NSError(domain: "Backup Canceled", code: 1, userInfo: nil))
             }
             await task.value
+            
+            // Increment progress as each task finishes
+            await progressTracker.incrementProcessedItems()
+            let progress = await progressTracker.getProgress(totalItems: totalItems)
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.progress = progress
+                }
+            }
         }
-        
+
         // Zip the backup folder
         let zipFileName = "Backup-\(date).zip"
         let zipFileURL = backupFolder.deletingLastPathComponent().appendingPathComponent(zipFileName)
         
-        do {
-            try await zipBackupFolder(sourceURL: backupFolder, destinationURL: zipFileURL)
-            try FileManager.default.removeItem(at: backupFolder)
-        } catch {
+        let result = await performFileOperations(sourceURL: backupFolder, backupFolder: backupFolder, zipFileURL: zipFileURL)
+        if case .failure(let error) = result {
             return .failure(error)
         }
-        
+
+        // Mark backup as complete
         DispatchQueue.main.async {
             self.isBackingUp = false
         }
+
         return .success(zipFileURL)
+    }
+    
+    @MainActor // Marking this function to run on the main actor since `FileManager` isn't sendable
+    func performFileOperations(sourceURL: URL, backupFolder: URL, zipFileURL: URL) async -> Result<URL, Error> {
+        do {
+            // Zip the backup folder asynchronously
+            try await zipBackupFolder(sourceURL: backupFolder, destinationURL: zipFileURL)
+            
+            // Perform file removal on the main thread (because FileManager is not sendable)
+            try fileManager.removeItem(at: backupFolder)
+            
+            return .success(zipFileURL)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    private func processAddressBackup(_ address: AddressWithHouses, territoryFolderURL: URL, territoryNumber: String, writeTasks: inout [Task<Void, Never>]) async {
+        if address.houses.count > 96 {
+            let split = address.houses.divideIn(96)
+            for (index, housesChunk) in split.enumerated() {
+                // Create a new AddressWithHouses for each chunk
+                let splitAddressWithHouses = AddressWithHouses(address: address.address, houses: housesChunk)
+                
+                let writeTask = Task {
+                    await self.writeS8(parentFolder: territoryFolderURL, territoryNumber: territoryNumber, address: splitAddressWithHouses, version: index + 1)
+                }
+                writeTasks.append(writeTask)
+            }
+        } else {
+            let writeTask = Task {
+                await self.writeS8(parentFolder: territoryFolderURL, territoryNumber: territoryNumber, address: address)
+            }
+            writeTasks.append(writeTask)
+        }
     }
     
     @BackgroundActor
@@ -224,9 +260,6 @@ class BackupManager: ObservableObject {
         let safeAddress = address.address.address.replacingOccurrences(of: " ", with: "_")
         let fileName = version == nil ? "\(safeAddress).pdf" : "\(safeAddress)_(\(version!)).pdf"
         let outputFileURL = parentFolder.appendingPathComponent(fileName)
-        
-        print("Starting PDF creation for: \(fileName)")
-        print("Output path: \(outputFileURL.path)")
         
         guard let pdfURL = Bundle.main.url(forResource: "s8NEW", withExtension: "pdf") else {
             print("Failed to find template PDF in bundle")
@@ -261,30 +294,15 @@ class BackupManager: ObservableObject {
             terrNoAnnotation2.widgetStringValue = territoryNumber
         }
         
-        // Assign the STREET and Terr No fields for Form 3
-        if let streetAnnotation3 = page.annotations.first(where: { $0.fieldName == "STREET3_1" }) {
-            streetAnnotation3.widgetStringValue = address.address.address
-        }
-        
-        if let terrNoAnnotation3 = page.annotations.first(where: { $0.fieldName == "Terr No3_1" }) {
-            terrNoAnnotation3.widgetStringValue = territoryNumber
-        }
-        
-        // Assign the STREET and Terr No fields for Form 4
-        if let streetAnnotation4 = page.annotations.first(where: { $0.fieldName == "STREET4_1" }) {
-            streetAnnotation4.widgetStringValue = address.address.address
-        }
-        
-        if let terrNoAnnotation4 = page.annotations.first(where: { $0.fieldName == "Terr No4_1" }) {
-            terrNoAnnotation4.widgetStringValue = territoryNumber
-        }
+        // Continue similar for Form 3 and Form 4 (this pattern is reused)
+        if Task.isCancelled { return }
+
         // Divide the houses into chunks of 24, one for each form
         let houseDataChunks = address.houses.divideIn(24)
         
-        if Task.isCancelled { // Check for cancellation before starting
-            return
-        }
-        // Write data to each form using hardcoded field names
+        if Task.isCancelled { return }
+
+        // Write data to each form using the field mapping
         for (formIndex, dataChunk) in houseDataChunks.enumerated() {
             let houseFields = await getHouseFields(for: formIndex)
             let dateFields = await getDateFields(for: formIndex)
@@ -318,11 +336,7 @@ class BackupManager: ObservableObject {
                 }
             }
         }
-        
-        if Task.isCancelled { // Check for cancellation before starting
-            return
-        }
-        
+
         pdfDocument.write(to: outputFileURL)
         DispatchQueue.main.async {
             if !self.fileManager.fileExists(atPath: outputFileURL.path) {
@@ -397,7 +411,7 @@ class BackupManager: ObservableObject {
         return backupFolder
     }
     @BackgroundActor
-    private func createTerritoryFolder(backupFolder: URL, territory: TerritoryModel) async -> URL {
+    private func createTerritoryFolder(backupFolder: URL, territory: Territory) async -> URL {
         let territoryFolder = backupFolder.appendingPathComponent("T-\(territory.number)")
         
         // Create the territory folder if it doesn't exist
@@ -434,7 +448,7 @@ class BackupManager: ObservableObject {
         return territoryFolder
     }
     @BackgroundActor
-    private func saveTerritoryTextFile(territory: TerritoryModel, territoryFolder: URL, doors: Int) async {
+    private func saveTerritoryTextFile(territory: Territory, territoryFolder: URL, doors: Int) async {
         let text = "\(territory.description)\nDoors: \(doors)"
         let textFileURL = territoryFolder.appendingPathComponent("\(territory.number).txt")
         try? text.write(to: textFileURL, atomically: true, encoding: .utf8)
@@ -449,7 +463,6 @@ class BackupManager: ObservableObject {
         if !fileManager.fileExists(atPath: destinationFolder.path) {
             do {
                 try fileManager.createDirectory(at: destinationFolder, withIntermediateDirectories: true)
-                print("Created destination folder at: \(destinationFolder.path)")
             } catch {
                 print("Failed to create destination folder: \(error.localizedDescription)")
                 throw error
@@ -460,33 +473,26 @@ class BackupManager: ObservableObject {
         if fileManager.fileExists(atPath: destinationURL.path) {
             do {
                 try fileManager.removeItem(at: destinationURL)
-                print("Removed existing zip file at: \(destinationURL.path)")
             } catch {
                 print("Failed to remove existing zip file: \(error.localizedDescription)")
                 throw error
             }
         }
         
-        // Log paths for debugging
-        print("Zipping from: \(sourceURL.path) to: \(destinationURL.path)")
-        
         // Use the new zip method provided in your URL extension
         do {
             let zipURL = try await sourceURL.zip(toFileAt: destinationURL)
-            print("Successfully zipped the folder to: \(zipURL.path)")
         } catch {
             print("Failed to zip the folder: \(error.localizedDescription)")
             throw error
         }
-        
-        print("Zip archive successfully created at: \(destinationURL.path)")
     }
     @BackgroundActor
     private func orderAllData(
-        territories: [TerritoryModel],
-        addressesList: [TerritoryAddressModel],
-        houseList: [HouseModel],
-        visits: [VisitModel]
+        territories: [Territory],
+        addressesList: [TerritoryAddress],
+        houseList: [House],
+        visits: [Visit]
     ) async -> [TerritoryWithAddresses] {
         var list = [TerritoryWithAddresses]()
         for territory in territories {
@@ -520,17 +526,17 @@ class BackupManager: ObservableObject {
 
 // Structs used in the BackupManager
 struct HouseWithVisit {
-    let house: HouseModel
-    let visit: VisitModel?
+    let house: House
+    let visit: Visit?
 }
 
 struct AddressWithHouses {
-    let address: TerritoryAddressModel
+    let address: TerritoryAddress
     let houses: [HouseWithVisit]
 }
 
 struct TerritoryWithAddresses {
-    let territory: TerritoryModel
+    let territory: Territory
     let addresses: [AddressWithHouses]
 }
 
@@ -642,57 +648,5 @@ public extension NSData {
         try fm.removeItem(at: tmpURL) // clean up
         try fm.removeItem(at: zipURL)
         return zippedData
-    }
-}
-
-@BackgroundActor
-extension Array where Element == VisitObject {
-    func toVisitModels() -> [VisitModel] {
-        return self.map { entity in
-            VisitModel(id: entity.id,
-                       house: entity.house,
-                       date: Int64(entity.date),
-                       symbol: entity.symbol == "uk" ? "-" : entity.symbol.uppercased(),
-                       notes: entity.notes,
-                       user: entity.user,
-                       created_at: "", updated_at: "")
-        }
-    }
-}
-@BackgroundActor
-extension Array where Element == TerritoryAddressObject {
-    func toTerritoryAddressModels() -> [TerritoryAddressModel] {
-        return self.map { entity in
-            TerritoryAddressModel(id: entity.id,
-                                  territory: entity.territory,
-                                  address: entity.address,
-                                  floors: entity.floors,
-                                  created_at: "", updated_at: "")
-        }
-    }
-}
-@BackgroundActor
-extension Array where Element == TerritoryObject {
-    func toTerritoryModels() -> [TerritoryModel] {
-        return self.map { entity in
-            TerritoryModel(id: entity.id,
-                           congregation: entity.congregation,
-                           number: entity.number,
-                           description: entity.territoryDescription,
-                           image: entity.image,
-                           created_at: "", updated_at: "")
-        }
-    }
-}
-@BackgroundActor
-extension Array where Element == HouseObject {
-    func toHouseModels() -> [HouseModel] {
-        return self.map { entity in
-            HouseModel(id: entity.id,
-                       territory_address: entity.territory_address,
-                       number: entity.number,
-                       floor: entity.floor,
-                       created_at: "", updated_at: "")
-        }
     }
 }

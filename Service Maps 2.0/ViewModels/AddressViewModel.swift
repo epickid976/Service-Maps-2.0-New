@@ -17,62 +17,52 @@ import Nuke
 class AddressViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
-    @ObservedObject var databaseManager = RealmManager.shared
+    // Dependencies
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
-    @Published var addressData: Optional<[AddressData]> = nil 
+    // Published properties for UI
+    @Published var addressData: [AddressData]? = nil
+    @Published var currentAddress: TerritoryAddress?
+    @Published var addressToDelete: (String?, String?) = (nil, nil)
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    
-    @Published var currentAddress: TerritoryAddressModel?
-    @Published var addressToDelete: (String?,String?)
-    
-    @Published var presentSheet = false {
-        didSet {
-            if presentSheet == false {
-                currentAddress = nil
-            }
-        }
+    @Published var territory: Territory
+    @Published var search: String = "" {
+        didSet { getAddresses() }
     }
     
+    // UI State Management
+    @Published var presentSheet = false {
+        didSet { if !presentSheet { currentAddress = nil } }
+    }
     @Published var progress: CGFloat = 0.0
     @Published var optionsAnimation = false
-    
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
-    
     @Published var backAnimation = false
     @Published var showAlert = false
     @Published var ifFailed = false
     @Published var loading = false
+    @Published var showToast = false
+    @Published var showAddedToast = false
+    @Published var territoryAddressIdToScrollTo: String? = nil
+    @Published var isShowingSearch = false
+    @Published var showImageViewer = false
     
-    func deleteAddress(address: String) async -> Result<Bool,Error> {
-        return await dataUploaderManager.deleteTerritoryAddress(territoryAddress: address)
-    }
-    
-    @Published var territory: TerritoryModel
-    
-    init(territory: TerritoryModel, territoryAddressIdToScrollTo: String? = nil) {
+    // Initializer
+    init(territory: Territory, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
         getAddresses(territoryAddressIdToScrollTo: territoryAddressIdToScrollTo)
     }
     
-    @Published var showToast = false
-    @Published var showAddedToast = false
-    
-    @Published var search: String = "" {
-        didSet {
-            getAddresses()
-        }
+    // Address deletion logic
+    func deleteAddress(address: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteTerritoryAddress(territoryAddressId: address)
     }
-    @Published var isShowingSearch = false
     
-    @Published var territoryAddressIdToScrollTo: String? = nil
-    
-    @Published var showImageViewer = false
-    
+    //Headers
     @ViewBuilder
     func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {
         VStack {
@@ -166,41 +156,43 @@ class AddressViewModel: ObservableObject {
         .padding(.horizontal)
         .hSpacing(.center)
     }
-    
-    
 }
 
 @MainActor
 extension AddressViewModel {
+    // Fetch and observe address data from GRDB
     func getAddresses(territoryAddressIdToScrollTo: String? = nil) {
-        databaseManager.getAddressData(territoryId: territory.id)
-            .subscribe(on: DispatchQueue.main)
-            .receive(on: DispatchQueue.main) // Update on main thread
-            .sink(receiveCompletion: { completion in
+        GRDBManager.shared.getAddressData(territoryId: territory.id)
+            .receive(on: DispatchQueue.main)  // Ensure updates are received on the main thread
+            .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    // Handle errors here
-                    print("Error retrieving territory data: \(error)")
+                    print("Error retrieving address data: \(error)")
+                    self?.ifFailed = true
                 }
-            }, receiveValue: { addressData in
-                
-                if self.search.isEmpty {
-                    DispatchQueue.main.async {
-                        self.addressData = addressData.sorted { $0.address.address < $1.address.address }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            if let territoryAddressIdToScrollTo = territoryAddressIdToScrollTo {
-                                self.territoryAddressIdToScrollTo = territoryAddressIdToScrollTo
-                            }
-                        }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.addressData = addressData.filter { addressData in
-                            addressData.address.address.lowercased().contains(self.search.lowercased())
-                        }
-                    }
-                }
+            }, receiveValue: { [weak self] addressData in
+                self?.handleAddressData(addressData, scrollTo: territoryAddressIdToScrollTo)
             })
             .store(in: &cancellables)
     }
+    
+    // Handle and process address data
+    private func handleAddressData(_ addressData: [AddressData], scrollTo territoryAddressIdToScrollTo: String?) {
+        if search.isEmpty {
+            self.addressData = addressData.sorted { $0.address.address < $1.address.address }
+            scrollToAddress(territoryAddressIdToScrollTo)
+        } else {
+            self.addressData = addressData.filter {
+                $0.address.address.lowercased().contains(search.lowercased())
+            }
+        }
+    }
+    
+    // Handle scrolling to a specific address after data is received
+    private func scrollToAddress(_ territoryAddressIdToScrollTo: String?) {
+        if let territoryAddressIdToScrollTo = territoryAddressIdToScrollTo {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.territoryAddressIdToScrollTo = territoryAddressIdToScrollTo
+            }
+        }
+    }
 }
-

@@ -81,7 +81,7 @@ struct HouseCell: View {
         }
     }
     
-    private func visitDetailView(for visit: VisitModel) -> some View {
+    private func visitDetailView(for visit: Visit) -> some View {
         let visitDateAsDate = Date(timeIntervalSince1970: Double(visit.date) / 1000)
         let days = daysSince(date: visitDateAsDate)
         
@@ -142,10 +142,8 @@ struct HouseCell: View {
                 // Check if the update is for the correct house and if it's a new/different visit
                 if let newVisit = newVisit, newVisit.house == house.house.id, newVisit != house.visit {
                     house.visit = newVisit  // Update the state with the new visit
-                    print("New visit for house \(house.house.number): \(newVisit)")
                 } else if newVisit == nil {
                     house.visit = nil
-                    print("No visit for house \(house.house.number)")
                 }
             }
     }

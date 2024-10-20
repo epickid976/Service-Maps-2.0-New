@@ -19,13 +19,13 @@ class CallsViewModel: ObservableObject {
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
-    let latestCallUpdatePublisher = PassthroughSubject<PhoneCallModel, Never>()
+    let latestCallUpdatePublisher = PassthroughSubject<PhoneCall, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     @Published var callsData: Optional<[PhoneCallData]> = nil
     //@ObservedObject var databaseManager = RealmManager.shared
     
-    init(phoneNumber: PhoneNumberModel, callToScrollTo: String? = nil) {
+    init(phoneNumber: PhoneNumber, callToScrollTo: String? = nil) {
         self.phoneNumber = phoneNumber
         
         getCalls(callToScrollTo: callToScrollTo)
@@ -36,10 +36,10 @@ class CallsViewModel: ObservableObject {
     @Published var backAnimation = false
     @Published var optionsAnimation = false
     @Published var progress: CGFloat = 0.0
-    @Published var phoneNumber: PhoneNumberModel
+    @Published var phoneNumber: PhoneNumber
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    @Published var currentCall: PhoneCallModel?
+    @Published var currentCall: PhoneCall?
     @Published var presentSheet = false {
         didSet {
             if presentSheet == false {
@@ -61,7 +61,7 @@ class CallsViewModel: ObservableObject {
     @Published var syncAnimationprogress: CGFloat = 0.0
     
     func deleteCall(call: String) async -> Result<Bool, Error> {
-        return await dataUploaderManager.deleteCall(call: call)
+        return await dataUploaderManager.deletePhoneCall(phoneCallId: call)
     }
     
     @Published var search: String = "" {
@@ -77,7 +77,7 @@ class CallsViewModel: ObservableObject {
 @MainActor
 extension CallsViewModel {
     func getCalls(callToScrollTo: String? = nil) {
-        RealmManager.shared.getPhoneCallData(phoneNumberId: phoneNumber.id)
+        GRDBManager.shared.getPhoneCallData(phoneNumberId: phoneNumber.id)
             .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in

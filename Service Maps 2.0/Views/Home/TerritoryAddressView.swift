@@ -8,7 +8,6 @@
 import SwiftUI
 import NukeUI
 import NavigationTransitions
-import RealmSwift
 import ScalingHeaderScrollView
 import SwipeActions
 import Lottie
@@ -17,12 +16,12 @@ import MijickPopupView
 import ImageViewerRemote
 
 struct TerritoryAddressView: View {
-    var territory: TerritoryModel
+    var territory: Territory
     
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     
     @StateObject var viewModel: AddressViewModel
-    init(territory: TerritoryModel, territoryAddressIdToScrollTo: String? = nil) {
+    init(territory: Territory, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
         self.imageURL = territory.getImageURL()
         
@@ -135,10 +134,10 @@ struct TerritoryAddressView: View {
                             let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
                             if ( abs(offsetDifference) > minimumOffset) {
                                 if offsetDifference > 0 {
-                                    print("Is scrolling up toward top.")
+                                    
                                     hideFloatingButton = false
                                 } else {
-                                    print("Is scrolling down toward bottom.")
+                                    
                                     hideFloatingButton = true
                                 }
                                 self.previousViewOffset = currentOffset
@@ -158,9 +157,11 @@ struct TerritoryAddressView: View {
                     .allowsHeaderGrowth()
                     .collapseProgress($viewModel.progress)
                     .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
-                        synchronizationManager.startupProcess(synchronizing: true)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            hideFloatingButton = false
+                        Task {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                hideFloatingButton = false
+                            }
                         }
                     }
                     .scrollIndicators(.never)
@@ -216,10 +217,11 @@ struct TerritoryAddressView: View {
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         HStack {
-                            Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                            Button("", action: { viewModel.syncAnimation.toggle();
+                                viewModel.synchronizationManager.startupProcess(synchronizing: true)  }) //.ke yboardShortcut("s", modifiers: .command)
                                 .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                             //                    if viewModel.isAdmin {
-                            //                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                            //                        Button("", action: { viewModel.optionsAnimation.toggle();   ; viewModel.presentSheet.toggle() })
                             //                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                             //                    }
                         }
@@ -467,7 +469,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
 
 struct CentrePopup_AddAddress: CentrePopup {
     @ObservedObject var viewModel: AddressViewModel
-    @State var territory: TerritoryModel
+    @State var territory: Territory
     
     
     func createContent() -> some View {

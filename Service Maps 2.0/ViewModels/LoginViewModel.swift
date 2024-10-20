@@ -150,11 +150,11 @@ class LoginViewModel: ObservableObject {
                 completion(Result.success(true))
             case .failure(let error):
                 // Handle any errors here
-                print(error.asAFError?.responseCode ?? "")
-                print(error.asAFError?.errorDescription ?? "")
-                print(error.asAFError?.failureReason ?? "")
-                print(error.asAFError?.url ?? "")
-                print(error.localizedDescription)
+                
+                
+                
+                
+                
                 if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
                     DispatchQueue.main.async {
                         self.alertTitle =  NSLocalizedString("No Internet Connection", comment: "")

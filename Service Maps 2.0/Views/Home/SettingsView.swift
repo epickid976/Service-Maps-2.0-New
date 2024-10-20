@@ -53,8 +53,8 @@ struct SettingsView: View {
                 viewModel.administratorInfoCell(mainWindowSize: mainWindowSize, showBack: showBackButton) {
                     presentationMode.wrappedValue.dismiss()
                 }
-                viewModel.languageLinkView(mainWindowSize: mainWindowSize)
-                Spacer().frame(height: 25)
+                //viewModel.languageLinkView(mainWindowSize: mainWindowSize)
+                //Spacer().frame(height: 25)
                 preferencesView(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
                 backupView(mainWindowSize: mainWindowSize)
@@ -201,6 +201,28 @@ struct SettingsView: View {
     @ViewBuilder
     func preferencesView(mainWindowSize: CGSize) -> some View {
         VStack(spacing: 16) {
+            Button {
+                HapticManager.shared.trigger(.lightImpact)
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            } label: {
+                HStack {
+                    Image(systemName: "globe")
+                        .imageScale(.large)
+                        .padding(.horizontal)
+                    Text("Language")
+                        .font(.title3)
+                        .lineLimit(2)
+                        .foregroundColor(.primary)
+                        .fontWeight(.heavy)
+                    Spacer()
+                    Image(systemName: "arrowshape.right.circle.fill")
+                        .imageScale(.large)
+                        .padding(.horizontal)
+                        .foregroundColor(.primary)
+                }
+            }
+            .hSpacing(.leading)
+            .frame(minHeight: 50)
             
             if UIDevice().userInterfaceIdiom == .pad {
                 Button(action: {}) {

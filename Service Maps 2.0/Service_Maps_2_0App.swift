@@ -29,7 +29,7 @@ struct Service_Maps_2_0App: App {
     @Environment(\.presentationMode) var presentationMode
     
     init() {
-        SynchronizationManager.shared.startupProcess(synchronizing: true)
+        
     }
     
     
@@ -37,7 +37,7 @@ struct Service_Maps_2_0App: App {
     var body: some Scene {
         WindowGroup {
             
-            var destination: DestinationEnum = instantiateDestination()
+            let destination: DestinationEnum = instantiateDestination()
             
             
             //GeometryReader { proxy in
@@ -49,33 +49,32 @@ struct Service_Maps_2_0App: App {
                     HomeTabView().implementPopupView()
                 case .WelcomeScreen:
                     WelcomeView() {
-                        DispatchQueue.main.async {
-                            synchronizationManager.startupProcess(synchronizing: true)
-                            synchronizationManager.startupProcess(synchronizing: true)
+                        Task {
+                            SynchronizationManager.shared.startupProcess(synchronizing: true)
                         }
                     }
                 case .LoginScreen:
                     LoginView() {
-                        DispatchQueue.main.async {
+                        Task {
                             synchronizationManager.startupProcess(synchronizing: true)
                         }
                     }
                 case .AdministratorLoginScreen:
                     AdminLoginView() {
-                        DispatchQueue.main.async {
-                            synchronizationManager.startupProcess(synchronizing: true)
+                        Task.detached {
+                            await synchronizationManager.startupProcess(synchronizing: true)
                         }
                     }
                 case .PhoneLoginScreen:
                     PhoneLoginScreen() {
-                        DispatchQueue.main.async {
-                            synchronizationManager.startupProcess(synchronizing: true)
+                        Task.detached {
+                            await synchronizationManager.startupProcess(synchronizing: true)
                         }
                     }
                     
                 case .ValidationScreen:
                     VerificationView() {
-                        DispatchQueue.main.async {
+                        Task {
                             synchronizationManager.startupProcess(synchronizing: true)
                         }
                     }
@@ -109,7 +108,9 @@ struct Service_Maps_2_0App: App {
                 .fade(.in)
             )
             //}
-            
+            .onAppear {
+                SynchronizationManager.shared.startupProcess(synchronizing: true)
+            }
             
         }
         .onChange(of: scenePhase) { newPhase in

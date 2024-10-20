@@ -10,7 +10,7 @@ import Foundation
 
 struct TerritoryDataWithKeys: Hashable, Identifiable {
     var id: UUID
-    var keys: [MyTokenModel]
+    var keys: [Token]
     var territoriesData: [TerritoryData]
     
     func hash(into hasher: inout Hasher) {

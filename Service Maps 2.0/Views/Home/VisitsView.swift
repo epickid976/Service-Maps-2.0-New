@@ -18,7 +18,7 @@ struct VisitsView: View {
     
     @StateObject var viewModel: VisitsViewModel
     
-    var house: HouseModel
+    var house: House
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -32,7 +32,7 @@ struct VisitsView: View {
     
     @StateObject var realtimeManager = RealtimeManager.shared
     
-    init(house: HouseModel, visitIdToScrollTo: String? = nil) {
+    init(house: House, visitIdToScrollTo: String? = nil) {
         self.house = house
         let initialViewModel = VisitsViewModel(house: house, visitIdToScrollTo: visitIdToScrollTo)
         _viewModel = StateObject(wrappedValue: initialViewModel)
@@ -123,10 +123,10 @@ struct VisitsView: View {
                             let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
                             if ( abs(offsetDifference) > minimumOffset) {
                                 if offsetDifference > 0 {
-                                    print("Is scrolling up toward top.")
+                                    
                                     hideFloatingButton = false
                                 } else {
-                                    print("Is scrolling down toward bottom.")
+                                    
                                     hideFloatingButton = true
                                 }
                                 self.previousViewOffset = currentOffset
@@ -158,7 +158,8 @@ struct VisitsView: View {
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle();
+                                        synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                     Button("", action: { 
                                         viewModel.revisitAnimation.toggle()
@@ -177,7 +178,7 @@ struct VisitsView: View {
                     }.coordinateSpace(name: "scroll")
                         .scrollIndicators(.never)
                         .refreshable {
-                            viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                           viewModel.synchronizationManager.startupProcess(synchronizing: true)
                         }
                         .onChange(of: viewModel.dataStore.synchronized) { value in
                             if value {
@@ -353,9 +354,6 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                                         self.viewModel.ifFailed = false
                                         self.viewModel.visitToDelete = nil
                                         self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showToast = false
-                                        }
                                     }
                                 case .failure(_):
                                     withAnimation {
@@ -391,7 +389,7 @@ struct CentrePopup_DeleteVisit: CentrePopup {
 
 struct CentrePopup_AddVisit: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
-    var house: HouseModel
+    var house: House
     
     
     func createContent() -> some View {
@@ -409,10 +407,6 @@ struct CentrePopup_AddVisit: CentrePopup {
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
                 viewModel.showAddedToast = true
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    viewModel.showAddedToast = false
-                    
-                }
             
         } onDismiss: {
             viewModel.presentSheet = false
@@ -497,9 +491,6 @@ struct CentrePopup_AddRecall: CentrePopup {
                                     self.viewModel.recallAdded = true
                                 }
                             }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                viewModel.showRecallAddedToast = false
-                            }
                         case .failure(let failure):
                             viewModel.ifFailed = true
                         }
@@ -571,9 +562,6 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                                 DispatchQueue.main.async {
                                     self.viewModel.recallAdded = false
                                 }
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                viewModel.showRecallAddedToast = false
                             }
                         case .failure(let failure):
                             viewModel.ifFailed = true

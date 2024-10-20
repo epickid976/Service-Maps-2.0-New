@@ -202,12 +202,12 @@ struct MySearchResultItem: View {
                 NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: data.territory!, territoryAddressIdToScrollTo: data.address!.id).implementPopupView()).implementPopupView()) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(AddressData(id: ObjectIdentifier(TerritoryAddressObject().createTerritoryAddressObject(from: data.address!)), address: data.address!, houseQuantity: 0, accessLevel: .User).address.address)")
+                            Text("\(AddressData(id: UUID(), address: data.address!, houseQuantity: 0, accessLevel: .User).address.address)")
                                 .font(.headline)
                                 .fontWeight(.heavy)
                                 .foregroundColor(.primary)
                                 .hSpacing(.leading)
-                            Text("Doors: \(AddressData(id: ObjectIdentifier(TerritoryAddressObject().createTerritoryAddressObject(from: data.address!)), address: data.address!, houseQuantity: 0, accessLevel: .User).houseQuantity)")
+                            Text("Doors: \(AddressData(id: UUID(), address: data.address!, houseQuantity: 0, accessLevel: .User).houseQuantity)")
                                 .font(.body)
                                 .lineLimit(5)
                                 .foregroundColor(.secondaryLabel)
@@ -228,12 +228,12 @@ struct MySearchResultItem: View {
                 Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(HousesView(address: data.address!, houseIdToScrollTo: data.house!.id).implementPopupView()).implementPopupView()) {
                     
-                    HouseCell(house: HouseData(id: UUID(), house: data.house!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: HouseObject().createHouseObject(from: data.house!)) ?? .User), mainWindowSize: mainWindowSize)
+                    HouseCell(house: HouseData(id: UUID(), house: data.house!, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  data.house!) ?? .User), mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .Visit:
                 Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
                 NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!, visitIdToScrollTo: data.visit!.id)).implementPopupView()) {
-                    VisitCell(visit: VisitData(id: UUID(), visit: data.visit!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: VisitObject().createVisitObject(from: data.visit!)) ?? .User), mainWindowSize: mainWindowSize)
+                    VisitCell(visit: VisitData(id: UUID(), visit: data.visit!, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  data.visit!) ?? .User), mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .PhoneTerritory:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
@@ -248,13 +248,13 @@ struct MySearchResultItem: View {
             case .Call:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()
                 NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: data.number!, callToScrollTo: data.call!.id).implementPopupView()).implementPopupView()) {
-                    CallCell(call: PhoneCallData(id: UUID(), phoneCall: data.call!, accessLevel: AuthorizationLevelManager().getAccessLevel(model: PhoneCallObject().createTerritoryObject(from: data.call!)) ?? .User))
+                    CallCell(call: PhoneCallData(id: UUID(), phoneCall: data.call!, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  data.call!) ?? .User))
                 }.onTapHaptic(.lightImpact)
             }
         }
     }
     
-    public func buildPath(territory: TerritoryModel?, address: TerritoryAddressModel?, house: HouseModel?) -> String {
+    public func buildPath(territory: Territory?, address: TerritoryAddress?, house: House?) -> String {
         let territoryString = "Territory \(territory?.number ?? 0)"
         let addressString: String? = {
             guard let address = address else { return nil }
@@ -279,7 +279,7 @@ struct MySearchResultItem: View {
         return finalString
     }
     
-    private func buildFoundPath(phoneTerritory: PhoneTerritoryModel?, phoneNumber: PhoneNumberModel?) -> String {
+    private func buildFoundPath(phoneTerritory: PhoneTerritory?, phoneNumber: PhoneNumber?) -> String {
         var territoryString = String.localizedStringWithFormat("Territory: \(phoneTerritory?.number ?? 0)")
 
         let numberString: String? = {

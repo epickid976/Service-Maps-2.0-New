@@ -176,11 +176,11 @@ class AuthenticationManager: ObservableObject {
         
         return result
     }
-    
+    @MainActor
     func exitAdministrator() {
         AuthorizationLevelManager().exitAdministrator()
     }
-    
+    @MainActor
     func exitPhoneLogin() {
         AuthorizationLevelManager().exitPhoneLogin()
     }
@@ -190,7 +190,7 @@ class AuthenticationManager: ObservableObject {
         do {
             let result = try await congregationApi.phoneSignIn(congregationSignInForm: congregationSignInForm)
             
-            authorizationLevelManager.setPhoneCredentials(password: congregationSignInForm.password, congregationResponse: result)
+            await authorizationLevelManager.setPhoneCredentials(password: congregationSignInForm.password, congregationResponse: result)
             
             dataStore.phoneCongregationName = result.name
             

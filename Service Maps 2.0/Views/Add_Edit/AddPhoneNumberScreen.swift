@@ -17,11 +17,11 @@ struct AddPhoneNumberScreen: View {
     @FocusState private var numberTextFocus: Bool
     @FocusState private var houseTextFocus: Bool
     
-    var number: PhoneNumberModel?
+    var number: PhoneNumber?
     
     @State var title = ""
     
-    init(territory: PhoneTerritoryModel, number: PhoneNumberModel?, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+    init(territory: PhoneTerritory, number: PhoneNumber?, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         _viewModel = StateObject(wrappedValue: AddPhoneNumberViewModel(territory: territory))
         if let number = number {
             self.number = number
@@ -152,14 +152,14 @@ struct AddPhoneNumberScreen: View {
 @MainActor
 class AddPhoneNumberViewModel: ObservableObject {
     
-    init(territory: PhoneTerritoryModel) {
+    init(territory: PhoneTerritory) {
         error = ""
         self.territory = territory
     }
     
     @Published private var dataUploader = DataUploaderManager()
     
-    @Published var territory: PhoneTerritoryModel
+    @Published var territory: PhoneTerritory
     
     @Published var error = ""
     @Published var numberText = ""
@@ -170,24 +170,14 @@ class AddPhoneNumberViewModel: ObservableObject {
     
     func addNumber() async -> Result<Bool, Error> {
         loading = true
-        let numberObject = PhoneNumberObject()
-        numberObject.id = territory.id + String(Date().timeIntervalSince1970 * 1000)
-        numberObject.congregation = territory.congregation
-        numberObject.number = numberText.removeFormatting()
-        numberObject.house = houseText == "" ? nil : houseText
-        numberObject.territory = territory.id
-        return await dataUploader.addNumber(number: numberObject)
+        let numberObject = PhoneNumber(id: territory.id + String(Date().timeIntervalSince1970 * 1000), congregation: territory.congregation, number: numberText.removeFormatting(), territory: territory.id, house: houseText == "" ? nil : houseText)
+        return await dataUploader.addPhoneNumber(phoneNumber: numberObject)
     }
     
-    func editNumber(number: PhoneNumberModel) async -> Result<Bool, Error> {
+    func editNumber(number: PhoneNumber) async -> Result<Bool, Error> {
         loading = true
-        let numberObject = PhoneNumberObject()
-        numberObject.id = number.id
-        numberObject.congregation = number.congregation
-        numberObject.number = numberText.removeFormatting()
-        numberObject.house = houseText == "" ? nil : houseText
-        numberObject.territory = number.territory
-        return await dataUploader.updateNumber(number: numberObject)
+        let numberObject = PhoneNumber(id: number.id, congregation: number.congregation, number: numberText.removeFormatting(), territory: number.territory, house: houseText == "" ? nil : houseText)
+        return await dataUploader.updatePhoneNumber(phoneNumber: numberObject)
     }
     
     func checkInfo() -> Bool {

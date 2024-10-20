@@ -9,12 +9,12 @@ import CoreData
 import NukeUI
 
 struct CellView: View {
-    var territory: TerritoryModel
+    var territory: Territory
     var houseQuantity: Int
     var width: Double = 0.95
     let isIpad = UIDevice.current.userInterfaceIdiom == .pad
     var mainWindowSize: CGSize
-    //@Binding var territoryModel: TerritoryModel
+    //@Binding var territoryModel: Territory
     
     @State private var cellHeight: CGFloat = 0
     
@@ -72,7 +72,6 @@ struct CellView: View {
                             Color.clear
                                 .onAppear {
                                     self.cellHeight = geometry.size.height
-                                    print("Cell height: \(self.cellHeight)")
                                 }
                         })
             .optionalViewModifier { content in
@@ -88,7 +87,7 @@ struct CellView: View {
 }
 
 struct PhoneTerritoryCellView: View {
-    var territory: PhoneTerritoryModel
+    var territory: PhoneTerritory
     var numbers: Int
     var width: Double = 0.95
     

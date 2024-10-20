@@ -8,7 +8,7 @@
 import Foundation
 
 struct AllPhoneDataResponse: Codable {
-    var territories: [PhoneTerritoryModel]
-    var numbers: [PhoneNumberModel]
-    var calls: [PhoneCallModel]
+    var territories: [PhoneTerritory]
+    var numbers: [PhoneNumber]
+    var calls: [PhoneCall]
 }

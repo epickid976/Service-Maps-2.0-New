@@ -46,7 +46,7 @@ class UserAPI {
     }
     
     //MARK: UPDATE
-    func updateTerritory(territory: TerritoryModel) async throws {
+    func updateTerritory(territory: Territory) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/update", body: territory)
         } catch {
@@ -55,7 +55,7 @@ class UserAPI {
     }
     
     
-    func updateTerritory(territory: TerritoryModel, image: UIImage) async throws {
+    func updateTerritory(territory: Territory, image: UIImage) async throws {
         do {
             let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
             
@@ -66,7 +66,7 @@ class UserAPI {
     }
     
     
-    func updateTerritoryAddress(territoryAddress: TerritoryAddressModel) async throws {
+    func updateTerritoryAddress(territoryAddress: TerritoryAddress) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/address/update", body: territoryAddress)
         } catch {
@@ -74,7 +74,7 @@ class UserAPI {
         }
     }
     
-    func updateHouse(house: HouseModel) async throws {
+    func updateHouse(house: House) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/update", body: house)
         } catch {
@@ -83,7 +83,7 @@ class UserAPI {
     }
     
     //MARK: VISIT
-    func addVisit(visit: VisitModel) async throws {
+    func addVisit(visit: Visit) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/add", body: visit)
         } catch {
@@ -91,7 +91,7 @@ class UserAPI {
         }
     }
     
-    func updateVisit(visit: VisitModel) async throws {
+    func updateVisit(visit: Visit) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/update", body: visit)
         } catch {
@@ -99,7 +99,7 @@ class UserAPI {
         }
     }
     
-    func addPhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+    func addPhoneCall(phoneCall: PhoneCall) async -> Result<Bool, Error> {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/add", body: phoneCall)
             return Result.success(true)
@@ -108,7 +108,7 @@ class UserAPI {
         }
     }
     
-    func updatePhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+    func updatePhoneCall(phoneCall: PhoneCall) async -> Result<Bool, Error> {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/update", body: phoneCall)
             return Result.success(true)
@@ -117,7 +117,7 @@ class UserAPI {
         }
     }
     
-    func deletePhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+    func deletePhoneCall(phoneCall: PhoneCall) async -> Result<Bool, Error> {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/delete", body: phoneCall)
             return Result.success(true)
@@ -126,7 +126,7 @@ class UserAPI {
         }
     }
     
-    func deleteCall(call: PhoneCallModel) async throws {
+    func deleteCall(call: PhoneCall) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/delete", body: call)
         } catch {
@@ -134,7 +134,7 @@ class UserAPI {
         }
     }
     
-    func addCall(call: PhoneCallModel) async throws {
+    func addCall(call: PhoneCall) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/add", body: call)
         } catch {
@@ -142,7 +142,7 @@ class UserAPI {
         }
     }
     
-    func updateCall(call: PhoneCallModel) async throws {
+    func updateCall(call: PhoneCall) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/update", body: call)
         } catch {
@@ -150,7 +150,7 @@ class UserAPI {
         }
     }
     
-    func getRecalls() async throws -> [Recall] {
+    func getRecalls() async throws -> [Recalls] {
         do {
             let response = try await ApiRequestAsync().getRequest(url: baseURL + "recalls")
             
@@ -158,16 +158,16 @@ class UserAPI {
             
             let jsonData = response.data(using: .utf8)!
             
-            let reply = try decoder.decode([Recall].self, from: jsonData)
+            let reply = try decoder.decode([Recalls].self, from: jsonData)
             
             return reply
         } catch {
-            print(error)
+            
             throw error.self
         }
     }
     
-    func addRecall(recall: Recall) async throws {
+    func addRecall(recall: Recalls) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "addRecall", body: recall)
         } catch {
@@ -175,7 +175,7 @@ class UserAPI {
         }
     }
     
-    func removeRecall(recall: Recall) async throws {
+    func removeRecall(recall: Recalls) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "removeRecall", body: recall)
         } catch {

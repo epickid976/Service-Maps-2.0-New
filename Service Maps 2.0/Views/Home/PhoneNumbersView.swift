@@ -17,11 +17,11 @@ import AlertKit
 import MijickPopupView
 
 struct PhoneNumbersView: View {
-    var territory: PhoneTerritoryModel
+    var territory: PhoneTerritory
     
     @ObservedObject var viewModel: NumbersViewModel
     //@StateObject var callsViewModel: CallsViewModel
-    init(territory: PhoneTerritoryModel, phoneNumberToScrollTo: String? = nil) {
+    init(territory: PhoneTerritory, phoneNumberToScrollTo: String? = nil) {
         self.territory = territory
         
         let initialViewModel = NumbersViewModel(territory: territory, phoneNumberToScrollTo: phoneNumberToScrollTo)
@@ -123,10 +123,10 @@ struct PhoneNumbersView: View {
                             let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
                             if ( abs(offsetDifference) > minimumOffset) {
                                 if offsetDifference > 0 {
-                                    print("Is scrolling up toward top.")
+                                    
                                     hideFloatingButton = false
                                 } else {
-                                    print("Is scrolling down toward bottom.")
+                                    
                                     hideFloatingButton = true
                                 }
                                 self.previousViewOffset = currentOffset
@@ -162,7 +162,9 @@ struct PhoneNumbersView: View {
                     .allowsHeaderGrowth()
                     .collapseProgress($viewModel.progress)
                     .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
-                        synchronizationManager.startupProcess(synchronizing: true)
+                        Task {
+                           synchronizationManager.startupProcess(synchronizing: true)
+                        }
                     }
                     .scrollIndicators(.never)
                     .coordinateSpace(name: "scroll")
@@ -195,10 +197,10 @@ struct PhoneNumbersView: View {
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     HStack {
-                        Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                        Button("", action: { viewModel.syncAnimation.toggle(); synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         //                    if viewModel.isAdmin {
-                        //                        Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                        //                        Button("", action: { viewModel.optionsAnimation.toggle();   ; viewModel.presentSheet.toggle() })
                         //                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                         //                    }
                     }
@@ -315,7 +317,7 @@ struct PhoneNumbersView: View {
 class NumbersViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
-    @ObservedObject var databaseManager = RealmManager.shared
+    @ObservedObject var databaseManager = GRDBManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
@@ -326,7 +328,7 @@ class NumbersViewModel: ObservableObject {
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     
-    @Published var currentNumber: PhoneNumberModel?
+    @Published var currentNumber: PhoneNumber?
     @Published var numberToDelete: (String?,String?)
     
     @Published var presentSheet = false {
@@ -350,12 +352,12 @@ class NumbersViewModel: ObservableObject {
     @Published var noImage = false
     
     func deleteNumber(number: String) async -> Result<Bool,Error> {
-        return await dataUploaderManager.deleteNumber(number: number)
+        return await dataUploaderManager.deletePhoneNumber(phoneNumberId: number)
     }
     
-    @Published var territory: PhoneTerritoryModel
+    @Published var territory: PhoneTerritory
     
-    init(territory: PhoneTerritoryModel, phoneNumberToScrollTo: String? = nil) {
+    init(territory: PhoneTerritory, phoneNumberToScrollTo: String? = nil) {
         self.territory = territory
         
         getNumbers(phoneNumberToScrollTo: phoneNumberToScrollTo)
@@ -487,7 +489,7 @@ extension NumbersViewModel {
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
                     // Handle errors here
-                    print("Error retrieving territory data: \(error)")
+                    print(error)
                 }
             }, receiveValue: { phoneNumbersData in
                 self.phoneNumbersData = phoneNumbersData
@@ -643,7 +645,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
 }
 struct CentrePopup_AddNumber: CentrePopup {
     @ObservedObject var viewModel: NumbersViewModel
-    @State var territory: PhoneTerritoryModel
+    @State var territory: PhoneTerritory
     
     
     func createContent() -> some View {

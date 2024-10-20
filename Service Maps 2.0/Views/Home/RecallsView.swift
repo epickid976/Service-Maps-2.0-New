@@ -84,7 +84,7 @@ struct RecallsView: View {
                             .navigationBarTitle("Recalls", displayMode: .automatic)
                             .toolbar {
                                 ToolbarItemGroup(placement: .topBarTrailing) {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle(); synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 }
                             }
@@ -142,33 +142,35 @@ class RecallViewModel: ObservableObject {
         getRecalls()
     }
     
-    func deleteRecall(user: String, house: String) async -> Result<Bool, Error> {
-        return await DataUploaderManager().deleteRecall(recall: Recall(id: Date.now.millisecondsSince1970, user: user, house: house, created_at: "", updated_at: ""))
+    func deleteRecall(id: Int64, user: String, house: String) async -> Result<Bool, Error> {
+        return await DataUploaderManager().deleteRecall(recall: Recalls(id: id, user: user, house: house))
     }
     
     @MainActor
     func getRecalls() {
-        RealmManager.shared.getRecalls()
+        GRDBManager.shared.getRecalls()
             .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink { completion in
                 if case .failure(let error) = completion {
                     // Handle errors here
-                    print("Error retrieving visit data: \(error)")
+                    print(error)
                 }
             } receiveValue: { recalls in
-                self.recalls = recalls
+                DispatchQueue.main.async {
+                    self.recalls = recalls
+                }
             }
             .store(in: &cancellables)
     }
 }
 
 struct RecallData: Hashable, Equatable {
-    var recall: Recall
-    var territory: TerritoryModel
-    var territoryAddress: TerritoryAddressModel
-    var house: HouseModel
-    var visit: VisitModel?
+    var recall: Recalls
+    var territory: Territory
+    var territoryAddress: TerritoryAddress
+    var house: House
+    var visit: Visit?
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(recall)
@@ -188,7 +190,7 @@ struct RecallData: Hashable, Equatable {
 }
 
 struct RecallsWithKey: Hashable, Equatable {
-    var keys: [MyTokenModel]
+    var keys: [Token]
     var recalls: [RecallData]
     
     func hash(into hasher: inout Hasher) {
@@ -218,7 +220,7 @@ struct RecallRow: View {
             Text(buildPath(territory: recall.territory, address: recall.territoryAddress, house: recall.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy).modifier(ScrollTransitionModifier()).transition(.customBackInsertion)
             SwipeView {
                 NavigationLink(destination: NavigationLazyView(VisitsView(house: recall.house)).implementPopupView()) {
-                    HouseCell(revisitView: revisitView, house: HouseData(id: UUID(), house: recall.house, accessLevel: AuthorizationLevelManager().getAccessLevel(model: HouseObject().createHouseObject(from: recall.house)) ?? .User), mainWindowSize: mainWindowSize).modifier(ScrollTransitionModifier()).transition(.customBackInsertion)
+                    HouseCell(revisitView: revisitView, house: HouseData(id: UUID(), house: recall.house, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  recall.house) ?? .User), mainWindowSize: mainWindowSize).modifier(ScrollTransitionModifier()).transition(.customBackInsertion)
                 }.onTapHaptic(.lightImpact)
             } trailingActions: { context in
                 SwipeAction(
@@ -248,7 +250,7 @@ struct RecallRow: View {
         
     }
     
-    public func buildPath(territory: TerritoryModel?, address: TerritoryAddressModel?, house: HouseModel?) -> String {
+    public func buildPath(territory: Territory?, address: TerritoryAddress?, house: House?) -> String {
         let territoryString = "Territory \(territory?.number ?? 0)"
         let addressString: String? = {
             guard let address = address else { return nil }
@@ -318,11 +320,11 @@ struct CentrePopup_RemoveRecall: CentrePopup {
                         }
                         Task {
                             if self.viewModel.recallToRemove != nil{
-                                switch await self.viewModel.deleteRecall(user: self.recall.recall.user, house: self.recall.recall.house) {
+                                switch await self.viewModel.deleteRecall(id: self.recall.recall.id,user: self.recall.recall.user, house: self.recall.recall.house) {
                                 case .success(_):
                                     withAnimation {
                                         //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        self.viewModel.getRecalls()
+                                        //self.viewModel.getRecalls()
                                         self.viewModel.loading = false
                                         //self.showAlert = false
                                         dismiss()

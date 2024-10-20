@@ -11,7 +11,6 @@ import CoreData
 import Combine
 import NavigationTransitions
 import SwipeActions
-import RealmSwift
 
 @MainActor
 class AccessViewModel: ObservableObject {
@@ -29,14 +28,16 @@ class AccessViewModel: ObservableObject {
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
+    @ObservedObject var grdbManager = GRDBManager.shared
+    
     private var cancellables = Set<AnyCancellable>()
     private var cancellablesTwo = Set<AnyCancellable>()
     
     @Published var keyData: Optional<[KeyData]> = nil
-    @Published var keyUsers: Optional<[UserTokenModel]> = nil
-    @Published var blockedUsers: Optional<[UserTokenModel]> = nil
+    @Published var keyUsers: Optional<[UserToken]> = nil
+    @Published var blockedUsers: Optional<[UserToken]> = nil
     
-    @Published var currentKey: MyTokenModel? = nil {
+    @Published var currentKey: Token? = nil {
         didSet {
             if currentKey != nil {
                 getKeyUsers()
@@ -46,7 +47,7 @@ class AccessViewModel: ObservableObject {
     @Published var backAnimation = false
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     
-    @Published var currentToken: MyTokenModel?
+    @Published var currentToken: Token?
     @Published var presentSheet = false {
         didSet {
             if presentSheet == false {
@@ -75,7 +76,8 @@ class AccessViewModel: ObservableObject {
     @Published var ifFailed = false
     @Published var loading = false
     @Published var keyToDelete: (String?,String?)
-    @Published var userToDelete: (String?,String?)
+    @Published var userToDelete: (id: String?, name: String?)?
+    @Published var blockUnblockAction: UserAction? 
     
     @Published var showToast = false
     @Published var showAddedToast = false
@@ -86,25 +88,37 @@ class AccessViewModel: ObservableObject {
         if !isAdmin {
             switch await dataUploaderManager.unregisterToken(myToken: key) {
             case .success(_):
-                //synchronizationManager.startupProcess(synchronizing: true)
+                // Fetch token territories from GRDB
+                let tokenTerritoryResult = grdbManager.fetchAll(TokenTerritory.self)
                 
-                let realm = try! await Realm()
-                let tokenTerritoryEntities = realm.objects(TokenTerritoryObject.self)
-                if let keyToDelete = realm.objects(TokenObject.self).filter("id == %d", key).first {
-                    tokenTerritoryEntities.forEach { tokenTerritory in
-                        if keyToDelete.id == tokenTerritory.token {
-                            _ = RealmManager.shared.deleteTokenTerritory(tokenTerritory: tokenTerritory)
+                // Fetch the token by ID
+                let tokenResult = grdbManager.fetchById(Token.self, id: key)
+                
+                switch (tokenTerritoryResult, tokenResult) {
+                case (.success(let tokenTerritoryEntities), .success(let keyToDelete)):
+                    if let keyToDelete = keyToDelete {
+                        // Delete associated token territories
+                        for tokenTerritory in tokenTerritoryEntities where tokenTerritory.token == keyToDelete.id {
+                            _ = grdbManager.delete(tokenTerritory)
                         }
+                        
+                        // Delete the token
+                        _ = grdbManager.delete(keyToDelete)
                     }
-                    _ = RealmManager.shared.deleteToken(token: keyToDelete)
+                    return .success(true)
+                    
+                case (.failure(let territoryError), _):
+                    return .failure(territoryError)
+                    
+                case (_, .failure(let tokenError)):
+                    return .failure(tokenError)
                 }
                 
-                return Result.success(true)
             case .failure(let error):
-                return Result.failure(error)
+                return .failure(error)
             }
         } else {
-            return await dataUploaderManager.deleteToken(myToken: key)
+            return await dataUploaderManager.deleteToken(tokenId: key)
         }
     }
     
@@ -127,14 +141,16 @@ class AccessViewModel: ObservableObject {
         return await dataUploaderManager.registerToken(myToken: universalLinksManager.dataFromUrl ?? "")
     }
     
-    @MainActor
+    
     func removeUserFromToken() async -> Result<Bool, Error> {
-        return await dataUploaderManager.deleteUserFromToken(userToken: userToDelete.0!)
+        return await dataUploaderManager.deleteUserFromToken(userToken: userToDelete?.0 ?? "")
     }
     
-    @MainActor
-    func blockUnblockUserFromToken() async -> Result<Bool, Error> {
-        return await dataUploaderManager.blockUnblockUserFromToken(userToken: userToDelete.0!, blocked: Bool(userToDelete.1!)!)
+    
+    // Function to handle blocking/unblocking users
+    func blockUnblockUserFromToken(user: UserAction) async -> Result<Bool, Error> {
+        // Use the 'user' struct to pass the necessary information (id and isBlocked)
+        return await dataUploaderManager.blockUnblockUserFromToken(userToken: user.id, blocked: !user.isBlocked)
     }
     
 }
@@ -142,7 +158,7 @@ class AccessViewModel: ObservableObject {
 @MainActor
 extension AccessViewModel {
     func getKeys() {
-        RealmManager.shared.getKeyData()
+        GRDBManager.shared.getKeyData()
             .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -173,7 +189,7 @@ extension AccessViewModel {
     
     func getKeyUsers() {
         if currentKey != nil {
-            RealmManager.shared.getKeyUsers(token: currentKey!)
+            GRDBManager.shared.getKeyUsers(token: currentKey!)
                 .subscribe(on: DispatchQueue.main)
                 .receive(on: DispatchQueue.main) // Update on main thread
                 .sink(receiveCompletion: { completion in
@@ -182,11 +198,12 @@ extension AccessViewModel {
                         print("Error retrieving territory data: \(error)")
                     }
                 }, receiveValue: { keyUsers in
-                    let blockedUsers = keyUsers.filter { $0.blocked }
-                    let unblockedUsers = keyUsers.filter { !$0.blocked }
+                    let uniqueKeyUsers = Array(Set(keyUsers)) // Use Set to remove duplicates
+                    let blockedUsers = uniqueKeyUsers.filter { $0.blocked }
+                    let unblockedUsers = uniqueKeyUsers.filter { !$0.blocked }
                     DispatchQueue.main.async {
-                        self.keyUsers = unblockedUsers
-                        self.blockedUsers = blockedUsers
+                        self.keyUsers = unblockedUsers.sorted { $0.name < $1.name }
+                        self.blockedUsers = blockedUsers.sorted { $0.name < $1.name }
                     }
                 })
                 .store(in: &cancellablesTwo)

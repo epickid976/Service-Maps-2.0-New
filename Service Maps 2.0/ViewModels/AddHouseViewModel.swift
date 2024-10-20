@@ -10,14 +10,14 @@ import SwiftUI
 
 @MainActor
 class AddHouseViewModel: ObservableObject {
-    init(address: TerritoryAddressModel) {
+    init(address: TerritoryAddress) {
         error = ""
         self.address = address
     }
     
     @Published private var dataUploader = DataUploaderManager()
     
-    @Published var address: TerritoryAddressModel
+    @Published var address: TerritoryAddress
     
     @Published var error = ""
     @Published var number = ""
@@ -28,23 +28,15 @@ class AddHouseViewModel: ObservableObject {
         withAnimation {
             loading = true
         }
-        let houseObject = HouseObject()
-        houseObject.id = "\(address.address)-\(number)"
-        houseObject.number = number
-        houseObject.territory_address = address.id
-        houseObject.floor = nil
+        let houseObject = House(id: "\(address.address)-\(number)", territory_address: address.id, number: number)
         return await dataUploader.addHouse(house: houseObject)
     }
     
-    func editHouse(house: HouseModel) async -> Result<Bool, Error> {
+    func editHouse(house: House) async -> Result<Bool, Error> {
         withAnimation {
             loading = true
         }
-        let houseObject = HouseObject()
-        houseObject.id = house.id
-        houseObject.number = number
-        houseObject.territory_address = address.id
-        houseObject.floor = nil
+        let houseObject = House(id: house.id, territory_address: address.id, number: number)
         return await dataUploader.updateHouse(house: houseObject)
     }
     

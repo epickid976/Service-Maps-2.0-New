@@ -9,12 +9,12 @@ import SwiftUI
 
 struct AddCallView: View {
     @Environment(\.dismiss) private var dismiss
-    var call: PhoneCallModel?
+    var call: PhoneCall?
     
     @StateObject var viewModel: AddCallViewModel
     @State var title = ""
     
-    init(call: PhoneCallModel?, phoneNumber: PhoneNumberModel, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+    init(call: PhoneCall?, phoneNumber: PhoneNumber, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         let initialViewModel = AddCallViewModel(phoneNumber: phoneNumber)
         _viewModel = StateObject(wrappedValue: initialViewModel)
         if let call = call {

@@ -11,7 +11,7 @@ import SwiftUI
 @MainActor
 class AddVisitViewModel: ObservableObject {
     
-    init(house: HouseModel) {
+    init(house: House) {
         error = ""
         self.house = house
     }
@@ -22,7 +22,7 @@ class AddVisitViewModel: ObservableObject {
     
     @Published private var dataUploader = DataUploaderManager()
     
-    @Published var house: HouseModel
+    @Published var house: House
     
     @Published var error = ""
     
@@ -33,28 +33,16 @@ class AddVisitViewModel: ObservableObject {
         withAnimation {
             loading = true
         }
-        let visitObject = VisitObject()
         let date = Date.now.millisecondsSince1970
-        visitObject.id = "\(house.id)-\(date)"
-        visitObject.house = house.id
-        visitObject.date = (date)
-        visitObject.notes = notes
-        visitObject.user = StorageManager.shared.userName ?? ""
-        visitObject.symbol = selectedOption.forServer
+        let visitObject = Visit(id: "\(house.id)-\(date)", house: house.id, date: (date), symbol: selectedOption.forServer, notes: notes, user: StorageManager.shared.userName ?? "")
         return await dataUploader.addVisit(visit: visitObject)
     }
     
-    func editVisit(visit: VisitModel) async -> Result<Bool, Error> {
+    func editVisit(visit: Visit) async -> Result<Bool, Error> {
         withAnimation {
             loading = true
         }
-        let visitObject = VisitObject()
-        visitObject.id = visit.id
-        visitObject.house = house.id
-        visitObject.date = visit.date
-        visitObject.notes = notes
-        visitObject.symbol = selectedOption.forServer
-        visitObject.user = StorageManager.shared.userName ?? ""
+        let visitObject = Visit(id: visit.id, house: house.id, date: visit.date, symbol: selectedOption.forServer, notes: notes, user: StorageManager.shared.userName ?? "")
         return await dataUploader.updateVisit(visit: visitObject)
     }
     

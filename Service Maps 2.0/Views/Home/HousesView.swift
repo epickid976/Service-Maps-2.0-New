@@ -16,7 +16,7 @@ import AlertKit
 import MijickPopupView
 
 struct HousesView: View {
-    var address: TerritoryAddressModel
+    var address: TerritoryAddress
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -26,7 +26,7 @@ struct HousesView: View {
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
     
-    init(address: TerritoryAddressModel, houseIdToScrollTo: String? = nil) {
+    init(address: TerritoryAddress, houseIdToScrollTo: String? = nil) {
         self.address = address
         let initialViewModel = HousesViewModel(territoryAddress: address, houseIdToScrollTo: houseIdToScrollTo)
         _viewModel = ObservedObject(wrappedValue: initialViewModel)
@@ -110,10 +110,10 @@ struct HousesView: View {
                             let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
                             if ( abs(offsetDifference) > minimumOffset) {
                                 if offsetDifference > 0 {
-                                    print("Is scrolling up toward top.")
+                                    
                                     hideFloatingButton = false
                                 } else {
-                                    print("Is scrolling down toward bottom.")
+                                    
                                     hideFloatingButton = true
                                 }
                                 self.previousViewOffset = currentOffset
@@ -143,7 +143,7 @@ struct HousesView: View {
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle(); synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                     
                                     Menu {
@@ -161,7 +161,7 @@ struct HousesView: View {
                                         }
                                         .pickerStyle(.menu)
                                     } label: {
-                                        Button("", action: { viewModel.optionsAnimation.toggle(); HapticManager.shared.trigger(.lightImpact);  print("Add") ; viewModel.presentSheet.toggle() })//.keyboardShortcut(";", modifiers: .command)
+                                        Button("", action: { viewModel.optionsAnimation.toggle(); HapticManager.shared.trigger(.lightImpact); viewModel.presentSheet.toggle() })//.keyboardShortcut(";", modifiers: .command)
                                             .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                                     }
                                     
@@ -393,7 +393,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
 
 struct CentrePopup_AddHouse: CentrePopup {
     @ObservedObject var viewModel: HousesViewModel
-    @State var address: TerritoryAddressModel
+    @State var address: TerritoryAddress
     
     
     func createContent() -> some View {

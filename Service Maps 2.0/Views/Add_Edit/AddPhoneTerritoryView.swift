@@ -11,14 +11,14 @@ import Nuke
 
 struct AddPhoneTerritoryView: View {
     
-    var territory: PhoneTerritoryModel?
+    var territory: PhoneTerritory?
     
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: AddPhoneTerritoryViewModel
     
     @State var title = ""
     
-    init(territory: PhoneTerritoryModel?, onDone: @escaping () -> Void) {
+    init(territory: PhoneTerritory?, onDone: @escaping () -> Void) {
         if let territory = territory {
             self.territory = territory
             _viewModel = StateObject(wrappedValue: AddPhoneTerritoryViewModel(territory: territory))
@@ -257,25 +257,22 @@ class AddPhoneTerritoryViewModel: ObservableObject {
     
     func addTerritory() async -> Result<Bool, Error>{
         loading = true
-        let territoryObject = PhoneTerritoryObject()
-        territoryObject.id = "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)"
-        territoryObject.number = Int64(number!)
-        territoryObject.territoryDescription = description
-        territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
-        return await dataUploader.addPhoneTerritory(territory: territoryObject, image: imageToSend)
+        let territoryObject = PhoneTerritory(id: "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)", congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int64(number!), description: description, image: nil)
+        if let imageToSend {
+            return await dataUploader.addPhoneTerritory(territory: territoryObject, image: imageToSend)
+        } else {
+            return await dataUploader.addPhoneTerritory(territory: territoryObject)
+        }
+       
     }
     
-    func editTerritory(territory: PhoneTerritoryModel) async -> Result<Bool, Error> {
+    func editTerritory(territory: PhoneTerritory) async -> Result<Bool, Error> {
         loading = true
-        let territoryObject = PhoneTerritoryObject()
-        territoryObject.id = territory.id
-        territoryObject.number = Int64(number!)
-        territoryObject.territoryDescription = description
-        territoryObject.congregation = String(AuthorizationProvider.shared.congregationId ?? 0)
+        let territoryObject = PhoneTerritory(id: territory.id, congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int64(number!), description: description)
         return await dataUploader.updatePhoneTerritory(territory: territoryObject, image: imageToSend)
     }
     
-    init(territory: PhoneTerritoryModel? = nil) {
+    init(territory: PhoneTerritory? = nil) {
         Task {
             if let territory = territory {
                 if let imageLink = URL(string: territory.getImageURL()) {

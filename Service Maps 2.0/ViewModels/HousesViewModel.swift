@@ -16,168 +16,149 @@ import MijickPopupView
 @MainActor
 class HousesViewModel: ObservableObject {
     
+    // Dependencies
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
-    
-    private var cancellables = Set<AnyCancellable>()
-    //@ObservedObject var databaseManager = RealmManager.shared
-    @Published var houseData: Optional<[HouseData]> = nil
-    
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
-    init(territoryAddress: TerritoryAddressModel, houseIdToScrollTo: String? = nil) {
-        self.territoryAddress = territoryAddress
-        
-        getHouses(houseIdToScrollTo: houseIdToScrollTo)
-        //houses = databaseManager.housesFlow
-    }
+    private var cancellables = Set<AnyCancellable>()
     
+    // Published properties for UI updates
+    @Published var houseData: [HouseData]? = nil
+    @Published var territoryAddress: TerritoryAddress
+    @Published var currentHouse: House?
+    @Published var houseToDelete: (String?, String?) = (nil, nil)
+    
+    @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     @Published var backAnimation = false
     @Published var optionsAnimation = false
     @Published var progress: CGFloat = 0.0
-    @Published var territoryAddress: TerritoryAddressModel
-    
-    @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    @Published var currentHouse: HouseModel?
     @Published var presentSheet = false {
-        didSet {
-            if presentSheet == false {
-                currentHouse = nil
-            }
-        }
+        didSet { if !presentSheet { currentHouse = nil } }
     }
-    
-    @Published var houseToDelete: (String?, String?)
     
     @Published var showAlert = false
     @Published var ifFailed = false
     @Published var loading = false
-    
     @Published var showToast = false
     @Published var showAddedToast = false
-    
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     
+    // Sorting and Filtering
     @Published var sortPredicate: HouseSortPredicate = .increasing {
-        didSet {
-            getHouses()
-        }
+        didSet { getHouses() }
     }
+    
     @Published var filterPredicate: HouseFilterPredicate = .normal {
-        didSet {
-            getHouses()
-        }
+        didSet { getHouses() }
     }
     
     @Published var search: String = "" {
-        didSet {
-            getHouses()
-        }
+        didSet { getHouses() }
     }
     
     @Published var searchActive = false
-    
-    func deleteHouse(house: String) async -> Result<Bool, Error> {
-        return await dataUploaderManager.deleteHouse(house: house)
+    @Published var houseIdToScrollTo: String?
+
+    // Initialize with TerritoryAddress and optional scrolling ID
+    init(territoryAddress: TerritoryAddress, houseIdToScrollTo: String? = nil) {
+        self.territoryAddress = territoryAddress
+        getHouses(houseIdToScrollTo: houseIdToScrollTo)
     }
     
-    @Published var houseIdToScrollTo: String? = nil
+    // Delete house logic
+    func deleteHouse(house: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteHouse(houseId: house)
+    }
 }
 
 @MainActor
 extension HousesViewModel {
+    // Fetch and observe house data from GRDB
     func getHouses(houseIdToScrollTo: String? = nil) {
-        RealmManager.shared.getHouseData(addressId: territoryAddress.id)
-            .subscribe(on: DispatchQueue.main)
-            .receive(on: DispatchQueue.main) // Update on main thread
-            .sink(receiveCompletion: { completion in
-                
+        GRDBManager.shared.getHouseData(addressId: territoryAddress.id)
+            .receive(on: DispatchQueue.main)  // Ensure updates on the main thread
+            .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    // Handle errors here
-                    print("Error retrieving territory data: \(error)")
+                    print("Error retrieving house data: \(error)")
+                    self?.ifFailed = true
                 }
-            }, receiveValue: { houseData in
-                DispatchQueue.main.async {
-                    var data = [HouseData]()
-                    
-                    
-                    
-                    if !self.search.isEmpty {
-                        data =  houseData.filter { houseData in
-                            houseData.house.number.lowercased().contains(self.search.lowercased()) ||
-                            houseData.visit?.notes.lowercased().contains(self.search.lowercased()) ?? false
-                            }
-                    } else {
-                        data = houseData
-                    }
-                    
-                    if self.sortPredicate == .decreasing {
-                        data = data.sorted { $0.house.number > $1.house.number }
-                    } else if self.sortPredicate == .increasing {
-                        data = data.sorted { $0.house.number < $1.house.number }
-                    }
-                    
-                    if self.filterPredicate == .normal {
-                        if self.sortPredicate == .decreasing {
-                            data = data.sorted { $0.house.number > $1.house.number }
-                        } else if self.sortPredicate == .increasing {
-                            data = data.sorted { $0.house.number < $1.house.number }
-                        }
-                    } else if self.filterPredicate == .oddEven {
-                        data = sortHousesByNumber(houses: data, sort: self.sortPredicate)
-                    }
-                    
-                    self.houseData = data
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        if let houseIdToScrollTo = houseIdToScrollTo {
-                            self.houseIdToScrollTo = houseIdToScrollTo
-                        }
-                    }
-                }
+            }, receiveValue: { [weak self] houseData in
+                self?.handleHouseData(houseData, scrollTo: houseIdToScrollTo)
             })
             .store(in: &cancellables)
     }
-}
+    
+    // Handle and process house data based on search, sort, and filter criteria
+    private func handleHouseData(_ houseData: [HouseData], scrollTo houseIdToScrollTo: String?) {
+        var filteredData = houseData
 
-func sortHousesByNumber(houses: [HouseData], sort: HouseSortPredicate = .increasing) -> [HouseData] {
-    var oddHouses: [HouseData] = []
-    var evenHouses: [HouseData] = []
+        if !search.isEmpty {
+            filteredData = houseData.filter {
+                $0.house.number.lowercased().contains(search.lowercased()) ||
+                $0.visit?.notes.lowercased().contains(search.lowercased()) ?? false
+            }
+        }
 
-    for house in houses {
-        if let number = Int(house.house.number.filter { "0"..."9" ~= $0 }) {
-            if number % 2 == 0 {
-                evenHouses.append(house)
-            } else {
-                oddHouses.append(house)
+        filteredData = sortHouses(filteredData)
+        filteredData = filterHouses(filteredData)
+
+        self.houseData = filteredData
+        scrollToHouse(houseIdToScrollTo)
+    }
+
+    // Sorting houses based on predicate
+    private func sortHouses(_ houses: [HouseData]) -> [HouseData] {
+        switch sortPredicate {
+        case .increasing:
+            return houses.sorted { $0.house.number < $1.house.number }
+        case .decreasing:
+            return houses.sorted { $0.house.number > $1.house.number }
+        }
+    }
+
+    // Filtering houses based on predicate
+    private func filterHouses(_ houses: [HouseData]) -> [HouseData] {
+        switch filterPredicate {
+        case .normal:
+            return houses
+        case .oddEven:
+            return sortHousesByNumber(houses: houses, sort: sortPredicate)
+        }
+    }
+
+    // Handle scrolling to a specific house after data is received
+    private func scrollToHouse(_ houseIdToScrollTo: String?) {
+        if let houseIdToScrollTo = houseIdToScrollTo {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.houseIdToScrollTo = houseIdToScrollTo
             }
         }
     }
-    if sort == .increasing {
-        oddHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 < Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
-        evenHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 < Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
-    } else {
-        oddHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 > Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
-        evenHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 > Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
-    }
-    return oddHouses + evenHouses
-}
+    
+    //Sort Houses for better readability
+    func sortHousesByNumber(houses: [HouseData], sort: HouseSortPredicate = .increasing) -> [HouseData] {
+        var oddHouses: [HouseData] = []
+        var evenHouses: [HouseData] = []
 
-
-func sortOddEven(strings: [String]) -> ([String], [String]) {
-    let numbers = strings.map { Int($0.filter { "0"..."9" ~= $0 }) ?? 0 }
-    var oddStrings: [String] = []
-    var evenStrings: [String] = []
-
-    for (index, number) in numbers.enumerated() {
-        if number % 2 == 0 {
-            evenStrings.append(strings[index])
-        } else {
-            oddStrings.append(strings[index])
+        for house in houses {
+            if let number = Int(house.house.number.filter { "0"..."9" ~= $0 }) {
+                if number % 2 == 0 {
+                    evenHouses.append(house)
+                } else {
+                    oddHouses.append(house)
+                }
+            }
         }
+
+        if sort == .increasing {
+            oddHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 < Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+            evenHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 < Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+        } else {
+            oddHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 > Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+            evenHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 > Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+        }
+        return oddHouses + evenHouses
     }
-
-    return (oddStrings.sorted(), evenStrings.sorted())
 }
-
-

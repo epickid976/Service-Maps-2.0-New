@@ -9,8 +9,8 @@ import Foundation
 import CoreData
 
 struct AllDataResponse: Codable {
-    var territories: [TerritoryModel]
-    var addresses: [TerritoryAddressModel]
-    var houses: [HouseModel]
-    var visits: [VisitModel]
+    var territories: [Territory]
+    var addresses: [TerritoryAddress]
+    var houses: [House]
+    var visits: [Visit]
 }

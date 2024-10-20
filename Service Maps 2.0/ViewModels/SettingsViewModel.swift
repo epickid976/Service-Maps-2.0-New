@@ -67,14 +67,13 @@ class SettingsViewModel: ObservableObject {
         let result = await authenticationManager.editUserName(userName: name)
         
         switch result {
-        case .success(let success):
+        case .success(_):
             dataStore.userName = name
             return Result.success(true)
         case .failure(let failure):
             return Result.failure(failure)
         }
     }
-    //UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
 
     @ViewBuilder
     func profile(showBack: Bool, onDone: @escaping () -> Void?) -> some View {
@@ -123,7 +122,7 @@ class SettingsViewModel: ObservableObject {
                         
                     case .failure(let error):
                         HapticManager.shared.trigger(.error)
-                        print("logout failed")
+                        
                         self.errorText = error.asAFError?.localizedDescription ?? ""
                     }
                 }
@@ -163,11 +162,16 @@ class SettingsViewModel: ObservableObject {
                                         .hSpacing(.leading)
                                     CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
                                         HapticManager.shared.trigger(.success)
-                                        self.exitPhoneLogin()
-                                        if showBack {
-                                            onDone()
+
+                                        // Immediate log and UI update
+                                        Task {
+                                            await MainActor.run {
+                                                self.exitPhoneLogin() // Immediate UI update
+                                            }
+                                            Task {
+                                                self.synchronizationManager.startupProcess(synchronizing: true)
+                                            }
                                         }
-                                        self.synchronizationManager.startupProcess(synchronizing: true)
                                     }
                                     .frame(maxWidth: 120)
                                     .hSpacing(.trailing)
@@ -234,8 +238,14 @@ class SettingsViewModel: ObservableObject {
                                         .hSpacing(.leading)
                                     CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
                                         HapticManager.shared.trigger(.success)
-                                        self.exitAdministrator()
-                                        self.synchronizationManager.startupProcess(synchronizing: true)
+                                        Task {
+                                            await MainActor.run {
+                                                self.exitAdministrator() // Immediate UI update
+                                            }
+                                            Task {
+                                                self.synchronizationManager.startupProcess(synchronizing: true)
+                                            }
+                                        }
                                         if showBack {
                                             onDone()
                                         }

@@ -34,7 +34,7 @@ class PhoneScreenViewModel: ObservableObject {
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     // Boolean state variable to track the sorting order
-    @Published var currentTerritory: PhoneTerritoryModel?
+    @Published var currentTerritory: PhoneTerritory?
     @Published var presentSheet = false {
         didSet {
             if presentSheet == false {
@@ -60,7 +60,7 @@ class PhoneScreenViewModel: ObservableObject {
     @Published var showAddedToast = false
     
     func deleteTerritory(territory: String) async -> Result<Bool, Error> {
-        return await dataUploaderManager.deleteTerritory(phoneTerritory: territory)
+        return await dataUploaderManager.deleteTerritory(territoryId: territory)
     }
     
     @Published var search: String = "" {
@@ -78,7 +78,7 @@ class PhoneScreenViewModel: ObservableObject {
 @MainActor
 extension PhoneScreenViewModel {
     func getTeritories(phoneTerritoryToScrollTo: String? = nil) {
-        RealmManager.shared.getPhoneData()
+        GRDBManager.shared.getPhoneData()
             .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
@@ -110,7 +110,7 @@ extension PhoneScreenViewModel {
     }
     
     func getRecentTerritoryData() {
-        RealmManager.shared.getRecentPhoneTerritoryData()
+        GRDBManager.shared.getRecentPhoneTerritoryData()
             .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in

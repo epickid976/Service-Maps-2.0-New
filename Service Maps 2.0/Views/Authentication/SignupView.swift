@@ -132,7 +132,7 @@ struct SignupView: View {
                                             HapticManager.shared.trigger(.success)
                                             withAnimation { loading = false }
                                             SynchronizationManager.shared.back_from_verification = false
-                                            SynchronizationManager.shared.startupProcess(synchronizing: false)
+                                                SynchronizationManager.shared.startupProcess(synchronizing: true)
                                             DispatchQueue.main.async { dismiss() }
                                         case .failure(_):  withAnimation { loading = false }
                                             HapticManager.shared.trigger(.error)

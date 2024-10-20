@@ -11,7 +11,7 @@ import SwiftUI
 @MainActor
 class AddCallViewModel: ObservableObject {
     
-    init(phoneNumber: PhoneNumberModel) {
+    init(phoneNumber: PhoneNumber) {
         error = ""
         self.phoneNumber = phoneNumber
     }
@@ -20,7 +20,7 @@ class AddCallViewModel: ObservableObject {
 
     @Published private var dataUploader = DataUploaderManager()
     
-    @Published var phoneNumber: PhoneNumberModel
+    @Published var phoneNumber: PhoneNumber
     
     @Published var error = ""
     
@@ -30,26 +30,16 @@ class AddCallViewModel: ObservableObject {
         withAnimation {
             loading = true
         }
-        let callObject = PhoneCallObject()
-        callObject.id = "\(phoneNumber.id)-\(Date.now.millisecondsSince1970)"
-        callObject.phoneNumber = phoneNumber.id
-        callObject.date = (Date.now.millisecondsSince1970)
-        callObject.notes = notes
-        callObject.user = StorageManager.shared.userName ?? ""
-        return await dataUploader.addCall(call: callObject)
+        let callObject = PhoneCall(id: "\(phoneNumber.id)-\(Date.now.millisecondsSince1970)", phonenumber: phoneNumber.id, date: (Date.now.millisecondsSince1970), notes: notes, user: StorageManager.shared.userName ?? "")
+        return await dataUploader.addPhoneCall(phoneCall: callObject)
     }
     
-    func editCall(call: PhoneCallModel) async -> Result<Bool, Error> {
+    func editCall(call: PhoneCall) async -> Result<Bool, Error> {
         withAnimation {
             loading = true
         }
-        let callObject = PhoneCallObject()
-        callObject.id = call.id
-        callObject.phoneNumber = call.phonenumber
-        callObject.date = call.date
-        callObject.notes = notes
-        callObject.user = StorageManager.shared.userName ?? ""
-        return await dataUploader.updateCall(call: callObject)
+        let callObject = PhoneCall(id: call.id, phonenumber: call.phonenumber, date: call.date, notes: notes, user: StorageManager.shared.userName ?? "")
+        return await dataUploader.updatePhoneCall(phoneCall: callObject)
     }
     
     func checkInfo() -> Bool {

@@ -18,7 +18,7 @@ struct AccessView: View {
     @StateObject var viewModel: AccessViewModel
     
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var databaseManager = RealmManager.shared
+    @ObservedObject var databaseManager = GRDBManager.shared
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -111,10 +111,10 @@ struct AccessView: View {
 //                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
 //                            if ( abs(offsetDifference) > minimumOffset) {
 //                                if offsetDifference > 0 {
-//                                    print("Is scrolling up toward top.")
+//                                    
 //                                    debounceHideFloatingButton(false)
 //                                } else {
-//                                    print("Is scrolling down toward bottom.")
+//                                    
 //                                    debounceHideFloatingButton(true)
 //                                }
 //                                self.previousViewOffset = currentOffset
@@ -155,7 +155,7 @@ struct AccessView: View {
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle(); synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                 }
                             }
@@ -381,7 +381,7 @@ struct AccessViewUsersView: View {
     @StateObject var viewModel = AccessViewModel()
     
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var databaseManager = RealmManager.shared
+    @ObservedObject var databaseManager = GRDBManager.shared
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -393,9 +393,9 @@ struct AccessViewUsersView: View {
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 60
-    @State var currentKey: MyTokenModel
+    @State var currentKey: Token
     
-    init(viewModel: AccessViewModel, currentKey: MyTokenModel) {
+    init(viewModel: AccessViewModel, currentKey: Token) {
         self.currentKey = currentKey
         _viewModel = StateObject(wrappedValue: viewModel)
     }
@@ -470,14 +470,14 @@ struct AccessViewUsersView: View {
                                                 } trailingActions: { context in
                                                     if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
                                                         SwipeAction(
-                                                            systemImage: "nosign",
-                                                            backgroundColor: .pink.opacity(0.5)
+                                                            systemImage: keyData.blocked ? "arrowshape.turn.up.left.2" : "nosign",
+                                                            backgroundColor: keyData.blocked ? .green.opacity(0.5) : .pink.opacity(0.5)
                                                         ) {
                                                             HapticManager.shared.trigger(.lightImpact)
                                                             DispatchQueue.main.async {
                                                                 context.state.wrappedValue = .closed
-                                                                self.viewModel.userToDelete = (keyData.userId, keyData.blocked ? "false" : "true")
-                                                                //self.showAlert = true
+                                                                // Set the block/unblock action here with a UserAction object
+                                                                self.viewModel.blockUnblockAction = UserAction(id: keyData.id, isBlocked: keyData.blocked)
                                                                 CentrePopup_BlockOrUnblockUser(viewModel: viewModel).showAndStack()
                                                             }
                                                         }
@@ -489,10 +489,10 @@ struct AccessViewUsersView: View {
                                                             backgroundColor: .red
                                                         ) {
                                                             HapticManager.shared.trigger(.lightImpact)
+                                                            
                                                             DispatchQueue.main.async {
                                                                 context.state.wrappedValue = .closed
-                                                                self.viewModel.userToDelete = (keyData.id, keyData.name)
-                                                                //self.showAlert = true
+                                                                self.viewModel.userToDelete = (keyData.id, keyData.name)  // Set userToDelete for deletion
                                                                 CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
                                                             }
                                                         }
@@ -500,6 +500,12 @@ struct AccessViewUsersView: View {
                                                         .foregroundColor(.white)
                                                     }
                                                 }
+                                                .swipeActionCornerRadius(16)
+                                                .swipeSpacing(5)
+                                                .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+                                                .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+                                                .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+                                                .swipeMinimumDistance(AuthorizationLevelManager().existsAdminCredentials() ? 25 : 1000)
                                             }.modifier(ScrollTransitionModifier())
                                         }
                                         .animation(.spring(), value: viewModel.keyUsers!)
@@ -533,14 +539,14 @@ struct AccessViewUsersView: View {
                                                         } trailingActions: { context in
                                                             if viewModel.isAdmin || AuthorizationLevelManager().existsModeratorAccess() {
                                                                 SwipeAction(
-                                                                    systemImage: "arrowshape.turn.up.left.2",
-                                                                    backgroundColor: .green.opacity(0.5)
+                                                                    systemImage: keyData.blocked ? "arrowshape.turn.up.left.2" : "nosign",
+                                                                    backgroundColor: keyData.blocked ? .green.opacity(0.5) : .pink.opacity(0.5)
                                                                 ) {
                                                                     HapticManager.shared.trigger(.lightImpact)
                                                                     DispatchQueue.main.async {
-                                                                        self.viewModel.userToDelete = (keyData.userId, keyData.blocked ? "false" : "true")
-                                                                        //self.showAlert = true
                                                                         context.state.wrappedValue = .closed
+                                                                        // Set the block/unblock action here with a UserAction object
+                                                                        self.viewModel.blockUnblockAction = UserAction(id: keyData.id, isBlocked: keyData.blocked)
                                                                         CentrePopup_BlockOrUnblockUser(viewModel: viewModel).showAndStack()
                                                                     }
                                                                 }
@@ -563,6 +569,12 @@ struct AccessViewUsersView: View {
                                                                 .foregroundColor(.white)
                                                             }
                                                         }
+                                                        .swipeActionCornerRadius(16)
+                                                        .swipeSpacing(5)
+                                                        .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
+                                                        .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
+                                                        .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
+                                                        .swipeMinimumDistance(AuthorizationLevelManager().existsAdminCredentials() ? 25 : 1000)
                                                     }
                                                 }
                                             }.animation(.spring(), value: viewModel.blockedUsers)
@@ -580,7 +592,7 @@ struct AccessViewUsersView: View {
                         .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
                         .alert(isPresent: $viewModel.showUserBlockAlert, view: alertViewBlocked)
                         .alert(isPresent: $viewModel.showUserUnblockAlert, view: alertViewUnblocked)
-                        .navigationBarTitle("Users", displayMode: .automatic)
+                        .navigationBarTitle("\(currentKey.name)", displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarLeading) {
@@ -611,7 +623,7 @@ struct AccessViewUsersView: View {
     }
     
     @ViewBuilder
-    func keyCell(keyData: UserTokenModel) -> some View {
+    func keyCell(keyData: UserToken) -> some View {
         SwipeView {
             UserTokenCell(userKeyData: keyData)
                 .padding(.bottom, 2)
@@ -757,27 +769,26 @@ struct CentrePopup_DeleteKey: CentrePopup {
 struct CentrePopup_DeleteUser: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
     
-    
-    
     func createContent() -> some View {
         ZStack {
             VStack {
-                Text("Delete User: \(viewModel.userToDelete.1 ?? "0")")
+                Text("Delete User: \(viewModel.userToDelete?.name ?? "0")")
                     .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .padding(.leading)
+                
                 Text("Are you sure you want to delete the selected user?")
                     .font(.headline)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
+                
                 if viewModel.ifFailed {
                     Text("Error deleting user, please try again later")
                         .fontWeight(.bold)
                         .foregroundColor(.red)
                 }
-                //.vSpacing(.bottom)
                 
                 HStack {
                     if !viewModel.loading {
@@ -785,34 +796,31 @@ struct CentrePopup_DeleteUser: CentrePopup {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 dismiss()
-                                self.viewModel.userToDelete = (nil,nil)
+                                self.viewModel.userToDelete = (nil, nil)
                             }
                         }
                     }
-                    //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
+                        
                         Task {
-                            if self.viewModel.userToDelete.0 != nil && self.viewModel.userToDelete.1 != nil {
-                                switch await self.viewModel.deleteUser(user: self.viewModel.userToDelete.0 ?? "") {
+                            if let userId = self.viewModel.userToDelete?.id {
+                                switch await self.viewModel.deleteUser(user: userId) {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                        withAnimation {
-                                            self.viewModel.loading = false
-                                            self.viewModel.getKeyUsers()
-                                        }
-                                        //self.viewModel.showAlert = false
-                                        dismiss()
-                                        self.viewModel.userToDelete = (nil,nil)
-                                        self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showToast = false
-                                        }
+                                        self.viewModel.loading = false
+                                        self.viewModel.getKeyUsers()
+                                    }
+                                    dismiss()
+                                    self.viewModel.userToDelete = (nil, nil)
+                                    self.viewModel.showToast = true
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                        self.viewModel.showToast = false
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -823,20 +831,17 @@ struct CentrePopup_DeleteUser: CentrePopup {
                                 }
                             }
                         }
-                        
                     }
                 }
                 .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
             }
             .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        }
+        .ignoresSafeArea(.keyboard)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
@@ -849,74 +854,66 @@ struct CentrePopup_DeleteUser: CentrePopup {
 
 struct CentrePopup_BlockOrUnblockUser: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
-    
-    
-    
+
     func createContent() -> some View {
         ZStack {
             VStack {
-                Text("\(viewModel.userToDelete.1 == "true" ? NSLocalizedString("Block", comment: "") : NSLocalizedString("Unblock", comment: "")) User")
+                Text("\(viewModel.blockUnblockAction?.isBlocked == true ? "Unblock" : "Block") User")
                     .font(.title3)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
                     .padding(.leading)
-                Text("Are you sure you want to \(viewModel.userToDelete.1 == "true" ? NSLocalizedString("block", comment: "") : NSLocalizedString("unblock", comment: "")) the selected user?")
+
+                Text("Are you sure you want to \(viewModel.blockUnblockAction?.isBlocked == true ? "unblock" : "block") the selected user?")
                     .font(.headline)
                     .fontWeight(.bold)
                     .hSpacing(.leading)
                     .padding(.leading)
+
                 if viewModel.ifFailed {
-                    Text("Error \(viewModel.userToDelete.1 == "true" ? NSLocalizedString("blocking",comment: "") : NSLocalizedString("unblocking", comment: "")) user, please try again later")
+                    Text("Error \(viewModel.blockUnblockAction?.isBlocked == true ? "unblocking" : "blocking") user, please try again later")
                         .fontWeight(.bold)
                         .foregroundColor(.red)
                 }
-                //.vSpacing(.bottom)
-                
+
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 dismiss()
-                                self.viewModel.userToDelete = (nil,nil)
+                                self.viewModel.blockUnblockAction = nil
                                 self.viewModel.ifFailed = false
                             }
                         }
                     }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: viewModel.loading, title: "\(viewModel.userToDelete.1 == "true" ? NSLocalizedString("Block", comment: "") : NSLocalizedString("Unblock", comment: ""))", color: viewModel.userToDelete.1 == "true" ? .red : .green) {
+
+                    CustomButton(loading: viewModel.loading, title: "\(viewModel.blockUnblockAction?.isBlocked == true ? "Unblock" : "Block")", color: viewModel.blockUnblockAction?.isBlocked == true ? .green : .red) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             self.viewModel.loading = true
                         }
+
                         Task {
-                            if self.viewModel.userToDelete.0 != nil && self.viewModel.userToDelete.1 != nil {
-                                switch await self.viewModel.blockUnblockUserFromToken() {
+                            if let userAction = self.viewModel.blockUnblockAction {
+                                switch await self.viewModel.blockUnblockUserFromToken(user: userAction) {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
-                                    //SynchronizationManager.shared.startupProcess(synchronizing: true)
                                     withAnimation {
-                                        
-                                        withAnimation {
-                                            self.viewModel.loading = false
-                                            self.viewModel.getKeyUsers()
-                                        }
-                                        //self.viewModel.showAlert = false
-                                        dismiss()
-                                        
-                                        if viewModel.userToDelete.1 == "true" {
-                                            self.viewModel.showUserBlockAlert = true
-                                        } else {
-                                            
-                                            self.viewModel.showUserUnblockAlert = true
-                                        }
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showUserBlockAlert = false
-                                            self.viewModel.showUserUnblockAlert = false
-                                        }
-                                        self.viewModel.userToDelete = (nil,nil)
+                                        self.viewModel.loading = false
+                                        self.viewModel.getKeyUsers()  // Update the list of users after block/unblock
                                     }
+                                    dismiss()
+                                    if userAction.isBlocked {
+                                        self.viewModel.showUserUnblockAlert = true
+                                    } else {
+                                        self.viewModel.showUserBlockAlert = true
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                        self.viewModel.showUserBlockAlert = false
+                                        self.viewModel.showUserUnblockAlert = false
+                                    }
+                                    self.viewModel.blockUnblockAction = nil
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
                                     withAnimation {
@@ -926,22 +923,19 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                                 }
                             }
                         }
-                        
                     }
                 }
                 .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
             }
             .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        }
+        .ignoresSafeArea(.keyboard)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
-    
+
     func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
         popup
             .horizontalPadding(24)

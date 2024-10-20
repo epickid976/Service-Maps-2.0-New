@@ -8,16 +8,16 @@
 //import SwiftUI
 //
 //struct ColumnView: View {
-//    var territory: TerritoryModel
+//    var territory: Territory
 //    
 //    @ObservedObject var addressViewModel: AddressViewModel
 //    @ObservedObject var householdViewModel: HousesViewModel
 //    @ObservedObject var visitViewModel: VisitsViewModel
 //    
-//    @State private var selectedAddress: TerritoryAddressModel?
-//    @State private var selectedHouse: HouseModel?
+//    @State private var selectedAddress: TerritoryAddress?
+//    @State private var selectedHouse: House?
 //    
-//    init(territory: TerritoryModel) {
+//    init(territory: Territory) {
 //        self.territory = territory
 //                
 //                let addressViewModel = AddressViewModel(territory: territory)
@@ -29,12 +29,12 @@
 //                        self._visitViewModel = ObservedObject(initialValue: VisitsViewModel(house: firstHouse.house))
 //                        _selectedHouse = State(initialValue: firstHouse.house)
 //                    } else {
-//                        self._visitViewModel = ObservedObject(initialValue:VisitsViewModel(house: HouseModel(id: "0", territory_address: "", number: "", created_at: "", updated_at: "")))
+//                        self._visitViewModel = ObservedObject(initialValue:VisitsViewModel(house: House(id: "0", territory_address: "", number: "", created_at: "", updated_at: "")))
 //                    }
 //                    _selectedAddress = State(initialValue: firstAddress.address)
 //                } else {
-//                    self.householdViewModel = HousesViewModel(territoryAddress: TerritoryAddressModel(id: "0", territory: "", address: "", created_at: "", updated_at: ""))
-//                    self.visitViewModel = VisitsViewModel(house: HouseModel(id: "0", territory_address: "", number: "", created_at: "", updated_at: ""))
+//                    self.householdViewModel = HousesViewModel(territoryAddress: TerritoryAddress(id: "0", territory: "", address: "", created_at: "", updated_at: ""))
+//                    self.visitViewModel = VisitsViewModel(house: House(id: "0", territory_address: "", number: "", created_at: "", updated_at: ""))
 //                }
 //    }
 //    var body: some View {

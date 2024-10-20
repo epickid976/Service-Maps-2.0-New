@@ -17,7 +17,7 @@ import MijickPopupView
 
 struct CallsView: View {
     @StateObject var viewModel: CallsViewModel
-    var phoneNumber: PhoneNumberModel
+    var phoneNumber: PhoneNumber
     @StateObject var realtimeManager = RealtimeManager.shared
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -29,7 +29,7 @@ struct CallsView: View {
     @State var scrollOffset: CGFloat = 0.00
     @State private var isScrollingDown = false
     
-    init(phoneNumber: PhoneNumberModel, callToScrollTo: String? = nil) {
+    init(phoneNumber: PhoneNumber, callToScrollTo: String? = nil) {
         self.phoneNumber = phoneNumber
         let initialViewModel = CallsViewModel(phoneNumber: phoneNumber, callToScrollTo: callToScrollTo)
         _viewModel = StateObject(wrappedValue: initialViewModel)
@@ -125,10 +125,10 @@ struct CallsView: View {
                             let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
                             if ( abs(offsetDifference) > minimumOffset) {
                                 if offsetDifference > 0 {
-                                    print("Is scrolling up toward top.")
+                                    
                                     hideFloatingButton = false
                                 } else {
-                                    print("Is scrolling down toward bottom.")
+                                    
                                     hideFloatingButton = true
                                 }
                                 self.previousViewOffset = currentOffset
@@ -159,10 +159,10 @@ struct CallsView: View {
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; viewModel.synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                                    Button("", action: { viewModel.syncAnimation.toggle(); synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                     
-                                    //                            Button("", action: { viewModel.optionsAnimation.toggle();  print("Add") ; viewModel.presentSheet.toggle() })
+                                    //                            Button("", action: { viewModel.optionsAnimation.toggle();   ; viewModel.presentSheet.toggle() })
                                     //                                .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                                     
                                 }
@@ -391,7 +391,7 @@ struct CentrePopup_DeleteCall: CentrePopup {
 }
 struct CentrePopup_AddCall: CentrePopup {
     @ObservedObject var viewModel: CallsViewModel
-    @State var phoneNumber: PhoneNumberModel
+    @State var phoneNumber: PhoneNumber
     
     
     func createContent() -> some View {

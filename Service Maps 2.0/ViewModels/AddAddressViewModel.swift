@@ -10,14 +10,14 @@ import Foundation
 @MainActor
 class AddAddressViewModel: ObservableObject {
     
-    init(territory: TerritoryModel) {
+    init(territory: Territory) {
         error = ""
         self.territory = territory
     }
     
     @Published private var dataUploader = DataUploaderManager()
     
-    @Published var territory: TerritoryModel
+    @Published var territory: Territory
     
     @Published var error = ""
     @Published var addressText = ""
@@ -27,21 +27,13 @@ class AddAddressViewModel: ObservableObject {
     
     func addAddress() async -> Result<Bool, Error> {
         loading = true
-        let addressObject = TerritoryAddressObject()
-        addressObject.id = territory.id + String(Date().timeIntervalSince1970 * 1000)
-        addressObject.address = addressText
-        addressObject.territory = territory.id
-        addressObject.floors = nil
+        let addressObject = TerritoryAddress(id: territory.id + String(Date().timeIntervalSince1970 * 1000), territory: territory.id, address: addressText)
         return await dataUploader.addTerritoryAddress(territoryAddress: addressObject)
     }
     
-    func editAddress(address: TerritoryAddressModel) async -> Result<Bool, Error> {
+    func editAddress(address: TerritoryAddress) async -> Result<Bool, Error> {
         loading = true
-        let addressObject = TerritoryAddressObject()
-        addressObject.id = address.id
-        addressObject.address = addressText
-        addressObject.territory = territory.id
-        addressObject.floors = nil
+        let addressObject = TerritoryAddress(id: address.id, territory: territory.id, address: addressText)
         return await dataUploader.updateTerritoryAddress(territoryAddress: addressObject)
     }
     

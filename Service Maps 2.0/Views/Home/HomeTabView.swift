@@ -162,7 +162,7 @@ struct HomeTabView: View {
             }.ignoresSafeArea(.keyboard)
                 .onAppear {
                     do {
-                         try isUpdateAvailable(completion: { [self] (update, error) in
+                         try isUpdateAvailable(completion: { (update, error) in
                             if let update {
                                 if update {
                                     DispatchQueue.main.async {

@@ -16,7 +16,7 @@ struct AddAddressView: View {
     
     @FocusState private var addressTextFocus: Bool
     
-    init(territory: TerritoryModel, address: TerritoryAddressModel?, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+    init(territory: Territory, address: TerritoryAddress?, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         _viewModel = StateObject(wrappedValue: AddAddressViewModel(territory: territory))
         if let address = address {
             self.address = address
@@ -26,7 +26,7 @@ struct AddAddressView: View {
         self.onDismiss = onDismiss
     }
     
-    var address: TerritoryAddressModel?
+    var address: TerritoryAddress?
     
     @State var title = ""
     

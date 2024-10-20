@@ -1,5 +1,5 @@
 {
-  "originHash" : "bb05b480aa04b811bcb8a221ad0a20a2a309653a8be521eca19b243fc9f367ca",
+  "originHash" : "b315ba924749c791e0a70899884b9c30217c90729f6f027e4fe49e2460ffb630",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -56,12 +56,30 @@
       }
     },
     {
+      "identity" : "grdb.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/groue/GRDB.swift",
+      "state" : {
+        "branch" : "master",
+        "revision" : "84d25dfc9dc1766feb8c80fb04b9f7e2337fb83e"
+      }
+    },
+    {
       "identity" : "lottie-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/airbnb/lottie-ios.git",
       "state" : {
         "revision" : "769b88d83a42ca8d5572b020c96f47e3690b3796",
         "version" : "4.4.3"
+      }
+    },
+    {
+      "identity" : "metacodable",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftyLab/MetaCodable",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b0563bc0d402ca7f2ff07db9a47517ae61fb988a"
       }
     },
     {
@@ -119,11 +137,38 @@
       }
     },
     {
+      "identity" : "safedecoding",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/renato-iar/SafeDecoding",
+      "state" : {
+        "revision" : "f2ac58a64b6e992cc6bca28ec2fd7975ac5632db",
+        "version" : "1.4.0"
+      }
+    },
+    {
       "identity" : "scalingheaderscrollview",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/exyte/ScalingHeaderScrollView",
       "state" : {
         "revision" : "57631d0885bc55991126b932c106540273d6131c",
+        "version" : "1.1.4"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "41982a3656a71c768319979febd796c6fd111d5c",
+        "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "671108c96644956dddcd89dd59c203dcdb36cec7",
         "version" : "1.1.4"
       }
     },

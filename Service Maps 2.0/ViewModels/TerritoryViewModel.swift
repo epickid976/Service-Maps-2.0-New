@@ -17,24 +17,27 @@ class TerritoryViewModel: ObservableObject {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
+    @Published var forceRefresh = false
+    // Cancellables for managing Combine subscriptions
+    private var cancellables = Set<AnyCancellable>()
+    private var recentCancellables = Set<AnyCancellable>()
     
-    @Published private var cancellables = Set<AnyCancellable>()
-    @Published private var recentCancellables = Set<AnyCancellable>()
-    
-    @Published var territoryData: Optional<[TerritoryDataWithKeys]> = nil {
+    // Published variables to update the UI
+    @Published var territoryData: [TerritoryDataWithKeys]? = nil {
         didSet {
-            print(territoryData)
+            // Trigger an update when data changes
+            print("Territory Data:", territoryData?.description)
         }
     }
-    @Published var recentTerritoryData: Optional<[RecentTerritoryData]> = nil
-    
+    @Published var recentTerritoryData: [RecentTerritoryData]? = nil
+    @Published var currentTerritory: Territory?
+
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    // Boolean state variable to track the sorting order
-    @Published var currentTerritory: TerritoryModel?
+    
+    // State variables for UI
     @Published var presentSheet = false {
         didSet {
-            print("Present Sheet = \(presentSheet)")
-            if presentSheet == false {
+            if !presentSheet {
                 currentTerritory = nil
             }
         }
@@ -44,19 +47,8 @@ class TerritoryViewModel: ObservableObject {
     @Published var optionsAnimation = false
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
-    @Published var backAnimation = false
-    
-    
     @Published var restartAnimation = false
     @Published var animationProgress: Bool = false
-    
-    @Published var showAlert = false
-    @Published var ifFailed = false
-    @Published var loading = false
-    @Published var territoryToDelete: (String?,String?)
-    
-    @Published var showToast = false
-    @Published var showAddedToast = false
     
     @Published var search: String = "" {
         didSet {
@@ -65,113 +57,94 @@ class TerritoryViewModel: ObservableObject {
         }
     }
     
+    @Published var territoryToDelete: (String? , String?) = (nil,nil)
+
     @Published var searchActive = false
-    
-    
-    func deleteTerritory(territory: String) async -> Result<Bool, Error> {
-        return await dataUploaderManager.deleteTerritory(territory: territory)
-    }
-    
-    func resync() {
-        synchronizationManager.startupProcess(synchronizing: true)
-    }
-    
-    
-    
+    @Published var showAlert = false
+    @Published var ifFailed = false
+    @Published var loading = false
+    @Published var showToast = false
+    @Published var showAddedToast = false
     @Published var territoryIdToScrollTo: String?
+    @Published var backAnimation = false
     
-    
+
     init(territoryIdToScrollTo: String? = nil) {
         getTerritories(territoryIdToScrollTo: territoryIdToScrollTo)
         getRecentTerritories()
     }
-    
-    
-    func processData(dataWithKeys: TerritoryDataWithKeys) -> String {
-        var name = ""
-        if !dataWithKeys.keys.isEmpty {
-            let data = dataWithKeys.keys.sorted { $0.name < $1.name}
-            for key in data {
-                if name.isEmpty {
-                    name = key.name
-                } else {
-                    name += ", " + key.name
-                }
-            }
-            return name
-        }
-        return name
+
+    func deleteTerritory(territory: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteTerritory(territoryId: territory)
     }
-    
-    func getLastTime() -> Date? { return dataStore.lastTime }
-    
-   
-    
+
+    func processData(dataWithKeys: TerritoryDataWithKeys) -> String {
+        dataWithKeys.keys.sorted { $0.name < $1.name }
+            .map { $0.name }
+            .joined(separator: ", ")
+    }
+
+    func getLastTime() -> Date? {
+        return dataStore.lastTime
+    }
 }
 
 @MainActor
 extension TerritoryViewModel {
+    // Fetching Territory data from GRDB using Combine
     func getTerritories(territoryIdToScrollTo: String? = nil) {
-        RealmManager.shared.getTerritoryData()
-            .subscribe(on: DispatchQueue.main)
-            .receive(on: DispatchQueue.main) // Update on main thread
+        
+        GRDBManager.shared.getTerritoryData()
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    // Handle errors here
+                switch completion {
+                case .failure(let error):
                     print("Error retrieving territory data: \(error)")
+                    self.ifFailed = true
+                case .finished:
+                    break
                 }
-            }, receiveValue: { territoryData in
-                print("Sinked territory data: \(territoryData)")
-                withAnimation(.spring()) {
-                    self.territoryData = territoryData
+            }, receiveValue: { [weak self] territoryData in
+                let sortedTerritoryData = territoryData.sorted {
+                    ($0.keys.first?.name ?? "") < ($1.keys.first?.name ?? "")
+                }
+                DispatchQueue.main.async {
+                    self?.territoryData = []
+                }
+                DispatchQueue.main.async {
+                    self?.territoryData? = sortedTerritoryData
                 }
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    if let territoryIdToScrollTo = territoryIdToScrollTo {
-                        self.territoryIdToScrollTo = territoryIdToScrollTo
+                if let territoryIdToScrollTo = territoryIdToScrollTo {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self?.territoryIdToScrollTo = territoryIdToScrollTo
+                    }
+                }
+            })
+            .store(in: &cancellables)
+    }
+
+    // Fetching Recent Territory data from GRDB using Combine
+    func getRecentTerritories() {
+        GRDBManager.shared.getRecentTerritoryData()  // Calls the GRDB function to get recent territories
+            .receive(on: DispatchQueue.main)  // Ensure the result is received on the main thread
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    print("Error retrieving recent territory data: \(error)")
+                case .finished:
+                    break
+                }
+            }, receiveValue: { [weak self] recentTerritories in
+                if self?.search.isEmpty == true {
+                    self?.recentTerritoryData = recentTerritories.sorted { $0.lastVisit.date > $1.lastVisit.date }
+                } else {
+                    self?.recentTerritoryData = recentTerritories.filter { territoryData in
+                        String(territoryData.territory.number).lowercased().contains(self?.search.lowercased() ?? "") ||
+                        territoryData.territory.description.lowercased().contains(self?.search.lowercased() ?? "")
                     }
                 }
             })
             .store(in: &cancellables)
     }
 }
-
-@MainActor
-extension TerritoryViewModel {
-    func getRecentTerritories() {
-        RealmManager.shared.getRecentTerritoryData()
-            .subscribe(on: DispatchQueue.main)
-            .receive(on: DispatchQueue.main) // Update on main thread)
-            
-            .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    // Handle errors here
-                    print("Error retrieving territory data: \(error)")
-                }
-            }, receiveValue: { territoryData in
-                if self.search.isEmpty {
-                    DispatchQueue.main.async {
-                        self.recentTerritoryData = territoryData.sorted(by: { $0.lastVisit.date > $1.lastVisit.date
-                        })
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.recentTerritoryData = territoryData.filter { territoryData in
-                            // Check for matches in territory number (converted to string for case-insensitive comparison)
-                            String(territoryData.territory.number).lowercased().contains(self.search.lowercased()) ||
-                            territoryData.territory.description.lowercased().contains(self.search.lowercased())
-                        }
-                    }
-                }
-            })
-            .store(in: &recentCancellables)
-    }
-}
-
-
-//struct TerritoryGroupView: View {
-//
-//  let dataWithKeys: TerritoryDataWithKeys // Replace with your data model
-//
-//  
-//}

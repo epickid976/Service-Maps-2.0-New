@@ -70,75 +70,68 @@ class AddKeyViewModel: ObservableObject {
         }
         
         ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-            self.SelectableTerritoryItem(territoryData: territoryData, mainWindowSize: mainWindowSize)
+            self.SelectableTerritoryItem(territoryData: territoryData, mainWindowSize: mainWindowSize).id(territoryData.territory.id)
         }
     }
     
     @ViewBuilder
     func SelectableTerritoryItem(territoryData: TerritoryData, mainWindowSize: CGSize) -> some View {
-        
-        HStack {
-            Image(systemName: selectedTerritories.contains(territoryData) ? "checkmark.circle.fill" : "circle")
-                .optionalViewModifier { content in
-                    if #available(iOS 17, *) {
-                        content
-                            .symbolEffect(.bounce, options: .speed(3.0), value: self.selectedTerritories.contains(territoryData))
-                            .animation(.bouncy, value: self.selectedTerritories.contains(territoryData))
-                    } else {
-                        content
-                            .animation(.bouncy, value: self.selectedTerritories.contains(territoryData))
-                    }
-                }
-                .onTapGesture {
-                    HapticManager.shared.trigger(.selectionChanged)
-                    if self.selectedTerritories.contains(territoryData) {
-                        if let index = self.selectedTerritories.firstIndex(of: territoryData) {
-                            self.selectedTerritories.remove(at: index)
+        Button(action: {
+            self.toggleSelection(for: territoryData)
+        }) {
+            HStack {
+                Image(systemName: selectedTerritories.contains(territoryData) ? "checkmark.circle.fill" : "circle")
+                    .optionalViewModifier { content in
+                        if #available(iOS 17, *) {
+                            content
+                                .symbolEffect(.bounce, options: .speed(3.0), value: self.selectedTerritories.contains(territoryData))
+                                .animation(.bouncy, value: self.selectedTerritories.contains(territoryData))
+                        } else {
+                            content
+                                .animation(.bouncy, value: self.selectedTerritories.contains(territoryData))
                         }
-                    } else {
-                        self.selectedTerritories.append(territoryData)
                     }
-                }
-            CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, width: 0.8, mainWindowSize: mainWindowSize)
-                .padding(2)
-                .onTapGesture {
-                    HapticManager.shared.trigger(.selectionChanged)
-                    if self.selectedTerritories.contains(territoryData) {
-                        if let index = self.selectedTerritories.firstIndex(of: territoryData) {
-                            self.selectedTerritories.remove(at: index)
-                        }
-                    } else {
-                        self.selectedTerritories.append(territoryData)
-                    }
-                }
+
+                CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, width: 0.8, mainWindowSize: mainWindowSize)
+                    .padding(2)
+            }
+            .padding(.horizontal, 10)
         }
-        .padding(.horizontal, 10)
-        
+        .buttonStyle(PlainButtonStyle()) // Maintains original appearance
     }
+
+    func toggleSelection(for territoryData: TerritoryData) {
+        HapticManager.shared.trigger(.selectionChanged)
+        if self.selectedTerritories.contains(territoryData) {
+            if let index = self.selectedTerritories.firstIndex(of: territoryData) {
+                self.selectedTerritories.remove(at: index)
+                // Force view update by reassigning the array
+                self.selectedTerritories = self.selectedTerritories
+            }
+        } else {
+            self.selectedTerritories.append(territoryData)
+            // Force view update by reassigning the array
+            self.selectedTerritories = self.selectedTerritories
+        }
+    }
+    
     func addToken() async -> Result<Bool, Error> {
         withAnimation {
             loading = true
         }
-        let tokenObject = TokenObject()
-        tokenObject.congregation = dataStore.congregationName ?? ""
-        tokenObject.moderator = servant
-        tokenObject.name = name
-        tokenObject.user = nil
-        tokenObject.expire = nil
-        tokenObject.id = ""
-        tokenObject.owner = ""
+        let tokenObject = Token(id: "", name: name, owner: "", congregation: dataStore.congregationName ?? "", moderator: servant)
         
         var territories = [String]()
-        var territoryObjects = [TerritoryModel]()
+        var territoryObjects = [Territory]()
         
         selectedTerritories.forEach { territory in
             territories.append(territory.territory.id)
             territoryObjects.append(territory.territory)
         }
         if keyData != nil {
-            return await dataUploader.editToken(token: keyData!.key.id, territories: StructToModel().convertTerritoryStructsToEntities(structs: territoryObjects))
+            return await dataUploader.editToken(token: keyData!.key.id, territories:  territoryObjects)
         } else {
-            switch await dataUploader.createToken(newTokenForm: NewTokenForm(name: tokenObject.name, moderator: tokenObject.moderator, territories: territories.description, congregation: AuthorizationProvider.shared.congregationId ?? 0, expire: tokenObject.expire), territories: StructToModel().convertTerritoryStructsToEntities(structs: territoryObjects)) {
+            switch await dataUploader.createToken(newTokenForm: NewTokenForm(name: tokenObject.name, moderator: tokenObject.moderator, territories: territories.description, congregation: AuthorizationProvider.shared.congregationId ?? 0, expire: tokenObject.expire), territories: territoryObjects) {
             case .success(_):
                 return Result.success(true)
             case .failure(let error):
@@ -177,7 +170,7 @@ class AddKeyViewModel: ObservableObject {
 @MainActor
 extension AddKeyViewModel {
     func getTerritories() {
-        RealmManager.shared.getTerritoryData()
+        GRDBManager.shared.getTerritoryData()
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
@@ -190,15 +183,15 @@ extension AddKeyViewModel {
             .store(in: &cancellables)
     }
     
-    func getTerritories(withTerritories selectedTerritories: [TerritoryModel]) {
-            RealmManager.shared.getTerritoryData()
+    func getTerritories(withTerritories selectedTerritories: [Territory]) {
+        GRDBManager.shared.getTerritoryData()
                 .receive(on: DispatchQueue.main)
                 .map { territoryDataWithKeys -> [TerritoryDataWithKeys] in
-                    // Filter the territories based on selected TerritoryModel objects
+                    // Filter the territories based on selected Territory objects
                     return territoryDataWithKeys.map { dataWithKeys in
                         var filteredDataWithKeys = dataWithKeys
                         filteredDataWithKeys.territoriesData = dataWithKeys.territoriesData.filter { territoryData in
-                            selectedTerritories.contains(territoryData.territory) // Compare TerritoryModel objects
+                            selectedTerritories.contains(territoryData.territory) // Compare Territory objects
                         }
                         return filteredDataWithKeys
                     }.filter { !$0.territoriesData.isEmpty }

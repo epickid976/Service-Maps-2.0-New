@@ -9,8 +9,8 @@ import Foundation
 
 struct HouseData: Hashable, Identifiable {
     var id: UUID
-    var house: HouseModel
-    var visit: VisitModel?
+    var house: House
+    var visit: Visit?
     var accessLevel: AccessLevel
     
     func hash(into hasher: inout Hasher) {

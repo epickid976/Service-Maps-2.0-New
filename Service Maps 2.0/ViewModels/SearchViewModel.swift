@@ -5,7 +5,7 @@ import Combine
 @MainActor
 class SearchViewModel: ObservableObject {
     @Published var dataStore = StorageManager.shared
-    @Published var realmManager = RealmManager.shared
+    @Published var grdbManager = GRDBManager.shared
     @Published var searchResults: [MySearchResult] = []
     @Published var searchQuery: String = "" {
         didSet {
@@ -48,13 +48,13 @@ class SearchViewModel: ObservableObject {
 struct MySearchResult: Hashable, Identifiable {
     var id = UUID()
     var type: SearchResultType
-    var territory: TerritoryModel? = nil
-    var address: TerritoryAddressModel? = nil
-    var house: HouseModel? = nil
-    var visit: VisitModel? = nil
-    var phoneTerritory: PhoneTerritoryModel? = nil
-    var number: PhoneNumberModel? = nil
-    var call: PhoneCallModel? = nil
+    var territory: Territory? = nil
+    var address: TerritoryAddress? = nil
+    var house: House? = nil
+    var visit: Visit? = nil
+    var phoneTerritory: PhoneTerritory? = nil
+    var number: PhoneNumber? = nil
+    var call: PhoneCall? = nil
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(type)
@@ -97,7 +97,7 @@ extension SearchViewModel {
     @MainActor
     func getSearchResults() {
         self.searchState = .Searching
-        RealmManager.shared.searchEverywhere(query: self.searchQuery, searchMode: searchMode)
+        GRDBManager.shared.searchEverywhere(query: self.searchQuery, searchMode: searchMode)
             .receive(on: DispatchQueue.main) // Update on main thread
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
