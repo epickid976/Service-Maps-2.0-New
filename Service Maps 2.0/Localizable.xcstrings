@@ -2678,6 +2678,7 @@
       }
     },
     "Menu" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {

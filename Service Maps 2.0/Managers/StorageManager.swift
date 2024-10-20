@@ -79,15 +79,6 @@ class StorageManager: ObservableObject {
       }
     }
   }
-
-  @Published var pendingChanges = [PendingChange]() {
-    didSet {
-      DispatchQueue.main.async {
-        self.defaults.set(self.pendingChanges, forKey: self.pendingChangesKey)
-        self.objectWillChange.send()
-      }
-    }
-  }
     
     @Published var lastTime: Date? {
         didSet {
@@ -107,18 +98,6 @@ class StorageManager: ObservableObject {
     self.passTemp = defaults.string(forKey: passTempKey)
     self.synchronized = defaults.bool(forKey: synchronizedKey)
       self.phoneCongregationName = defaults.string(forKey: phoneCongregationNameKey)
-    if let data = defaults.data(forKey: pendingChangesKey) {
-      do {
-        // Create JSON Decoder
-        let decoder = JSONDecoder()
-
-        // Decode Note
-        _ = try decoder.decode([PendingChange].self, from: data)
-
-      } catch {
-        print("Unable to Decode Note (\(error))")
-      }
-    }
   }
 
   func clear() {

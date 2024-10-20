@@ -1,7 +1,6 @@
 import Foundation
 import PDFKit
 import SwiftUI
-import ZIPFoundation
 import Nuke
 
 actor ProgressTracker {
