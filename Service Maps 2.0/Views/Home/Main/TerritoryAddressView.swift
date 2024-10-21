@@ -229,13 +229,13 @@ struct TerritoryAddressView: View {
                 }
             }
             .navigationTransition(viewModel.presentSheet || viewModel.territoryAddressIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-            .onChange(of: viewModel.dataStore.synchronized) { value in
-                if value {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        viewModel.getAddresses()
-                    }
-                }
-            }
+//            .onChange(of: viewModel.dataStore.synchronized) { value in
+//                if value {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                        viewModel.getAddresses()
+//                    }
+//                }
+//            }
         }.overlay(ImageViewerRemote(imageURL: $imageURL, viewerShown: $viewModel.showImageViewer))
     }
     
@@ -425,7 +425,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
                                        // self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        self.viewModel.getAddresses()
+                                        //self.viewModel.getAddresses()
                                         self.viewModel.loading = false
                                         //self.viewModel.showAlert = false
                                         dismiss()
@@ -478,7 +478,7 @@ struct CentrePopup_AddAddress: CentrePopup {
                 viewModel.presentSheet = false
                 dismiss()
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                viewModel.getAddresses()
+                //viewModel.getAddresses()
                 viewModel.showAddedToast = true
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

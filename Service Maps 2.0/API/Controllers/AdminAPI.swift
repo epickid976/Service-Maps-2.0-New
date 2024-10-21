@@ -19,13 +19,18 @@ class AdminAPI: ApiService {
             
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
+            
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
             
             let allDataResponse = try decoder.decode(AllDataResponse.self, from: jsonData)
             
             return allDataResponse
         } catch {
-            
+            print(error)
             throw error.self
         }
     }
@@ -36,12 +41,18 @@ class AdminAPI: ApiService {
             
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
+            
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
             
             let reply = try decoder.decode(AllPhoneDataResponse.self, from: jsonData)
             
             return Result.success(reply)
         } catch {
+            print(error)
             return Result.failure(error)
         }
     }

@@ -180,19 +180,18 @@ struct VisitsView: View {
                         .refreshable {
                            viewModel.synchronizationManager.startupProcess(synchronizing: true)
                         }
-                        .onChange(of: viewModel.dataStore.synchronized) { value in
-                            if value {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    viewModel.getVisits()
-                                }
-                            }
-                        }
-                        .onChange(of: realtimeManager.lastMessage) { value in
-                            if value != nil {
-                                viewModel.getVisits()
-                            }
-                            
-                        }
+//                        .onChange(of: viewModel.dataStore.synchronized) { value in
+//                            if value {
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                                    viewModel.getVisits()
+//                                }
+//                            }
+//                        }
+//                        .onChange(of: realtimeManager.lastMessage) { value in
+//                            if value != nil {
+//                                viewModel.getVisits()
+//                            }
+//                        }
                     
                         .onChange(of: viewModel.visitIdToScrollTo) { id in
                             if let id = id {
@@ -347,14 +346,15 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                                 case .success(_):
                                     withAnimation {
                                         //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        self.viewModel.getVisits()
+                                        //self.viewModel.getVisits()
                                         self.viewModel.loading = false
+                                    }
                                         //self.showAlert = false
                                         dismiss()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.visitToDelete = nil
                                         self.viewModel.showToast = true
-                                    }
+                                    
                                 case .failure(_):
                                     withAnimation {
                                         self.viewModel.loading = false
@@ -394,12 +394,6 @@ struct CentrePopup_AddVisit: CentrePopup {
     
     func createContent() -> some View {
         AddVisitView(visit: viewModel.currentVisit, house: house) {
-            DispatchQueue.main.async {
-                
-                withAnimation {
-                    viewModel.getVisits()
-                }
-            }
             
                 viewModel.presentSheet = false
                 dismiss()
@@ -553,7 +547,7 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                         
                     }
                     Task {
-                        switch await viewModel.deleteRecall(user: user ?? "", house: house) {
+                        switch await viewModel.deleteRecall(id: viewModel.getRecallId(house: house) ?? Date().millisecondsSince1970 ,user: user ?? "", house: house) {
                         case .success(let success):
                             viewModel.loading = false
                             dismiss()

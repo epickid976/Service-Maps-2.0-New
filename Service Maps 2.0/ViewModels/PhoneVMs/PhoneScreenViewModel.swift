@@ -60,7 +60,7 @@ class PhoneScreenViewModel: ObservableObject {
     @Published var showAddedToast = false
     
     func deleteTerritory(territory: String) async -> Result<Bool, Error> {
-        return await dataUploaderManager.deleteTerritory(territoryId: territory)
+        return await dataUploaderManager.deletePhoneTerritory(territoryId: territory)
     }
     
     @Published var search: String = "" {

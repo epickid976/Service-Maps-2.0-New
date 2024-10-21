@@ -77,9 +77,7 @@ struct AddVisitView: View {
                                     switch result {
                                     case .success(_):
                                         HapticManager.shared.trigger(.success)
-                                        DispatchQueue.main.async {
                                             onDone()
-                                        }
                                     case .failure(_):
                                         HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error updating Visit.", comment: "")
@@ -95,9 +93,7 @@ struct AddVisitView: View {
                                     switch result {
                                     case .success(_):
                                         HapticManager.shared.trigger(.success)
-                                        DispatchQueue.main.async {
                                             onDone()
-                                        }
                                     case .failure(_):
                                         HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error adding Visit.", comment: "")

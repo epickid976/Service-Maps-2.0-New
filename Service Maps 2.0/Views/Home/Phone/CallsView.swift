@@ -175,19 +175,19 @@ struct CallsView: View {
                         .refreshable {
                             viewModel.synchronizationManager.startupProcess(synchronizing: true)
                         }
-                        .onChange(of: viewModel.dataStore.synchronized) { value in
-                            if value {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    viewModel.getCalls()
-                                }
-                            }
-                        }
-                        .onChange(of: realtimeManager.lastMessage) { value in
-                            if value != nil {
-                                viewModel.getCalls()
-                            }
-                            
-                        }
+//                        .onChange(of: viewModel.dataStore.synchronized) { value in
+//                            if value {
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                                    viewModel.getCalls()
+//                                }
+//                            }
+//                        }
+//                        .onChange(of: realtimeManager.lastMessage) { value in
+//                            if value != nil {
+//                                viewModel.getCalls()
+//                            }
+//                            
+//                        }
                         .onChange(of: viewModel.callToScrollTo) { id in
                             if let id = id {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -347,7 +347,6 @@ struct CentrePopup_DeleteCall: CentrePopup {
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        self.viewModel.getCalls()
                                         self.viewModel.loading = false
                                         dismiss()
                                         self.viewModel.ifFailed = false
@@ -400,7 +399,6 @@ struct CentrePopup_AddCall: CentrePopup {
                 viewModel.presentSheet = false
                 dismiss()
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                viewModel.getCalls()
                 viewModel.showAddedToast = true
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

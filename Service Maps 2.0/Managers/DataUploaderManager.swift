@@ -35,6 +35,7 @@ class DataUploaderManager: ObservableObject {
             } else {
                 try await adminApi.addTerritory(territory: territory, image: image!)
             }
+            
             _ = await grdbManager.addAsync(territory)
             return .success(true)
         } catch {

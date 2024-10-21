@@ -134,32 +134,29 @@ struct TerritoryView: View {
                                                     if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                         territoryHeader(dataWithKeys: dataWithKeys)
                                                             .modifier(ScrollTransitionModifier())
+                                                        
                                                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                            
                                                             ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
                                                                 territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                    .id(territoryData.territory.id)
-                                                                    .transition(.customBackInsertion)
-                                                            }.modifier(ScrollTransitionModifier()).animation(.spring(), value: dataWithKeys.territoriesData)
-                                                            
+                                                                    .id(territoryData.territory.id) // Ensure unique ID here
+                                                                    .transition(.move(edge: .leading)) // Apply a move transition on the cell
+                                                                    .animation(.spring(), value: dataWithKeys.territoriesData) // Only animate this specific cell's change
+                                                            }
                                                         }
-                                                        //.animation(.spring(), value: viewModel.territoryData)
                                                     } else {
                                                         territoryHeader(dataWithKeys: dataWithKeys)
                                                             .modifier(ScrollTransitionModifier())
+                                                        
                                                         LazyVGrid(columns: [GridItem(.flexible())]) {
-                                                            
                                                             ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
                                                                 territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                    .id(territoryData.territory.id)
-                                                                //.modifier(ScrollTransitionModifier())
-                                                                    .transition(.customBackInsertion)
-                                                            }.modifier(ScrollTransitionModifier()).animation(.spring(), value: dataWithKeys.territoriesData)
-                                                            
+                                                                    .id(territoryData.territory.id) // Ensure unique ID here
+                                                                    .transition(.move(edge: .leading)) // Apply a move transition
+                                                                    .animation(.spring(), value: dataWithKeys.territoriesData) // Only animate this specific cell
+                                                            }
                                                         }
                                                     }
-                                                }//.transition(.customBackInsertion)
-                                                
+                                                }
                                             }
                                         }
                                     }
@@ -292,7 +289,7 @@ struct TerritoryView: View {
                             .onChange(of: viewModel.dataStore.synchronized) { value in
                                 if value {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                        // viewModel.getTerritories()
+                                            viewModel.getTerritories()
                                     }
                                 }
                             }

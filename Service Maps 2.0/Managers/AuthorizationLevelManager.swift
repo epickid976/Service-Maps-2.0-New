@@ -87,19 +87,32 @@ class AuthorizationLevelManager: ObservableObject {
     
     // Find a token for the given model
     func findToken<T>(model: T) -> Token? where T: FetchableRecord & MutablePersistableRecord {
-        switch model {
-        case let territory as Territory:
-            return findToken(territory: territory)
-        case let territoryAddress as TerritoryAddress:
-            return findToken(territoryAddress: territoryAddress)
-        case let house as House:
-            return findToken(house: house)
-        case let visit as Visit:
-            return findToken(visit: visit)
-        default:
-            return nil
+            do {
+                return try grdbManager.dbPool.read { db in
+                    switch model {
+                    case let territory as Territory:
+                        return try self.findTokenForTerritory(territory.id, in: db)
+                    case let territoryAddress as TerritoryAddress:
+                        return try self.findTokenForTerritory(territoryAddress.territory, in: db)
+                    case let house as House:
+                        if let territoryAddress = try TerritoryAddress.filter(Column("id") == house.territory_address).fetchOne(db) {
+                            return try self.findTokenForTerritory(territoryAddress.territory, in: db)
+                        }
+                    case let visit as Visit:
+                        if let house = try House.filter(Column("id") == visit.house).fetchOne(db),
+                           let territoryAddress = try TerritoryAddress.filter(Column("id") == house.territory_address).fetchOne(db) {
+                            return try self.findTokenForTerritory(territoryAddress.territory, in: db)
+                        }
+                    default:
+                        return nil
+                    }
+                    return nil
+                }
+            } catch {
+                print("Error fetching token: \(error)")
+                return nil
+            }
         }
-    }
     
     // Check if admin credentials exist
     func existsAdminCredentials() -> Bool {
@@ -119,34 +132,28 @@ class AuthorizationLevelManager: ObservableObject {
     }
     
     // Find token for a territory using GRDB
-    func findToken(territory: Territory) -> Token? {
-        do {
-            return try grdbManager.dbPool.read { db in
-                let tokenTerritories = try TokenTerritory.filter(Column("territory") == territory.id).fetchAll(db)
-                let tokens = try Token.fetchAll(db)
-                
-                for tokenTerritory in tokenTerritories {
-                    if let token = tokens.first(where: { $0.id == tokenTerritory.token }) {
-                        if token.moderator {
-                            return token
-                        }
-                    }
-                }
-                
-                return tokens.first(where: { $0.expire ?? Int64(Date().timeIntervalSince1970 * 1000) >= Int64(Date().timeIntervalSince1970 * 1000) })
+    private func findTokenForTerritory(_ territoryId: String, in db: Database) throws -> Token? {
+            let tokenTerritories = try TokenTerritory.filter(Column("territory") == territoryId).fetchAll(db)
+            let tokenIds = tokenTerritories.map { $0.token }
+            
+            // First, try to find a moderator token
+            if let moderatorToken = try Token.filter(tokenIds.contains(Column("id")) && Column("moderator") == true).fetchOne(db) {
+                return moderatorToken
             }
-        } catch {
-            print("Error fetching token for territory: \(error)")
-            return nil
+            
+            // If no moderator token, find the earliest non-expired token
+            let currentTimestamp = Int64(Date().timeIntervalSince1970 * 1000)
+            return try Token.filter(tokenIds.contains(Column("id")) && (Column("expire") >= currentTimestamp || Column("expire") == nil))
+                .order(Column("expire").asc)
+                .fetchOne(db)
         }
-    }
     
     // Find token for a territory address
     func findToken(territoryAddress: TerritoryAddress) -> Token? {
         do {
             return try grdbManager.dbPool.read { db in
                 if let territory = try Territory.filter(Column("id") == territoryAddress.territory).fetchOne(db) {
-                    return findToken(territory: territory)
+                    return findToken(model: territory)
                 }
                 return nil
             }

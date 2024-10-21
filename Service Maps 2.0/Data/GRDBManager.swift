@@ -103,9 +103,9 @@ class GRDBManager: ObservableObject {
         // Migration to create the "token_territories" table
         migrator.registerMigration("createTokenTerritories") { db in
             try db.create(table: "token_territories") { t in
-                t.column("id", .text).primaryKey()
-                t.column("token", .text).notNull() // Removed .references("tokens", onDelete: .cascade)
-                t.column("territory", .text).notNull() // Removed .references("territories", onDelete: .cascade)
+                t.column("token", .text).notNull()
+                t.column("territory", .text).notNull()
+                t.primaryKey(["token", "territory"]) // Composite primary key
             }
         }
         
@@ -155,7 +155,7 @@ class GRDBManager: ObservableObject {
         
         migrator.registerMigration("createRecalls") { db in
             try db.create(table: "recalls") { t in
-                t.column("id", .integer).primaryKey()
+                t.column("id", .integer).primaryKey(autoincrement: true)
                 t.column("user", .text).notNull()
                 t.column("house", .text).notNull() // Removed .references("houses", onDelete: .cascade)
             }
@@ -172,7 +172,7 @@ class GRDBManager: ObservableObject {
         do {
             try dbPool.write { db in  // Use dbPool.write for writes
                 var object = object
-                try object.insert(db)
+                try object.insert(db, onConflict: .replace)
             }
             return .success(())
         } catch {
@@ -184,7 +184,7 @@ class GRDBManager: ObservableObject {
     func edit<T: MutablePersistableRecord>(_ object: T) -> Result<Void, Error> {
         do {
             try dbPool.write { db in
-                try object.update(db)
+                try object.update(db, onConflict: .replace)
             }
             return .success(())
         } catch {
@@ -236,7 +236,8 @@ class GRDBManager: ObservableObject {
         do {
             try await dbPool.write { db in
                 var mutableObject = object  // Make a mutable copy inside the write block
-                try mutableObject.insert(db)  // Now insert the mutable object
+                
+                try mutableObject.insert(db, onConflict: .replace)  // Now insert the mutable object
             }
             return .success("Added successfully")
         } catch {
@@ -248,7 +249,7 @@ class GRDBManager: ObservableObject {
     func editAsync<T: MutablePersistableRecord>(_ object: T) async -> Result<String, Error> {
         do {
             try await dbPool.write { db in
-                try object.update(db)
+                try object.update(db, onConflict: .replace)
             }
             return .success("Edited successfully")
         } catch {
@@ -274,7 +275,7 @@ class GRDBManager: ObservableObject {
             try await dbPool.write { db in
                 for object in objects {
                     var mutableObject = object // Make a mutable copy inside the write block
-                    try mutableObject.insert(db)
+                    try mutableObject.insert(db, onConflict: .replace)
                 }
             }
             return .success("Bulk added successfully")
@@ -288,11 +289,14 @@ class GRDBManager: ObservableObject {
         do {
             try await dbPool.write { db in
                 for object in objects {
-                    try object.delete(db)
+                    print("Deleting object: \(object)")
+                    try object.delete(db) // Log before deletion
                 }
             }
+            print("All objects deleted successfully")
             return .success("Bulk deleted successfully")
         } catch {
+            print("Error during deletion: \(error)")
             return .failure(error)
         }
     }
@@ -302,7 +306,7 @@ class GRDBManager: ObservableObject {
         do {
             try await dbPool.write { db in
                 for object in objects {
-                    try object.update(db)
+                    try object.update(db, onConflict: .replace)
                 }
             }
             return .success("Bulk edited successfully")
@@ -686,36 +690,38 @@ class GRDBManager: ObservableObject {
                 .catch { _ in Just([]) } // Handle errors by emitting an empty array
                 .setFailureType(to: Never.self)
         )
-            .flatMap { keyData -> AnyPublisher<[KeyData], Never> in
-                let myTokens = keyData.0
-                let allTerritoriesDb = keyData.1
-                let tokenTerritories = keyData.2
-                var data = [KeyData]()
+        .flatMap { (tokens: [Token], allTerritories: [Territory], tokenTerritories: [TokenTerritory]) -> AnyPublisher<[KeyData], Never> in
+            
+            var data: [KeyData] = []
+            
+            // Iterate through tokens and create KeyData
+            for token in tokens {
+                // Create an array to collect unique territories (use a dictionary to avoid duplicates)
+                var uniqueTerritories: [Territory] = []
+                var seenTerritoryIDs: Set<String> = [] // Store IDs to check for duplicates
                 
-                // For each token, find the associated territories
-                for token in myTokens {
-                    var territories = [Territory]()
-                    
-                    tokenTerritories.filter { $0.token == token.id }.forEach { tokenTerritory in
-                        if let territory = allTerritoriesDb.first(where: { $0.id == tokenTerritory.territory }) {
-                            territories.append(territory)
-                        }
+                // Find associated territories for the token
+                let associatedTokenTerritories = tokenTerritories.filter { $0.token == token.id }
+                
+                for tokenTerritory in associatedTokenTerritories {
+                    // Find the territory and ensure it's not a duplicate
+                    if let territory = allTerritories.first(where: { $0.id == tokenTerritory.territory }), !seenTerritoryIDs.contains(territory.id) {
+                        uniqueTerritories.append(territory)
+                        seenTerritoryIDs.insert(territory.id)
                     }
-                    
-                    // Append KeyData with sorted territories
-                    data.append(
-                        KeyData(
-                            id: UUID(),
-                            key:  token,
-                            territories: territories)
-                    )
                 }
                 
-                // Sort the data by token name and return as a publisher
-                return Just(data.sorted { $0.key.name < $1.key.name })
-                    .eraseToAnyPublisher()
+                // Append sorted KeyData
+                let sortedTerritories = uniqueTerritories.sorted(by: { $0.number < $1.number })
+                let keyData = KeyData(id: UUID(), key: token, territories: sortedTerritories)
+                data.append(keyData)
             }
-            .eraseToAnyPublisher()
+            
+            // Return the data sorted by token name
+            let sortedData = data.sorted { $0.key.name < $1.key.name }
+            return Just(sortedData).eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
         
         return flow
     }
@@ -1292,6 +1298,17 @@ class GRDBManager: ObservableObject {
             }
         } catch {
             return false
+        }
+    }
+    
+    func findRecallId(house: String) -> Int64? {
+        do {
+            return try dbPool.read { db in
+                let recall = try Recalls.filter(Column("house") == house).fetchOne(db)
+                return recall?.id
+            }
+        } catch {
+            return nil
         }
     }
 }

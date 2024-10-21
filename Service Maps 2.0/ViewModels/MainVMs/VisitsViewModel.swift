@@ -72,8 +72,12 @@ class VisitsViewModel: ObservableObject {
         return await dataUploaderManager.addRecall(user: user, house: house)
     }
 
-    func deleteRecall(user: String, house: String) async -> Result<Bool, Error> {
-        return await dataUploaderManager.deleteRecall(recall: Recalls(id: Date.now.millisecondsSince1970, user: user, house: house))
+    func deleteRecall(id: Int64, user: String, house: String) async -> Result<Bool, Error> {
+        return await dataUploaderManager.deleteRecall(recall: Recalls(id: id, user: user, house: house))
+    }
+    
+    func getRecallId(house: String) async -> Int64? {
+        return GRDBManager.shared.findRecallId(house: house)
     }
 }
 

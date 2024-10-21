@@ -178,13 +178,13 @@ struct HousesView: View {
                                 hideFloatingButton = false
                             }
                         }
-                        .onChange(of: viewModel.dataStore.synchronized) { value in
-                            if value {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    viewModel.getHouses()
-                                }
-                            }
-                        }
+//                        .onChange(of: viewModel.dataStore.synchronized) { value in
+//                            if value {
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                                    viewModel.getHouses()
+//                                }
+//                            }
+//                        }
                         .onChange(of: viewModel.houseIdToScrollTo) { id in
                             if let id = id {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -347,16 +347,13 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        self.viewModel.getHouses()
+                                       // self.viewModel.getHouses()
                                         self.viewModel.loading = false
                                         //self.showAlert = false
                                         dismiss()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.houseToDelete = (nil,nil)
                                         self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showToast = false
-                                        }
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -402,9 +399,9 @@ struct CentrePopup_AddHouse: CentrePopup {
                 viewModel.presentSheet = false
                 dismiss()
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                DispatchQueue.main.async {
-                    viewModel.getHouses()
-                }
+//                DispatchQueue.main.async {
+//                    viewModel.getHouses()
+//                }
                 viewModel.showAddedToast = true
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

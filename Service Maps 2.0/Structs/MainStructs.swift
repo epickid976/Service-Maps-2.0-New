@@ -143,7 +143,7 @@ struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Has
     }
 }
 
-struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable {
     
     var token: String
     var territory: String
@@ -153,23 +153,24 @@ struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equat
         hasher.combine(territory)
     }
     
-    // This `id` will not be decoded from JSON
-    var id: String {
-        return "\(token)_\(territory)"
-    }
-    
-    // Define custom CodingKeys to omit the id
+    // Define custom CodingKeys to ensure `id` is not used during encoding/decoding
     enum CodingKeys: String, CodingKey {
         case token
         case territory
     }
     
-    // Define primary key
+    // Define primary key as an array of both `token` and `territory`
     static var databaseTableName: String {
         return "token_territories"
     }
     
+    // Using an array to specify composite primary keys
     static var primaryKey: [String] {
         return ["token", "territory"]
+    }
+    
+    // Equatable comparison
+    static func == (lhs: TokenTerritory, rhs: TokenTerritory) -> Bool {
+        return lhs.token == rhs.token && lhs.territory == rhs.territory
     }
 }

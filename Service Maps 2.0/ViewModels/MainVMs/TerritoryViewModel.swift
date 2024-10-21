@@ -23,10 +23,10 @@ class TerritoryViewModel: ObservableObject {
     private var recentCancellables = Set<AnyCancellable>()
     
     // Published variables to update the UI
-    @Published var territoryData: [TerritoryDataWithKeys]? = nil 
+    @Published var territoryData: [TerritoryDataWithKeys]? = nil
     @Published var recentTerritoryData: [RecentTerritoryData]? = nil
     @Published var currentTerritory: Territory?
-
+    
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     
     // State variables for UI
@@ -53,7 +53,7 @@ class TerritoryViewModel: ObservableObject {
     }
     
     @Published var territoryToDelete: (String? , String?) = (nil,nil)
-
+    
     @Published var searchActive = false
     @Published var showAlert = false
     @Published var ifFailed = false
@@ -63,22 +63,22 @@ class TerritoryViewModel: ObservableObject {
     @Published var territoryIdToScrollTo: String?
     @Published var backAnimation = false
     
-
+    
     init(territoryIdToScrollTo: String? = nil) {
         getTerritories(territoryIdToScrollTo: territoryIdToScrollTo)
         getRecentTerritories()
     }
-
+    
     func deleteTerritory(territory: String) async -> Result<Bool, Error> {
         return await dataUploaderManager.deleteTerritory(territoryId: territory)
     }
-
+    
     func processData(dataWithKeys: TerritoryDataWithKeys) -> String {
         dataWithKeys.keys.sorted { $0.name < $1.name }
             .map { $0.name }
             .joined(separator: ", ")
     }
-
+    
     func getLastTime() -> Date? {
         return dataStore.lastTime
     }
@@ -103,11 +103,19 @@ extension TerritoryViewModel {
                 let sortedTerritoryData = territoryData.sorted {
                     ($0.keys.first?.name ?? "") < ($1.keys.first?.name ?? "")
                 }
-                DispatchQueue.main.async {
-                    self?.territoryData = []
-                }
-                DispatchQueue.main.async {
-                    self?.territoryData? = sortedTerritoryData
+                if self?.territoryData == nil {
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            self?.territoryData = sortedTerritoryData
+                        }
+                    }
+                } else {
+                    // If territoryData is already set, simply update it with sorted data
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            self?.territoryData? = sortedTerritoryData
+                        }
+                    }
                 }
                 
                 if let territoryIdToScrollTo = territoryIdToScrollTo {
@@ -118,7 +126,7 @@ extension TerritoryViewModel {
             })
             .store(in: &cancellables)
     }
-
+    
     // Fetching Recent Territory data from GRDB using Combine
     func getRecentTerritories() {
         GRDBManager.shared.getRecentTerritoryData()  // Calls the GRDB function to get recent territories

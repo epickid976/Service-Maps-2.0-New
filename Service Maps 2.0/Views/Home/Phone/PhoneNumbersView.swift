@@ -207,13 +207,13 @@ struct PhoneNumbersView: View {
                 }
             }
             .navigationTransition(viewModel.presentSheet || viewModel.phoneNumberToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-            .onChange(of: viewModel.dataStore.synchronized) { value in
-                if value {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        viewModel.getNumbers()
-                    }
-                }
-            }
+//            .onChange(of: viewModel.dataStore.synchronized) { value in
+//                if value {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                        viewModel.getNumbers()
+//                    }
+//                }
+//            }
         }
     }
     
@@ -601,15 +601,12 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        self.viewModel.getNumbers()
+                                        //self.viewModel.getNumbers()
                                         self.viewModel.loading = false
                                         dismiss()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.numberToDelete = (nil,nil)
                                         self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showToast = false
-                                        }
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -654,12 +651,12 @@ struct CentrePopup_AddNumber: CentrePopup {
                 viewModel.presentSheet = false
                 dismiss()
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                viewModel.getNumbers()
+                //viewModel.getNumbers()
                 viewModel.showAddedToast = true
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    viewModel.showAddedToast = false
-                }
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                    viewModel.showAddedToast = false
+//                }
             }
         }, onDismiss: {
             viewModel.presentSheet = false

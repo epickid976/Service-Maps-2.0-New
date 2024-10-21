@@ -36,27 +36,37 @@ class ApiRequestAsync {
         }
     }
     
-    func postRequest<T: Encodable>(url:String, body: T) async throws -> String {
+    func postRequest<T: Encodable>(url: String, body: T) async throws -> String {
         try await withUnsafeThrowingContinuation { continuation in
             
-            AF.request("\(baseURL)\(url)", method: .post, parameters: body, encoder: JSONParameterEncoder.default, headers: getHeaders()).validate().responseString { response in
-                if let string = response.value {
+            AF.request("\(baseURL)\(url)", method: .post, parameters: body, encoder: JSONParameterEncoder.default, headers: getHeaders())
+                .validate()
+                .responseData { response in
                     
-                    continuation.resume(returning: string)
-                    return
+                    // Print the full response for debugging
+                    if let data = response.data {
+                        if let responseBody = String(data: data, encoding: .utf8) {
+                            print("Full Response Body: \(responseBody)")
+                        }
+                    }
+                    
+                    // Print status code and headers
+                    print("Status Code: \(response.response?.statusCode ?? 0)")
+                    print("Headers: \(response.response?.allHeaderFields ?? [:])")
+                    
+                    // Handle the response string
+                    switch response.result {
+                    case .success(let data):
+                        if let responseString = String(data: data, encoding: .utf8) {
+                            continuation.resume(returning: responseString)
+                        } else {
+                            continuation.resume(throwing: URLError(.badServerResponse))
+                        }
+                    case .failure(let error):
+                        print("Error: \(error)")
+                        continuation.resume(throwing: error)
+                    }
                 }
-                if let err = response.error {
-                    
-                    
-                    
-                    continuation.resume(throwing: err)
-                    return
-                }
-                
-                fatalError("POST Request Failed")
-                
-            }
-            //
         }
     }
     

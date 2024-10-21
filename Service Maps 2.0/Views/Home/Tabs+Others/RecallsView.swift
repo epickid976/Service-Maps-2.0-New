@@ -94,18 +94,18 @@ struct RecallsView: View {
                     }.refreshable {
                         viewModel.synchronizationManager.startupProcess(synchronizing: true)
                     }
-                    .onChange(of: viewModel.dataStore.synchronized) { value in
-                        if value {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                viewModel.getRecalls()
-                            }
-                        }
-                    }
-                    .onChange(of: RealtimeManager.shared.lastMessage) { value in
-                        if value != nil {
-                            viewModel.getRecalls()
-                        }
-                    }
+//                    .onChange(of: viewModel.dataStore.synchronized) { value in
+//                        if value {
+//                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                                viewModel.getRecalls()
+//                            }
+//                        }
+//                    }
+//                    .onChange(of: RealtimeManager.shared.lastMessage) { value in
+//                        if value != nil {
+//                            viewModel.getRecalls()
+//                        }
+//                    }
                     
                     
                 }

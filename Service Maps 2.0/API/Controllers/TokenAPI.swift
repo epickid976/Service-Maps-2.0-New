@@ -17,14 +17,22 @@ class TokenAPI {
         do {
             let response = try await ApiRequestAsync().getRequest(url: baseURL + "loadown")
             
+            print("Response: \(response)")
+            
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
+            
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
             
             let reply = try decoder.decode([Token].self, from: jsonData)
             
             return reply
         } catch {
+            print(error)
             throw error.self
         }
     }
@@ -35,14 +43,22 @@ class TokenAPI {
         do {
             let response = try await ApiRequestAsync().getRequest(url: baseURL + "loaduser")
             
+            print("Response: \(response)")
+            
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
+            
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
             
             let reply = try decoder.decode([Token].self, from: jsonData)
             
             return reply
         } catch {
+            print(error)
             throw error.self
         }
     }
@@ -52,15 +68,22 @@ class TokenAPI {
         do {
             let response = try await ApiRequestAsync().getRequest(url: baseURL + "territories/\(token)")
             
+            print("Response: \(response)")
+            
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
+            
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
             
             let reply = try decoder.decode([TokenTerritory].self, from: jsonData)
             
             return reply
         } catch {
-            
+            print(error)
             throw error.self
         }
     }
@@ -150,39 +173,39 @@ class TokenAPI {
     }
     
     func createTokenManually(from jsonData: Data) throws -> Token {
-      guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
-          throw CustomErrors.NotFound // Define an error type
-      }
-
-      var name: String = ""
-      var id: String = ""
-      var owner: String? = nil
-      var congregation: String = ""
-      var moderator: Bool = false
-      var expire: Int64? = nil
-      var user: String? = nil
-
-      if let nameValue = jsonDictionary["name"] as? String {
-        name = nameValue
-      }
-
-      if let idValue = jsonDictionary["id"] as? String {
-        id = idValue
-      }
-
-      // Handle optional properties
-      owner = jsonDictionary["owner"] as? String
-      congregation = String(describing: jsonDictionary["congregation"] ?? "") // Handle potential non-string value
-
-      if let moderatorValue = jsonDictionary["moderator"] as? Bool {
-        moderator = moderatorValue
-      }
-
-      expire = jsonDictionary["expire"] as? Int64
-
-      user = jsonDictionary["user"] as? String
-
+        guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
+            throw CustomErrors.NotFound // Define an error type
+        }
+        
+        var name: String = ""
+        var id: String = ""
+        var owner: String? = nil
+        var congregation: String = ""
+        var moderator: Bool = false
+        var expire: Int64? = nil
+        var user: String? = nil
+        
+        if let nameValue = jsonDictionary["name"] as? String {
+            name = nameValue
+        }
+        
+        if let idValue = jsonDictionary["id"] as? String {
+            id = idValue
+        }
+        
+        // Handle optional properties
+        owner = jsonDictionary["owner"] as? String
+        congregation = String(describing: jsonDictionary["congregation"] ?? "") // Handle potential non-string value
+        
+        if let moderatorValue = jsonDictionary["moderator"] as? Bool {
+            moderator = moderatorValue
+        }
+        
+        expire = jsonDictionary["expire"] as? Int64
+        
+        user = jsonDictionary["user"] as? String
+        
         return Token(id: id, name: name, owner: owner ?? "", congregation: congregation, moderator: moderator, expire: expire, user: user)
     }
-
+    
 }

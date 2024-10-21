@@ -87,6 +87,7 @@ class UserAPI {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/add", body: visit)
         } catch {
+            print(error)
             throw error.self
         }
     }

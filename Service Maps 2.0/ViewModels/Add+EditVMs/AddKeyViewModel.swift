@@ -102,36 +102,50 @@ class AddKeyViewModel: ObservableObject {
 
     func toggleSelection(for territoryData: TerritoryData) {
         HapticManager.shared.trigger(.selectionChanged)
-        if self.selectedTerritories.contains(territoryData) {
-            if let index = self.selectedTerritories.firstIndex(of: territoryData) {
-                self.selectedTerritories.remove(at: index)
-                // Force view update by reassigning the array
-                self.selectedTerritories = self.selectedTerritories
-            }
+        if let index = self.selectedTerritories.firstIndex(of: territoryData) {
+            self.selectedTerritories.remove(at: index)
         } else {
-            self.selectedTerritories.append(territoryData)
-            // Force view update by reassigning the array
-            self.selectedTerritories = self.selectedTerritories
+            // Avoid adding duplicates
+            if !self.selectedTerritories.contains(territoryData) {
+                self.selectedTerritories.append(territoryData)
+            }
         }
+        // Force view update by reassigning the array
+        self.selectedTerritories = self.selectedTerritories
     }
     
     func addToken() async -> Result<Bool, Error> {
         withAnimation {
             loading = true
         }
+        
+        // Create token object
         let tokenObject = Token(id: "", name: name, owner: "", congregation: dataStore.congregationName ?? "", moderator: servant)
         
-        var territories = [String]()
-        var territoryObjects = [Territory]()
+        // Collect territories and avoid duplicates using a Set
+        var territoriesSet = Set<String>()
+        var territoryObjectsSet = Set<Territory>()
         
+        // Populate the territories from selectedTerritories
         selectedTerritories.forEach { territory in
-            territories.append(territory.territory.id)
-            territoryObjects.append(territory.territory)
+            territoriesSet.insert(territory.territory.id)  // Use Set to avoid duplicates
+            territoryObjectsSet.insert(territory.territory)
         }
-        if keyData != nil {
-            return await dataUploader.editToken(token: keyData!.key.id, territories:  territoryObjects)
+        
+        if let keyData = keyData {
+            // Editing existing token
+            return await dataUploader.editToken(token: keyData.key.id, territories: Array(territoryObjectsSet)) // Convert set back to array
         } else {
-            switch await dataUploader.createToken(newTokenForm: NewTokenForm(name: tokenObject.name, moderator: tokenObject.moderator, territories: territories.description, congregation: AuthorizationProvider.shared.congregationId ?? 0, expire: tokenObject.expire), territories: territoryObjects) {
+            // Creating a new token
+            let newTokenForm = NewTokenForm(
+                name: tokenObject.name,
+                moderator: tokenObject.moderator,
+                territories: Array(territoriesSet).description,  // Convert set to array and description
+                congregation: AuthorizationProvider.shared.congregationId ?? 0,
+                expire: tokenObject.expire
+            )
+            
+            switch await dataUploader.createToken(newTokenForm: newTokenForm, territories: Array(territoryObjectsSet)) {
             case .success(_):
                 return Result.success(true)
             case .failure(let error):
@@ -178,34 +192,42 @@ extension AddKeyViewModel {
                     print("Error retrieving territory data: \(error)")
                 }
             }, receiveValue: { territoryData in
-                self.territoryData = territoryData
+                self.territoryData = territoryData.sorted {
+                    ($0.keys.first?.name ?? "") < ($1.keys.first?.name ?? "")
+                }
             })
             .store(in: &cancellables)
     }
     
     func getTerritories(withTerritories selectedTerritories: [Territory]) {
         GRDBManager.shared.getTerritoryData()
-                .receive(on: DispatchQueue.main)
-                .map { territoryDataWithKeys -> [TerritoryDataWithKeys] in
-                    // Filter the territories based on selected Territory objects
-                    return territoryDataWithKeys.map { dataWithKeys in
-                        var filteredDataWithKeys = dataWithKeys
-                        filteredDataWithKeys.territoriesData = dataWithKeys.territoriesData.filter { territoryData in
-                            selectedTerritories.contains(territoryData.territory) // Compare Territory objects
-                        }
-                        return filteredDataWithKeys
-                    }.filter { !$0.territoriesData.isEmpty }
-                }
-                .sink(receiveCompletion: { completion in
-                    if case .failure(let error) = completion {
-                        print("Error retrieving territory data: \(error)")
+            .receive(on: DispatchQueue.main)
+            .map { territoryDataWithKeys -> [TerritoryDataWithKeys] in
+                // Filter the territories based on selected Territory objects
+                return territoryDataWithKeys.map { dataWithKeys in
+                    var filteredDataWithKeys = dataWithKeys
+                    filteredDataWithKeys.territoriesData = dataWithKeys.territoriesData.filter { territoryData in
+                        // Avoid re-adding duplicates
+                        !self.selectedTerritories.contains(territoryData) && selectedTerritories.contains(territoryData.territory)
                     }
-                }, receiveValue: { filteredTerritoryData in
-                    self.territoryData = filteredTerritoryData
-                    self.selectedTerritories = filteredTerritoryData.flatMap { $0.territoriesData }
-                })
-                .store(in: &cancellables)
-        }
+                    return filteredDataWithKeys
+                }.filter { !$0.territoriesData.isEmpty }
+            }
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    print("Error retrieving territory data: \(error)")
+                }
+            }, receiveValue: { filteredTerritoryData in
+                let sortedTerritoryData = filteredTerritoryData.sorted {
+                    ($0.keys.first?.name ?? "") < ($1.keys.first?.name ?? "")
+                }
+                self.territoryData = sortedTerritoryData
+                // Ensure selectedTerritories does not contain duplicates
+                let newSelected = filteredTerritoryData.flatMap { $0.territoriesData }.filter { !self.selectedTerritories.contains($0) }
+                self.selectedTerritories.append(contentsOf: newSelected)
+            })
+            .store(in: &cancellables)
+    }
 }
 
 
