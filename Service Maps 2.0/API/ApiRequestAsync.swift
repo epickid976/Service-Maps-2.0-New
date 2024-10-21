@@ -16,17 +16,17 @@ class ApiRequestAsync {
     //MARK: FUNCS
     func getRequest(url:String) async throws -> String {
         try await withUnsafeThrowingContinuation { continuation in
-            print(" Making GET: " + baseURL + url)
+            
             AF.request("\(baseURL)\(url)", method: .get, headers: getHeaders()).responseString { response in
                 if let string = response.value {
-                    print("Get Success: " + self.baseURL + url)
+                    
                     continuation.resume(returning: string)
                     return
                 }
                 if let err = response.error {
-                    print("Error: " + self.baseURL + url)
-                    print(err.asAFError?.responseCode ?? "")
-                    print(err.asAFError?.failureReason ?? "")
+                    
+                    
+                    
                     continuation.resume(throwing: err)
                     return
                 }
@@ -36,33 +36,43 @@ class ApiRequestAsync {
         }
     }
     
-    func postRequest<T: Encodable>(url:String, body: T) async throws -> String {
+    func postRequest<T: Encodable>(url: String, body: T) async throws -> String {
         try await withUnsafeThrowingContinuation { continuation in
-            print(" Making POST: " + baseURL + url)
-            AF.request("\(baseURL)\(url)", method: .post, parameters: body, encoder: JSONParameterEncoder.default, headers: getHeaders()).validate().responseString { response in
-                if let string = response.value {
-                    print("POST Success: " + self.baseURL + url)
-                    continuation.resume(returning: string)
-                    return
+            
+            AF.request("\(baseURL)\(url)", method: .post, parameters: body, encoder: JSONParameterEncoder.default, headers: getHeaders())
+                .validate()
+                .responseData { response in
+                    
+                    // Print the full response for debugging
+                    if let data = response.data {
+                        if let responseBody = String(data: data, encoding: .utf8) {
+                            print("Full Response Body: \(responseBody)")
+                        }
+                    }
+                    
+                    // Print status code and headers
+                    print("Status Code: \(response.response?.statusCode ?? 0)")
+                    print("Headers: \(response.response?.allHeaderFields ?? [:])")
+                    
+                    // Handle the response string
+                    switch response.result {
+                    case .success(let data):
+                        if let responseString = String(data: data, encoding: .utf8) {
+                            continuation.resume(returning: responseString)
+                        } else {
+                            continuation.resume(throwing: URLError(.badServerResponse))
+                        }
+                    case .failure(let error):
+                        print("Error: \(error)")
+                        continuation.resume(throwing: error)
+                    }
                 }
-                if let err = response.error {
-                    print("Error Post: " + self.baseURL + url)
-                    print(err.asAFError?.responseCode ?? "")
-                    print(err.asAFError?.failureReason ?? "")
-                    continuation.resume(throwing: err)
-                    return
-                }
-                
-                fatalError("POST Request Failed")
-                
-            }
-            //print(request.acceptableStatusCodes.debugDescription)
         }
     }
     
     func uploadWithImage(url: String, withFile image: UIImage, parameters: [String: Any] = [:]) async throws -> String {
       try await withUnsafeThrowingContinuation { continuation in
-        print("Uploading file to: " + baseURL + url)
+        
         
         AF.upload(multipartFormData: { multipartFormData in
             multipartFormData.append(image.pngData()!, withName: "file", fileName: "image.png", mimeType: "image/png")
@@ -73,16 +83,16 @@ class ApiRequestAsync {
         }, to: baseURL + url, usingThreshold: UInt64.max, method: .post, headers: getHeaders())
           .validate()
           .responseString { response in
-              print(response)
+              
             if let string = response.value {
-                print("Upload Success: " + self.baseURL + url)
+                
               continuation.resume(returning: string)
               return
             }
             if let err = response.error {
-                print("Error Uploading: " + self.baseURL + url)
-              print(err.asAFError?.responseCode ?? "")
-              print(err.asAFError?.failureReason ?? "")
+                
+              
+              
               continuation.resume(throwing: err)
               return
             }

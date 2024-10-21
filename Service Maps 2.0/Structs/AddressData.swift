@@ -8,8 +8,8 @@
 import Foundation
 
 struct AddressData: Hashable, Identifiable {
-    var id: ObjectIdentifier 
-    var address: TerritoryAddressModel
+    var id: UUID
+    var address: TerritoryAddress
     var houseQuantity: Int
     var accessLevel: AccessLevel
     

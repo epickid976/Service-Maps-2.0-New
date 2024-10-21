@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import Ably
-import RealmSwift
 
 let ABLY_KEY_SUBSCRIBE_ONLY = "DsHCCQ.qNceOA:3V_gM3AwmdS0M6zpHSRSxVSGV9HqyK6CpvvC8LB3KeQ"
 
@@ -17,10 +16,11 @@ class RealtimeManager: ObservableObject {
     
     @ObservedObject private var dataStorageProvider = StorageManager.shared
     @ObservedObject private var authorizationProvider = AuthorizationProvider.shared
-    @ObservedObject private var realmManager = RealmManager.shared
+    @ObservedObject private var grdbManager = GRDBManager.shared // GRDB Manager instead of RealmManager
     private var channel: ARTRealtimeChannel?
     private var ably: ARTRealtime?
     @Published var lastMessage: Date?
+    
     init() {
         Task {
             do {
@@ -44,9 +44,9 @@ class RealtimeManager: ObservableObject {
         let congregationId: String?
         
         if let authCongregationId = authorizationProvider.congregationId.flatMap({ String($0) }) {
-            congregationId = (authCongregationId == "0") ? self.realmManager.getAllTerritoriesDirect().first?.congregation : authCongregationId
+            congregationId = (authCongregationId == "0") ? grdbManager.fetchFirstTerritory()?.congregation : authCongregationId
         } else {
-            congregationId = self.realmManager.getAllTerritoriesDirect().first?.congregation
+            congregationId = grdbManager.fetchFirstTerritory()?.congregation
         }
         
         if let validCongregationId = congregationId {
@@ -58,42 +58,42 @@ class RealtimeManager: ObservableObject {
     }
 
     func subscribeToChanges(completion: @escaping (Result<Bool, Error>) -> Void) {
-            guard let channel = self.channel else {
-                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Channel not initialized"])))
-                return
-            }
-            
-            channel.subscribe { [weak self] message in
-                Task {
-                    do {
-                        try await self?.processMessage(message)
-                        await MainActor.run {  // Run completion on the main thread
-                            self?.lastMessage = Date()
-                            completion(.success(true))
-                        }
-                    } catch {
-                        await MainActor.run {  // Run completion on the main thread
-                            completion(.failure(error))
-                        }
+        guard let channel = self.channel else {
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Channel not initialized"])))
+            return
+        }
+
+        channel.subscribe { [weak self] message in
+            Task {
+                do {
+                    try await self?.processMessage(message)
+                    await MainActor.run {
+                        self?.lastMessage = Date()
+                        completion(.success(true))
+                    }
+                } catch {
+                    await MainActor.run {
+                        completion(.failure(error))
                     }
                 }
             }
         }
+    }
 
     func unsubscribeToChanges() {
         channel?.unsubscribe()
     }
 
     private func processMessage(_ message: ARTMessage) async throws {
-           switch message.name {
-           case "visit":
-               try await self.doVisit(message)
-           case "call":
-               try await self.doCall(message)
-           default:
-               break
-           }
-       }
+        switch message.name {
+        case "visit":
+            try await self.doVisit(message)
+        case "call":
+            try await self.doCall(message)
+        default:
+            break
+        }
+    }
 
     private func doVisit(_ message: ARTMessage) async throws {
         guard let dataString = message.data as? String else {
@@ -105,69 +105,87 @@ class RealtimeManager: ObservableObject {
         do {
             let response = try decoder.decode(UserWithDataResponse.self, from: Data(dataString.utf8))
             
-            var visit = try decoder.decode(VisitModel.self, from: Data(response.data.utf8))
+            var visit = try decoder.decode(Visit.self, from: Data(response.data.utf8)) // Use Visit struct
             visit.id = "\(visit.house)-\(visit.date)"
             
             let userWithVisit = UserWithVisit(email: response.email, visit: visit)
             
             var visitToSave = visit
             if self.dataStorageProvider.userEmail == userWithVisit.email {
-                visitToSave = visit.copy(user: self.dataStorageProvider.userEmail ?? visit.user)
+                visitToSave.user = self.dataStorageProvider.userEmail ?? visit.user
             }
             print("Visit to save: \(visitToSave)")
-            await saveVisitToRealm(visitToSave)
+            await saveVisitToDatabase(visitToSave)
         } catch {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode message data: \(error.localizedDescription)"])
         }
     }
 
-        private func doCall(_ message: ARTMessage) async throws {
-            
-            guard let dataString = message.data as? String else {
-                throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Message data is not in expected format"])
-            }
-            
-            let decoder = JSONDecoder()
-            
-            do {
-                let response = try decoder.decode(UserWithDataResponse.self, from: Data(dataString.utf8))
-                
-                var call = try decoder.decode(PhoneCallModel.self, from: Data(response.data.utf8))
-                call.id = "\(call.phonenumber)-\(call.date)"
-                
-                let userWithCall = UserWithCall(email: response.email, call: call)
-                
-                var callToSave = call
-                if self.dataStorageProvider.userEmail == userWithCall.email {
-                    callToSave = call.copy(user: self.dataStorageProvider.userEmail ?? call.user)
-                }
-                
-                await saveCallToRealm(callToSave)
-            } catch {
-                throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode message data: \(error.localizedDescription)"])
-            }
+    private func doCall(_ message: ARTMessage) async throws {
+        guard let dataString = message.data as? String else {
+            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Message data is not in expected format"])
         }
-
-    private func saveVisitToRealm(_ visit: VisitModel) async {
-        await MainActor.run {
-            if realmManager.realmDatabase.objects(VisitObject.self).filter("id == %d", visit.id).first != nil {
-               _ = self.realmManager.updateVisit(visit: visit)
-            } else {
-              _ = realmManager.addModel(VisitObject().createVisitObject(from: visit))
+        
+        let decoder = JSONDecoder()
+        
+        do {
+            let response = try decoder.decode(UserWithDataResponse.self, from: Data(dataString.utf8))
+            
+            var call = try decoder.decode(PhoneCall.self, from: Data(response.data.utf8)) // Use PhoneCall struct
+            call.id = "\(call.phonenumber)-\(call.date)"
+            
+            let userWithCall = UserWithCall(email: response.email, call: call)
+            
+            var callToSave = call
+            if self.dataStorageProvider.userEmail == userWithCall.email {
+                callToSave.user = self.dataStorageProvider.userEmail ?? call.user
             }
+            
+            await saveCallToDatabase(callToSave)
+        } catch {
+            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to decode message data: \(error.localizedDescription)"])
         }
     }
 
-    private func saveCallToRealm(_ call: PhoneCallModel) async {
-        await MainActor.run {
-            if realmManager.realmDatabase.objects(PhoneCallObject.self).filter("id == %d", call.id).first != nil {
-                _ = self.realmManager.updatePhoneCall(phoneCall: call)
-            } else {
-                _ = realmManager.addModel(PhoneCallObject().createTerritoryObject(from: call))
+    // Save Visit to GRDB
+    private func saveVisitToDatabase(_ visit: Visit) async {
+        do {
+            // Perform the synchronous database operation
+            let exists = try await grdbManager.dbPool.read { db in
+                try Visit.fetchOne(db, key: visit.id) != nil
             }
+
+            if exists {
+                // Update the visit directly (if edit doesn't throw, no need for try?)
+                _ = grdbManager.edit(visit)
+            } else {
+                // Insert new visit
+                _ = grdbManager.add(visit)
+            }
+        } catch {
+            print("Error saving visit to database: \(error)")
         }
     }
-    
+
+    private func saveCallToDatabase(_ call: PhoneCall) async {
+        do {
+            // Perform the synchronous database operation
+            let exists = try await grdbManager.dbPool.read { db in
+                try PhoneCall.fetchOne(db, key: call.id) != nil
+            }
+
+            if exists {
+                // Update the phone call directly
+                _ = grdbManager.edit(call)
+            } else {
+                // Insert new phone call
+                _ = grdbManager.add(call)
+            }
+        } catch {
+            print("Error saving phone call to database: \(error)")
+        }
+    }
+
     class var shared: RealtimeManager {
         struct Static {
             static let instance = RealtimeManager()
@@ -184,11 +202,10 @@ struct UserWithDataResponse: Codable {
 
 struct UserWithVisit: Codable {
     let email: String
-    let visit: VisitModel
+    let visit: Visit
 }
 
 struct UserWithCall: Codable {
     let email: String
-    let call: PhoneCallModel
+    let call: PhoneCall
 }
-

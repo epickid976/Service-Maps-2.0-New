@@ -97,7 +97,7 @@ struct TokenCell: View {
 
 struct UserTokenCell: View {
     @ObservedObject var dataStore = StorageManager.shared
-    var userKeyData: UserTokenModel
+    var userKeyData: UserToken
     @Environment(\.mainWindowSize) var mainWindowSize
     var body: some View {
         HStack(spacing: 10) {

@@ -9,8 +9,8 @@ import Foundation
 
 struct KeyData: Hashable, Identifiable {
     var id: UUID
-    var key: MyTokenModel
-    var territories: [TerritoryModel]
+    var key: Token
+    var territories: [Territory]
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(key)

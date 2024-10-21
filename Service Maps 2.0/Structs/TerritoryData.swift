@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct TerritoryData: Hashable {
-    var territory: TerritoryModel
-    var addresses: [TerritoryAddressModel]
+struct TerritoryData: Hashable, Equatable {
+    var territory: Territory
+    var addresses: [TerritoryAddress]
     var housesQuantity: Int
     var accessLevel: AccessLevel
     

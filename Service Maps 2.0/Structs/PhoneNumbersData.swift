@@ -9,8 +9,8 @@ import Foundation
 
 struct PhoneNumbersData: Hashable, Identifiable {
     var id: UUID
-    var phoneNumber: PhoneNumberModel
-    var phoneCall: PhoneCallModel?
+    var phoneNumber: PhoneNumber
+    var phoneCall: PhoneCall?
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(phoneNumber)

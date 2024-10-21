@@ -86,7 +86,9 @@ struct NoDataView: View {
                         CustomButton(loading: loading, title: "Reload") {
                             withAnimation { loading = true }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                                synchronizationManager.startupProcess(synchronizing: true)
+                                Task {
+                                    synchronizationManager.startupProcess(synchronizing: true)
+                                }
                             }
                         }
                     }

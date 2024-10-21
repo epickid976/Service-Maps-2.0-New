@@ -9,7 +9,7 @@ import Foundation
 
 struct PhoneCallData: Hashable, Identifiable {
     var id: UUID
-    var phoneCall: PhoneCallModel
+    var phoneCall: PhoneCall
     var accessLevel: AccessLevel?
     
     func hash(into hasher: inout Hasher) {

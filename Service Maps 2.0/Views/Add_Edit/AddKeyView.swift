@@ -47,94 +47,96 @@ struct AddKeyView: View {
                             .frame(width: 350, height: 350)
                     }
                 } else {
-                    if viewModel.territoryData!.isEmpty {
-                        VStack {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("nodatapreview"))
-                                    .playing()
-                                    .resizable()
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("nodatapreview"))
-                                    .playing()
-                                    .resizable()
-                                    .frame(width: 350, height: 350)
-                            }
-                        }
-                        
-                    } else {
-                        Text(viewModel.error)
-                            .fontWeight(.bold)
-                            .foregroundColor(.red)
-                        HStack {
-                            Text("Name")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                                .padding(.leading)
-                            
+                    if let territoryData = viewModel.territoryData {
+                        if territoryData.isEmpty {
                             VStack {
-                                Toggle(isOn: $viewModel.servant) {
-                                    Text("Servant")
-                                        .font(.headline)
-                                        .fontWeight(.bold)
-                                        .hSpacing(.trailing)
-                                }
-                                .toggleStyle(CheckmarkToggleStyle())
-                                .disabled(keyData != nil)
-                                //.padding()
-                            }
-                        }
-                        .onChange(of: viewModel.servant) { _ in
-                            HapticManager.shared.trigger(.lightImpact)
-                        }
-                        if keyData != nil {
-                            Text(keyData!.key.name)
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .hSpacing(.leading)
-                                .padding(.leading)
-                        } else {
-                            CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Key Name", comment: ""))
-                        }
-                        ScrollView {
-                            LazyVStack {
-                                ForEach(viewModel.territoryData!) { dataWithKey in
-                                    viewModel.showSelectableTerritoriesList(dataWithKeys: dataWithKey, mainWindowSize: proxy.size)
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("nodatapreview"))
+                                        .playing()
+                                        .resizable()
+                                        .frame(width: 250, height: 250)
+                                } else {
+                                    LottieView(animation: .named("nodatapreview"))
+                                        .playing()
+                                        .resizable()
+                                        .frame(width: 350, height: 350)
                                 }
                             }
-                        }
-                        
-                        HStack {
-                            if !viewModel.loading {
-                                CustomBackButton() { presentationMode.wrappedValue.dismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
-                            }
-                            //.padding([.top])
                             
-                            CustomButton(loading: viewModel.loading, title: NSLocalizedString(keyData != nil ? "Edit" : "Add", comment: "")) {
-                                HapticManager.shared.trigger(.lightImpact)
-                                if viewModel.checkInfo() {
-                                    Task {
-                                        withAnimation {
-                                            viewModel.loading = true
-                                        }
-                                        let result = await viewModel.addToken()
-                                        switch result {
-                                        case .success(_):
-                                            HapticManager.shared.trigger(.success)
-                                            onDone()
-                                            presentationMode.wrappedValue.dismiss()
-                                        case .failure(_):
-                                            HapticManager.shared.trigger(.error)
-                                            viewModel.error = NSLocalizedString("Error adding/updating key.", comment: "")
-                                            viewModel.loading = false
-                                        }
+                        } else {
+                            Text(viewModel.error)
+                                .fontWeight(.bold)
+                                .foregroundColor(.red)
+                            HStack {
+                                Text("Name")
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                    .hSpacing(.leading)
+                                    .padding(.leading)
+                                
+                                VStack {
+                                    Toggle(isOn: $viewModel.servant) {
+                                        Text("Servant")
+                                            .font(.headline)
+                                            .fontWeight(.bold)
+                                            .hSpacing(.trailing)
                                     }
-                                    
+                                    .toggleStyle(CheckmarkToggleStyle())
+                                    .disabled(keyData != nil)
+                                    //.padding()
                                 }
-                            }//.keyboardShortcut("\r", modifiers: .command)
+                            }
+                            .onChange(of: viewModel.servant) { _ in
+                                HapticManager.shared.trigger(.lightImpact)
+                            }
+                            if keyData != nil {
+                                Text(keyData!.key.name)
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                    .hSpacing(.leading)
+                                    .padding(.leading)
+                            } else {
+                                CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Key Name", comment: ""))
+                            }
+                            ScrollView {
+                                LazyVStack {
+                                    ForEach(territoryData, id: \.id) { dataWithKey in
+                                        viewModel.showSelectableTerritoriesList(dataWithKeys: dataWithKey, mainWindowSize: proxy.size).id(dataWithKey.id)
+                                    }
+                                }
+                            }
+                            
+                            HStack {
+                                if !viewModel.loading {
+                                    CustomBackButton() { presentationMode.wrappedValue.dismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
+                                }
+                                //.padding([.top])
+                                
+                                CustomButton(loading: viewModel.loading, title: NSLocalizedString(keyData != nil ? "Edit" : "Add", comment: "")) {
+                                    HapticManager.shared.trigger(.lightImpact)
+                                    if viewModel.checkInfo() {
+                                        Task {
+                                            withAnimation {
+                                                viewModel.loading = true
+                                            }
+                                            let result = await viewModel.addToken()
+                                            switch result {
+                                            case .success(_):
+                                                HapticManager.shared.trigger(.success)
+                                                onDone()
+                                                presentationMode.wrappedValue.dismiss()
+                                            case .failure(_):
+                                                HapticManager.shared.trigger(.error)
+                                                viewModel.error = NSLocalizedString("Error adding/updating key.", comment: "")
+                                                viewModel.loading = false
+                                            }
+                                        }
+                                        
+                                    }
+                                }//.keyboardShortcut("\r", modifiers: .command)
+                            }
+                            .padding([.horizontal, .bottom])
                         }
-                        .padding([.horizontal, .bottom])
                     }
                 }
             }

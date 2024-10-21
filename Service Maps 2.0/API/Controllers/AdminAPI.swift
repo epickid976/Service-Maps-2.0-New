@@ -19,13 +19,18 @@ class AdminAPI: ApiService {
             
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
+            
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
             
             let allDataResponse = try decoder.decode(AllDataResponse.self, from: jsonData)
             
             return allDataResponse
         } catch {
-            print(error.self)
+            print(error)
             throw error.self
         }
     }
@@ -36,18 +41,24 @@ class AdminAPI: ApiService {
             
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
+            
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
             
             let reply = try decoder.decode(AllPhoneDataResponse.self, from: jsonData)
             
             return Result.success(reply)
         } catch {
+            print(error)
             return Result.failure(error)
         }
     }
     
     //MARK: TERRITORY
-    func addTerritory(territory: TerritoryModel) async throws {
+    func addTerritory(territory: Territory) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/add", body: territory)
         } catch {
@@ -57,7 +68,7 @@ class AdminAPI: ApiService {
     
     //PENDING UPLOAD PHOTOS ADDTERRITORYFUNC
     
-    func addTerritory(territory: TerritoryModel, image: UIImage) async throws {
+    func addTerritory(territory: Territory, image: UIImage) async throws {
         do {
             let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
             
@@ -67,16 +78,16 @@ class AdminAPI: ApiService {
         }
     }
     
-    func updateTerritory(territory: TerritoryModel) async throws {
+    func updateTerritory(territory: Territory) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/update", body: territory)
         } catch {
-            print(error)
+            
             throw error.self
         }
     }
     
-    func updateTerritory(territory: TerritoryModel, image: UIImage) async throws {
+    func updateTerritory(territory: Territory, image: UIImage) async throws {
         do {
             let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
             
@@ -88,7 +99,7 @@ class AdminAPI: ApiService {
     }
     //PENDING UPLOAD PHOTOS UPDATETERRITORYFUNC
     
-    func deleteTerritory(territory: TerritoryModel) async throws {
+    func deleteTerritory(territory: Territory) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/delete", body: territory)
         } catch {
@@ -97,7 +108,7 @@ class AdminAPI: ApiService {
     }
     
     //MARK: TERRITORY
-    func addTerritoryAddress(territoryAddress: TerritoryAddressModel) async throws {
+    func addTerritoryAddress(territoryAddress: TerritoryAddress) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/address/add", body: territoryAddress)
         } catch {
@@ -108,7 +119,7 @@ class AdminAPI: ApiService {
     //PENDING UPLOAD PHOTOS ADDTERRITORYFUNC
     
     
-    func updateTerritoryAddress(territoryAddress: TerritoryAddressModel) async throws {
+    func updateTerritoryAddress(territoryAddress: TerritoryAddress) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/address/update", body: territoryAddress)
         } catch {
@@ -118,7 +129,7 @@ class AdminAPI: ApiService {
     
     //PENDING UPLOAD PHOTOS UPDATETERRITORYFUNC
     
-    func deleteTerritoryAddress(territoryAddress: TerritoryAddressModel) async throws {
+    func deleteTerritoryAddress(territoryAddress: TerritoryAddress) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "territories/address/delete", body: territoryAddress)
         } catch {
@@ -127,7 +138,7 @@ class AdminAPI: ApiService {
     }
     
     //MARK: House
-    func addHouse(house: HouseModel) async throws {
+    func addHouse(house: House) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/add", body: house)
         } catch {
@@ -135,7 +146,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func updateHouse(house: HouseModel) async throws {
+    func updateHouse(house: House) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/update", body: house)
         } catch {
@@ -143,7 +154,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func deleteHouse(house: HouseModel) async throws {
+    func deleteHouse(house: House) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "houses/delete", body: house)
         } catch {
@@ -152,7 +163,7 @@ class AdminAPI: ApiService {
     }
     
     //MARK: Visit
-    func addVisit(visit: VisitModel) async throws {
+    func addVisit(visit: Visit) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/add", body: visit)
         } catch {
@@ -160,7 +171,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func updateVisit(visit: VisitModel) async throws {
+    func updateVisit(visit: Visit) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/update", body: visit)
         } catch {
@@ -168,7 +179,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func deleteVisit(visit: VisitModel) async throws {
+    func deleteVisit(visit: Visit) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "visits/delete", body: visit)
         } catch {
@@ -176,7 +187,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func addPhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+    func addPhoneCall(phoneCall: PhoneCall) async -> Result<Bool, Error> {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/add", body: phoneCall)
             return Result.success(true)
@@ -185,7 +196,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func updatePhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+    func updatePhoneCall(phoneCall: PhoneCall) async -> Result<Bool, Error> {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/update", body: phoneCall)
             return Result.success(true)
@@ -194,7 +205,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func deletePhoneCall(phoneCall: PhoneCallModel) async -> Result<Bool, Error> {
+    func deletePhoneCall(phoneCall: PhoneCall) async -> Result<Bool, Error> {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/delete", body: phoneCall)
             return Result.success(true)
@@ -204,7 +215,7 @@ class AdminAPI: ApiService {
     }
     
     //MARK: TERRITORY
-    func addPhoneTerritory(territory: PhoneTerritoryModel) async throws {
+    func addPhoneTerritory(territory: PhoneTerritory) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/territories/add", body: territory)
         } catch {
@@ -214,7 +225,7 @@ class AdminAPI: ApiService {
     
     //PENDING UPLOAD PHOTOS ADDTERRITORYFUNC
     
-    func addPhoneTerritory(territory: PhoneTerritoryModel, image: UIImage) async throws {
+    func addPhoneTerritory(territory: PhoneTerritory, image: UIImage) async throws {
         do {
             let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
             
@@ -224,16 +235,16 @@ class AdminAPI: ApiService {
         }
     }
     
-    func updatePhoneTerritory(territory: PhoneTerritoryModel) async throws {
+    func updatePhoneTerritory(territory: PhoneTerritory) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/territories/update", body: territory)
         } catch {
-            print(error)
+            
             throw error.self
         }
     }
     
-    func updatePhoneTerritory(territory: PhoneTerritoryModel, image: UIImage) async throws {
+    func updatePhoneTerritory(territory: PhoneTerritory, image: UIImage) async throws {
         do {
             let parameters: [String : Any] = ["congregation" : territory.congregation, "number" : territory.number, "description" : territory.description, "image" : territory.image as Any]
             
@@ -245,7 +256,7 @@ class AdminAPI: ApiService {
     }
     //PENDING UPLOAD PHOTOS UPDATETERRITORYFUNC
     
-    func deletePhoneTerritory(territory: PhoneTerritoryModel) async throws {
+    func deletePhoneTerritory(territory: PhoneTerritory) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/territories/delete", body: territory)
         } catch {
@@ -253,7 +264,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func deletePhoneNumber(number: PhoneNumberModel) async throws {
+    func deletePhoneNumber(number: PhoneNumber) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/numbers/delete", body: number)
         } catch {
@@ -261,7 +272,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func addPhoneNumber(number: PhoneNumberModel) async throws {
+    func addPhoneNumber(number: PhoneNumber) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/numbers/add", body: number)
         } catch {
@@ -269,7 +280,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func updatePhoneNumber(number: PhoneNumberModel) async throws {
+    func updatePhoneNumber(number: PhoneNumber) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/numbers/update", body: number)
         } catch {
@@ -277,7 +288,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func deleteCall(call: PhoneCallModel) async throws {
+    func deleteCall(call: PhoneCall) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/delete", body: call)
         } catch {
@@ -285,7 +296,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func addCall(call: PhoneCallModel) async throws {
+    func addCall(call: PhoneCall) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/add", body: call)
         } catch {
@@ -293,7 +304,7 @@ class AdminAPI: ApiService {
         }
     }
     
-    func updateCall(call: PhoneCallModel) async throws {
+    func updateCall(call: PhoneCall) async throws {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "phone/calls/update", body: call)
         } catch {

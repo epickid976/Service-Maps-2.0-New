@@ -9,12 +9,12 @@ import SwiftUI
 
 struct AddVisitView: View {
     @Environment(\.dismiss) private var dismiss
-    var visit: VisitModel?
+    var visit: Visit?
     
     @StateObject var viewModel: AddVisitViewModel
     @State var title = ""
     
-    init(visit: VisitModel?, house: HouseModel, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+    init(visit: Visit?, house: House, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         let initialViewModel = AddVisitViewModel(house: house)
         _viewModel = StateObject(wrappedValue: initialViewModel)
         if let visit = visit {
@@ -77,9 +77,7 @@ struct AddVisitView: View {
                                     switch result {
                                     case .success(_):
                                         HapticManager.shared.trigger(.success)
-                                        DispatchQueue.main.async {
                                             onDone()
-                                        }
                                     case .failure(_):
                                         HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error updating Visit.", comment: "")
@@ -95,9 +93,7 @@ struct AddVisitView: View {
                                     switch result {
                                     case .success(_):
                                         HapticManager.shared.trigger(.success)
-                                        DispatchQueue.main.async {
                                             onDone()
-                                        }
                                     case .failure(_):
                                         HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error adding Visit.", comment: "")

@@ -21,12 +21,12 @@ class API_Requests {
                 switch response.result {
                     //Receive code, check if good or bad
                 case .success:
-                    print("Validated")
-                    print(response.value!.description)
+                    
+                    
                     result(response.value, nil)
                     
                 case let .failure(error):
-                    print(error)
+                    
                     result(nil, error)
                 }
             }
@@ -41,12 +41,12 @@ class API_Requests {
                 switch response.result {
                     //Receive code, check if good or bad
                 case .success:
-                    print("Validated")
+                    
                     debugPrint(response)
                     result(response.value, nil)
                     
                 case let .failure(error):
-                    print(error)
+                    
                     debugPrint(response)
                     result(nil, error)
                 }

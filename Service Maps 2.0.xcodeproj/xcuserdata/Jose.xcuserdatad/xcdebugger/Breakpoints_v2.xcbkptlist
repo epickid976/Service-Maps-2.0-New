@@ -3,4 +3,380 @@
    uuid = "A6DC26D9-FEE9-446E-936C-6E64DEB7EF4B"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "80B88462-65F3-4DF9-A491-F8F1739A18BB"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/Managers/SynchronizationManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "319"
+            endingLineNumber = "319"
+            landmarkName = "synchronize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "873B23DB-E5D0-43DF-8043-E11D73DD7CDC"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/UserAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "loadTerritories()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "873B23DB-E5D0-43DF-8043-E11D73DD7CDC - 8ca601d3e44a1bf9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.UserAPI.loadTerritories() async throws -&gt; Service_Maps_2_0.AllDataResponse"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/UserAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "27"
+                  endingLineNumber = "27">
+               </Location>
+               <Location
+                  uuid = "873B23DB-E5D0-43DF-8043-E11D73DD7CDC - 8ca601d3e44a1bf9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.UserAPI.loadTerritories() async throws -&gt; Service_Maps_2_0.AllDataResponse"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/UserAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "27"
+                  endingLineNumber = "27">
+               </Location>
+               <Location
+                  uuid = "873B23DB-E5D0-43DF-8043-E11D73DD7CDC - da1eb2b2fe3bc9c2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.UserAPI.loadTerritories() async throws -&gt; Service_Maps_2_0.AllDataResponse"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/UserAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "27"
+                  endingLineNumber = "27">
+               </Location>
+               <Location
+                  uuid = "873B23DB-E5D0-43DF-8043-E11D73DD7CDC - da1eb2b2fe3bc9c2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.UserAPI.loadTerritories() async throws -&gt; Service_Maps_2_0.AllDataResponse"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/UserAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "27"
+                  endingLineNumber = "27">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EFBA4249-045C-46F2-8BC6-FF2FE208A21E"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AdminAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "allPhoneData()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "EFBA4249-045C-46F2-8BC6-FF2FE208A21E - 1712d4e5b6370d20"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AdminAPI.allPhoneData() async -&gt; Swift.Result&lt;Service_Maps_2_0.AllPhoneDataResponse, Swift.Error&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/AdminAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "56"
+                  endingLineNumber = "56">
+               </Location>
+               <Location
+                  uuid = "EFBA4249-045C-46F2-8BC6-FF2FE208A21E - b1fa2073c703ab21"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.AdminAPI.allPhoneData() async -&gt; Swift.Result&lt;Service_Maps_2_0.AllPhoneDataResponse, Swift.Error&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/AdminAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "56"
+                  endingLineNumber = "56">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F5DB875F-F3A4-4B65-9CD0-8B1C200C2958"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/AdminAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "allData()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "F5DB875F-F3A4-4B65-9CD0-8B1C200C2958 - 4216da70eb12e30b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AdminAPI.allData() async throws -&gt; Service_Maps_2_0.AllDataResponse"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/AdminAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34">
+               </Location>
+               <Location
+                  uuid = "F5DB875F-F3A4-4B65-9CD0-8B1C200C2958 - 4216da70eb12e30b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.AdminAPI.allData() async throws -&gt; Service_Maps_2_0.AllDataResponse"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/AdminAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34">
+               </Location>
+               <Location
+                  uuid = "F5DB875F-F3A4-4B65-9CD0-8B1C200C2958 - b11b0e67346f8108"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.AdminAPI.allData() async throws -&gt; Service_Maps_2_0.AllDataResponse"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/AdminAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34">
+               </Location>
+               <Location
+                  uuid = "F5DB875F-F3A4-4B65-9CD0-8B1C200C2958 - b11b0e67346f8108"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.AdminAPI.allData() async throws -&gt; Service_Maps_2_0.AllDataResponse"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/AdminAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0D58F05A-F7FD-4EA7-96F6-BBD257C3D02E"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
+            landmarkName = "getTerritoriesOfToken(token:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "0D58F05A-F7FD-4EA7-96F6-BBD257C3D02E - 940b9b793bcb7160"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.TokenAPI.getTerritoriesOfToken(token: Swift.String) async throws -&gt; Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "87"
+                  endingLineNumber = "87">
+               </Location>
+               <Location
+                  uuid = "0D58F05A-F7FD-4EA7-96F6-BBD257C3D02E - 940b9b793bcb7160"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.TokenAPI.getTerritoriesOfToken(token: Swift.String) async throws -&gt; Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "87"
+                  endingLineNumber = "87">
+               </Location>
+               <Location
+                  uuid = "0D58F05A-F7FD-4EA7-96F6-BBD257C3D02E - f36afa0d571bd163"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.TokenAPI.getTerritoriesOfToken(token: Swift.String) async throws -&gt; Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "87"
+                  endingLineNumber = "87">
+               </Location>
+               <Location
+                  uuid = "0D58F05A-F7FD-4EA7-96F6-BBD257C3D02E - f36afa0d571bd163"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.TokenAPI.getTerritoriesOfToken(token: Swift.String) async throws -&gt; Swift.Array&lt;Service_Maps_2_0.TokenTerritory&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "87"
+                  endingLineNumber = "87">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0C49B266-8D29-4106-91EB-5E667E23730C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/TokenAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
+            landmarkName = "loadUserTokens()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "0C49B266-8D29-4106-91EB-5E667E23730C - 923f9ff4a857662b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadUserTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.Token&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "62"
+                  endingLineNumber = "62">
+               </Location>
+               <Location
+                  uuid = "0C49B266-8D29-4106-91EB-5E667E23730C - 923f9ff4a857662b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadUserTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.Token&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "62"
+                  endingLineNumber = "62">
+               </Location>
+               <Location
+                  uuid = "0C49B266-8D29-4106-91EB-5E667E23730C - b1739189ba4247e8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadUserTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.Token&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "62"
+                  endingLineNumber = "62">
+               </Location>
+               <Location
+                  uuid = "0C49B266-8D29-4106-91EB-5E667E23730C - b1739189ba4247e8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Service_Maps_2_0.TokenAPI.loadUserTokens() async throws -&gt; Swift.Array&lt;Service_Maps_2_0.Token&gt;"
+                  moduleName = "Service Maps 2.0.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Jose/Service-Maps-2.0-New/Service%20Maps%202.0/API/Controllers/TokenAPI.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "62"
+                  endingLineNumber = "62">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "64D21CF7-29F2-4B03-BE45-8612E585409D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Service Maps 2.0/API/Controllers/UserAPI.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
+            landmarkName = "addVisit(visit:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

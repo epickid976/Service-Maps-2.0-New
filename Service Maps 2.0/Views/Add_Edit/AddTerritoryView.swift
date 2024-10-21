@@ -12,14 +12,14 @@ import Nuke
 import Combine
 
 struct AddTerritoryView: View {
-    var territory: TerritoryModel?
+    var territory: Territory?
     
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: AddTerritoryViewModel
     
     @State var title = ""
     
-    init(territory: TerritoryModel?, onDone: @escaping () -> Void) {
+    init(territory: Territory?, onDone: @escaping () -> Void) {
         if let territory = territory {
             self.territory = territory
             _viewModel = StateObject(wrappedValue: AddTerritoryViewModel(territory: territory))

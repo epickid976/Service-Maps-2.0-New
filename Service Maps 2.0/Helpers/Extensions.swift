@@ -12,22 +12,43 @@ import NavigationTransitions
 extension Result where Success == Bool {
 
     @discardableResult
-    func onSuccess(_ closure: (Bool) throws -> Success) rethrows -> Success? {
+    func onSuccess(_ closure: (Bool) throws -> Void) rethrows -> Self {
         switch self {
         case .success(let value):
-            return try closure(value) // Execute closure with the boolean value
+            try closure(value) // Execute closure with the boolean value
         case .failure:
-            return nil // Do nothing on failure
+            break // Do nothing on failure
         }
+        return self // Return self for chaining
     }
 
-    func onFailure(_ closure: (Error) -> Void) {
+    @discardableResult
+    func onFailure(_ closure: (Error) -> Void) -> Self {
         switch self {
         case .success:
             break // Do nothing on success
         case .failure(let error):
             closure(error) // Execute closure with the error
         }
+        return self // Return self for chaining
+    }
+}
+
+extension Result {
+    /// Checks if the `Result` is a failure (contains an error).
+    var isError: Bool {
+        if case .failure(_) = self {
+            return true
+        }
+        return false
+    }
+    
+    /// Optionally returns the error if it exists.
+    var error: Error? {
+        if case .failure(let error) = self {
+            return error
+        }
+        return nil
     }
 }
 
@@ -102,6 +123,21 @@ extension Array {
     }
 }
 
+extension Array {
+    func unique<T:Hashable>(map: ((Element) -> (T)))  -> [Element] {
+        var set = Set<T>() //the unique list kept in a Set for fast retrieval
+        var arrayOrdered = [Element]() //keeping the unique list of elements but ordered
+        for value in self {
+            if !set.contains(map(value)) {
+                set.insert(map(value))
+                arrayOrdered.append(value)
+            }
+        }
+        
+        return arrayOrdered
+    }
+}
+
 extension String {
     func isValidPhoneNumber() -> Bool {
         // Use a regular expression to match a valid phone number format
@@ -125,7 +161,7 @@ extension String {
         
         var result = ""
         var startIndex = cleanNumber.startIndex
-        var endIndex = cleanNumber.endIndex
+        let endIndex = cleanNumber.endIndex
         
         for char in mask where startIndex < endIndex {
             if char == "X" {
@@ -146,7 +182,7 @@ func isInLastTwoWeeks(_ visitDate: Date) -> Bool {
   return twoWeeksAgo <= visitDate && visitDate <= today
 }
 
-func areEqual(tokenModel: MyTokenModel, tokenObject: TokenObject) -> Bool {
+func areEqual(tokenModel: Token, tokenObject: Token) -> Bool {
   return tokenModel.id == tokenObject.id &&
          tokenModel.name == tokenObject.name &&
          tokenModel.owner == tokenObject.owner &&

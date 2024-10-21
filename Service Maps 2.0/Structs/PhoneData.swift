@@ -9,7 +9,7 @@ import Foundation
 
 struct PhoneData: Hashable, Identifiable {
     var id: UUID
-    var territory: PhoneTerritoryModel
+    var territory: PhoneTerritory
     var numbersQuantity: Int
     
     func hash(into hasher: inout Hasher) {

@@ -11,7 +11,7 @@ import PhotosUI
 import NavigationTransitions
 
 struct AddHouseView: View {
-    var house: HouseModel?
+    var house: House?
     
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: AddHouseViewModel
@@ -19,7 +19,7 @@ struct AddHouseView: View {
     @FocusState private var numberFocus: Bool
     @State var title = ""
     
-    init(house: HouseModel?, address: TerritoryAddressModel, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
+    init(house: House?, address: TerritoryAddress, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         _viewModel = StateObject(wrappedValue: AddHouseViewModel(address: address))
         if let house = house {
             self.house = house

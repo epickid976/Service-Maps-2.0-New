@@ -10,15 +10,15 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingColumnNumber</key>
-					<string>4</string>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>43</string>
+					<string>240</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>43</string>
+					<string>240</string>
 					<key>Timestamp</key>
-					<string>742054100.9383709</string>
+					<string>751244254.820707</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,16 +34,13 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>    </string>
+				<string></string>
 				<key>leading</key>
 				<string>    }
-    @MainActor
+}
 </string>
 				<key>trailing</key>
-				<string>func getAccessLevel&lt;T&gt;(model: T) -&gt; AccessLevel?  where T: Object{
-        if existsAdminCredentials() {
-            return .Admin
-</string>
+				<string></string>
 			</dict>
 			<key>type</key>
 			<string>bookmark</string>
@@ -54,15 +51,15 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingColumnNumber</key>
-					<string>8</string>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>60</string>
+					<string>240</string>
 					<key>StartingColumnNumber</key>
-					<string>4</string>
+					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>60</string>
+					<string>240</string>
 					<key>Timestamp</key>
-					<string>742054109.872686</string>
+					<string>751244254.820664</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -78,16 +75,13 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>func</string>
+				<string></string>
 				<key>leading</key>
-				<string>    
-    @MainActor
-    </string>
-				<key>trailing</key>
-				<string> setAuthorizationTokenFor&lt;T&gt;(model: T) async  where T: Object {
-        if let token =  findToken(model: model) {
-            authorizationProvider.token = token.id
+				<string>    }
+}
 </string>
+				<key>trailing</key>
+				<string></string>
 			</dict>
 			<key>type</key>
 			<string>bookmark</string>
@@ -98,15 +92,15 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingColumnNumber</key>
-					<string>8</string>
+					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>75</string>
+					<string>240</string>
 					<key>StartingColumnNumber</key>
-					<string>4</string>
+					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>75</string>
+					<string>240</string>
 					<key>Timestamp</key>
-					<string>742054398.1718</string>
+					<string>751244254.820698</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -122,16 +116,13 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>func</string>
+				<string></string>
 				<key>leading</key>
 				<string>    }
-    @MainActor
-    </string>
-				<key>trailing</key>
-				<string> findToken&lt;T&gt;(model: T) -&gt; TokenObject? where T: Object {
-      switch model {
-      case let territory as TerritoryObject:
+}
 </string>
+				<key>trailing</key>
+				<string></string>
 			</dict>
 			<key>type</key>
 			<string>bookmark</string>

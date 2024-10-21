@@ -1,5 +1,5 @@
 {
-  "originHash" : "bb05b480aa04b811bcb8a221ad0a20a2a309653a8be521eca19b243fc9f367ca",
+  "originHash" : "5807969260a0b2446f9318870a9bc23102ee89defb1362ae4244a17717145400",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -56,6 +56,15 @@
       }
     },
     {
+      "identity" : "grdb.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/groue/GRDB.swift",
+      "state" : {
+        "branch" : "master",
+        "revision" : "84d25dfc9dc1766feb8c80fb04b9f7e2337fb83e"
+      }
+    },
+    {
       "identity" : "lottie-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/airbnb/lottie-ios.git",
@@ -98,24 +107,6 @@
       "state" : {
         "revision" : "60ebc93bbcf06d78b0123389e641c3a451c80f65",
         "version" : "2.7.1"
-      }
-    },
-    {
-      "identity" : "realm-core",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/realm/realm-core.git",
-      "state" : {
-        "revision" : "dea51e1e9b2219689cf27b44a0206135b984f9cf",
-        "version" : "14.11.1"
-      }
-    },
-    {
-      "identity" : "realm-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/realm/realm-swift",
-      "state" : {
-        "branch" : "master",
-        "revision" : "76d79455a3d736ec01d4ef1864aa62cc5f0fc2cb"
       }
     },
     {
@@ -179,15 +170,6 @@
       "state" : {
         "revision" : "ccab89ad1cedb04f25dd4df1776dd8c8583b914a",
         "version" : "2.2.5"
-      }
-    },
-    {
-      "identity" : "zipfoundation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/weichsel/ZIPFoundation",
-      "state" : {
-        "revision" : "02b6abe5f6eef7e3cbd5f247c5cc24e246efcfe0",
-        "version" : "0.9.19"
       }
     }
   ],

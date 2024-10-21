@@ -9,8 +9,8 @@ import Foundation
 
 struct RecentTerritoryData: Hashable, Identifiable {
     var id: UUID
-    var territory: TerritoryModel
-    var lastVisit: VisitModel
+    var territory: Territory
+    var lastVisit: Visit
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(territory)
@@ -25,8 +25,8 @@ struct RecentTerritoryData: Hashable, Identifiable {
 
 struct RecentPhoneData: Hashable, Identifiable {
     var id: UUID
-    var territory: PhoneTerritoryModel
-    var lastCall: PhoneCallModel
+    var territory: PhoneTerritory
+    var lastCall: PhoneCall
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(territory)

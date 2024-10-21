@@ -9,7 +9,7 @@ import Foundation
 
 struct VisitData: Hashable, Identifiable {
     var id: UUID
-    var visit: VisitModel
+    var visit: Visit
     var accessLevel: AccessLevel?
     
     func hash(into hasher: inout Hasher) {

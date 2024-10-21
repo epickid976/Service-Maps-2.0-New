@@ -12,61 +12,84 @@ class TokenAPI {
     let baseURL = "tokens/"
     
     //MARK: LOADING
-    func loadOwnedTokens() async throws -> [MyTokenModel] {
+    func loadOwnedTokens() async throws -> [Token] {
         
         do {
             let response = try await ApiRequestAsync().getRequest(url: baseURL + "loadown")
             
+            print("Response: \(response)")
+            
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
             
-            let reply = try decoder.decode([MyTokenModel].self, from: jsonData)
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
+            
+            let reply = try decoder.decode([Token].self, from: jsonData)
             
             return reply
         } catch {
+            print(error)
             throw error.self
         }
     }
     
-    func loadUserTokens() async throws -> [MyTokenModel] {
+    func loadUserTokens() async throws -> [Token] {
         
         
         do {
             let response = try await ApiRequestAsync().getRequest(url: baseURL + "loaduser")
             
+            print("Response: \(response)")
+            
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
             
-            let reply = try decoder.decode([MyTokenModel].self, from: jsonData)
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
+            
+            let reply = try decoder.decode([Token].self, from: jsonData)
             
             return reply
         } catch {
+            print(error)
             throw error.self
         }
     }
     
-    func getTerritoriesOfToken(token: String) async throws -> [TokenTerritoryModel] {
+    func getTerritoriesOfToken(token: String) async throws -> [TokenTerritory] {
         
         do {
             let response = try await ApiRequestAsync().getRequest(url: baseURL + "territories/\(token)")
             
+            print("Response: \(response)")
+            
             let decoder = JSONDecoder()
             
-            let jsonData = response.data(using: .utf8)!
+            guard let jsonData = response.data(using: .utf8) else {
+                throw NSError(domain: "InvalidResponseData", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert response to data"])
+            }
             
-            let reply = try decoder.decode([TokenTerritoryModel].self, from: jsonData)
+            // Log the JSON data for debugging
+            print("JSON Data: \(String(data: jsonData, encoding: .utf8) ?? "nil")")
+            
+            let reply = try decoder.decode([TokenTerritory].self, from: jsonData)
             
             return reply
         } catch {
-            print(error.self)
+            print(error)
             throw error.self
         }
     }
     
     //MARK: DELETE
-    func createToken(name: String, moderator: Bool, territories: String, congregation: Int64, expire: Int64?) async throws -> MyTokenModel {
+    func createToken(name: String, moderator: Bool, territories: String, congregation: Int64, expire: Int64?) async throws -> Token {
         do {
             let response = try await ApiRequestAsync().postRequest(url: baseURL + "new", body: NewTokenForm(name: name, moderator: moderator, territories: territories, congregation: congregation, expire: expire))
             
@@ -112,12 +135,12 @@ class TokenAPI {
         do {
             _ = try await ApiRequestAsync().postRequest(url: baseURL + "register", body: DeleteTokenForm(token: token))
         } catch {
-            print(error)
+            
             throw error.self
         }
     }
     
-    func usersOfToken(token: String) async throws -> [UserSimpleResponse] {
+    func usersOfToken(token: String) async  -> Result<[UserSimpleResponse], Error> {
         do {
             let response = try await ApiRequestAsync().postRequest(url: baseURL + "tokenusers", body: DeleteTokenForm(token: token))
             
@@ -127,9 +150,9 @@ class TokenAPI {
             
             let reply = try decoder.decode([UserSimpleResponse].self, from: jsonData)
             
-            return reply
+            return Result.success(reply)
         } catch {
-            throw error.self
+            return .failure(error)
         }
     }
     
@@ -149,50 +172,40 @@ class TokenAPI {
         }
     }
     
-    func createTokenManually(from jsonData: Data) throws -> MyTokenModel {
-      guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
-          throw CustomErrors.NotFound // Define an error type
-      }
-
-      var name: String = ""
-      var id: String = ""
-      var owner: String? = nil
-      var congregation: String = ""
-      var moderator: Bool = false
-      var expire: Int64? = nil
-      var user: String? = nil
-      var created_at: String = ""
-      var updated_at: String = ""
-
-      if let nameValue = jsonDictionary["name"] as? String {
-        name = nameValue
-      }
-
-      if let idValue = jsonDictionary["id"] as? String {
-        id = idValue
-      }
-
-      // Handle optional properties
-      owner = jsonDictionary["owner"] as? String
-      congregation = String(describing: jsonDictionary["congregation"] ?? "") // Handle potential non-string value
-
-      if let moderatorValue = jsonDictionary["moderator"] as? Bool {
-        moderator = moderatorValue
-      }
-
-      expire = jsonDictionary["expire"] as? Int64
-
-      user = jsonDictionary["user"] as? String
-
-      if let createdAtValue = jsonDictionary["created_at"] as? String {
-        created_at = createdAtValue
-      }
-
-      if let updatedAtValue = jsonDictionary["updated_at"] as? String {
-        updated_at = updatedAtValue
-      }
-
-        return MyTokenModel(id: id, name: name, owner: owner ?? "", congregation: congregation, moderator: moderator, expire: expire, user: user, created_at: created_at, updated_at: updated_at)
+    func createTokenManually(from jsonData: Data) throws -> Token {
+        guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
+            throw CustomErrors.NotFound // Define an error type
+        }
+        
+        var name: String = ""
+        var id: String = ""
+        var owner: String? = nil
+        var congregation: String = ""
+        var moderator: Bool = false
+        var expire: Int64? = nil
+        var user: String? = nil
+        
+        if let nameValue = jsonDictionary["name"] as? String {
+            name = nameValue
+        }
+        
+        if let idValue = jsonDictionary["id"] as? String {
+            id = idValue
+        }
+        
+        // Handle optional properties
+        owner = jsonDictionary["owner"] as? String
+        congregation = String(describing: jsonDictionary["congregation"] ?? "") // Handle potential non-string value
+        
+        if let moderatorValue = jsonDictionary["moderator"] as? Bool {
+            moderator = moderatorValue
+        }
+        
+        expire = jsonDictionary["expire"] as? Int64
+        
+        user = jsonDictionary["user"] as? String
+        
+        return Token(id: id, name: name, owner: owner ?? "", congregation: congregation, moderator: moderator, expire: expire, user: user)
     }
-
+    
 }
