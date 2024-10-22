@@ -113,6 +113,9 @@
 		82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4672BD815A200F52F2F /* AddKeyViewModel.swift */; };
 		82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4692BD820BB00F52F2F /* AddKeyView.swift */; };
 		82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */; };
+		82B97F892CC82D8300A0BC13 /* Papyrus in Frameworks */ = {isa = PBXBuildFile; productRef = 82B97F882CC82D8300A0BC13 /* Papyrus */; };
+		82B97F8B2CC82D8300A0BC13 /* PapyrusAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 82B97F8A2CC82D8300A0BC13 /* PapyrusAlamofire */; };
+		82B97F8D2CC82D8300A0BC13 /* PapyrusCore in Frameworks */ = {isa = PBXBuildFile; productRef = 82B97F8C2CC82D8300A0BC13 /* PapyrusCore */; };
 		82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1C2A9BF53900B255BF /* DataUploaderManager.swift */; };
 		82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F1E2A9BF55B00B255BF /* AuthorizationLevelManager.swift */; };
 		82BC0F212A9C249300B255BF /* ChangeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F202A9C249300B255BF /* ChangeAction.swift */; };
@@ -323,6 +326,7 @@
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
 				82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */,
 				828C4CD62C3A31CC00E147C3 /* ImageViewer in Frameworks */,
+				82B97F8D2CC82D8300A0BC13 /* PapyrusCore in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
 				82BED49F2CC567F400183E19 /* MijickPopups in Frameworks */,
@@ -330,7 +334,9 @@
 				822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */,
 				828C4CD82C3A31CC00E147C3 /* ImageViewerRemote in Frameworks */,
 				8228B6122C29C148002B7886 /* ModifiedCopy in Frameworks */,
+				82B97F892CC82D8300A0BC13 /* Papyrus in Frameworks */,
 				8228B6082C29BB68002B7886 /* Ably in Frameworks */,
+				82B97F8B2CC82D8300A0BC13 /* PapyrusAlamofire in Frameworks */,
 				82CAFE162CC34E2200B3796D /* GRDB in Frameworks */,
 				8228B6142C29C148002B7886 /* ModifiedCopyClient in Frameworks */,
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
@@ -763,6 +769,9 @@
 				828C4CD72C3A31CC00E147C3 /* ImageViewerRemote */,
 				82CAFE152CC34E2200B3796D /* GRDB */,
 				82BED49E2CC567F400183E19 /* MijickPopups */,
+				82B97F882CC82D8300A0BC13 /* Papyrus */,
+				82B97F8A2CC82D8300A0BC13 /* PapyrusAlamofire */,
+				82B97F8C2CC82D8300A0BC13 /* PapyrusCore */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -809,6 +818,7 @@
 				828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */,
 				82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */,
 				82CAFE142CC34E2200B3796D /* XCRemoteSwiftPackageReference "GRDB" */,
+				82B97F872CC82D8300A0BC13 /* XCRemoteSwiftPackageReference "papyrus" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1293,6 +1303,14 @@
 				minimumVersion = 5.1.9;
 			};
 		};
+		82B97F872CC82D8300A0BC13 /* XCRemoteSwiftPackageReference "papyrus" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/joshuawright11/papyrus";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 		82CAFE142CC34E2200B3796D /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
@@ -1391,6 +1409,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */;
 			productName = AlertKit;
+		};
+		82B97F882CC82D8300A0BC13 /* Papyrus */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82B97F872CC82D8300A0BC13 /* XCRemoteSwiftPackageReference "papyrus" */;
+			productName = Papyrus;
+		};
+		82B97F8A2CC82D8300A0BC13 /* PapyrusAlamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82B97F872CC82D8300A0BC13 /* XCRemoteSwiftPackageReference "papyrus" */;
+			productName = PapyrusAlamofire;
+		};
+		82B97F8C2CC82D8300A0BC13 /* PapyrusCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82B97F872CC82D8300A0BC13 /* XCRemoteSwiftPackageReference "papyrus" */;
+			productName = PapyrusCore;
 		};
 		82BED49E2CC567F400183E19 /* MijickPopups */ = {
 			isa = XCSwiftPackageProductDependency;
