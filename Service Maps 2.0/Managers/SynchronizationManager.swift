@@ -192,7 +192,7 @@ class SynchronizationManager: ObservableObject {
                 switch usersResult {
                 case .success(let users):
                     for user in users {
-                        userTokensApi.append(UserToken(id: UUID().uuidString, token: token.id, userId: String(user.id), name: user.name, blocked: user.blocked))
+                        userTokensApi.append(UserToken(token: token.id, userId: String(user.id), name: user.name, blocked: user.blocked))
                     }
                 case .failure(let error):
                     print("Failed to fetch users for token \(token.id): \(error)")
@@ -320,8 +320,83 @@ class SynchronizationManager: ObservableObject {
             }
         }
     }
+    // Helper Functions for Fetching Data from Server]
+    @SyncActor
+    private func fetchTokensFromServer() async throws -> ([Token], [UserToken], [TokenTerritory]) {
+        var tokensApi = [Token]()
+        var userTokensApi = [UserToken]()
+        var tokenTerritoriesApi = [TokenTerritory]()
+        
+        let tokenApi = TokenAPI()
+        let ownedTokens = try await tokenApi.loadOwnedTokens()
+        tokensApi.append(contentsOf: ownedTokens)
+        
+        let userTokens = try await tokenApi.loadUserTokens()
+        for token in userTokens {
+            if !tokensApi.contains(token) {
+                tokensApi.append(token)
+            }
+        }
+        if await AuthorizationLevelManager().existsAdminCredentials() {
+            for token in tokensApi {
+                let usersResult = await tokenApi.usersOfToken(token: token.id)
+                
+                switch usersResult {
+                case .success(let users):
+                    for user in users {
+                        userTokensApi.append(UserToken( token: token.id, userId: String(user.id), name: user.name, blocked: user.blocked))
+                    }
+                case .failure(let error):
+                    print("Failed to fetch users for token \(token.id): \(error)")
+                    // Optionally handle the error or log it
+                }
+            }
+        }
+        for token in tokensApi {
+            let response = try await tokenApi.getTerritoriesOfToken(token: token.id)
+            tokenTerritoriesApi.append(contentsOf: response)
+        }
+        
+        return (tokensApi, userTokensApi, tokenTerritoriesApi)
+    }
+    @SyncActor
+    private func fetchTerritoriesFromServer() async throws -> ([Territory], [House], [Visit], [TerritoryAddress]) {
+        if await authorizationLevelManager.existsAdminCredentials() {
+            let response = try await AdminAPI().allData()
+            return (response.territories, response.houses, response.visits, response.addresses)
+        } else {
+            let response = try await UserAPI().loadTerritories()
+            return (response.territories, response.houses, response.visits, response.addresses)
+        }
+    }
+    @SyncActor
+    private func fetchPhoneTerritoryDataFromServer() async throws -> ( [PhoneTerritory], [PhoneNumber], [PhoneCall]) {
+        if await authorizationLevelManager.existsAdminCredentials() {
+            let result = await AdminAPI().allPhoneData()
+            switch result {
+            case .success(let response):
+                return (response.territories, response.numbers, response.calls)
+            case .failure(let error):
+                throw error
+            }
+        } else if await authorizationLevelManager.existsPhoneCredentials() {
+            let result = await UserAPI().allPhoneData()
+            switch result {
+            case .success(let response):
+                return (response.territories, response.numbers, response.calls)
+            case .failure(let error):
+                throw error
+            }
+        } else {
+            return ([], [], [])
+        }
+    }
+    @SyncActor
+    private func fetchRecallsFromServer() async throws -> [Recalls] {
+        return try await UserAPI().getRecalls()
+    }
     
-    @BackgroundActor
+    @SyncActor
     private func comparingAndSynchronize<T: Identifiable & Equatable>(
         apiList: [T],
         dbList: [T],
@@ -472,7 +547,6 @@ class SynchronizationManager: ObservableObject {
             }
         }
     }
-    
     // Custom error for when the credentials change during sync
     enum SynchronizationError: Error {
         case credentialsChanged

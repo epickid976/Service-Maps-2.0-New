@@ -15,7 +15,7 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import MijickPopupView
+import MijickPopups
 
 struct RecallsView: View {
     @StateObject private var viewModel = RecallViewModel()
@@ -219,7 +219,7 @@ struct RecallRow: View {
         VStack {
             Text(buildPath(territory: recall.territory, address: recall.territoryAddress, house: recall.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy).modifier(ScrollTransitionModifier()).transition(.customBackInsertion)
             SwipeView {
-                NavigationLink(destination: NavigationLazyView(VisitsView(house: recall.house)).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(VisitsView(house: recall.house))) {
                     HouseCell(revisitView: revisitView, house: HouseData(id: UUID(), house: recall.house, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  recall.house) ?? .User), mainWindowSize: mainWindowSize).modifier(ScrollTransitionModifier()).transition(.customBackInsertion)
                 }.onTapHaptic(.lightImpact)
             } trailingActions: { context in
@@ -232,9 +232,9 @@ struct RecallRow: View {
                     DispatchQueue.main.async {
                         // self.viewModel.visitToDelete = visitData.visit.id
                         //self.viewModel.showAlert = true
-                        //CentrePopup_DeleteVisit(viewModel: viewModel).showAndStack()
+                        //CentrePopup_DeleteVisit(viewModel: viewModel).present()
                         self.viewModel.recallToRemove = recall.recall.house
-                        CentrePopup_RemoveRecall(viewModel: viewModel, recall: recall).showAndStack()
+                        CentrePopup_RemoveRecall(viewModel: viewModel, recall: recall).present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -280,6 +280,10 @@ struct CentrePopup_RemoveRecall: CentrePopup {
     @ObservedObject var viewModel: RecallViewModel
     @State var recall: RecallData
     
+    var body: some View {
+        createContent()
+    }
+    
     func createContent() -> some View {
         ZStack {
             VStack {
@@ -306,7 +310,7 @@ struct CentrePopup_RemoveRecall: CentrePopup {
                             withAnimation {
                                 //self.viewModel.showAlert = false
                                 HapticManager.shared.trigger(.lightImpact)
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.recallToRemove = nil
                             }
                         }
@@ -327,7 +331,7 @@ struct CentrePopup_RemoveRecall: CentrePopup {
                                         //self.viewModel.getRecalls()
                                         self.viewModel.loading = false
                                         //self.showAlert = false
-                                        dismiss()
+                                        dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.recallToRemove = nil
                                         self.viewModel.showToast = true
@@ -361,11 +365,10 @@ struct CentrePopup_RemoveRecall: CentrePopup {
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
     }
 }
 

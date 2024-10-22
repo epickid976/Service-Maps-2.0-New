@@ -12,7 +12,7 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import MijickPopupView
+import MijickPopups
 
 struct VisitsView: View {
     
@@ -138,7 +138,7 @@ struct VisitsView: View {
                         .alert(isPresent: $viewModel.showRecallAddedToast, view: alertRecallAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddVisit(viewModel: viewModel, house: house).showAndStack()
+                                CentrePopup_AddVisit(viewModel: viewModel, house: house).present()
                             }
                         }
                         //.scrollIndicators(.never)
@@ -149,7 +149,7 @@ struct VisitsView: View {
                                 HStack {
                                     Button("", action: { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) ;
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            dismissAll()
+                                            dismissAllPopups()
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })//.keyboardShortcut(.delete, modifiers: .command)
@@ -164,9 +164,9 @@ struct VisitsView: View {
                                     Button("", action: { 
                                         viewModel.revisitAnimation.toggle()
                                         if viewModel.recallAdded {
-                                            CentrePopup_DeleteRecall(viewModel: viewModel, house: house.id).showAndStack()
+                                            CentrePopup_DeleteRecall(viewModel: viewModel, house: house.id).present()
                                         } else {
-                                            CentrePopup_AddRecall(viewModel: viewModel, house: house.id).showAndStack()
+                                            CentrePopup_AddRecall(viewModel: viewModel, house: house.id).present()
                                         }
                                     })
                                     .buttonStyle(CircleButtonStyle(imageName: viewModel.recallAdded ? "person.fill.checkmark"  : "person.badge.plus.fill", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.revisitAnimationprogress, animation: $viewModel.revisitAnimation))
@@ -265,7 +265,7 @@ struct VisitsView: View {
                     DispatchQueue.main.async {
                         self.viewModel.visitToDelete = visitData.visit.id
                         //self.viewModel.showAlert = true
-                        CentrePopup_DeleteVisit(viewModel: viewModel).showAndStack()
+                        CentrePopup_DeleteVisit(viewModel: viewModel).present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -303,6 +303,9 @@ struct VisitsView: View {
 struct CentrePopup_DeleteVisit: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         ZStack {
@@ -329,7 +332,7 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                         CustomBackButton() {
                             withAnimation {
                                 //self.viewModel.showAlert = false
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.visitToDelete = nil
                             }
                         }
@@ -350,7 +353,7 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                                         self.viewModel.loading = false
                                     }
                                         //self.showAlert = false
-                                        dismiss()
+                                        dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.visitToDelete = nil
                                         self.viewModel.showToast = true
@@ -379,11 +382,11 @@ struct CentrePopup_DeleteVisit: CentrePopup {
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
@@ -391,12 +394,15 @@ struct CentrePopup_AddVisit: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
     var house: House
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         AddVisitView(visit: viewModel.currentVisit, house: house) {
             
                 viewModel.presentSheet = false
-                dismiss()
+                dismissLastPopup()
                 
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
                 viewModel.showAddedToast = true
@@ -404,7 +410,7 @@ struct CentrePopup_AddVisit: CentrePopup {
             
         } onDismiss: {
             viewModel.presentSheet = false
-            dismiss()
+            dismissLastPopup()
         }
             .padding(.top, 10)
             .padding(.bottom, 10)
@@ -423,11 +429,11 @@ struct CentrePopup_AddVisit: CentrePopup {
             )
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
@@ -435,6 +441,10 @@ struct CentrePopup_AddRecall: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
     let house: String
     let user = StorageManager.shared.userEmail
+    
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         VStack {
@@ -460,7 +470,7 @@ struct CentrePopup_AddRecall: CentrePopup {
                     CustomBackButton() {
                         withAnimation {
                             //self.viewModel.showAlert = false
-                            dismiss()
+                            dismissLastPopup()
                             
                         }
                     }
@@ -478,7 +488,7 @@ struct CentrePopup_AddRecall: CentrePopup {
                             
                             
                             viewModel.loading = false
-                            dismiss()
+                            dismissLastPopup()
                             viewModel.showRecallAddedToast = true
                             withAnimation {
                                 DispatchQueue.main.async {
@@ -493,15 +503,13 @@ struct CentrePopup_AddRecall: CentrePopup {
                 }
             }
             .padding([.horizontal])
-            //.vSpacing(.bottom)
         }.padding(10)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(16)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
     }
 }
 
@@ -509,6 +517,10 @@ struct CentrePopup_DeleteRecall: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
     let house: String
     let user = StorageManager.shared.userEmail
+    
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         VStack {
@@ -527,19 +539,17 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                     .fontWeight(.bold)
                     .foregroundColor(.red)
             }
-            //.vSpacing(.bottom)
             
             HStack {
                 if !viewModel.loading {
                     CustomBackButton() {
                         withAnimation {
                             //self.viewModel.showAlert = false
-                            dismiss()
+                            dismissLastPopup()
                             
                         }
                     }
                 }
-                //.padding([.top])
                 
                 CustomButton(loading: viewModel.loading, title: NSLocalizedString("Remove", comment: ""), color: .red) {
                     withAnimation {
@@ -550,7 +560,7 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                         switch await viewModel.deleteRecall(id: viewModel.getRecallId(house: house) ?? Date().millisecondsSince1970 ,user: user ?? "", house: house) {
                         case .success(let success):
                             viewModel.loading = false
-                            dismiss()
+                            dismissLastPopup()
                             viewModel.showRecallAddedToast = true
                             withAnimation {
                                 DispatchQueue.main.async {
@@ -569,14 +579,11 @@ struct CentrePopup_DeleteRecall: CentrePopup {
         }.padding(10)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(16)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
-//#Preview {
-//    VisitsView()
-//}

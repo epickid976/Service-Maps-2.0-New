@@ -11,7 +11,7 @@ import CoreData
 import NukeUI
 import Combine
 import SwipeActions
-import MijickPopupView
+import MijickPopups
 
 @MainActor
 class HousesViewModel: ObservableObject {

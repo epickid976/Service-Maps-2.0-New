@@ -80,15 +80,15 @@ class AddKeyViewModel: ObservableObject {
             self.toggleSelection(for: territoryData)
         }) {
             HStack {
-                Image(systemName: selectedTerritories.contains(territoryData) ? "checkmark.circle.fill" : "circle")
+                Image(systemName: isSelected(territoryData: territoryData) ? "checkmark.circle.fill" : "circle")
                     .optionalViewModifier { content in
                         if #available(iOS 17, *) {
                             content
-                                .symbolEffect(.bounce, options: .speed(3.0), value: self.selectedTerritories.contains(territoryData))
-                                .animation(.bouncy, value: self.selectedTerritories.contains(territoryData))
+                                .symbolEffect(.bounce, options: .speed(3.0), value: self.isSelected(territoryData: territoryData))
+                                .animation(.bouncy, value: self.isSelected(territoryData: territoryData))
                         } else {
                             content
-                                .animation(.bouncy, value: self.selectedTerritories.contains(territoryData))
+                                .animation(.bouncy, value: self.isSelected(territoryData: territoryData))
                         }
                     }
 
@@ -96,8 +96,12 @@ class AddKeyViewModel: ObservableObject {
                     .padding(2)
             }
             .padding(.horizontal, 10)
-        }
+        }.id(territoryData.territory.id)
         .buttonStyle(PlainButtonStyle()) // Maintains original appearance
+    }
+                       
+    private func isSelected(territoryData: TerritoryData) -> Bool {
+        return selectedTerritories.contains(territoryData)
     }
 
     func toggleSelection(for territoryData: TerritoryData) {
@@ -131,7 +135,6 @@ class AddKeyViewModel: ObservableObject {
             territoriesSet.insert(territory.territory.id)  // Use Set to avoid duplicates
             territoryObjectsSet.insert(territory.territory)
         }
-        
         if let keyData = keyData {
             // Editing existing token
             return await dataUploader.editToken(token: keyData.key.id, territories: Array(territoryObjectsSet)) // Convert set back to array

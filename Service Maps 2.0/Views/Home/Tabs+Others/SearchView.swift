@@ -14,7 +14,7 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import MijickPopupView
+import MijickPopups
 
 
 struct SearchView: View {
@@ -194,12 +194,12 @@ struct MySearchResultItem: View {
             switch data.type {
             case .Territory:
                 Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
-                NavigationLink(destination: NavigationLazyView(TerritoryView(territoryIdToScrollTo: data.territory!.id).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(TerritoryView(territoryIdToScrollTo: data.territory!.id))) {
                     CellView(territory: data.territory!, houseQuantity: 0, mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .Address:
                 Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
-                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: data.territory!, territoryAddressIdToScrollTo: data.address!.id).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: data.territory!, territoryAddressIdToScrollTo: data.address!.id))) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(AddressData(id: UUID(), address: data.address!, houseQuantity: 0, accessLevel: .User).address.address)")
@@ -226,28 +226,28 @@ struct MySearchResultItem: View {
                 }.onTapHaptic(.lightImpact)
             case .House:
                 Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
-                NavigationLink(destination: NavigationLazyView(HousesView(address: data.address!, houseIdToScrollTo: data.house!.id).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(HousesView(address: data.address!, houseIdToScrollTo: data.house!.id))) {
                     
                     HouseCell(house: HouseData(id: UUID(), house: data.house!, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  data.house!) ?? .User), mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .Visit:
                 Text(buildPath(territory: data.territory, address: data.address, house: data.house)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
-                NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!, visitIdToScrollTo: data.visit!.id)).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(VisitsView(house: data.house!, visitIdToScrollTo: data.visit!.id))) {
                     VisitCell(visit: VisitData(id: UUID(), visit: data.visit!, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  data.visit!) ?? .User), mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .PhoneTerritory:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
-                NavigationLink(destination: NavigationLazyView(PhoneTerritoriesScreen(phoneTerritoryToScrollTo: data.phoneTerritory!.id).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(PhoneTerritoriesScreen(phoneTerritoryToScrollTo: data.phoneTerritory!.id))) {
                     PhoneTerritoryCellView(territory: data.phoneTerritory!, numbers: 0, mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .Number:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).font(.headline).fontWeight(.heavy)
-                NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: data.phoneTerritory!, phoneNumberToScrollTo: data.number!.id).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: data.phoneTerritory!, phoneNumberToScrollTo: data.number!.id))) {
                     PhoneNumberCell(numbersData: PhoneNumbersData(id: UUID(), phoneNumber: data.number!), mainWindowSize: mainWindowSize)
                 }.onTapHaptic(.lightImpact)
             case .Call:
                 Text(buildFoundPath(phoneTerritory: data.phoneTerritory, phoneNumber: data.number)).hSpacing(.leading).bold()
-                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: data.number!, callToScrollTo: data.call!.id).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: data.number!, callToScrollTo: data.call!.id))) {
                     CallCell(call: PhoneCallData(id: UUID(), phoneCall: data.call!, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  data.call!) ?? .User))
                 }.onTapHaptic(.lightImpact)
             }

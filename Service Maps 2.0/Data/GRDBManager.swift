@@ -349,146 +349,116 @@ class GRDBManager: ObservableObject {
             return nil
         }
     }
-    
-    // MARK: - Main Territory Data Fetching
-    
-    func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Error> {
-        return Publishers.CombineLatest3(
-            fetchTerritories(),
-            fetchAddresses(),
-            fetchHouses()
-        )
-        .flatMap { [weak self] territories, addresses, houses -> AnyPublisher<[TerritoryDataWithKeys], Error> in
-            guard let self = self else {
-                return Fail(error: DatabaseError.instanceDeallocated).eraseToAnyPublisher()
-            }
-            
-            let territoryData = self.processTerritoryData(
-                territories: territories,
-                addresses: addresses,
-                houses: houses
-            )
-            
-            return self.fetchAndCombineKeys(for: territoryData)
-                .eraseToAnyPublisher()
-        }
-        .receive(on: DispatchQueue.main)
-        .eraseToAnyPublisher()
-    }
-
     // MARK: - Individual Data Fetching
-    private func fetchTerritories() -> AnyPublisher<[Territory], Error> {
-        ValueObservation.tracking { db in
-            try Territory.fetchAll(db)
-        }
-        .publisher(in: dbPool)
-        .eraseToAnyPublisher()
-    }
-
-    private func fetchAddresses() -> AnyPublisher<[TerritoryAddress], Error> {
-        ValueObservation.tracking { db in
-            try TerritoryAddress.fetchAll(db)
-        }
-        .publisher(in: dbPool)
-        .eraseToAnyPublisher()
-    }
-
-    private func fetchHouses() -> AnyPublisher<[House], Error> {
-        ValueObservation.tracking { db in
-            try House.fetchAll(db)
-        }
-        .publisher(in: dbPool)
-        .eraseToAnyPublisher()
-    }
-
-    // MARK: - Data Processing
-    private func processTerritoryData(
-        territories: [Territory],
-        addresses: [TerritoryAddress],
-        houses: [House]
-    ) -> [TerritoryData] {
-        let territoryAddresses = Dictionary(grouping: addresses, by: { $0.territory })
-        let territoryHouses = Dictionary(grouping: houses, by: { $0.territory_address })
-        let authManager = AuthorizationLevelManager()
+    @MainActor
+    func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Never> {
         
-        return territories
-            .map { territory in
+        // Observations for territories, addresses, and houses
+        let territoriesObservation = ValueObservation.tracking { db in
+            try Territory.fetchAll(db) // Fetch territories
+        }
+        
+        let addressesObservation = ValueObservation.tracking { db in
+            try TerritoryAddress.fetchAll(db) // Fetch addresses
+        }
+        
+        let housesObservation = ValueObservation.tracking { db in
+            try House.fetchAll(db) // Fetch houses
+        }
+        
+        // Combine the three observations
+        let combinedFlow = Publishers.CombineLatest3(
+            territoriesObservation
+                .publisher(in: dbPool)
+                .catch { _ in Just([]) } // Handle errors by emitting an empty array
+                .setFailureType(to: Never.self),
+            
+            addressesObservation
+                .publisher(in: dbPool)
+                .catch { _ in Just([]) } // Handle errors by emitting an empty array
+                .setFailureType(to: Never.self),
+            
+            housesObservation
+                .publisher(in: dbPool)
+                .catch { _ in Just([]) } // Handle errors by emitting an empty array
+                .setFailureType(to: Never.self)
+        )
+        
+        // Transform the data
+        let transformedFlow = combinedFlow.flatMap { territories, addresses, houses -> AnyPublisher<[TerritoryDataWithKeys], Never> in
+            var dataWithKeys = [TerritoryDataWithKeys]()
+            
+            // Group addresses and houses by their relationships to territories
+            let territoryAddresses = Dictionary(grouping: addresses, by: { $0.territory })
+            let territoryHouses = Dictionary(grouping: houses, by: { $0.territory_address })
+            
+            // Authorization Level Manager (assuming this is already set up)
+            let authManager = AuthorizationLevelManager()
+            
+            // Process each territory
+            for territory in territories {
+                // Get addresses and houses for the current territory
                 let currentAddresses = territoryAddresses[territory.id] ?? []
-                let currentHouses = currentAddresses.flatMap { territoryHouses[$0.id] ?? [] }
+                let currentHouses = currentAddresses.flatMap { address in
+                    territoryHouses[address.id] ?? []
+                }
                 
-                return TerritoryData(
+                // Create a TerritoryData object
+                let territoryData = TerritoryData(
                     territory: territory,
                     addresses: currentAddresses,
                     housesQuantity: currentHouses.count,
                     accessLevel: authManager.getAccessLevel(model: territory) ?? .User
                 )
-            }
-            .sorted(by: { $0.territory.number < $1.territory.number })
-    }
-
-    // MARK: - Key Processing
-    private func fetchAndCombineKeys(for territoryData: [TerritoryData]) -> AnyPublisher<[TerritoryDataWithKeys], Error> {
-        return Future { [weak self] promise in
-            guard let self = self else {
-                promise(.failure(DatabaseError.instanceDeallocated))
-                return
+                
+                // Fetch keys for the current territory (simulate fetch from DB)
+                let tokens = try? self.dbPool.read { db in
+                    try Token.fetchAll(db)
+                }
+                let tokenTerritories = try? self.dbPool.read { db in
+                    try TokenTerritory.fetchAll(db).filter { $0.territory == territory.id }
+                }
+                
+                var keys = [Token]()
+                
+                if let tokenTerritories = tokenTerritories {
+                    for tokenTerritory in tokenTerritories {
+                        if let token = tokens?.first(where: { $0.id == tokenTerritory.token }) {
+                            keys.append(token)
+                        }
+                    }
+                }
+                
+                // Check if we already have a TerritoryDataWithKeys with the same keys
+                let foundIndex = dataWithKeys.firstIndex(where: { item in
+                    if keys.isEmpty {
+                        return item.keys.isEmpty
+                    } else {
+                        return self.containsSame(first: item.keys, second: keys, getId: { $0.id })
+                    }
+                })
+                
+                if let foundIndex = foundIndex {
+                    // Add to the existing TerritoryDataWithKeys group
+                    dataWithKeys[foundIndex].territoriesData.append(territoryData)
+                    dataWithKeys[foundIndex].territoriesData.sort { $0.territory.number < $1.territory.number }
+                } else {
+                    // Create a new TerritoryDataWithKeys group
+                    dataWithKeys.append(TerritoryDataWithKeys(
+                        id: UUID(),
+                        keys: keys,
+                        territoriesData: [territoryData]
+                    ))
+                }
             }
             
-            do {
-                let result = try self.dbPool.read { db in
-                    let tokens = try Token.fetchAll(db)
-                    let territoryTokens = try TokenTerritory.fetchAll(db)
-                    
-                    let tokensByTerritory = Dictionary(
-                        grouping: territoryTokens,
-                        by: { $0.territory }
-                    )
-                    
-                    return self.combineTerritoriesWithKeys(
-                        territoryData: territoryData,
-                        tokens: tokens,
-                        tokensByTerritory: tokensByTerritory
-                    )
-                }
-                promise(.success(result))
-            } catch {
-                promise(.failure(error))
-            }
-        }.eraseToAnyPublisher()
-    }
-
-    private func combineTerritoriesWithKeys(
-        territoryData: [TerritoryData],
-        tokens: [Token],
-        tokensByTerritory: [String: [TokenTerritory]]
-    ) -> [TerritoryDataWithKeys] {
-        var result = [TerritoryDataWithKeys]()
-
-        // Existing logic to group and combine keys
-        var groupedData = [Set<String>: [TerritoryData]]()
-        for data in territoryData {
-            let territoryTokens = tokensByTerritory[data.territory.id] ?? []
-            let tokenIds = Set(territoryTokens.compactMap { $0.token })
-            groupedData[tokenIds, default: []].append(data)
+            // Return the sorted data
+            return Just(dataWithKeys)
+                .eraseToAnyPublisher()
         }
         
-        for (tokenIds, territories) in groupedData {
-            let associatedTokens = tokens.filter { tokenIds.contains($0.id) }
-            result.append(
-                TerritoryDataWithKeys(
-                    id: UUID(),
-                    keys: associatedTokens,
-                    territoriesData: territories.sorted { $0.territory.number < $1.territory.number }
-                )
-            )
-        }
-        return result
-    }
-
-    // MARK: - Error Types
-    enum DatabaseError: Error {
-        case instanceDeallocated
-        // Add other specific error cases as needed
+        // Erase to a publisher with Never failure type
+        return transformedFlow.eraseToAnyPublisher()
     }
     
     

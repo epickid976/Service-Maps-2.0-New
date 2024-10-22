@@ -8,7 +8,7 @@
 import SwiftUI
 import NavigationTransitions
 import AlertKit
-import MijickPopupView
+import MijickPopups
 import Lottie
 
 struct SettingsView: View {
@@ -69,29 +69,29 @@ struct SettingsView: View {
             .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
             .onChange(of: viewModel.showAlert) { value in
                 if value {
-                    CentrePopup_AboutApp(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).showAndStack()
+                    CentrePopup_AboutApp(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).present()
                 }
             }
             .alert(isPresent: $viewModel.showUpdateToast, view: alertUpdate)
             .onChange(of: viewModel.showDeletionConfirmationAlert) { value in
                 if value {
-                    CentrePopup_DeletionConfirmation(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true, showBack: showBackButton, onDone: { presentationMode.wrappedValue.dismiss() }).showAndReplace()
+                    CentrePopup_DeletionConfirmation(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true, showBack: showBackButton, onDone: { presentationMode.wrappedValue.dismiss() }).present()
                 }
             }
             .onChange(of: viewModel.showSharePopup) { value in
                 if value {
-                    CentrePopup_ShareApp(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).showAndReplace()
+                    CentrePopup_ShareApp(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).present()
                 }
             }
             .onChange(of: viewModel.showDeletionAlert) { value in
                 if value {
-                    CentrePopup_Deletion(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).showAndReplace()
+                    CentrePopup_Deletion(viewModel: viewModel, usingLargeText: sizeCategory == .large || sizeCategory == .extraLarge ? false : true).present()
                 }
             }
             
             .onChange(of: viewModel.showEditNamePopup) { value in
                 if value {
-                    CentrePopup_EditUsername(viewModel: viewModel).showAndReplace()
+                    CentrePopup_EditUsername(viewModel: viewModel).present()
                 }
             }
             
@@ -124,7 +124,7 @@ struct SettingsView: View {
             .padding()
             .onChange(of: viewModel.presentPolicy) { value in
                 if value {
-                    BottomPopup_Document(viewModel: viewModel).showAndStack()
+                    BottomPopup_Document(viewModel: viewModel).present()
                 }
             }
             .fullScreenCover(isPresented: $viewModel.phoneBookLogin) {
@@ -153,7 +153,7 @@ struct SettingsView: View {
                     HStack {
                         Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                dismissAll()
+                                dismissAllPopups()
                                 presentationMode.wrappedValue.dismiss()
                             }
                         })
@@ -289,7 +289,7 @@ struct SettingsView: View {
         VStack(spacing: 16) {
             Button {
                 HapticManager.shared.trigger(.lightImpact)
-                CentrePopup_Backup(viewModel: viewModel, backingUp: $backingUp).showAndStack()
+                CentrePopup_Backup(viewModel: viewModel, backingUp: $backingUp).present()
             } label: {
                 HStack {
                     HStack {
@@ -322,6 +322,10 @@ struct CentrePopup_AboutApp: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
     var usingLargeText: Bool
     
+    var body: some View {
+        createContent()
+    }
+    
     func createContent() -> some View {
         VStack {
             Text("About App")
@@ -342,7 +346,7 @@ struct CentrePopup_AboutApp: CentrePopup {
                 HapticManager.shared.trigger(.lightImpact)
                 withAnimation {
                     self.viewModel.showAlert = false
-                    dismiss()
+                    dismissLastPopup()
                 }
             }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
             //.frame(width: 100)
@@ -354,11 +358,11 @@ struct CentrePopup_AboutApp: CentrePopup {
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
@@ -370,6 +374,10 @@ struct CentrePopup_Backup: CentrePopup {
     @State var shareBackup: Bool = false
     
     @ObservedObject var backupManager = BackupManager.shared
+    
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         VStack {
@@ -434,7 +442,7 @@ struct CentrePopup_Backup: CentrePopup {
                             BackupManager.shared.cancelBackup()  // Call cancel
                         }
                         backingUp = false  // Stop backing up UI
-                        PopupManager.dismissAll()
+                        PopupManager.dismissAllPopups()
                     }
                 }.hSpacing(.trailing)
                 
@@ -480,11 +488,11 @@ struct CentrePopup_Backup: CentrePopup {
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
     
     func presentActivityViewController(with url: URL) {
@@ -503,6 +511,10 @@ struct CentrePopup_Backup: CentrePopup {
 struct CentrePopup_ShareApp: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
     var usingLargeText: Bool
+    
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         VStack {
@@ -568,7 +580,7 @@ struct CentrePopup_ShareApp: CentrePopup {
                 HapticManager.shared.trigger(.lightImpact)
                 withAnimation {
                     self.viewModel.showSharePopup = false
-                    dismiss()
+                    dismissLastPopup()
                 }
             }.hSpacing(.trailing)
                 .padding(.top, 10)//.keyboardShortcut("\r", modifiers: [.command, .shift])
@@ -581,11 +593,11 @@ struct CentrePopup_ShareApp: CentrePopup {
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 #Preview {
@@ -597,6 +609,10 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
     var usingLargeText: Bool
     var showBack: Bool
     var onDone: () -> Void
+    
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         VStack {
@@ -623,7 +639,7 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                     HapticManager.shared.trigger(.lightImpact)
                     withAnimation {
                         self.viewModel.showDeletionConfirmationAlert = false
-                        PopupManager.dismissAll()
+                        PopupManager.dismissAllPopups()
                     }
                 }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red, action: {
@@ -636,7 +652,7 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                             withAnimation { self.viewModel.loading = false }
                             
                             self.viewModel.showDeletionConfirmationAlert = false
-                            dismiss()
+                            dismissLastPopup()
                             if showBack {
                                 onDone()
                             }
@@ -657,17 +673,21 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
 struct CentrePopup_Deletion: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
     var usingLargeText: Bool
+    
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         VStack {
@@ -690,7 +710,7 @@ struct CentrePopup_Deletion: CentrePopup {
                 CustomBackButton(showImage: true, text: "Cancel") {
                     HapticManager.shared.trigger(.lightImpact)
                     self.viewModel.showDeletionAlert = false
-                    dismiss()
+                    dismissLastPopup()
                 }.hSpacing(.trailing)//.keyboardShortcut("\r", modifiers: [.command, .shift])
                 CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red, action: {
                     HapticManager.shared.trigger(.lightImpact)
@@ -708,11 +728,11 @@ struct CentrePopup_Deletion: CentrePopup {
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
@@ -723,6 +743,11 @@ struct CentrePopup_EditUsername: CentrePopup {
     
     @State var error = ""
     @State var loading = false
+    
+    var body: some View {
+        createContent()
+    }
+    
     func createContent() -> some View {
         VStack {
             Text("Edit Username")
@@ -743,7 +768,7 @@ struct CentrePopup_EditUsername: CentrePopup {
                 if !loading {
                     CustomBackButton() {
                         HapticManager.shared.trigger(.lightImpact)
-                        dismiss()
+                        dismissLastPopup()
                         self.viewModel.showEditNamePopup = false
                     }
                 }
@@ -760,7 +785,7 @@ struct CentrePopup_EditUsername: CentrePopup {
                             case .success(_):
                                 HapticManager.shared.trigger(.success)
                                 withAnimation { loading = false }
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.showEditNamePopup = false
                             case .failure(let error):
                                 HapticManager.shared.trigger(.error)
@@ -796,11 +821,11 @@ struct CentrePopup_EditUsername: CentrePopup {
         
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
         
     }
 }
@@ -808,10 +833,13 @@ struct CentrePopup_EditUsername: CentrePopup {
 struct BottomPopup_Document: BottomPopup {
     @ObservedObject var viewModel: SettingsViewModel
     
-    func configurePopup(popup: BottomPopupConfig) -> BottomPopupConfig {
-        popup
-            .contentFillsWholeHeigh(true)
-            .dragGestureEnabled(false)
+    var body: some View {
+        createContent()
+    }
+    func configurePopup(config: BottomPopupConfig) -> BottomPopupConfig {
+        config
+//            .contentFillsWholeHeigh(true)
+//            .dragGestureEnabled(false)
     }
     func createContent() -> some View {
         VStack(spacing: 0) {
@@ -841,7 +869,7 @@ private extension BottomPopup_Document {
     func createConfirmButton() -> some View {
         Button {
             HapticManager.shared.trigger(.lightImpact)
-            dismiss()
+            dismissLastPopup()
             viewModel.presentPolicy = false
         } label: {
             Text("Dismiss")

@@ -14,7 +14,7 @@ import Lottie
 import AlertKit
 import Nuke
 import FloatingButton
-import MijickPopupView
+import MijickPopups
 
 
 struct TerritoryView: View {
@@ -116,7 +116,7 @@ struct TerritoryView: View {
                                                         ScrollView(.horizontal, showsIndicators: false) {
                                                             LazyHStack {
                                                                 ForEach(viewModel.recentTerritoryData!, id: \.id) { territoryData in
-                                                                    NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                                    NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory))) {
                                                                         recentCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
                                                                     }.onTapHaptic(.lightImpact)
                                                                 }
@@ -212,7 +212,7 @@ struct TerritoryView: View {
                                         if viewModel.territoryIdToScrollTo != nil {
                                             Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                    dismissAll()
+                                                    dismissAllPopups()
                                                     presentationMode.wrappedValue.dismiss()
                                                 }
                                             })//.keyboardShortcut(.delete, modifiers: .command)
@@ -289,11 +289,10 @@ struct TerritoryView: View {
                             .onChange(of: viewModel.dataStore.synchronized) { value in
                                 if value {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                            viewModel.getTerritories()
+                                         viewModel.getTerritories()
                                     }
                                 }
                             }
-                        
                         
                     }
                     
@@ -334,7 +333,7 @@ struct TerritoryView: View {
     func territoryCell(dataWithKeys: TerritoryDataWithKeys, territoryData: TerritoryData, mainViewSize: CGSize) -> some View {
         LazyVStack {
             SwipeView {
-                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory))) {
                     CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16) // Same shape as the cell
@@ -362,7 +361,7 @@ struct TerritoryView: View {
                                         Button {
                                             HapticManager.shared.trigger(.lightImpact)
                                             DispatchQueue.main.async {
-                                                CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).showAndStack()
+                                                CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).present()
                                             }
                                         } label: {
                                             HStack {
@@ -399,7 +398,7 @@ struct TerritoryView: View {
                         DispatchQueue.main.async {
                             context.state.wrappedValue = .closed
                             self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                            CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).showAndStack()
+                            CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).present()
                         }
                     }
                     .font(.title.weight(.semibold))
@@ -510,6 +509,9 @@ struct ViewOffsetKey: PreferenceKey {
 struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
     @ObservedObject var viewModel: TerritoryViewModel
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         ZStack {
@@ -537,7 +539,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 //self.viewModel.showAlert = false
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.territoryToDelete = (nil,nil)
                             }
                         }
@@ -568,7 +570,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.20) {
                                             self.viewModel.showToast = false
                                             //self.showAlert = false
-                                            dismiss()
+                                            dismissLastPopup()
                                         }
                                     }
                                 case .failure(_):
@@ -596,11 +598,11 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 

@@ -86,7 +86,6 @@
 		8255F1962C1A79AF00445A82 /* EditTokenForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1952C1A79AF00445A82 /* EditTokenForm.swift */; };
 		825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B42BD04E9F00F18AC9 /* AddressData.swift */; };
 		825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */; };
-		82659D7A2C6FBD8700580BE6 /* MijickPopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 82659D792C6FBD8700580BE6 /* MijickPopupView */; };
 		826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */; };
 		826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766F2A729FDE000A4BAA /* HomeTabView.swift */; };
 		826B76722A729FE1000A4BAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826B76712A729FE1000A4BAA /* Assets.xcassets */; };
@@ -119,6 +118,7 @@
 		82BC0F212A9C249300B255BF /* ChangeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F202A9C249300B255BF /* ChangeAction.swift */; };
 		82BC0F232A9C24AC00B255BF /* ChangeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F222A9C24AC00B255BF /* ChangeType.swift */; };
 		82BC0F272A9CD94500B255BF /* AddHouseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BC0F262A9CD94500B255BF /* AddHouseView.swift */; };
+		82BED49F2CC567F400183E19 /* MijickPopups in Frameworks */ = {isa = PBXBuildFile; productRef = 82BED49E2CC567F400183E19 /* MijickPopups */; };
 		82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C11AAC2AA35FC8007CDFFA /* TerritoryAddressView.swift */; };
 		82CAFDDE2CC1FA0600B3796D /* MainStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CAFDDD2CC1F9FF00B3796D /* MainStructs.swift */; };
 		82CAFDE02CC1FB2D00B3796D /* PhoneStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CAFDDF2CC1FB2900B3796D /* PhoneStructs.swift */; };
@@ -325,6 +325,7 @@
 				828C4CD62C3A31CC00E147C3 /* ImageViewer in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
+				82BED49F2CC567F400183E19 /* MijickPopups in Frameworks */,
 				822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */,
 				822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */,
 				828C4CD82C3A31CC00E147C3 /* ImageViewerRemote in Frameworks */,
@@ -332,7 +333,6 @@
 				8228B6082C29BB68002B7886 /* Ably in Frameworks */,
 				82CAFE162CC34E2200B3796D /* GRDB in Frameworks */,
 				8228B6142C29C148002B7886 /* ModifiedCopyClient in Frameworks */,
-				82659D7A2C6FBD8700580BE6 /* MijickPopupView in Frameworks */,
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
 				822FA07D2AA6B6320008FA61 /* Nuke in Frameworks */,
@@ -561,6 +561,7 @@
 			isa = PBXGroup;
 			children = (
 				826B766C2A729FDE000A4BAA /* Service Maps 2.0 */,
+				82BED49D2CC567F400183E19 /* Frameworks */,
 				826B766B2A729FDE000A4BAA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -603,6 +604,13 @@
 				826B76742A729FE1000A4BAA /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		82BED49D2CC567F400183E19 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		82CAFE352CC5360200B3796D /* Main */ = {
@@ -753,8 +761,8 @@
 				8228B6132C29C148002B7886 /* ModifiedCopyClient */,
 				828C4CD52C3A31CC00E147C3 /* ImageViewer */,
 				828C4CD72C3A31CC00E147C3 /* ImageViewerRemote */,
-				82659D792C6FBD8700580BE6 /* MijickPopupView */,
 				82CAFE152CC34E2200B3796D /* GRDB */,
+				82BED49E2CC567F400183E19 /* MijickPopups */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -1266,7 +1274,7 @@
 			repositoryURL = "https://github.com/Mijick/PopupView.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.7.0;
+				minimumVersion = 3.0.0;
 			};
 		};
 		828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */ = {
@@ -1369,11 +1377,6 @@
 			package = 822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
 			productName = NavigationTransitions;
 		};
-		82659D792C6FBD8700580BE6 /* MijickPopupView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */;
-			productName = MijickPopupView;
-		};
 		828C4CD52C3A31CC00E147C3 /* ImageViewer */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */;
@@ -1388,6 +1391,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */;
 			productName = AlertKit;
+		};
+		82BED49E2CC567F400183E19 /* MijickPopups */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = MijickPopups;
 		};
 		82CAFE152CC34E2200B3796D /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;

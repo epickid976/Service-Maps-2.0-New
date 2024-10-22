@@ -13,7 +13,7 @@ import UIKit
 import Lottie
 import AlertKit
 import Nuke
-import MijickPopupView
+import MijickPopups
 
 struct PhoneTerritoriesScreen: View {
     @StateObject var viewModel: PhoneScreenViewModel
@@ -116,7 +116,7 @@ struct PhoneTerritoriesScreen: View {
                                                         ScrollView(.horizontal, showsIndicators: false) {
                                                             LazyHStack {
                                                                 ForEach(viewModel.recentPhoneData!, id: \.id) { territoryData in
-                                                                    NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory).implementPopupView()).implementPopupView()) {
+                                                                    NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: territoryData.territory))) {
                                                                         recentPhoneCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
                                                                     }.onTapHaptic(.lightImpact)
                                                                 }
@@ -206,7 +206,7 @@ struct PhoneTerritoriesScreen: View {
                                     if viewModel.phoneTerritoryToScrollTo != nil {
                                         Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                dismissAll()
+                                                dismissAllPopups()
                                                 presentationMode.wrappedValue.dismiss()
                                             }
                                         })//.keyboardShortcut(.delete, modifiers: .command)
@@ -296,7 +296,7 @@ struct PhoneTerritoriesScreen: View {
     func territoryCell(phoneData: PhoneData, mainViewSize: CGSize) -> some View {
         LazyVStack {
         SwipeView {
-            NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: phoneData.territory).implementPopupView()).implementPopupView()) {
+            NavigationLink(destination: NavigationLazyView(PhoneNumbersView(territory: phoneData.territory))) {
                 PhoneTerritoryCellView(territory: phoneData.territory, numbers: phoneData.numbersQuantity, mainWindowSize: mainViewSize)
                     .padding(.bottom, 2)
                     .overlay(
@@ -310,7 +310,7 @@ struct PhoneTerritoriesScreen: View {
                                     Button {
                                         DispatchQueue.main.async {
                                             self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
-                                            CentrePopup_DeletePhoneTerritory(viewModel: viewModel).showAndStack()
+                                            CentrePopup_DeletePhoneTerritory(viewModel: viewModel).present()
                                         }
                                     } label: {
                                         HStack {
@@ -360,7 +360,7 @@ struct PhoneTerritoriesScreen: View {
                     DispatchQueue.main.async {
                         context.state.wrappedValue = .closed
                         self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
-                        CentrePopup_DeletePhoneTerritory(viewModel: viewModel).showAndStack()
+                        CentrePopup_DeletePhoneTerritory(viewModel: viewModel).present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -392,6 +392,9 @@ struct PhoneTerritoriesScreen: View {
 struct CentrePopup_DeletePhoneTerritory: CentrePopup {
     @ObservedObject var viewModel: PhoneScreenViewModel
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         ZStack {
@@ -419,7 +422,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 //self.showAlert = false
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.territoryToDelete = (nil,nil)
                             }
                         }
@@ -440,7 +443,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                                         withAnimation {
                                             self.viewModel.loading = false
                                         }
-                                        dismiss()
+                                        dismissLastPopup()
                                         self.viewModel.territoryToDelete = (nil,nil)
                                         self.viewModel.showToast = true
                                     }
@@ -480,10 +483,10 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
             )
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }

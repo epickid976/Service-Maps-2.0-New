@@ -544,7 +544,7 @@ class DataUploaderManager: ObservableObject {
                 try await tokenApi.blockUnblockUserFromToken(token: userTokenEntity.token, userId: userTokenEntity.userId, blocked: blocked)
                 
                 // Update the local database with the new blocked status
-                let updatedUserToken = UserToken(id: userTokenEntity.id, token: userTokenEntity.token, userId: userTokenEntity.userId, name: userTokenEntity.name, blocked: blocked)
+                let updatedUserToken = UserToken( token: userTokenEntity.token, userId: userTokenEntity.userId, name: userTokenEntity.name, blocked: blocked)
                 _ = await grdbManager.editAsync(updatedUserToken)
                 
                 return .success(true)

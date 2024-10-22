@@ -9,7 +9,7 @@ import SwiftUI
 import NavigationTransitions
 import BackgroundTasks
 import Nuke
-import MijickPopupView
+import MijickPopups
 
 //ORIGINAL NEW
 
@@ -40,13 +40,12 @@ struct Service_Maps_2_0App: App {
             let destination: DestinationEnum = instantiateDestination()
             
             
-            //GeometryReader { proxy in
             NavigationStack {
                 switch destination {
                 case .SplashScreen:
                     SplashScreenView()
                 case .HomeScreen:
-                    HomeTabView().implementPopupView()
+                    HomeTabView()
                 case .WelcomeScreen:
                     WelcomeView() {
                         Task {
@@ -83,7 +82,6 @@ struct Service_Maps_2_0App: App {
                 case .NoDataScreen:
                     NoDataView()
                 case .ActivateEmail:
-                    //TO DO ADD VIEWs
                     ValidationView()
                 case .RegisterKeyView:
                     RegisterKeyView()
@@ -107,6 +105,7 @@ struct Service_Maps_2_0App: App {
             .navigationTransition(
                 .fade(.in)
             )
+        
             
         }
         .onChange(of: scenePhase) { newPhase in

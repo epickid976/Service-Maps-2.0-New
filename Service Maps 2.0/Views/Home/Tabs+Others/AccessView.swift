@@ -12,7 +12,7 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import MijickPopupView
+import MijickPopups
 
 struct AccessView: View {
     @StateObject var viewModel: AccessViewModel
@@ -126,7 +126,7 @@ struct AccessView: View {
                         .navigationDestination(isPresented: $viewModel.presentSheet) {
                             AddKeyView(keyData: keydataToEdit) {
                                 //synchronizationManager.startupProcess(synchronizing: true)
-                                viewModel.getKeys()
+                               // viewModel.getKeys()
                                 keydataToEdit = nil
                                 DispatchQueue.main.async {
                                     viewModel.showAddedToast = true
@@ -216,7 +216,7 @@ struct AccessView: View {
                     Button {
                         HapticManager.shared.trigger(.lightImpact)
                         self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
-                        CentrePopup_DeleteKey(viewModel: viewModel).showAndStack()
+                        CentrePopup_DeleteKey(viewModel: viewModel).present()
                     } label: {
                         HStack {
                             Image(systemName: "trash")
@@ -271,7 +271,7 @@ struct AccessView: View {
             ) {
                 HapticManager.shared.trigger(.lightImpact)
                 context.state.wrappedValue = .closed
-                CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)).showAndStack()
+                CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)).present()
             }
             .font(.title.weight(.semibold))
             .foregroundColor(.white)
@@ -457,7 +457,7 @@ struct AccessViewUsersView: View {
                                                                         
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                         //self.showAlert = true
-                                                                        CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                                                                        CentrePopup_DeleteUser(viewModel: viewModel).present()
                                                                     }
                                                                 } label: {
                                                                     HStack {
@@ -478,7 +478,7 @@ struct AccessViewUsersView: View {
                                                                 context.state.wrappedValue = .closed
                                                                 // Set the block/unblock action here with a UserAction object
                                                                 self.viewModel.blockUnblockAction = UserAction(id: keyData.id, isBlocked: keyData.blocked)
-                                                                CentrePopup_BlockOrUnblockUser(viewModel: viewModel).showAndStack()
+                                                                CentrePopup_BlockOrUnblockUser(viewModel: viewModel).present()
                                                             }
                                                         }
                                                         .font(.title.weight(.semibold))
@@ -493,7 +493,7 @@ struct AccessViewUsersView: View {
                                                             DispatchQueue.main.async {
                                                                 context.state.wrappedValue = .closed
                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)  // Set userToDelete for deletion
-                                                                CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                                                                CentrePopup_DeleteUser(viewModel: viewModel).present()
                                                             }
                                                         }
                                                         .font(.title.weight(.semibold))
@@ -526,7 +526,7 @@ struct AccessViewUsersView: View {
                                                                             DispatchQueue.main.async {
                                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                                 //self.showAlert = true
-                                                                                CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                                                                                CentrePopup_DeleteUser(viewModel: viewModel).present()
                                                                             }
                                                                         } label: {
                                                                             HStack {
@@ -547,7 +547,7 @@ struct AccessViewUsersView: View {
                                                                         context.state.wrappedValue = .closed
                                                                         // Set the block/unblock action here with a UserAction object
                                                                         self.viewModel.blockUnblockAction = UserAction(id: keyData.id, isBlocked: keyData.blocked)
-                                                                        CentrePopup_BlockOrUnblockUser(viewModel: viewModel).showAndStack()
+                                                                        CentrePopup_BlockOrUnblockUser(viewModel: viewModel).present()
                                                                     }
                                                                 }
                                                                 .font(.title.weight(.semibold))
@@ -562,7 +562,7 @@ struct AccessViewUsersView: View {
                                                                         context.state.wrappedValue = .closed
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                         //self.showAlert = true
-                                                                        CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                                                                        CentrePopup_DeleteUser(viewModel: viewModel).present()
                                                                     }
                                                                 }
                                                                 .font(.title.weight(.semibold))
@@ -599,7 +599,7 @@ struct AccessViewUsersView: View {
                                 HStack {
                                     Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            dismissAll()
+                                            dismissAllPopups()
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })//.keyboardShortcut(.delete, modifiers: .command)
@@ -633,7 +633,7 @@ struct AccessViewUsersView: View {
                         DispatchQueue.main.async {
                             self.viewModel.userToDelete = (keyData.id, keyData.name)
                             //self.showAlert = true
-                            CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                            CentrePopup_DeleteUser(viewModel: viewModel).present()
                         }
                     } label: {
                         HStack {
@@ -654,7 +654,7 @@ struct AccessViewUsersView: View {
                         context.state.wrappedValue = .closed
                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                         //self.showAlert = true
-                        CentrePopup_DeleteUser(viewModel: viewModel).showAndStack()
+                        CentrePopup_DeleteUser(viewModel: viewModel).present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -674,7 +674,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
     var keyToDelete: (String?,String?)
     
-    func createContent() -> some View {
+    var body: some View {
         ZStack {
             VStack {
                 Text("Delete Key: \(keyToDelete.1 ?? "0")")
@@ -700,7 +700,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 self.viewModel.keyToDelete = (nil,nil)
-                                dismiss()
+                                dismissLastPopup()
                             }
                         }
                     }
@@ -719,13 +719,10 @@ struct CentrePopup_DeleteKey: CentrePopup {
                                 switch await self.viewModel.deleteKey(key: self.keyToDelete.0 ?? "") {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
-                                    DispatchQueue.main.async {
-                                        viewModel.getKeys()
-                                    }
                                     withAnimation {
                                         self.viewModel.loading = false
                                     }
-                                    dismiss()
+                                    dismissLastPopup()
                                     self.viewModel.keyToDelete = (nil,nil)
                                         //self.viewModel.showAlert = false
                                      self.viewModel.showToast = true
@@ -758,16 +755,20 @@ struct CentrePopup_DeleteKey: CentrePopup {
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
 struct CentrePopup_DeleteUser: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
+    
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         ZStack {
@@ -795,7 +796,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                         CustomBackButton() {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.userToDelete = (nil, nil)
                             }
                         }
@@ -816,7 +817,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                                         self.viewModel.loading = false
                                         self.viewModel.getKeyUsers()
                                     }
-                                    dismiss()
+                                    dismissLastPopup()
                                     self.viewModel.userToDelete = (nil, nil)
                                     self.viewModel.showToast = true
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -844,16 +845,20 @@ struct CentrePopup_DeleteUser: CentrePopup {
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
 struct CentrePopup_BlockOrUnblockUser: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
+    
+    var body: some View {
+        createContent()
+    }
 
     func createContent() -> some View {
         ZStack {
@@ -881,7 +886,7 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                         CustomBackButton() {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.blockUnblockAction = nil
                                 self.viewModel.ifFailed = false
                             }
@@ -903,7 +908,7 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                                         self.viewModel.loading = false
                                         self.viewModel.getKeyUsers()  // Update the list of users after block/unblock
                                     }
-                                    dismiss()
+                                    dismissLastPopup()
                                     if userAction.isBlocked {
                                         self.viewModel.showUserUnblockAlert = true
                                     } else {
@@ -936,10 +941,10 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
         .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
 
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }

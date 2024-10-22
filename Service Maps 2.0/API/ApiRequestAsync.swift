@@ -24,9 +24,7 @@ class ApiRequestAsync {
                     return
                 }
                 if let err = response.error {
-                    
-                    
-                    
+                    print(err)
                     continuation.resume(throwing: err)
                     return
                 }
@@ -90,9 +88,7 @@ class ApiRequestAsync {
               return
             }
             if let err = response.error {
-                
-              
-              
+                print(err)
               continuation.resume(throwing: err)
               return
             }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 import NavigationTransitions
-import MijickPopupView
+import MijickPopups
 
 struct NoDataView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -57,32 +57,6 @@ struct NoDataView: View {
                     
                     Spacer()
                     VStack(spacing: 20) {
-                        //
-                        //                    Button {
-                        //                        goToPhoneLogin = true
-                        //                    }label: {
-                        //                        Text("Phone Book Login")
-                        //                            .bold()
-                        //                            .lineLimit(2)
-                        //                            .fixedSize(horizontal: false, vertical: true)
-                        //                    }
-                        //                    .buttonStyle(.automatic)
-                        //                    .buttonBorderShape(.capsule)
-                        //                    .controlSize(.large)
-                        //
-                        //                    Button {
-                        //                        goToAdminLogin = true
-                        //                    }label: {
-                        //                        Text("Become Administrator")
-                        //                            .bold()
-                        //                            .lineLimit(2)
-                        //                            .fixedSize(horizontal: false, vertical: true)
-                        //                    }
-                        //                    .buttonStyle(.automatic)
-                        //                    .buttonBorderShape(.capsule)
-                        //                    .controlSize(.large)
-                        //                    //.padding([.bottom])
-                        
                         CustomButton(loading: loading, title: "Reload") {
                             withAnimation { loading = true }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
@@ -93,14 +67,14 @@ struct NoDataView: View {
                         }
                     }
                 }
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        Task {
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    }
+                }
                 .padding()
-                //            .fullScreenCover(isPresented: $goToAdminLogin) {
-                //                AdminLoginView() { synchronizationManager.startupProcess(synchronizing: true)}
-                //            }
-                //
-                //            .fullScreenCover(isPresented: $goToPhoneLogin) {
-                //                PhoneLoginScreen() { synchronizationManager.startupProcess(synchronizing: true)}
-                //            }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

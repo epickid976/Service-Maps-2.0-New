@@ -14,7 +14,7 @@ import ScalingHeaderScrollView
 import Nuke
 import Lottie
 import AlertKit
-import MijickPopupView
+import MijickPopups
 
 struct PhoneNumbersView: View {
     var territory: PhoneTerritory
@@ -136,7 +136,7 @@ struct PhoneNumbersView: View {
                         .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddNumber(viewModel: viewModel, territory: territory).showAndStack()
+                                CentrePopup_AddNumber(viewModel: viewModel, territory: territory).present()
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil || viewModel.phoneNumbersData != nil)
@@ -188,7 +188,7 @@ struct PhoneNumbersView: View {
                     HStack {
                         Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                dismissAll()
+                                dismissAllPopups()
                                 presentationMode.wrappedValue.dismiss()
                             }
                         })//.keyboardShortcut(.delete, modifiers: .command)
@@ -220,7 +220,7 @@ struct PhoneNumbersView: View {
     @ViewBuilder
     func numbersCell(numbersData: PhoneNumbersData, mainWindowSize: CGSize) -> some View {
             SwipeView {
-                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: numbersData.phoneNumber).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: numbersData.phoneNumber))) {
                     PhoneNumberCell(numbersData: numbersData, mainWindowSize: mainWindowSize)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16) // Same shape as the cell
@@ -234,7 +234,7 @@ struct PhoneNumbersView: View {
                                             DispatchQueue.main.async {
                                                 self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
                                                 
-                                                CentrePopup_DeletePhoneNumber(viewModel: viewModel).showAndStack()
+                                                CentrePopup_DeletePhoneNumber(viewModel: viewModel).present()
                                             }
                                         } label: {
                                             HStack {
@@ -284,7 +284,7 @@ struct PhoneNumbersView: View {
                         DispatchQueue.main.async {
                             self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
                             
-                            CentrePopup_DeletePhoneNumber(viewModel: viewModel).showAndStack()
+                            CentrePopup_DeletePhoneNumber(viewModel: viewModel).present()
                         }
                     }
                     .font(.title.weight(.semibold))
@@ -520,7 +520,7 @@ struct NavigationLazyView<Content: View>: View {
         self.build = build
     }
     var body: some View {
-        build().implementPopupView()
+        build()
     }
 }
 public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
@@ -536,10 +536,10 @@ public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
     public var body: some View {
         NavigationLink {
             LazyView {
-                destination().implementPopupView()
+                destination()
             }
         } label: {
-            label().implementPopupView()
+            label()
         }
     }
     
@@ -547,7 +547,7 @@ public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
         var content: () -> Content
         
         var body: some View {
-            content().implementPopupView()
+            content()
         }
     }
 }
@@ -555,6 +555,9 @@ public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
 struct CentrePopup_DeletePhoneNumber: CentrePopup {
     @ObservedObject var viewModel: NumbersViewModel
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         ZStack {
@@ -581,7 +584,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                         CustomBackButton() {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.ifFailed = false
                                 self.viewModel.numberToDelete = (nil,nil)
                             }
@@ -603,7 +606,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                                         //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
                                         //self.viewModel.getNumbers()
                                         self.viewModel.loading = false
-                                        dismiss()
+                                        dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.numberToDelete = (nil,nil)
                                         self.viewModel.showToast = true
@@ -633,23 +636,26 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 struct CentrePopup_AddNumber: CentrePopup {
     @ObservedObject var viewModel: NumbersViewModel
     @State var territory: PhoneTerritory
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         AddPhoneNumberScreen(territory: territory, number: viewModel.currentNumber, onDone: {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
-                dismiss()
+                dismissLastPopup()
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
                 //viewModel.getNumbers()
                 viewModel.showAddedToast = true
@@ -660,7 +666,7 @@ struct CentrePopup_AddNumber: CentrePopup {
             }
         }, onDismiss: {
             viewModel.presentSheet = false
-            dismiss()
+            dismissLastPopup()
         })
         .padding(.top, 10)
         .padding(.bottom, 10)
@@ -679,11 +685,11 @@ struct CentrePopup_AddNumber: CentrePopup {
         )
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 

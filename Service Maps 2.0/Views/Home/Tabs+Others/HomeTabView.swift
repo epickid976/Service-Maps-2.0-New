@@ -9,7 +9,7 @@ import SwiftUI
 import CoreData
 import UIKit
 import NavigationTransitions
-import MijickPopupView
+import MijickPopups
 
 struct HomeTabView: View {
     
@@ -166,7 +166,7 @@ struct HomeTabView: View {
                             if let update {
                                 if update {
                                     DispatchQueue.main.async {
-                                        CentrePopup_Update().showAndStack()
+                                        CentrePopup_Update().present()
                                     }
                                 }
                             }
@@ -188,7 +188,7 @@ struct HomeTabView: View {
 struct CentrePopup_Update: CentrePopup {
     @State var loading = false
     
-    func createContent() -> some View {
+    var body: some View {
         VStack {
             Text("A new update for the app is available!")
                 .font(.title3)
@@ -207,7 +207,7 @@ struct CentrePopup_Update: CentrePopup {
                     CustomBackButton(text: "Later") {
                         withAnimation {
                             //self.viewModel.showAlert = false
-                            dismiss()
+                            dismissLastPopup()
                         }
                     }
                 }
@@ -221,7 +221,7 @@ struct CentrePopup_Update: CentrePopup {
                         UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103")!)
                     }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        dismiss()
+                        dismissLastPopup()
                     }
                     
                 }
@@ -230,11 +230,10 @@ struct CentrePopup_Update: CentrePopup {
         }.padding()
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
     }
 }
 

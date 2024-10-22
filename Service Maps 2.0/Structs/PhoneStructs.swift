@@ -95,14 +95,18 @@ struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
 
 
 struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+    
+    // This `id` will not be decoded from JSON
+    var id: String {
+        return "\(token)-\(userId)"
+    }
+    
     var token: String
     var userId: String
     var name: String
-    var blocked = false
+    var blocked: Bool
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
         hasher.combine(token)
         hasher.combine(userId)
         hasher.combine(name)
@@ -114,8 +118,8 @@ struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
         return "user_tokens"
     }
     
-    static var primaryKey: String {
-            return "id"
+    static var primaryKey: [String] {
+            return ["token", "userId"]
         }
 }
 

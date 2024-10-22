@@ -13,7 +13,7 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import MijickPopupView
+import MijickPopups
 
 struct HousesView: View {
     var address: TerritoryAddress
@@ -124,7 +124,7 @@ struct HousesView: View {
                         .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddHouse(viewModel: viewModel, address: address).showAndStack()
+                                CentrePopup_AddHouse(viewModel: viewModel, address: address).present()
                             }
                         }
                         .navigationBarTitle(address.address, displayMode: .automatic)
@@ -134,7 +134,7 @@ struct HousesView: View {
                                 HStack {
                                     Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            dismissAll()
+                                            dismissAllPopups()
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })//.keyboardShortcut(.delete, modifiers: .command)
@@ -238,7 +238,7 @@ struct HousesView: View {
                                             self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
                                             //self.showAlert = true
                                             if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-                                                CentrePopup_DeleteHouse(viewModel: viewModel).showAndStack()
+                                                CentrePopup_DeleteHouse(viewModel: viewModel).present()
                                             }
                                         }
                                     } label: {
@@ -267,7 +267,7 @@ struct HousesView: View {
                         self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
                         //self.showAlert = true
                         if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-                            CentrePopup_DeleteHouse(viewModel: viewModel).showAndStack()
+                            CentrePopup_DeleteHouse(viewModel: viewModel).present()
                         }
                     }
                 }
@@ -285,24 +285,13 @@ struct HousesView: View {
         .swipeMinimumDistance(houseData.accessLevel != .User ? 25:1000)
         
     }
-    
-    struct BorderModifier: ViewModifier {
-        let highlighted: Bool
-        
-        func body(content: Content) -> some View {
-            content
-                .border(highlighted ? Color.gray : Color.clear, width: 2)
-                .cornerRadius(16)
-        }
-    }
 }
 
 
 struct CentrePopup_DeleteHouse: CentrePopup {
     @ObservedObject var viewModel: HousesViewModel
     
-    
-    func createContent() -> some View {
+    var body: some View {
         ZStack {
             VStack {
                 Text("Delete House \(viewModel.houseToDelete.1 ?? "0")")
@@ -328,7 +317,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 //self.viewModel.showAlert = false
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.houseToDelete = (nil,nil)
                             }
                         }
@@ -350,7 +339,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                                        // self.viewModel.getHouses()
                                         self.viewModel.loading = false
                                         //self.showAlert = false
-                                        dismiss()
+                                        dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.houseToDelete = (nil,nil)
                                         self.viewModel.showToast = true
@@ -379,12 +368,11 @@ struct CentrePopup_DeleteHouse: CentrePopup {
             .padding(.horizontal, 10)
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
-    
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
@@ -392,12 +380,11 @@ struct CentrePopup_AddHouse: CentrePopup {
     @ObservedObject var viewModel: HousesViewModel
     @State var address: TerritoryAddress
     
-    
-    func createContent() -> some View {
+    var body: some View {
         AddHouseView(house: viewModel.currentHouse, address: address, onDone: {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
-                dismiss()
+                dismissLastPopup()
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
 //                DispatchQueue.main.async {
 //                    viewModel.getHouses()
@@ -410,7 +397,7 @@ struct CentrePopup_AddHouse: CentrePopup {
             }
         }, onDismiss: {
             viewModel.presentSheet = false
-            dismiss()
+            dismissLastPopup()
         })
         .padding(.top, 10)
         .padding(.bottom, 10)
@@ -429,10 +416,10 @@ struct CentrePopup_AddHouse: CentrePopup {
         )
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }

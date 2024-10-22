@@ -24,6 +24,7 @@ class UserAPI {
             
             return reply
         } catch {
+            print(error)
             throw error.self
         }
     }
@@ -40,7 +41,7 @@ class UserAPI {
             
             return Result.success(reply)
         } catch {
-            
+            print(error)
             return Result.failure(error)
         }
     }

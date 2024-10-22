@@ -13,7 +13,7 @@ import Combine
 import UIKit
 import Lottie
 import AlertKit
-import MijickPopupView
+import MijickPopups
 
 struct CallsView: View {
     @StateObject var viewModel: CallsViewModel
@@ -139,7 +139,7 @@ struct CallsView: View {
                         .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber).showAndStack()
+                                CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber).present()
                             }
                         }
                         //.scrollIndicators(.never)
@@ -150,7 +150,7 @@ struct CallsView: View {
                                 HStack {
                                     Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            dismissAll()
+                                            dismissAllPopups()
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })//.keyboardShortcut(.delete, modifiers: .command)
@@ -233,7 +233,7 @@ struct CallsView: View {
                         HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             self.viewModel.callToDelete = callData.phoneCall.id
-                            CentrePopup_DeleteCall(viewModel: viewModel).showAndStack()
+                            CentrePopup_DeleteCall(viewModel: viewModel).present()
                         }
                     } label: {
                         HStack {
@@ -264,7 +264,7 @@ struct CallsView: View {
                     context.state.wrappedValue = .closed
                     DispatchQueue.main.async {
                         self.viewModel.callToDelete = callData.phoneCall.id
-                        CentrePopup_DeleteCall(viewModel: viewModel).showAndStack()
+                        CentrePopup_DeleteCall(viewModel: viewModel).present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -302,6 +302,9 @@ struct CallsView: View {
 struct CentrePopup_DeleteCall: CentrePopup {
     @ObservedObject var viewModel: CallsViewModel
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         ZStack {
@@ -328,7 +331,7 @@ struct CentrePopup_DeleteCall: CentrePopup {
                         CustomBackButton() {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.callToDelete = nil
                             }
                         }
@@ -348,7 +351,7 @@ struct CentrePopup_DeleteCall: CentrePopup {
                                     withAnimation {
                                         //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
                                         self.viewModel.loading = false
-                                        dismiss()
+                                        dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.callToDelete = nil
                                         self.viewModel.showToast = true
@@ -381,23 +384,26 @@ struct CentrePopup_DeleteCall: CentrePopup {
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 struct CentrePopup_AddCall: CentrePopup {
     @ObservedObject var viewModel: CallsViewModel
     @State var phoneNumber: PhoneNumber
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         AddCallView(call: viewModel.currentCall, phoneNumber: phoneNumber) {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
-                dismiss()
+                dismissLastPopup()
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
                 viewModel.showAddedToast = true
                 
@@ -407,7 +413,7 @@ struct CentrePopup_AddCall: CentrePopup {
             }
         } onDismiss: {
             viewModel.presentSheet = false
-            dismiss()
+            dismissLastPopup()
         }
             .padding(.top, 10)
             .padding(.bottom, 10)
@@ -426,10 +432,10 @@ struct CentrePopup_AddCall: CentrePopup {
             )
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }

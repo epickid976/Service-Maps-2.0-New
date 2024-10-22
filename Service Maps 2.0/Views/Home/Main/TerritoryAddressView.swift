@@ -12,7 +12,7 @@ import ScalingHeaderScrollView
 import SwipeActions
 import Lottie
 import AlertKit
-import MijickPopupView
+import MijickPopups
 import ImageViewerRemote
 
 struct TerritoryAddressView: View {
@@ -148,7 +148,7 @@ struct TerritoryAddressView: View {
                         .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || viewModel.addressData != nil)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddAddress(viewModel: viewModel, territory: territory).showAndStack()
+                                CentrePopup_AddAddress(viewModel: viewModel, territory: territory).present()
                             }
                         }
                     }
@@ -208,7 +208,7 @@ struct TerritoryAddressView: View {
                             Button("", action: {withAnimation { viewModel.backAnimation.toggle();
                                 HapticManager.shared.trigger(.lightImpact) };
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    dismissAll()
+                                    dismissAllPopups()
                                     presentationMode.wrappedValue.dismiss()
                                 }
                             })//.keyboardShortcut(.delete, modifiers: .command)
@@ -246,7 +246,7 @@ struct TerritoryAddressView: View {
         }
         LazyVStack {
             SwipeView {
-                NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address).implementPopupView()).implementPopupView()) {
+                NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address))) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(addressData.address.address)")
@@ -298,7 +298,7 @@ struct TerritoryAddressView: View {
                                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
                                             //self.showAlert = true
                                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-                                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).showAndStack()
+                                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).present()
                                             }
                                         }
                                     } label: {
@@ -342,7 +342,7 @@ struct TerritoryAddressView: View {
                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
                             //self.showAlert = true
                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).showAndStack()
+                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).present()
                             }
                         }
                     }
@@ -378,6 +378,9 @@ struct TerritoryAddressView: View {
 struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
     @ObservedObject var viewModel: AddressViewModel
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         ZStack {
@@ -405,7 +408,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
                                 //self.showAlert = false
-                                dismiss()
+                                dismissLastPopup()
                                 self.viewModel.ifFailed = false
                                 self.viewModel.addressToDelete = (nil,nil)
                             }
@@ -428,7 +431,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                                         //self.viewModel.getAddresses()
                                         self.viewModel.loading = false
                                         //self.viewModel.showAlert = false
-                                        dismiss()
+                                        dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.addressToDelete = (nil,nil)
                                         self.viewModel.showToast = true
@@ -459,11 +462,11 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
             .background(Material.thin).cornerRadius(15, corners: .allCorners)
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(15)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
 
@@ -471,12 +474,15 @@ struct CentrePopup_AddAddress: CentrePopup {
     @ObservedObject var viewModel: AddressViewModel
     @State var territory: Territory
     
+    var body: some View {
+        createContent()
+    }
     
     func createContent() -> some View {
         AddAddressView(territory: territory, address: viewModel.currentAddress, onDone: {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
-                dismiss()
+                dismissLastPopup()
                 //viewModel.synchronizationManager.startupProcess(synchronizing: true)
                 //viewModel.getAddresses()
                 viewModel.showAddedToast = true
@@ -487,7 +493,7 @@ struct CentrePopup_AddAddress: CentrePopup {
             }
         }, onDismiss: {
             viewModel.presentSheet = false
-            dismiss()
+            dismissLastPopup()
         })
         .padding(.top, 15)
         .padding(.bottom, 15)
@@ -507,10 +513,10 @@ struct CentrePopup_AddAddress: CentrePopup {
         )
     }
     
-    func configurePopup(popup: CentrePopupConfig) -> CentrePopupConfig {
-        popup
-            .horizontalPadding(24)
-            .cornerRadius(20)
-            .backgroundColour(Color(UIColor.systemGray6).opacity(85))
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config
+            .popupHorizontalPadding(24)
+            
+            
     }
 }
