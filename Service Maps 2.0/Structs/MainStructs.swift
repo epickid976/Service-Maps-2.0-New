@@ -8,14 +8,14 @@
 import GRDB
 import Foundation
 
-struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+public struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+    public var id: String
     var congregation: String
     var number: Int32
     var description: String
     var image: String?
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(congregation)
         hasher.combine(number)
@@ -33,7 +33,7 @@ struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "territories"
     }
     
@@ -42,13 +42,13 @@ struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
     }
 }
 
-struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+public struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+    public var id: String
     var territory: String
     var address: String
     var floors: Int?
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(territory)
         hasher.combine(address)
@@ -56,7 +56,7 @@ struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableRecord, Equ
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "territory_addresses"
     }
     
@@ -65,13 +65,13 @@ struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableRecord, Equ
     }
 }
 
-struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+public struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+    public var id: String
     var territory_address: String
     var number: String
     var floor: String?
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(territory_address)
         hasher.combine(number)
@@ -79,7 +79,7 @@ struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Has
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "houses"
     }
     
@@ -88,15 +88,15 @@ struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Has
     }
 }
 
-struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+public struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+    public var id: String
     var house: String
     var date: Int64
     var symbol: String
     var notes: String
     var user: String
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(house)
         hasher.combine(date)
@@ -106,7 +106,7 @@ struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Has
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "visits"
     }
     
@@ -115,8 +115,8 @@ struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Has
     }
 }
 
-struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+public struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+    public var id: String
     var name: String
     var owner: String
     var congregation: String
@@ -124,7 +124,7 @@ struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Has
     var expire: Int64?
     var user: String?
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(name)
         hasher.combine(owner)
@@ -134,7 +134,7 @@ struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Has
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "tokens"
     }
     
@@ -143,12 +143,12 @@ struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Has
     }
 }
 
-struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable {
+public struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable {
     
     var token: String
     var territory: String
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(token)
         hasher.combine(territory)
     }
@@ -160,7 +160,7 @@ struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equat
     }
     
     // Define primary key as an array of both `token` and `territory`
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "token_territories"
     }
     
@@ -170,7 +170,7 @@ struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equat
     }
     
     // Equatable comparison
-    static func == (lhs: TokenTerritory, rhs: TokenTerritory) -> Bool {
+    public static func == (lhs: TokenTerritory, rhs: TokenTerritory) -> Bool {
         return lhs.token == rhs.token && lhs.territory == rhs.territory
     }
 }

@@ -118,7 +118,7 @@ class SignupViewModel: ObservableObject {
             
             
             switch result {
-            case .success(_):
+            case .success:
                 DispatchQueue.main.async { // Update properties on the main thread
                     withAnimation { self.loading = false
                         // Handle success case

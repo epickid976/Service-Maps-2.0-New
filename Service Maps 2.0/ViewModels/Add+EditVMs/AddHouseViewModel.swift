@@ -24,7 +24,7 @@ class AddHouseViewModel: ObservableObject {
     
     @Published var loading = false
     
-    func addHouse() async -> Result<Bool, Error> {
+    func addHouse() async -> Result<Void, Error> {
         withAnimation {
             loading = true
         }
@@ -32,13 +32,13 @@ class AddHouseViewModel: ObservableObject {
         return await dataUploader.addHouse(house: houseObject)
     }
     
-    func editHouse(house: House) async -> Result<Bool, Error> {
-        withAnimation {
-            loading = true
-        }
-        let houseObject = House(id: house.id, territory_address: address.id, number: number)
-        return await dataUploader.updateHouse(house: houseObject)
-    }
+//    func editHouse(house: House) async -> Result<Void, Error> {
+//        withAnimation {
+//            loading = true
+//        }
+//        let houseObject = House(id: house.id, territory_address: address.id, number: number)
+//        return await dataUploader.updateHouse(house: houseObject)
+//    }
     
     func checkInfo() -> Bool {
         if number == "" {

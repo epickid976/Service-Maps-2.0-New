@@ -57,21 +57,21 @@ struct AddHouseView: View {
                         HapticManager.shared.trigger(.lightImpact)
                         if viewModel.checkInfo() {
                             if house != nil {
-                                Task {
-                                    withAnimation {
-                                        viewModel.loading = true
-                                    }
-                                    let result = await viewModel.editHouse(house: house!)
-                                    switch result {
-                                    case .success(_):
-                                        HapticManager.shared.trigger(.success)
-                                        onDone()
-                                    case .failure(_):
-                                        HapticManager.shared.trigger(.error)
-                                        viewModel.error = NSLocalizedString("Error updating house.", comment: "")
-                                        viewModel.loading = false
-                                    }
-                                }
+//                                Task {
+//                                    withAnimation {
+//                                        viewModel.loading = true
+//                                    }
+//                                    let result = await viewModel.editHouse(house: house!)
+//                                    switch result {
+//                                    case .success(_):
+//                                        HapticManager.shared.trigger(.success)
+//                                        onDone()
+//                                    case .failure(_):
+//                                        HapticManager.shared.trigger(.error)
+//                                        viewModel.error = NSLocalizedString("Error updating house.", comment: "")
+//                                        viewModel.loading = false
+//                                    }
+//                                }
                             } else {
                                 Task {
                                     withAnimation {
@@ -79,7 +79,7 @@ struct AddHouseView: View {
                                     }
                                     let result = await viewModel.addHouse()
                                     switch result {
-                                    case .success(_):
+                                    case .success:
                                         HapticManager.shared.trigger(.success)
                                         onDone()
                                     case .failure(_):

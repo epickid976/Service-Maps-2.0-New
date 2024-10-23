@@ -25,13 +25,13 @@ class AddAddressViewModel: ObservableObject {
     @Published var loading = false
     
     
-    func addAddress() async -> Result<Bool, Error> {
+    func addAddress() async -> Result<Void, Error> {
         loading = true
         let addressObject = TerritoryAddress(id: territory.id + String(Date().timeIntervalSince1970 * 1000), territory: territory.id, address: addressText)
         return await dataUploader.addTerritoryAddress(territoryAddress: addressObject)
     }
     
-    func editAddress(address: TerritoryAddress) async -> Result<Bool, Error> {
+    func editAddress(address: TerritoryAddress) async -> Result<Void, Error> {
         loading = true
         let addressObject = TerritoryAddress(id: address.id, territory: territory.id, address: addressText)
         return await dataUploader.updateTerritoryAddress(territoryAddress: addressObject)

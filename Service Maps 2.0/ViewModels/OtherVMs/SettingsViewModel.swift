@@ -67,7 +67,7 @@ class SettingsViewModel: ObservableObject {
         let result = await authenticationManager.editUserName(userName: name)
         
         switch result {
-        case .success(_):
+        case .success:
             dataStore.userName = name
             return Result.success(true)
         case .failure(let failure):

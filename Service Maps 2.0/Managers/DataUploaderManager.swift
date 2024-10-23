@@ -10,381 +10,389 @@ import BackgroundTasks
 import SwiftUI
 import Combine
 
-import Foundation
-import SwiftUI
-
 
 class DataUploaderManager: ObservableObject {
-
+    
     @Published private var authorizationLevelManager = AuthorizationLevelManager()
     @Published private var dataStore = StorageManager.shared
     @Published private var synchronizationManager = SynchronizationManager.shared
-
-    private var adminApi = AdminAPI()
-    private var userApi = UserAPI()
-    private var tokenApi = TokenAPI()
-
+    
+    private var adminApi = AdminService()
+    private var userApi = UserService()
+    private var tokenApi = TokenService()
+    
     @ObservedObject private var grdbManager = GRDBManager.shared
-
+    
     // MARK: - Territory Methods
     @BackgroundActor
-    func addTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Bool, Error> {
-        do {
-            if image == nil {
-                try await adminApi.addTerritory(territory: territory)
-            } else {
-                try await adminApi.addTerritory(territory: territory, image: image!)
+    func addTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Void, Error> {
+        let result = image == nil ? await adminApi.addTerritory(territory: territory)
+        : await adminApi.addTerritory(territory: territory, image: image!)
+        
+        switch result {
+        case .success:
+            return await grdbManager.addAsync(territory).map { _ in () }
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func updateTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Void, Error> {
+        let result = image != nil ? await adminApi.updateTerritory(territory: territory, image: image!) : await adminApi.updateTerritory(territory: territory)
+        
+        switch result {
+        case .success:
+            return await grdbManager.editAsync(territory).map { _ in () }
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+    
+    @BackgroundActor
+    func deleteTerritory(territoryId: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(Territory.self, id: territoryId)
+        
+        switch result {
+        case .success(let territory):
+            guard let territory = territory else {
+                return .failure(CustomErrors.NotFound)
             }
             
-            _ = await grdbManager.addAsync(territory)
-            return .success(true)
-        } catch {
-            return .failure(error)
-        }
-    }
-    @BackgroundActor
-    func updateTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Bool, Error> {
-        do {
-            if await authorizationLevelManager.existsAdminCredentials() {
-                if image == nil {
-                    try await adminApi.updateTerritory(territory: territory)
-                } else {
-                    try await adminApi.updateTerritory(territory: territory, image: image!)
-                }
-            } else {
-                await authorizationLevelManager.setAuthorizationTokenFor(model: territory)
-                if image == nil {
-                    try await userApi.updateTerritory(territory: territory)
-                } else {
-                    try await userApi.updateTerritory(territory: territory, image: image!)
-                }
-            }
-            _ = await grdbManager.editAsync(territory)
-            return .success(true)
-        } catch {
-            return .failure(error)
-        }
-    }
-    @BackgroundActor
-    func deleteTerritory(territoryId: String) async -> Result<Bool, Error> {
-        do {
-            let territoryResult = await grdbManager.fetchByIdAsync(Territory.self, id: territoryId)
-
-            switch territoryResult {
-            case .success(let territory):
-                guard let territory = territory else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                try await adminApi.deleteTerritory(territory: territory)
-                _ = await grdbManager.deleteAsync(territory)
-                return .success(true)
-                
+            let apiResult = await adminApi.deleteTerritory(territory: territory)
+            
+            switch apiResult {
+            case .success:
+                let dbResult = await grdbManager.deleteAsync(territory).map { _ in () }
+                return dbResult
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+            
+        case .failure(let error):
             return .failure(error)
         }
     }
-
+    
     // MARK: - TerritoryAddress Methods
     @BackgroundActor
-    func addTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Bool, Error> {
-        do {
-            try await adminApi.addTerritoryAddress(territoryAddress: territoryAddress)
-            _ = await grdbManager.addAsync(territoryAddress)
-            return .success(true)
-        } catch {
+    func addTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Void, Error> {
+        let result = await adminApi.addTerritoryAddress(territoryAddress: territoryAddress)
+        
+        switch result {
+        case .success:
+            return await grdbManager.addAsync(territoryAddress).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func updateTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Bool, Error> {
-        do {
-            try await adminApi.updateTerritoryAddress(territoryAddress: territoryAddress)
-            _ = await grdbManager.editAsync(territoryAddress)
-            return .success(true)
-        } catch {
-            return .failure(error)
-        }
-    }
-    @BackgroundActor
-    func deleteTerritoryAddress(territoryAddressId: String) async -> Result<Bool, Error> {
-        do {
-            let territoryAddressResult = await grdbManager.fetchByIdAsync(TerritoryAddress.self, id: territoryAddressId)
+    func deleteTerritoryAddress(territoryAddressId: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(TerritoryAddress.self, id: territoryAddressId)
+        
+        switch result {
+        case .success(let territoryAddress):
+            guard let territoryAddress = territoryAddress else {
+                return .failure(CustomErrors.NotFound)
+            }
             
-            switch territoryAddressResult {
-            case .success(let territoryAddress):
-                guard let territoryAddress = territoryAddress else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                try await adminApi.deleteTerritoryAddress(territoryAddress: territoryAddress)
-                _ = await grdbManager.deleteAsync(territoryAddress)
-                return .success(true)
-                
+            let apiResult = await adminApi.deleteTerritoryAddress(territoryAddress: territoryAddress)
+            
+            switch apiResult {
+            case .success:
+                let dbResult = await grdbManager.deleteAsync(territoryAddress).map { _ in () }
+                return dbResult
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+            
+        case .failure(let error):
             return .failure(error)
         }
     }
-
+    
+    @BackgroundActor
+    func updateTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Void, Error> {
+        let result = await adminApi.updateTerritoryAddress(territoryAddress: territoryAddress)
+        
+        switch result {
+        case .success:
+            return await grdbManager.editAsync(territoryAddress).map { _ in () }
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+    
     // MARK: - House Methods
     @BackgroundActor
-    func addHouse(house: House) async -> Result<Bool, Error> {
-        do {
-            try await adminApi.addHouse(house: house)
-            _ = await grdbManager.addAsync(house)
-            return .success(true)
-        } catch {
+    func addHouse(house: House) async -> Result<Void, Error> {
+        let result = await adminApi.addHouse(house: house)
+        
+        switch result {
+        case .success:
+            return await grdbManager.addAsync(house).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func updateHouse(house: House) async -> Result<Bool, Error> {
-        do {
-            try await adminApi.updateHouse(house: house)
-            _ = await grdbManager.editAsync(house)
-            return .success(true)
-        } catch {
-            return .failure(error)
-        }
-    }
-    @BackgroundActor
-    func deleteHouse(houseId: String) async -> Result<Bool, Error> {
-        do {
-            let houseResult = await grdbManager.fetchByIdAsync(House.self, id: houseId)
+    func deleteHouse(houseId: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(House.self, id: houseId)
+        
+        switch result {
+        case .success(let house):
+            guard let house = house else {
+                return .failure(CustomErrors.NotFound)
+            }
             
-            switch houseResult {
-            case .success(let house):
-                guard let house = house else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                try await adminApi.deleteHouse(house: house)
-                _ = await grdbManager.deleteAsync(house)
-                return .success(true)
-                
+            let apiResult = await adminApi.deleteHouse(house: house)
+            
+            switch apiResult {
+            case .success:
+                let dbResult = await grdbManager.deleteAsync(house).map { _ in () }
+                return dbResult
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+            
+        case .failure(let error):
             return .failure(error)
         }
     }
-
+    
     // MARK: - Visit Methods
     @BackgroundActor
-    func addVisit(visit: Visit) async -> Result<Bool, Error> {
-        do {
-            if await authorizationLevelManager.existsAdminCredentials() {
-                try await adminApi.addVisit(visit: visit)
-            } else {
-                await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
-                try await userApi.addVisit(visit: visit)
-            }
-            _ = await grdbManager.addAsync(visit)
-            return .success(true)
-        } catch {
+    func addVisit(visit: Visit) async -> Result<Void, Error> {
+        let result: Result<Void, Error>
+        
+        if await authorizationLevelManager.existsAdminCredentials() {
+            result = await adminApi.addVisit(visit: visit)
+        } else {
+            // Simply await the function if it returns Void
+            await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
+            result = await userApi.addVisit(visit: visit)
+        }
+        
+        switch result {
+        case .success:
+            return await grdbManager.addAsync(visit).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func updateVisit(visit: Visit) async -> Result<Bool, Error> {
-        do {
-            if await authorizationLevelManager.existsAdminCredentials() {
-                try await adminApi.updateVisit(visit: visit)
-            } else {
-                await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
-                try await userApi.updateVisit(visit: visit)
-            }
-            _ = await grdbManager.editAsync(visit)
-            return .success(true)
-        } catch {
+    func updateVisit(visit: Visit) async -> Result<Void, Error> {
+        let result: Result<Void, Error>
+        
+        if await authorizationLevelManager.existsAdminCredentials() {
+            result = await adminApi.updateVisit(visit: visit)
+        } else {
+            // Same as before, await this if it's Void
+            await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
+            result = await userApi.updateVisit(visit: visit)
+        }
+        
+        switch result {
+        case .success:
+            return await grdbManager.editAsync(visit).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func deleteVisit(visitId: String) async -> Result<Bool, Error> {
-        do {
-            let visitResult = await grdbManager.fetchByIdAsync(Visit.self, id: visitId)
+    func deleteVisit(visitId: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(Visit.self, id: visitId)
+        
+        switch result {
+        case .success(let visit):
+            guard let visit = visit else {
+                return .failure(CustomErrors.NotFound)
+            }
+            let apiResult = await adminApi.deleteVisit(visit: visit)
             
-            switch visitResult {
-            case .success(let visit):
-                guard let visit = visit else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                try await adminApi.deleteVisit(visit: visit)
-                _ = await grdbManager.deleteAsync(visit)
-                return .success(true)
-                
+            switch apiResult {
+            case .success:
+                return await grdbManager.deleteAsync(visit).map { _ in () }
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+            
+        case .failure(let error):
             return .failure(error)
         }
     }
-
+    
     // MARK: - PhoneTerritory Methods
     @BackgroundActor
-    func addPhoneTerritory(territory: PhoneTerritory, image: UIImage? = nil) async -> Result<Bool, Error> {
-        do {
-            if image == nil {
-                try await adminApi.addPhoneTerritory(territory: territory)
-            } else {
-                try await adminApi.addPhoneTerritory(territory: territory, image: image!)
-            }
-            _ = await grdbManager.addAsync(territory)
-            return .success(true)
-        } catch {
+    func addPhoneTerritory(territory: PhoneTerritory, image: UIImage? = nil) async -> Result<Void, Error> {
+        let result: Result<Void, Error>
+        if let image = image {
+            result = await adminApi.addPhoneTerritory(phoneTerritory: territory, image: image)
+        } else {
+            result = await adminApi.addPhoneTerritory(phoneTerritory: territory)
+        }
+        
+        switch result {
+        case .success:
+            return await grdbManager.addAsync(territory).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func updatePhoneTerritory(territory: PhoneTerritory, image: UIImage? = nil) async -> Result<Bool, Error> {
-        do {
-            if await authorizationLevelManager.existsAdminCredentials() {
-                if image == nil {
-                    try await adminApi.updatePhoneTerritory(territory: territory)
-                } else {
-                    try await adminApi.updatePhoneTerritory(territory: territory, image: image!)
-                }
-            }
-            _ = await grdbManager.editAsync(territory)
-            return .success(true)
-        } catch {
+    func updatePhoneTerritory(territory: PhoneTerritory, image: UIImage? = nil) async -> Result<Void, Error> {
+        let result: Result<Void, Error>
+        if await authorizationLevelManager.existsAdminCredentials() {
+            result = image == nil ?
+            await adminApi.updatePhoneTerritory(phoneTerritory: territory) :
+            await adminApi.updatePhoneTerritory(phoneTerritory: territory, image: image!)
+        } else {
+            return .failure(CustomErrors.ErrorUploading)
+        }
+        
+        switch result {
+        case .success:
+            return await grdbManager.editAsync(territory).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func deletePhoneTerritory(territoryId: String) async -> Result<Bool, Error> {
-        do {
-            let territoryResult = await grdbManager.fetchByIdAsync(PhoneTerritory.self, id: territoryId)
-
-            switch territoryResult {
-            case .success(let territory):
-                guard let territory = territory else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                try await adminApi.deletePhoneTerritory(territory: territory)
-                _ = await grdbManager.deleteAsync(territory)
-                return .success(true)
-                
+    func deletePhoneTerritory(territoryId: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(PhoneTerritory.self, id: territoryId)
+        
+        switch result {
+        case .success(let territory):
+            guard let territory = territory else {
+                return .failure(CustomErrors.NotFound)
+            }
+            let apiResult = await adminApi.deletePhoneTerritory(phoneTerritory: territory)
+            switch apiResult {
+            case .success:
+                return await grdbManager.deleteAsync(territory).map { _ in () }
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+        case .failure(let error):
             return .failure(error)
         }
     }
-
+    
     // MARK: - PhoneNumber Methods
     @BackgroundActor
-    func addPhoneNumber(phoneNumber: PhoneNumber) async -> Result<Bool, Error> {
-        do {
-            try await adminApi.addPhoneNumber(number: phoneNumber)
-            _ = await grdbManager.addAsync(phoneNumber)
-            return .success(true)
-        } catch {
+    func addPhoneNumber(phoneNumber: PhoneNumber) async -> Result<Void, Error> {
+        let result = await adminApi.addPhoneNumber(phoneNumber: phoneNumber)
+        switch result {
+        case .success:
+            return await grdbManager.addAsync(phoneNumber).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func updatePhoneNumber(phoneNumber: PhoneNumber) async -> Result<Bool, Error> {
-        do {
-            try await adminApi.updatePhoneNumber(number: phoneNumber)
-            _ = await grdbManager.editAsync(phoneNumber)
-            return .success(true)
-        } catch {
+    func updatePhoneNumber(phoneNumber: PhoneNumber) async -> Result<Void, Error> {
+        let result = await adminApi.updatePhoneNumber(phoneNumber: phoneNumber)
+        switch result {
+        case .success:
+            return await grdbManager.editAsync(phoneNumber).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func deletePhoneNumber(phoneNumberId: String) async -> Result<Bool, Error> {
-        do {
-            let phoneNumberResult = await grdbManager.fetchByIdAsync(PhoneNumber.self, id: phoneNumberId)
-
-            switch phoneNumberResult {
-            case .success(let phoneNumber):
-                guard let phoneNumber = phoneNumber else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                try await adminApi.deletePhoneNumber(number: phoneNumber)
-                _ = await grdbManager.deleteAsync(phoneNumber)
-                return .success(true)
-                
+    func deletePhoneNumber(phoneNumberId: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(PhoneNumber.self, id: phoneNumberId)
+        
+        switch result {
+        case .success(let phoneNumber):
+            guard let phoneNumber = phoneNumber else {
+                return .failure(CustomErrors.NotFound)
+            }
+            let apiResult = await adminApi.deletePhoneNumber(phoneNumber: phoneNumber)
+            switch apiResult {
+            case .success:
+                return await grdbManager.deleteAsync(phoneNumber).map { _ in () }
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+        case .failure(let error):
             return .failure(error)
         }
     }
-
+    
     // MARK: - PhoneCall Methods
     @BackgroundActor
-    func addPhoneCall(phoneCall: PhoneCall) async -> Result<Bool, Error> {
-        do {
-            if await authorizationLevelManager.existsAdminCredentials() {
-                try await adminApi.addCall(call: phoneCall)
-            } else {
-                try await userApi.addCall(call: phoneCall)
-            }
-            _ = await grdbManager.addAsync(phoneCall)
-            return .success(true)
-        } catch {
+    func addPhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
+        let result = if await authorizationLevelManager.existsAdminCredentials() {
+            await adminApi.addPhoneCall(phoneCall: phoneCall)
+        } else {
+            await userApi.addPhoneCall(phoneCall: phoneCall)
+        }
+        
+        switch result {
+        case .success:
+            return await grdbManager.addAsync(phoneCall).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func updatePhoneCall(phoneCall: PhoneCall) async -> Result<Bool, Error> {
-        do {
-            if await authorizationLevelManager.existsAdminCredentials() {
-                try await adminApi.updateCall(call: phoneCall)
-            } else {
-                try await userApi.updateCall(call: phoneCall)
-            }
-            _ = await grdbManager.editAsync(phoneCall)
-            return .success(true)
-        } catch {
+    func updatePhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
+        let result = if await authorizationLevelManager.existsAdminCredentials() {
+            await adminApi.updatePhoneCall(phoneCall: phoneCall)
+        } else {
+            await userApi.updatePhoneCall(phoneCall: phoneCall)
+        }
+        
+        switch result {
+        case .success:
+            return await grdbManager.editAsync(phoneCall).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func deletePhoneCall(phoneCallId: String) async -> Result<Bool, Error> {
-        do {
-            let phoneCallResult = await grdbManager.fetchByIdAsync(PhoneCall.self, id: phoneCallId)
-
-            switch phoneCallResult {
-            case .success(let phoneCall):
-                guard let phoneCall = phoneCall else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                try await adminApi.deleteCall(call: phoneCall)
-                _ = await grdbManager.deleteAsync(phoneCall)
-                return .success(true)
-                
+    func deletePhoneCall(phoneCallId: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(PhoneCall.self, id: phoneCallId)
+        
+        switch result {
+        case .success(let phoneCall):
+            guard let phoneCall = phoneCall else {
+                return .failure(CustomErrors.NotFound)
+            }
+            let apiResult = await adminApi.deletePhoneCall(phoneCall: phoneCall)
+            switch apiResult {
+            case .success:
+                return await grdbManager.deleteAsync(phoneCall).map { _ in () }
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+        case .failure(let error):
             return .failure(error)
         }
     }
-
+    
     // MARK: - Token and TokenTerritory Methods
     @BackgroundActor
     func createToken(newTokenForm: NewTokenForm, territories: [Territory]) async -> Result<Token, Error> {
-        do {
-            let token = try await tokenApi.createToken(name: newTokenForm.name, moderator: newTokenForm.moderator, territories: newTokenForm.territories, congregation: newTokenForm.congregation, expire: newTokenForm.expire)
-            
-            var tokenTerritories = [TokenTerritory]()
-            
-            _ = await grdbManager.addAsync(token)
+        let token = await tokenApi.createToken(name: newTokenForm.name, moderator: newTokenForm.moderator, territories: newTokenForm.territories, congregation: newTokenForm.congregation, expire: newTokenForm.expire)
+        
+        var tokenTerritories = [TokenTerritory]()
+        if let tokenUnwrapped = try? token.get() {
+            _ = await grdbManager.addAsync(tokenUnwrapped)
             
             for territory in territories {
-                let newTokenTerritory = TokenTerritory(token: token.id, territory: territory.id)
+                let newTokenTerritory = TokenTerritory(token: tokenUnwrapped.id, territory: territory.id)
                 tokenTerritories.append(newTokenTerritory)
             }
             
@@ -392,166 +400,153 @@ class DataUploaderManager: ObservableObject {
                 _ = await grdbManager.addAsync(tokenTerritory)
             }
             
-            return .success(token)
+            return .success(tokenUnwrapped)
+        } else {
+            return .failure(NSError(domain: "Could not create token", code: 0, userInfo: nil))
+        }
+    }
+    
+    @BackgroundActor
+    func editToken(token: String, territories: [Territory]) async -> Result<Void, Error> {
+        let territoriesToSend = territories.map { $0.id }
+        
+        let result = await tokenApi.editToken(tokenId: token, territories: territoriesToSend.description)
+        
+        switch result {
+        case .success:
+            let fetchResult = await grdbManager.fetchAllAsync(TokenTerritory.self)
             
-        } catch {
+            switch fetchResult {
+            case .success(let tokenTerritories):
+                for oldTokenTerritory in tokenTerritories where oldTokenTerritory.token == token {
+                    _ = await grdbManager.deleteAsync(oldTokenTerritory)
+                }
+                for territory in territories {
+                    let newTokenTerritory = TokenTerritory(token: token, territory: territory.id)
+                    _ = await grdbManager.addAsync(newTokenTerritory)
+                }
+                return .success(())
+            case .failure(let fetchError):
+                return .failure(fetchError)
+            }
+            
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func editToken(token: String, territories: [Territory]) async -> Result<Bool, Error> {
-        do {
-            var territoriesToSend = [String]()
-            territories.forEach { territory in
-                territoriesToSend.append(territory.id)
+    func deleteToken(tokenId: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(Token.self, id: tokenId)
+        
+        switch result {
+        case .success(let token):
+            guard let token = token else {
+                return .failure(CustomErrors.NotFound)
             }
+            let apiResult = await tokenApi.deleteToken(token: token.id)
             
-            try await tokenApi.editToken(tokenId: token, territories: territoriesToSend.description)
-            
-            do {
-                // Fetching data using fetchAll that returns a Result type
-                let fetchResult = await grdbManager.fetchAllAsync(TokenTerritory.self)
-                
-                // Unwrapping the result
-                switch fetchResult {
-                case .success(let tokenTerritoryEntities):
-                    // Proceed with the list of token territories
-                    for oldTokenTerritory in tokenTerritoryEntities where oldTokenTerritory.token == token {
-                        _ = await grdbManager.deleteAsync(oldTokenTerritory)
-                    }
-                case .failure(let error):
-                    // Handle error case
-                    print("Error fetching token territories: \(error)")
-                    throw error
-                }
-            } catch {
-                return .failure(error)
-            }
-            
-            for territory in territories {
-                let newTokenTerritory = TokenTerritory(token: token, territory: territory.id)
-                _ = await grdbManager.addAsync(newTokenTerritory)
-            }
-            
-            return .success(true)
-        } catch {
-            return .failure(error)
-        }
-    }
-    @BackgroundActor
-    func deleteToken(tokenId: String) async -> Result<Bool, Error> {
-        do {
-            let tokenResult = await grdbManager.fetchByIdAsync(Token.self, id: tokenId)
-
-            switch tokenResult {
-            case .success(let token):
-                guard let token = token else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                try await tokenApi.deleteToken(token: token.id)
-                _ = await grdbManager.deleteAsync(token)
-                return .success(true)
-                
+            switch apiResult {
+            case .success:
+                return await grdbManager.deleteAsync(token).map { _ in () }
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+            
+        case .failure(let error):
             return .failure(error)
         }
     }
-
+    
     // MARK: - Recalls Methods
     @BackgroundActor
-    func addRecall(user: String, house: String) async -> Result<Bool, Error> {
-        do {
-            let recall = Recalls(id: Date.now.millisecondsSince1970, user: user, house: house)
-            try await userApi.addRecall(recall: recall)
-            _ = await grdbManager.addAsync(recall)
-            return .success(true)
-        } catch {
+    func addRecall(user: String, house: String) async -> Result<Void, Error> {
+        let recall = Recalls(id: Date.now.millisecondsSince1970, user: user, house: house)
+        
+        let result = await userApi.addRecall(recall: recall)
+        
+        switch result {
+        case .success:
+            return await grdbManager.addAsync(recall).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func deleteRecall(recall: Recalls) async -> Result<Bool, Error> {
-        do {
-            try await userApi.removeRecall(recall: recall)
-            _ = await grdbManager.deleteAsync(recall)
-            return .success(true)
-        } catch {
+    func deleteRecall(recall: Recalls) async -> Result<Void, Error> {
+        let result = await userApi.removeRecall(recall: recall)
+        
+        switch result {
+        case .success:
+            return await grdbManager.deleteAsync(recall).map { _ in () }
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func unregisterToken(myToken: String) async -> Result<Bool, Error> {
-        do {
-            try await tokenApi.unregister(token: myToken)
-            return .success(true)
-        } catch {
-            return .failure(error)
-        }
+    func unregisterToken(myToken: String) async -> Result<Void, Error> {
+        let result = await tokenApi.unregister(token: myToken)
+        
+        return result.map { _ in () }
     }
+    
     @BackgroundActor
-    func registerToken(myToken: String) async -> Result<Bool, Error> {
-        do {
-            try await tokenApi.register(token: myToken)
-            return .success(true)
-        } catch {
-            return .failure(error)
-        }
+    func registerToken(myToken: String) async -> Result<Void, Error> {
+        let result = await tokenApi.register(token: myToken)
+        
+        return result.map { _ in () }
     }
+    
     @BackgroundActor
-    func deleteUserFromToken(userToken: String) async -> Result<Bool, Error> {
-        do {
-            // Fetch user token from database using GRDB
-            let userTokenResult = await grdbManager.fetchByIdAsync(UserToken.self, id: userToken)
+    func deleteUserFromToken(userToken: String) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(UserToken.self, id: userToken)
+        
+        switch result {
+        case .success(let userTokenEntity):
+            guard let userTokenEntity = userTokenEntity else {
+                return .failure(CustomErrors.NotFound)
+            }
+            let apiResult = await tokenApi.removeUserFromToken(token: userTokenEntity.token, userId: userTokenEntity.userId)
             
-            switch userTokenResult {
-            case .success(let userTokenEntity):
-                // Ensure the user token exists
-                guard let userTokenEntity = userTokenEntity else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                
-                // Remove the user from the token using the API
-                try await tokenApi.removeUserFromToken(token: userTokenEntity.token, userId: userTokenEntity.userId)
-                
-                // Delete the user token from the local database
-                _ = await grdbManager.deleteAsync(userTokenEntity)
-                
-                return .success(true)
+            switch apiResult {
+            case .success:
+                return await grdbManager.deleteAsync(userTokenEntity).map { _ in () }
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+            
+        case .failure(let error):
             return .failure(error)
         }
     }
+    
     @BackgroundActor
-    func blockUnblockUserFromToken(userToken: String, blocked: Bool) async -> Result<Bool, Error> {
-        do {
-            // Fetch user token from database using GRDB
-            let userTokenResult = await grdbManager.fetchByIdAsync(UserToken.self, id: userToken)
+    func blockUnblockUserFromToken(userToken: String, blocked: Bool) async -> Result<Void, Error> {
+        let result = await grdbManager.fetchByIdAsync(UserToken.self, id: userToken)
+        
+        switch result {
+        case .success(let userTokenEntity):
+            guard let userTokenEntity = userTokenEntity else {
+                return .failure(CustomErrors.NotFound)
+            }
+            let apiResult = await tokenApi.blockUnblockUserFromToken(token: userTokenEntity.token, userId: userTokenEntity.userId, blocked: blocked)
             
-            switch userTokenResult {
-            case .success(let userTokenEntity):
-                // Ensure the user token exists
-                guard let userTokenEntity = userTokenEntity else {
-                    return .failure(CustomErrors.NotFound)
-                }
-                
-                // Block or unblock the user using the API
-                try await tokenApi.blockUnblockUserFromToken(token: userTokenEntity.token, userId: userTokenEntity.userId, blocked: blocked)
-                
-                // Update the local database with the new blocked status
-                let updatedUserToken = UserToken( token: userTokenEntity.token, userId: userTokenEntity.userId, name: userTokenEntity.name, blocked: blocked)
-                _ = await grdbManager.editAsync(updatedUserToken)
-                
-                return .success(true)
+            switch apiResult {
+            case .success:
+                let updatedUserToken = UserToken(
+                    token: userTokenEntity.token,
+                    userId: userTokenEntity.userId,
+                    name: userTokenEntity.name,
+                    blocked: blocked
+                )
+                return await grdbManager.editAsync(updatedUserToken).map { _ in () }
             case .failure(let error):
                 return .failure(error)
             }
-        } catch {
+            
+        case .failure(let error):
             return .failure(error)
         }
     }

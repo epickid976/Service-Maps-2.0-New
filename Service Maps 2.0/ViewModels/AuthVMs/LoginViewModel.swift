@@ -20,6 +20,9 @@ class LoginViewModel: ObservableObject {
         self.showAlert = false
         self.alertTitle = ""
         self.alertMessage = ""
+#if DEBUG
+print("Testing file compile")
+#endif
     }
     
     @Published var username: String = ""
@@ -41,6 +44,8 @@ class LoginViewModel: ObservableObject {
     
     @Published var emailSent = false
     @Published var errorEmailSent = false
+    
+    
     
     func validate(forReset: Bool = false) -> Bool {
         
@@ -189,7 +194,7 @@ class LoginViewModel: ObservableObject {
             DispatchQueue.main.async { withAnimation { self.loading = true } }
             
             switch await authenticationManager.loginEmail(email: self.username) {
-            case .success(_):
+            case .success:
                 HapticManager.shared.trigger(.success)
                 DispatchQueue.main.async {
                     withAnimation {
@@ -223,7 +228,7 @@ class LoginViewModel: ObservableObject {
             DispatchQueue.main.async { withAnimation { self.loading = true } }
             
         switch await authenticationManager.loginEmailToken(token: token) {
-            case .success(_):
+        case .success:
                 DispatchQueue.main.async { withAnimation { self.loading = false } }
                 HapticManager.shared.trigger(.success)
                 DispatchQueue.main.async {
@@ -252,7 +257,7 @@ class LoginViewModel: ObservableObject {
     }
     func resetPassword(password: String, token: String ) async {
         switch await authenticationManager.resetPassword( password: password, token: token) {
-        case .success(_):
+        case .success:
             HapticManager.shared.trigger(.success)
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 withAnimation {

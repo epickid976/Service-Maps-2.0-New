@@ -142,7 +142,7 @@ class RecallViewModel: ObservableObject {
         getRecalls()
     }
     
-    func deleteRecall(id: Int64, user: String, house: String) async -> Result<Bool, Error> {
+    func deleteRecall(id: Int64, user: String, house: String) async -> Result<Void, Error> {
         return await DataUploaderManager().deleteRecall(recall: Recalls(id: id, user: user, house: house))
     }
     

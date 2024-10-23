@@ -35,20 +35,13 @@ extension Result where Success == Bool {
 }
 
 extension Result {
-    /// Checks if the `Result` is a failure (contains an error).
-    var isError: Bool {
-        if case .failure(_) = self {
-            return true
-        }
+    var isSuccess: Bool {
+        if case .success = self { return true }
         return false
     }
-    
-    /// Optionally returns the error if it exists.
-    var error: Error? {
-        if case .failure(let error) = self {
-            return error
-        }
-        return nil
+
+    var isFailure: Bool {
+        return !isSuccess
     }
 }
 

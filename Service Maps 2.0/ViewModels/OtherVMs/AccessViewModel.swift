@@ -84,7 +84,7 @@ class AccessViewModel: ObservableObject {
     @Published var showUserDeleteToast = false
     
     @MainActor
-    func deleteKey(key: String) async -> Result<Bool, Error> {
+    func deleteKey(key: String) async -> Result<Void, Error> {
         if !isAdmin {
             switch await dataUploaderManager.unregisterToken(myToken: key) {
             case .success(_):
@@ -105,7 +105,7 @@ class AccessViewModel: ObservableObject {
                         // Delete the token
                         _ = grdbManager.delete(keyToDelete)
                     }
-                    return .success(true)
+                    return .success(())
                     
                 case (.failure(let territoryError), _):
                     return .failure(territoryError)
@@ -123,7 +123,7 @@ class AccessViewModel: ObservableObject {
     }
     
     @MainActor
-    func deleteUser(user: String) async -> Result<Bool, Error> {
+    func deleteUser(user: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteUserFromToken(userToken: user)
     }
     
@@ -137,18 +137,18 @@ class AccessViewModel: ObservableObject {
     @Published var searchActive = false
     
     @MainActor
-    func registerKey() async -> Result<Bool, Error> {
+    func registerKey() async -> Result<Void, Error> {
         return await dataUploaderManager.registerToken(myToken: universalLinksManager.dataFromUrl ?? "")
     }
     
     
-    func removeUserFromToken() async -> Result<Bool, Error> {
+    func removeUserFromToken() async -> Result<Void, Error> {
         return await dataUploaderManager.deleteUserFromToken(userToken: userToDelete?.0 ?? "")
     }
     
     
     // Function to handle blocking/unblocking users
-    func blockUnblockUserFromToken(user: UserAction) async -> Result<Bool, Error> {
+    func blockUnblockUserFromToken(user: UserAction) async -> Result<Void, Error> {
         // Use the 'user' struct to pass the necessary information (id and isBlocked)
         return await dataUploaderManager.blockUnblockUserFromToken(userToken: user.id, blocked: !user.isBlocked)
     }

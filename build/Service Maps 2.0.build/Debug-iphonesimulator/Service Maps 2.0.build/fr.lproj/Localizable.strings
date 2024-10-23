@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%@</key>
+	<string>%@</string>
+	<key>%@ Address</key>
+	<string>%@ Adresse</string>
+	<key>%@ Call</key>
+	<string>%@ Appel</string>
+	<key>%@ House</key>
+	<string>%@ Maison</string>
+	<key>%@ Number</key>
+	<string>%@ Numéro</string>
+	<key>%@ Phone Number</key>
+	<string>%@ Numéro Téléphonique</string>
+	<key>%@ Territory</key>
+	<string>%@ Territoire</string>
+	<key>%@ User</key>
+	<string>%@ Utilisateur</string>
+	<key>%@ Visit</key>
+	<string>%@ Visite</string>
+	<key>%d</key>
+	<string>%d</string>
+	<key>%d day(s)</key>
+	<string>%d jour(s)</string>
+	<key>%d hour(s)</key>
+	<string>%d heure(s)</string>
+	<key>%d minute(s)</key>
+	<string>%d minute(s)</string>
+	<key>%lld/255</key>
+	<string>%lld/255</string>
+	<key>(%d days ago)</key>
+	<string>(il y a %d jours)</string>
+	<key>((days) days ago)</key>
+	<string>(il y a (days) jours)</string>
+	<key>A backup copy of all the territories, addresses, houses, and visits that are in the app will be made. A zip file will be generated that will contain the folders and forms for each address. Please note that only the last visit will be exported. The process may take some time.</key>
+	<string>Une copie de sauvegarde de tous les territoires, adresses, maisons et visites présentes dans l’application sera effectuée. Un fichier zip sera généré, contenant les dossiers et formulaires pour chaque adresse. Veuillez noter que seule la dernière visite sera exportée. Le processus peut prendre un certain temps.</string>
+	<key>A new update for the app is available!</key>
+	<string>Une nouvelle mise à jour est disponible!</string>
+	<key>About App</key>
+	<string>Sur l'Application</string>
+	<key>Activating Account</key>
+	<string>Activation de la Compte</string>
+	<key>Activating Account...</key>
+	<string>Activation de la Compte...</string>
+	<key>Add</key>
+	<string>Ajouter</string>
+	<key>Add House</key>
+	<string>Ajouter Maison</string>
+	<key>Add Key</key>
+	<string>Ajouter une Clé</string>
+	<key>Add Recall</key>
+	<string>Ajouter Revisite</string>
+	<key>Address</key>
+	<string>Adresse</string>
+	<key>Address is required.</key>
+	<string>Une adresse est obligatoire</string>
+	<key>Addresses</key>
+	<string>Adresses</string>
+	<key>Administrator</key>
+	<string>Administrateur</string>
+	<key>An email was sent to verify your account. When you have verified, click the button below to continue to your account.</key>
+	<string>Un courriel a été envoyé pour vérifier votre compte. Quand vous aurez vérifiez, cliquez le bouton dessous.</string>
+	<key>App Version</key>
+	<string>Version de l'Appli</string>
+	<key>App is up to date!</key>
+	<string>L'appli est à jour!</string>
+	<key>Are you sure about deleting your account? This action can not be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again.</key>
+	<string>Vous êtes sur de vouloir supprimer votre compte? Cette action ne peut pas être reversé. Si vous décidez supprimer votre compte, la compte et tout accès sera supprimé, mais l'information que vous avez pourvu restera sur le serveur. Le courriel lié a la compte ne pourra pas être encore utilisé. </string>
+	<key>Are you sure you want to %@ the selected user?</key>
+	<string>Êtes-vous sur de vouloir supprimer cet utilisateur?</string>
+	<key>Are you sure you want to delete the selected address?</key>
+	<string>Êtes-vous sur de vouloir supprimer cette adresse ?</string>
+	<key>Are you sure you want to delete the selected call?</key>
+	<string>Êtes-vous sur de vouloir supprimer cet appel?</string>
+	<key>Are you sure you want to delete the selected house?</key>
+	<string>Êtes-vous sur de vouloir supprimer cette maison ?</string>
+	<key>Are you sure you want to delete the selected key?</key>
+	<string>Êtes-vous sur de vouloir supprimer cette clé ?</string>
+	<key>Are you sure you want to delete the selected number?</key>
+	<string>Êtes-vous sur de vouloir supprimer ce numéro?</string>
+	<key>Are you sure you want to delete the selected territory?</key>
+	<string>Êtes-vous sur de vouloir supprimer ce territoire ?</string>
+	<key>Are you sure you want to delete the selected user?</key>
+	<string>Êtes-vous sur de vouloir supprimer cet utilisateur ?</string>
+	<key>Are you sure you want to delete the selected visit?</key>
+	<string>Êtes-vous sur de vouloir supprimer cette visite ?</string>
+	<key>Are you sure you want to delete your account?</key>
+	<string>Êtes-vous sur de vouloir supprimer cette compte ?</string>
+	<key>Are you sure you want to remove the selected recall?</key>
+	<string>Êtes-vous sur de vouloir supprimer la revisite?</string>
+	<key>At least one field is required.</key>
+	<string>Au moins un champ est obligatoire.</string>
+	<key>Back</key>
+	<string>Retourner</string>
+	<key>Back up</key>
+	<string>Sauvegarder</string>
+	<key>Backup</key>
+	<string>Sauvegarde</string>
+	<key>Become Administrator</key>
+	<string>Devenir Administrateur</string>
+	<key>Block</key>
+	<string>Bloquer</string>
+	<key>Blocked Users</key>
+	<string>Utilisateurs Bloqués</string>
+	<key>By adding this house as a recall, it will be displayed in the recalls tab and you will be able to access it more easily.</key>
+	<string>En ajoutant cette maison comme revisite, elle s'ajoutera a la page de revisites et vous pourrez la voir plus facilement. </string>
+	<key>By removing this house as a recall, it will be removed from the recalls tab.</key>
+	<string>En supprimant cette maison comme revisite, elle sera supprimé de la page de revisites.  </string>
+	<key>Confirm Password</key>
+	<string>Confirmer le mot de passe</string>
+	<key>Congregation 
+Login</key>
+	<string>Se connecter à la Congrégation</string>
+	<key>Congregation ID</key>
+	<string>ID de Congrégation</string>
+	<key>Congregation Password</key>
+	<string>Mot de passe de Congrégation</string>
+	<key>Copy Address</key>
+	<string>Copier l'adresse</string>
+	<key>Creating Backup...</key>
+	<string>En train de créer la copie…</string>
+	<key>Date: </key>
+	<string>Date:</string>
+	<key>Date: N/A</key>
+	<string>Date: N/A</string>
+	<key>Decreasing</key>
+	<string>Décroissant</string>
+	<key>Delete</key>
+	<string>Supprimer</string>
+	<key>Delete Account</key>
+	<string>Supprimer la Compte</string>
+	<key>Delete Address</key>
+	<string>Supprimer l'Adresse:</string>
+	<key>Delete Address: %@</key>
+	<string>Supprimer l'Adresse: %@</string>
+	<key>Delete Cache</key>
+	<string>Supprimer le Cache</string>
+	<key>Delete Call</key>
+	<string>Supprimer l'Appel</string>
+	<key>Delete House</key>
+	<string>Supprimer la Maison</string>
+	<key>Delete House %@</key>
+	<string>Supprimer la Maison: %@</string>
+	<key>Delete Key</key>
+	<string>Supprimer la Clé</string>
+	<key>Delete Key: %@</key>
+	<string>Supprimer la Clé: %@</string>
+	<key>Delete Number</key>
+	<string>Suprimmer le Numéro</string>
+	<key>Delete Number: %@</key>
+	<string>Supprimer le Numéro: %@</string>
+	<key>Delete Territory</key>
+	<string>Supprimer le Territoire</string>
+	<key>Delete Territory %@</key>
+	<string>Supprimer le Territoire: %@</string>
+	<key>Delete User</key>
+	<string>Supprimer l'utilisateur</string>
+	<key>Delete User: %@</key>
+	<string>Supprimer l'utilisateur: %@</string>
+	<key>Delete Visit</key>
+	<string>Supprimer la Visite</string>
+	<key>Description</key>
+	<string>Description</string>
+	<key>Dismiss</key>
+	<string>Retourner</string>
+	<key>Done</key>
+	<string>OK</string>
+	<key>Doors: %lld</key>
+	<string>Portes: %lld</string>
+	<key>Drag &amp; Drop</key>
+	<string>Glisser-Poser</string>
+	<key>Edit</key>
+	<string>Modifier</string>
+	<key>Edit Address</key>
+	<string>Modifier l'Address</string>
+	<key>Edit Key</key>
+	<string>Modifier la Clé</string>
+	<key>Edit Number</key>
+	<string>Modifier le Numéro</string>
+	<key>Edit Territory</key>
+	<string>Modifier le Territoire</string>
+	<key>Edit Username</key>
+	<string>Modifier le nom</string>
+	<key>Edit Visit</key>
+	<string>Modifier la Visite</string>
+	<key>Email</key>
+	<string>Email</string>
+	<key>Email Taken</key>
+	<string>L'email est déjà en utilisation</string>
+	<key>Email cannot contain spaces.</key>
+	<string>L'email ne peux pas contenir d'espaces</string>
+	<key>Email or Password is incorrect. Please try again.</key>
+	<string>L'email et le mot de passe sont incorrect</string>
+	<key>Error</key>
+	<string>Erreur</string>
+	<key>Error %@ user, please try again later</key>
+	<string>Erreur en %@  l'utilisateur. Essayez plus tard.</string>
+	<key>Error Logging in. Please try again later</key>
+	<string>Erreur pour se connecter. Réessayez</string>
+	<key>Error Resetting Password. Please try again later</key>
+	<string>Erreur pour changer le mot de passes. Réessayez</string>
+	<key>Error adding Visit.</key>
+	<string>Erreur en ajoutant la visite</string>
+	<key>Error adding address.</key>
+	<string>Erreur en ajoutant l'adresse</string>
+	<key>Error adding call.</key>
+	<string>Erreur en ajoutant l'appel</string>
+	<key>Error adding house.</key>
+	<string>Erreur en ajoutant la maison</string>
+	<key>Error adding key.</key>
+	<string>Erreur en ajoutant la clé</string>
+	<key>Error adding phone number.</key>
+	<string>Erreur en ajoutant le numéro</string>
+	<key>Error adding recall, please try again later</key>
+	<string>Une erreur est survenu en supprimant la revisite, essayez plus tard.</string>
+	<key>Error adding territory.</key>
+	<string>Erreur en ajoutant le territoire</string>
+	<key>Error adding/updating key.</key>
+	<string>Erreur en ajoutant/modifiant la clé.</string>
+	<key>Error deleting address, please try again later</key>
+	<string>Une erreur est survenu en supprimant l'adresse, essayez plus tard.</string>
+	<key>Error deleting call, please try again later</key>
+	<string>Une erreur est survenu en supprimant l'appel, essayez plus tard.</string>
+	<key>Error deleting house, please try again later</key>
+	<string>Une erreur est survenu en supprimant la maison, essayez plus tard.</string>
+	<key>Error deleting key, please try again later</key>
+	<string>Une erreur est survenu en supprimant la clé, essayez plus tard.</string>
+	<key>Error deleting number, please try again later</key>
+	<string>Une erreur est survenu en supprimant le numéro, essayez plus tard.</string>
+	<key>Error deleting territory, please try again later</key>
+	<string>Une erreur est survenu en supprimant le territoire, essayez plus tard.</string>
+	<key>Error deleting user, please try again later</key>
+	<string>Une erreur est survenu en supprimant l'utilisateur, essayez plus tard.</string>
+	<key>Error deleting visit, please try again later</key>
+	<string>Une erreur est survenu en supprimant la visite, essayez plus tard.</string>
+	<key>Error logging in. 
+Please try again.</key>
+	<string>Erreur pour se connecter. Réessayez</string>
+	<key>Error logging in...</key>
+	<string>Erreur pour se connecter...</string>
+	<key>Error removing recall, please try again later</key>
+	<string>Une erreur est survenu en supprimant la revisite, essayez plus tard.</string>
+	<key>Error updating Visit.</key>
+	<string>Erreur en ajoutant la visite</string>
+	<key>Error updating address.</key>
+	<string>Erreur en ajoutant l'adresse</string>
+	<key>Error updating call.</key>
+	<string>Erreur en ajoutant l'appel</string>
+	<key>Error updating house.</key>
+	<string>Erreur en ajoutant la maison</string>
+	<key>Error updating phone number.</key>
+	<string>Erreur en ajoutant le numéro</string>
+	<key>Error updating territory.</key>
+	<string>Erreur en ajoutant le territoire</string>
+	<key>Error updating username</key>
+	<string>Erreur en changeant le nom</string>
+	<key>Everything at the palm of your hand</key>
+	<string>Tout dans la paume de votre main</string>
+	<key>Exit</key>
+	<string>Sortir</string>
+	<key>Fields cannot be empty</key>
+	<string>Les champs ne peuvent pas être vide</string>
+	<key>Filter</key>
+	<string>Filtrer</string>
+	<key>First Name</key>
+	<string>Prénom</string>
+	<key>Forgot Password</key>
+	<string>Mot de Passe Oublié(é)</string>
+	<key>H</key>
+	<string>H</string>
+	<key>HV</key>
+	<string>HR</string>
+	<key>Haptics</key>
+	<string>Vibrations</string>
+	<key>Hombre</key>
+	<string>Homme</string>
+	<key>Hombre Volver</key>
+	<string>Homme Revenir</string>
+	<key>House</key>
+	<string>Maison</string>
+	<key>House: %@</key>
+	<string>Maison: %@</string>
+	<key>ID</key>
+	<string>ID</string>
+	<key>Image</key>
+	<string>Image</string>
+	<key>Increasing</key>
+	<string>Croissant</string>
+	<key>Invalid Credentials</key>
+	<string>Les informations d'identification sont incorrects</string>
+	<key>It seems this email is taken. Try logging in.</key>
+	<string>Il parait que cet email est en utilisation. Essayez de se connecter.</string>
+	<key>Key Name</key>
+	<string>Nom de Clé</string>
+	<key>Keys</key>
+	<string>Clés</string>
+	<key>Language</key>
+	<string>Langue</string>
+	<key>Last Name</key>
+	<string>Nom</string>
+	<key>Last Synced</key>
+	<string>Synchronisé</string>
+	<key>Level: Publisher</key>
+	<string>Niveau: Proclamateur</string>
+	<key>Level: Servant</key>
+	<string>Niveau: Assistant</string>
+	<key>Loading</key>
+	<string>Chargement</string>
+	<key>Log into Phone Book</key>
+	<string>Se connecter au Répertoire Téléphonique</string>
+	<key>Logging in...</key>
+	<string>En train de se connecter...</string>
+	<key>Login</key>
+	<string>Se Connecter</string>
+	<key>Logout</key>
+	<string>Se Déconnecter</string>
+	<key>M</key>
+	<string>F</string>
+	<key>MV</key>
+	<string>FR</string>
+	<key>Menu</key>
+	<string>Menu</string>
+	<key>Mujer</key>
+	<string>Femme</string>
+	<key>Mujer Volver</key>
+	<string>Femme Revenir</string>
+	<key>N</key>
+	<string>E</string>
+	<key>NC</key>
+	<string>A</string>
+	<key>NT</key>
+	<string>PV</string>
+	<key>Name</key>
+	<string>Nom</string>
+	<key>Need account? Contact me</key>
+	<string>Besoin d'une compte? Contactez-moi</string>
+	<key>Niño</key>
+	<string>Enfant</string>
+	<key>No Data</key>
+	<string>Pas d'Informations</string>
+	<key>No Internet Connection</key>
+	<string>Pas de connexion à internet</string>
+	<key>No Internet Connection. Please try again later.</key>
+	<string>Pas de connexion à internet. Réessayez plus tard.</string>
+	<key>No Notes</key>
+	<string>Pas de notes</string>
+	<key>No Tocar</key>
+	<string>Pas Visiter</string>
+	<key>No address selected</key>
+	<string>Aucune adresse sélectionné</string>
+	<key>No en casa</key>
+	<string>Absent</string>
+	<key>No house selected</key>
+	<string>Aucune maison sélectionné</string>
+	<key>No internet connection</key>
+	<string>Pas de connection internet</string>
+	<key>No notes available.</key>
+	<string>Pas de notes disponibles</string>
+	<key>No results found</key>
+	<string>Résultat pas trouvé</string>
+	<key>Not a valid email.</key>
+	<string>Pas un email valide</string>
+	<key>Note: %@</key>
+	<string>Note: %@</string>
+	<key>Note: N/A</key>
+	<string>Note: N/A</string>
+	<key>Note: No notes</key>
+	<string>Note: Pas de Notes</string>
+	<key>Notes</key>
+	<string>Notes</string>
+	<key>Notes and Symbol are required.</key>
+	<string>Une note et une symbole sont obligatoire</string>
+	<key>Notes are required.</key>
+	<string>Les notes sont obligatoire</string>
+	<key>Now</key>
+	<string>Maintenant</string>
+	<key>Number</key>
+	<string>Numéro</string>
+	<key>Number Uneditable</key>
+	<string>Numéro non modifiable</string>
+	<key>Number and Description are required.</key>
+	<string>Le numéro et la description sont obligatoire</string>
+	<key>Number is required.</key>
+	<string>Le numéro est obligatoire</string>
+	<key>Number: %@</key>
+	<string>Numéro: %@</string>
+	<key>Numbers</key>
+	<string>Numéros</string>
+	<key>O</key>
+	<string>O</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>OV</key>
+	<string>OR</string>
+	<key>Ocupado</key>
+	<string>Occupé(e)</string>
+	<key>Ocupado Volver</key>
+	<string>Occupé(e) Revenir</string>
+	<key>Odd &amp; Even</key>
+	<string>Pairs &amp; Impairs</string>
+	<key>Password</key>
+	<string>Mot de Passe</string>
+	<key>Password Confirmation</key>
+	<string>Confirmation de Mot de Passe</string>
+	<key>Password must be more than 6 characters.</key>
+	<string>Le mot de passe doit être plus de 6 caractères.</string>
+	<key>Password must be more than 8 characters.</key>
+	<string>Le mot de passe doit être plus de 8 caractères.</string>
+	<key>Passwords must match.</key>
+	<string>Les mots de passe ne sont pas les mêmes</string>
+	<key>Phone Book</key>
+	<string>Répertoire Téléphonique</string>
+	<key>Phone Book 
+Login</key>
+	<string>Se connecter au Répertoire Téléphonique</string>
+	<key>Phone Book Login</key>
+	<string>Se connecter au Répertoire Téléphonique</string>
+	<key>Phone Number is required.</key>
+	<string>Le numéro de téléphone est obligatoire</string>
+	<key>Phone Numbers: %lld</key>
+	<string>Numéros Téléphoniques: %lld</string>
+	<key>Phone Territories</key>
+	<string>Territoires Téléphoniques</string>
+	<key>Please fill out all the required fields.</key>
+	<string>Remplissez tous les champs obligatoires</string>
+	<key>Please update the app as soon as possible to access the latest features and improvements. 
+Would you like to update now?</key>
+	<string>S'il vous plaît mettez à jour l'application pour accéder aux nouveautés. 
+Voulez vous mettre à jour maintenant?</string>
+	<key>Privacy Policy</key>
+	<string>Politique de Confidentialité</string>
+	<key>Recalls</key>
+	<string>Revisites</string>
+	<key>Recent Territories</key>
+	<string>Territoires Récents</string>
+	<key>Registering Key</key>
+	<string>Registration de la Clé</string>
+	<key>Registering key...</key>
+	<string>Registration de la Clé...</string>
+	<key>Remove</key>
+	<string>Supprimer</string>
+	<key>Remove Recall</key>
+	<string>Supprimer Revisite</string>
+	<key>Resend Verification</key>
+	<string>Renvoyer la Vérification</string>
+	<key>Reset Password</key>
+	<string>Réinitialiser le Mot de Passe</string>
+	<key>Review App</key>
+	<string>Évaluer l'application</string>
+	<key>Save</key>
+	<string>Enregistrer</string>
+	<key>Search for a Phone Territory, Number, Call</key>
+	<string>Cherchez un territoire, numéro ou appel.</string>
+	<key>Search for a Territory, Address, House, Visit</key>
+	<string>Cherchez un territoire, adresse, maison ou visite.</string>
+	<key>Search...</key>
+	<string>Recherche</string>
+	<key>Searching...</key>
+	<string>Recherche...</string>
+	<key>Select Symbol</key>
+	<string>Choisir Symbole</string>
+	<key>Servant</key>
+	<string>Assistant</string>
+	<key>Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.
+This tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps.</key>
+	<string>Service Maps a été conçu pour rendre plus facile le contrôle et la registration de la prédication publique des Témoins de Jéhovah. Cet outil ne fait pas partie de JW.ORG ni est une application de l'organisation. C'est simplement le résultat des efforts et l'amour de quelques frères. Nous espérons que ceci vous sera utile. Merci d'utiliser Service Maps.</string>
+	<key>Settings</key>
+	<string>Réglages</string>
+	<key>Share App</key>
+	<string>Partager l'Application</string>
+	<key>Share Backup</key>
+	<string>Partager</string>
+	<key>Share Key</key>
+	<string>Partager la Clé</string>
+	<key>Sign Up</key>
+	<string>Se Registrer</string>
+	<key>Sign up</key>
+	<string>S'incrire</string>
+	<key>Sort</key>
+	<string>Trier</string>
+	<key>Symbol: </key>
+	<string>Symbole:</string>
+	<key>Symbol: %@</key>
+	<string>Symbole: %@</string>
+	<key>Symbol: -</key>
+	<string>Symbole: -</string>
+	<key>Symbol: N/A</key>
+	<string>Symbole: N/A</string>
+	<key>Syncing</key>
+	<string>Synchronisation</string>
+	<key>Tap to add an image</key>
+	<string>Cliquez pour ajouter une image</string>
+	<key>Territories</key>
+	<string>Territoires</string>
+	<key>Territories: %@</key>
+	<string>Territoires: %@</string>
+	<key>That is not a valid phone number.</key>
+	<string>Ce n'est pas un numéro valide.</string>
+	<key>The bundle info could not be parsed.</key>
+	<string>Erreur d'info du Bundle</string>
+	<key>The operation couldn’t be completed. (NSURLErrorDomain error -1009.)</key>
+	<string>Opération erreur -1009</string>
+	<key>The server returned an invalid response.</key>
+	<string>Le serveur réponse invalide</string>
+	<key>There was a problem with the internet connection. 
+Please check your internet connection and try again.</key>
+	<string>Il y a eu un problème avec la connexion à internet. Vérifiez-la.</string>
+	<key>This is nonreversible</key>
+	<string>Ceci est irréversible</string>
+	<key>Today </key>
+	<string>Aujourd'hui </string>
+	<key>UK</key>
+	<string>-</string>
+	<key>Unblock</key>
+	<string>Debloquer</string>
+	<key>Update available. Redirecting to App Store...</key>
+	<string>Une mise à jour est disponible...</string>
+	<key>Use Password</key>
+	<string>Utiliser Mot de Passe</string>
+	<key>Users</key>
+	<string>Utilisateurs</string>
+	<key>V</key>
+	<string>R</string>
+	<key>Verification</key>
+	<string>Vérification</string>
+	<key>Volver</key>
+	<string>Revenir</string>
+	<key>Welcome to 
+Service Maps!</key>
+	<string>Bienvenue à Service Maps!</string>
+	<key>Yesterday </key>
+	<string>Hier</string>
+	<key>You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below.</key>
+	<string>Vous avez réussi à se connecter, mais vous n'avez pas accès à aucun Territoire. Contactez votre chef de groupe pour demander de l'accès. Si vous êtes administrateur, cliquez le bouton dessous.</string>
+	<key>block</key>
+	<string>bloquer</string>
+	<key>blocking</key>
+	<string>en bloquant</string>
+	<key>first name</key>
+	<string>prénom</string>
+	<key>iPad Column View</key>
+	<string>Vue de Colonne sur iPad</string>
+	<key>last name</key>
+	<string>nom</string>
+	<key>name</key>
+	<string>nom</string>
+	<key>uk</key>
+	<string>-</string>
+	<key>unblock</key>
+	<string>débloquer</string>
+	<key>unblocking</key>
+	<string>en débloquant</string>
+</dict>
+</plist>

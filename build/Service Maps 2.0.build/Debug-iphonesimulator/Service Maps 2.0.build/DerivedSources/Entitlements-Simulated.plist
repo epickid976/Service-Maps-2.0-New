@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>application-identifier</key>
+	<string>6FLCXFF4D9.com.Jose.Blanco.Territorios</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:servicemaps.ejvapps.online</string>
+		<string>appclips:servicemaps.ejvapps.online</string>
+		<string>applinks:servicemaps.ejvapps.online</string>
+		<string>webcredentials:servicemaps.ejvapps.online</string>
+	</array>
+</dict>
+</plist>

@@ -257,7 +257,7 @@ struct LoginView: View {
                                 let result = await authenticationManager.requestPasswordReset(email: viewModel.username)
                                 
                                 switch result {
-                                case .success(_):
+                                case .success:
                                     viewModel.resetFeedbackText = "Request Successfully Sent"
                                     viewModel.resetFeedback = true
                                     HapticManager.shared.trigger(.success)
@@ -298,7 +298,7 @@ struct LoginView: View {
                                 Task {
                                     await viewModel.login() { result in
                                         switch result {
-                                        case .success(_):
+                                        case .success:
                                             HapticManager.shared.trigger(.success)
                                             DispatchQueue.main.async {
                                                 onDone()

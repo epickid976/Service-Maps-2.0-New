@@ -94,33 +94,27 @@ class BackupManager: ObservableObject {
         var houses = [House]()
         var visits = [Visit]()
         
-        do {
-            // Fetch data from database
-            let territoriesResult = await grdbManager.fetchAllAsync(Territory.self)
-            let addressesResult = await grdbManager.fetchAllAsync(TerritoryAddress.self)
-            let housesResult = await grdbManager.fetchAllAsync(House.self)
-            let visitsResult = await grdbManager.fetchAllAsync(Visit.self)
+        // Fetch data from database
+        let territoriesResult = await grdbManager.fetchAllAsync(Territory.self)
+        let addressesResult = await grdbManager.fetchAllAsync(TerritoryAddress.self)
+        let housesResult = await grdbManager.fetchAllAsync(House.self)
+        let visitsResult = await grdbManager.fetchAllAsync(Visit.self)
+        
+        switch (territoriesResult, addressesResult, housesResult, visitsResult) {
+        case (.success(let allTerritories), .success(let allAddresses), .success(let allHouses), .success(let allVisits)):
+            territories = allTerritories
+            houses = allHouses
+            addresses = allAddresses
+            visits = allVisits
             
-            switch (territoriesResult, addressesResult, housesResult, visitsResult) {
-            case (.success(let allTerritories), .success(let allAddresses), .success(let allHouses), .success(let allVisits)):
-                territories = allTerritories
-                houses = allHouses
-                addresses = allAddresses
-                visits = allVisits
-                
-            case (.failure(let error), _, _, _), (_, .failure(let error), _, _), (_, _, .failure(let error), _), (_, _, _, .failure(let error)):
-                // Handle errors
-                return Result.failure(error)
-            }
-            
-        } catch {
-            // Handle fetch error
+        case (.failure(let error), _, _, _), (_, .failure(let error), _, _), (_, _, .failure(let error), _), (_, _, _, .failure(let error)):
+            // Handle errors
             return Result.failure(error)
         }
         
         // Calculate total items for progress tracking
         let totalItems = Double(territories.count + addresses.count)
-
+        
         guard let pdfURL = Bundle.main.url(forResource: "s8NEW", withExtension: "pdf"),
               let pdfDoc = PDFDocument(url: pdfURL) else {
             return Result.failure(CustomErrors.GenericError)
@@ -154,7 +148,7 @@ class BackupManager: ObservableObject {
             
             // Save text file for territory
             await saveTerritoryTextFile(territory: territory.territory, territoryFolder: territoryFolderURL, doors: doors)
-
+            
             // Process each address for backup
             for address in territory.addresses {
                 if Task.isCancelled {
@@ -191,7 +185,7 @@ class BackupManager: ObservableObject {
                 }
             }
         }
-
+        
         // Zip the backup folder
         let zipFileName = "Backup-\(date).zip"
         let zipFileURL = backupFolder.deletingLastPathComponent().appendingPathComponent(zipFileName)
@@ -200,12 +194,12 @@ class BackupManager: ObservableObject {
         if case .failure(let error) = result {
             return .failure(error)
         }
-
+        
         // Mark backup as complete
         DispatchQueue.main.async {
             self.isBackingUp = false
         }
-
+        
         return .success(zipFileURL)
     }
     
@@ -295,12 +289,12 @@ class BackupManager: ObservableObject {
         
         // Continue similar for Form 3 and Form 4 (this pattern is reused)
         if Task.isCancelled { return }
-
+        
         // Divide the houses into chunks of 24, one for each form
         let houseDataChunks = address.houses.divideIn(24)
         
         if Task.isCancelled { return }
-
+        
         // Write data to each form using the field mapping
         for (formIndex, dataChunk) in houseDataChunks.enumerated() {
             let houseFields = await getHouseFields(for: formIndex)
@@ -335,7 +329,7 @@ class BackupManager: ObservableObject {
                 }
             }
         }
-
+        
         pdfDocument.write(to: outputFileURL)
         DispatchQueue.main.async {
             if !self.fileManager.fileExists(atPath: outputFileURL.path) {

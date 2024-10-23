@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%@ Address</key>
+	<string>%@ Dirección</string>
+	<key>%@ Call</key>
+	<string>%@ Llamada</string>
+	<key>%@ House</key>
+	<string>%@ Casa</string>
+	<key>%@ Number</key>
+	<string>%@ Número</string>
+	<key>%@ Phone Number</key>
+	<string>%@ Número Telefónico</string>
+	<key>%@ Territory</key>
+	<string>%@ Territorio</string>
+	<key>%@ User</key>
+	<string>%@ Usuario</string>
+	<key>%@ Visit</key>
+	<string>%@ Visita</string>
+	<key>%d</key>
+	<string>%d</string>
+	<key>%d day(s)</key>
+	<string>%d día(s)</string>
+	<key>%d hour(s)</key>
+	<string>%d hora(s)</string>
+	<key>%d minute(s)</key>
+	<string>%d minuto(s)</string>
+	<key>%lld/255</key>
+	<string>%lld/255</string>
+	<key>(%d days ago)</key>
+	<string>(hace %d días)</string>
+	<key>((days) days ago)</key>
+	<string>(hace (days) días)</string>
+	<key>(getElapsedMinutes()) minute(s)</key>
+	<string>(getElapsedMinutes()) minuto(s)</string>
+	<key>A backup copy of all the territories, addresses, houses, and visits that are in the app will be made. A zip file will be generated that will contain the folders and forms for each address. Please note that only the last visit will be exported. The process may take some time.</key>
+	<string>Se realizará una copia de seguridad de todos los territorios, direcciones, casas y visitas que están en la aplicación. Se generará un archivo zip que contendrá las carpetas y formularios para cada dirección. Tenga en cuenta que solo se exportará la última visita. El proceso puede tardar algún tiempo.</string>
+	<key>A new update for the app is available!</key>
+	<string>Una nueva actualización esta disponible!</string>
+	<key>About App</key>
+	<string>Sobre la Applicación</string>
+	<key>Activating Account</key>
+	<string>Activando Cuenta</string>
+	<key>Activating Account...</key>
+	<string>Activando Cuenta...</string>
+	<key>Add</key>
+	<string>Añadir</string>
+	<key>Add House</key>
+	<string>Añadir Casa</string>
+	<key>Add Key</key>
+	<string>Añadir Llave</string>
+	<key>Add Recall</key>
+	<string>Añadir Revisita</string>
+	<key>Address</key>
+	<string>Dirección</string>
+	<key>Address is required.</key>
+	<string>Una dirección es obligatoria</string>
+	<key>Addresses</key>
+	<string>Direcciones</string>
+	<key>Administrator</key>
+	<string>Administrador</string>
+	<key>An email was sent to verify your account. When you have verified, click the button below to continue to your account.</key>
+	<string>Se envió un correo para verificar tu cuenta. Cuando verifiques, toca el botón de abajo.</string>
+	<key>App Version</key>
+	<string>Version de la Aplicación</string>
+	<key>App is up to date!</key>
+	<string>La aplicación esta actualizada!</string>
+	<key>Are you sure about deleting your account? This action can not be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again.</key>
+	<string>¿Esta seguro de que quiere borrar su cuenta? Esta acción es irreversible. Si decide borrar su cuenta, su cuenta y todo acceso sera borrado, pero la información provista se mantendrá en el servidor. El correo utilizado en esta cuenta no se podrá reutilizar.</string>
+	<key>Are you sure you want to %@ the selected user?</key>
+	<string>¿Esta seguro de que quiere %@ este usuario?</string>
+	<key>Are you sure you want to delete the selected address?</key>
+	<string>¿Esta seguro de que quiere borrar esta dirección?</string>
+	<key>Are you sure you want to delete the selected call?</key>
+	<string>¿Esta seguro de que quiere borrar esta llamada?</string>
+	<key>Are you sure you want to delete the selected house?</key>
+	<string>¿Esta seguro de que quiere borrar esta casa?</string>
+	<key>Are you sure you want to delete the selected key?</key>
+	<string>¿Esta seguro de que quiere borrar esta llave?</string>
+	<key>Are you sure you want to delete the selected number?</key>
+	<string>¿Esta seguro de que quiere borrar este número?</string>
+	<key>Are you sure you want to delete the selected territory?</key>
+	<string>¿Esta seguro de que quiere borrar este territorio?</string>
+	<key>Are you sure you want to delete the selected user?</key>
+	<string>¿Esta seguro de que quiere borrar este usuario?</string>
+	<key>Are you sure you want to delete the selected visit?</key>
+	<string>¿Esta seguro de que quiere borrar esta visita?</string>
+	<key>Are you sure you want to delete your account?</key>
+	<string>¿Esta seguro de que quiere borrar su cuenta?</string>
+	<key>Are you sure you want to remove the selected recall?</key>
+	<string>¿Esta seguro de que quiere borrar la revisita?</string>
+	<key>At least one field is required.</key>
+	<string>Al menos un campo es obligatorio.</string>
+	<key>Back</key>
+	<string>Volver</string>
+	<key>Back up</key>
+	<string>Respaldar</string>
+	<key>Backup</key>
+	<string>Respaldo</string>
+	<key>Become Administrator</key>
+	<string>Convertirse en Administrador</string>
+	<key>Block</key>
+	<string>Desbloquear</string>
+	<key>Blocked Users</key>
+	<string>Usuarios Bloqueados</string>
+	<key>By adding this house as a recall, it will be displayed in the recalls tab and you will be able to access it more easily.</key>
+	<string>Al añadir esta casa como revisita, sera mostrada en la pagina de revisitas y podrá acceder a ella más fácilmente.</string>
+	<key>By removing this house as a recall, it will be removed from the recalls tab.</key>
+	<string>Al remover esta casa como revisita, sera removida de la pagina de revisitas.</string>
+	<key>Confirm Password</key>
+	<string>Confirmar Contraseña</string>
+	<key>Congregation 
+Login</key>
+	<string>Inicio de sesión de Congregación</string>
+	<key>Congregation ID</key>
+	<string>ID de Congregación</string>
+	<key>Congregation Password</key>
+	<string>Contraseña de Congregación</string>
+	<key>Copy Address</key>
+	<string>Copiar Dirección</string>
+	<key>Creating Backup...</key>
+	<string>Creando copia de seguridad…</string>
+	<key>Date: </key>
+	<string>Fecha:</string>
+	<key>Date: N/A</key>
+	<string>Fecha: N/A</string>
+	<key>Decreasing</key>
+	<string>Decreciente</string>
+	<key>Delete</key>
+	<string>Borrar</string>
+	<key>Delete Account</key>
+	<string>Borrar Cuenta</string>
+	<key>Delete Address</key>
+	<string>Borrar Dirección</string>
+	<key>Delete Address: %@</key>
+	<string>Borrar Dirección: %@</string>
+	<key>Delete Cache</key>
+	<string>Borrar Caché</string>
+	<key>Delete Call</key>
+	<string>Borrar Llamada</string>
+	<key>Delete House</key>
+	<string>Borrar Casa</string>
+	<key>Delete House %@</key>
+	<string>Borrar Casa %@</string>
+	<key>Delete Key</key>
+	<string>Borrar Llave</string>
+	<key>Delete Key: %@</key>
+	<string>Borrar Llave: %@</string>
+	<key>Delete Number</key>
+	<string>Borrar número</string>
+	<key>Delete Number: %@</key>
+	<string>Borrar Número: %@</string>
+	<key>Delete Territory</key>
+	<string>Borrar Territorio</string>
+	<key>Delete Territory %@</key>
+	<string>Borrar Territorio %@</string>
+	<key>Delete User</key>
+	<string>Borrar Usuario</string>
+	<key>Delete User: %@</key>
+	<string>Borrar Usuario: %@</string>
+	<key>Delete Visit</key>
+	<string>Borrar Visita</string>
+	<key>Description</key>
+	<string>Descripción</string>
+	<key>Dismiss</key>
+	<string>Volver</string>
+	<key>Done</key>
+	<string>Listo</string>
+	<key>Doors: %lld</key>
+	<string>Puertas: %lld</string>
+	<key>Drag &amp; Drop</key>
+	<string>Arrastrar y Soltar</string>
+	<key>Edit</key>
+	<string>Editar</string>
+	<key>Edit Address</key>
+	<string>Editar Dirección</string>
+	<key>Edit Key</key>
+	<string>Editar Llave</string>
+	<key>Edit Number</key>
+	<string>Editar número</string>
+	<key>Edit Territory</key>
+	<string>Editar Territorio</string>
+	<key>Edit Username</key>
+	<string>Editar Nombre</string>
+	<key>Edit Visit</key>
+	<string>Editar Visita</string>
+	<key>Email</key>
+	<string>Email</string>
+	<key>Email Taken</key>
+	<string>Correo ya utilisado</string>
+	<key>Email cannot contain spaces.</key>
+	<string>Correo no puede contener espacios.</string>
+	<key>Email or Password is incorrect. Please try again.</key>
+	<string>El correo y la contraseña son incorrectos. </string>
+	<key>Error</key>
+	<string>Error</string>
+	<key>Error %@ user, please try again later</key>
+	<string>Error %@ usuario, por favor intente más tarde</string>
+	<key>Error Logging in. Please try again later</key>
+	<string>Error iniciando sesión. Intente otra vez.</string>
+	<key>Error Resetting Password. Please try again later</key>
+	<string>Error reiniciando la contravene. Intense de nuevo.</string>
+	<key>Error adding Visit.</key>
+	<string>Error al añadir visita</string>
+	<key>Error adding address.</key>
+	<string>Error al añadir dirección</string>
+	<key>Error adding call.</key>
+	<string>Error al añadir llamada</string>
+	<key>Error adding house.</key>
+	<string>Error al añadir casa</string>
+	<key>Error adding key.</key>
+	<string>Error al añadir llave</string>
+	<key>Error adding phone number.</key>
+	<string>Error al añadir número</string>
+	<key>Error adding recall, please try again later</key>
+	<string>Error al añadir revisita, por favor intente más tarde.</string>
+	<key>Error adding territory.</key>
+	<string>Error al añadir territorio</string>
+	<key>Error adding/updating key.</key>
+	<string>Error añadiendo/actualizando llave.</string>
+	<key>Error deleting address, please try again later</key>
+	<string>Error al borrar dirección, por favor intente más tarde</string>
+	<key>Error deleting call, please try again later</key>
+	<string>Error al borrar llamada, por favor intente más tarde</string>
+	<key>Error deleting house, please try again later</key>
+	<string>Error al borrar casa, por favor intente más tarde</string>
+	<key>Error deleting key, please try again later</key>
+	<string>Error al borrar llave, por favor intente más tarde</string>
+	<key>Error deleting number, please try again later</key>
+	<string>Error al borrar número, por favor intente más tarde</string>
+	<key>Error deleting territory, please try again later</key>
+	<string>Error al borrar territorio, por favor intente más tarde</string>
+	<key>Error deleting user, please try again later</key>
+	<string>Error al borrar usuario, por favor intente más tarde</string>
+	<key>Error deleting visit, please try again later</key>
+	<string>Error al borrar vitsita, por favor intente más tarde</string>
+	<key>Error logging in. 
+Please try again.</key>
+	<string>Error iniciando sesión. Intente otra vez.</string>
+	<key>Error logging in...</key>
+	<string>Error iniciando sesión...</string>
+	<key>Error removing recall, please try again later</key>
+	<string>Error al remover revisita, por favor intente más tarde.</string>
+	<key>Error updating Visit.</key>
+	<string>Error al añadir visita</string>
+	<key>Error updating address.</key>
+	<string>Error al añadir dirección</string>
+	<key>Error updating call.</key>
+	<string>Error al añadir llamada</string>
+	<key>Error updating house.</key>
+	<string>Error al añadir casa</string>
+	<key>Error updating phone number.</key>
+	<string>Error al añadir número</string>
+	<key>Error updating territory.</key>
+	<string>Error al añadir territorio</string>
+	<key>Error updating username</key>
+	<string>Error actualizando el nombre.</string>
+	<key>Everything at the palm of your hand</key>
+	<string>Todo en la palma de su mano</string>
+	<key>Exit</key>
+	<string>Salir</string>
+	<key>Fields cannot be empty</key>
+	<string>Los campos no pueden estar vacíos</string>
+	<key>Filter</key>
+	<string>Filtrar</string>
+	<key>First Name</key>
+	<string>Primer nombre</string>
+	<key>Forgot Password</key>
+	<string>Olvide mi contraseña</string>
+	<key>H</key>
+	<string>H</string>
+	<key>HV</key>
+	<string>HV</string>
+	<key>Haptics</key>
+	<string>Vibraciones</string>
+	<key>Hombre</key>
+	<string>Hombre</string>
+	<key>Hombre Volver</key>
+	<string>Hombre Volver</string>
+	<key>House</key>
+	<string>Casa</string>
+	<key>House: %@</key>
+	<string>Casa: %@</string>
+	<key>ID</key>
+	<string>ID</string>
+	<key>Image</key>
+	<string>Imagen</string>
+	<key>Increasing</key>
+	<string>Creciente</string>
+	<key>Invalid Credentials</key>
+	<string>Credenciales incorrectos</string>
+	<key>It seems this email is taken. Try logging in.</key>
+	<string>Al parecer ya existe este correo. Intente iniciando sesión.</string>
+	<key>Key Name</key>
+	<string>Nombre de Llave</string>
+	<key>Keys</key>
+	<string>Llaves</string>
+	<key>Language</key>
+	<string>Lenguaje</string>
+	<key>Last Name</key>
+	<string>Apellido</string>
+	<key>Last Synced</key>
+	<string>Sincronizado</string>
+	<key>Level: Publisher</key>
+	<string>Nivel: Publicador</string>
+	<key>Level: Servant</key>
+	<string>Nivel: Siervo</string>
+	<key>Loading</key>
+	<string>Cargando</string>
+	<key>Log into Phone Book</key>
+	<string>Iniciar Sesión a Repertorio Telefónico</string>
+	<key>Logging in...</key>
+	<string>Iniciando sesión...</string>
+	<key>Login</key>
+	<string>Inicio de Sesión</string>
+	<key>Logout</key>
+	<string>Desconectarse</string>
+	<key>M</key>
+	<string>M</string>
+	<key>MV</key>
+	<string>MV</string>
+	<key>Mujer</key>
+	<string>Mujer</string>
+	<key>Mujer Volver</key>
+	<string>Mujer Volver</string>
+	<key>N</key>
+	<string>N</string>
+	<key>NC</key>
+	<string>NC</string>
+	<key>NT</key>
+	<string>NT</string>
+	<key>Name</key>
+	<string>Nombre</string>
+	<key>Need account? Contact me</key>
+	<string>¿Necesita una cuenta? Contacteme</string>
+	<key>Niño</key>
+	<string>Niño</string>
+	<key>No Data</key>
+	<string>Ninguna Información</string>
+	<key>No Internet Connection</key>
+	<string>Falta de conexión de internet</string>
+	<key>No Internet Connection. Please try again later.</key>
+	<string>Falta de conexión de internet. Intente más tarde.</string>
+	<key>No Notes</key>
+	<string>Ninguna nota</string>
+	<key>No Tocar</key>
+	<string>No Tocar</string>
+	<key>No address selected</key>
+	<string>Ninguna dirección seleccionada</string>
+	<key>No en casa</key>
+	<string>No en casa</string>
+	<key>No house selected</key>
+	<string>Ninguna casa seleccionada</string>
+	<key>No internet connection</key>
+	<string>No hay conexión a internet</string>
+	<key>No notes available.</key>
+	<string>No hay notas disponibles</string>
+	<key>No results found</key>
+	<string>No se encontro resultados</string>
+	<key>Not a valid email.</key>
+	<string>No es un correo valido.</string>
+	<key>Note: %@</key>
+	<string>Nota: %@</string>
+	<key>Note: N/A</key>
+	<string>Nota: N/A</string>
+	<key>Note: No notes</key>
+	<string>Nota: Ninguna nota</string>
+	<key>Notes</key>
+	<string>Notas</string>
+	<key>Notes and Symbol are required.</key>
+	<string>Las notas y el símbolo son obligatorios</string>
+	<key>Notes are required.</key>
+	<string>Las notas son requeridas</string>
+	<key>Now</key>
+	<string>Ahora</string>
+	<key>Number</key>
+	<string>Número</string>
+	<key>Number Uneditable</key>
+	<string>Número Ineditable</string>
+	<key>Number and Description are required.</key>
+	<string>El número y la descripción son obligatorias</string>
+	<key>Number is required.</key>
+	<string>El número es requerido</string>
+	<key>Number: %@</key>
+	<string>Número: %@</string>
+	<key>Numbers</key>
+	<string>Números</string>
+	<key>O</key>
+	<string>O</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>OV</key>
+	<string>OV</string>
+	<key>Ocupado</key>
+	<string>Ocupado</string>
+	<key>Ocupado Volver</key>
+	<string>Ocupado Volver</string>
+	<key>Odd &amp; Even</key>
+	<string>Pares &amp; Nones</string>
+	<key>Password</key>
+	<string>Contraseña</string>
+	<key>Password Confirmation</key>
+	<string>Confirmar Contraseña</string>
+	<key>Password must be more than 6 characters.</key>
+	<string>La contraseña tiene que ser más de 6 caracteres.</string>
+	<key>Password must be more than 8 characters.</key>
+	<string>Contraseña tiene que ser más de 8 caracteres.</string>
+	<key>Passwords must match.</key>
+	<string>Las contraseñas tienen que ser iguales.</string>
+	<key>Phone Book</key>
+	<string>Repertorio Telefónico</string>
+	<key>Phone Book 
+Login</key>
+	<string>Iniciar Sesión Repertorio Telefonico</string>
+	<key>Phone Book Login</key>
+	<string>Iniciar Sesión Repertorio Telefonico</string>
+	<key>Phone Number is required.</key>
+	<string>El número es requerido</string>
+	<key>Phone Numbers: %lld</key>
+	<string>Números Telefónicos: %lld</string>
+	<key>Phone Territories</key>
+	<string>Territorios Telefónicos</string>
+	<key>Please fill out all the required fields.</key>
+	<string>Por favor rellene todos los campos</string>
+	<key>Please update the app as soon as possible to access the latest features and improvements. 
+Would you like to update now?</key>
+	<string>Por favor actualice la aplicación lo más rápido posible para acceder a las nuevas funciones. 
+Quisiera actualizar ahora?</string>
+	<key>Privacy Policy</key>
+	<string>Politica de Privacidad</string>
+	<key>Recalls</key>
+	<string>Revisitas</string>
+	<key>Recent Territories</key>
+	<string>Territorios Recientes</string>
+	<key>Registering Key</key>
+	<string>Registrando Llave</string>
+	<key>Registering key...</key>
+	<string>Registrando Llave...</string>
+	<key>Remove</key>
+	<string>Remover</string>
+	<key>Remove Recall</key>
+	<string>Remover Revisita</string>
+	<key>Resend Verification</key>
+	<string>Reenviar Verificación</string>
+	<key>Reset Password</key>
+	<string>Reiniciar Contraseña</string>
+	<key>Review App</key>
+	<string>Evaluar la aplicación</string>
+	<key>Save</key>
+	<string>Guardar</string>
+	<key>Search for a Phone Territory, Number, Call</key>
+	<string>Busque un territorio, teléfono o llamada.</string>
+	<key>Search for a Territory, Address, House, Visit</key>
+	<string>Busque un territorio, dirección, casa o visita.</string>
+	<key>Search...</key>
+	<string>Buscar...</string>
+	<key>Searching...</key>
+	<string>Buscando...</string>
+	<key>Select Symbol</key>
+	<string>Seleccionar Simbolo</string>
+	<key>Servant</key>
+	<string>Siervo</string>
+	<key>Service Maps</key>
+	<string>Service Maps</string>
+	<key>Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.
+This tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps.</key>
+	<string>Service Maps ha sido creado con el propósito de facilitar el control y registro de la predicación publica de los Testigos de Jehová. Esta herramienta no es parte de JW.ORG ni es una aplicación oficial de la organización. Es simplemente el resultado del esfuerzo y amor de algunos hermanos. Esperamos que les sea util. Gracias por usar Service Maps.</string>
+	<key>Settings</key>
+	<string>Configuración</string>
+	<key>Share App</key>
+	<string>Compartir Applicación</string>
+	<key>Share Backup</key>
+	<string>Compartir</string>
+	<key>Share Key</key>
+	<string>Compartir Llave</string>
+	<key>Sign Up</key>
+	<string>Registrarse</string>
+	<key>Sign up</key>
+	<string>Registrarse</string>
+	<key>Sort</key>
+	<string>Ordenar</string>
+	<key>Symbol: </key>
+	<string>Simbolo:</string>
+	<key>Symbol: %@</key>
+	<string>Simbolo: %@</string>
+	<key>Symbol: -</key>
+	<string>Simbolo: -</string>
+	<key>Symbol: N/A</key>
+	<string>Simbol: N/A</string>
+	<key>Syncing</key>
+	<string>Sincronizando</string>
+	<key>Tap to add an image</key>
+	<string>Toque para añadir imagen</string>
+	<key>Territories</key>
+	<string>Territorios</string>
+	<key>Territories: %@</key>
+	<string>Territorios: %@</string>
+	<key>That is not a valid phone number.</key>
+	<string>Este no es un número valido</string>
+	<key>The bundle info could not be parsed.</key>
+	<string>Error procesando Bundle</string>
+	<key>The operation couldn’t be completed. (NSURLErrorDomain error -1009.)</key>
+	<string>Operación error -1009</string>
+	<key>The server returned an invalid response.</key>
+	<string>Servidor devolvió respuesta invalida</string>
+	<key>There was a problem with the internet connection. 
+Please check your internet connection and try again.</key>
+	<string>Un problema con la conexión a internet. Intente más tard.</string>
+	<key>This is nonreversible</key>
+	<string>Esto es irreversible</string>
+	<key>Today </key>
+	<string>Hoy </string>
+	<key>UK</key>
+	<string>-</string>
+	<key>Unblock</key>
+	<string>Desbloquear</string>
+	<key>Update available. Redirecting to App Store...</key>
+	<string>Actualización disponible...</string>
+	<key>Use Password</key>
+	<string>Utilizar Contraseña</string>
+	<key>Users</key>
+	<string> Usuarios</string>
+	<key>V</key>
+	<string>V</string>
+	<key>Verification</key>
+	<string>Verificación</string>
+	<key>Volver</key>
+	<string>Volver</string>
+	<key>Welcome to 
+Service Maps!</key>
+	<string>Bienvenido a Service Maps!</string>
+	<key>Yesterday </key>
+	<string>Ayer</string>
+	<key>You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below.</key>
+	<string>Ha iniciado sesión correctamente, pero parece que no tiene acceso a ningún territorio. Contacte su siervo de grupo para acceso y luego presione actualizar. Si es administrador, presione el botón debajo.</string>
+	<key>block</key>
+	<string>desbloquear</string>
+	<key>blocking</key>
+	<string>desbloqueando</string>
+	<key>first name</key>
+	<string>primer nombre</string>
+	<key>iPad Column View</key>
+	<string>Vista de Columna</string>
+	<key>last name</key>
+	<string>apellido</string>
+	<key>name</key>
+	<string>nombre</string>
+	<key>uk</key>
+	<string>-</string>
+	<key>unblock</key>
+	<string>desbloquear</string>
+	<key>unblocking</key>
+	<string>desbloqueando</string>
+</dict>
+</plist>

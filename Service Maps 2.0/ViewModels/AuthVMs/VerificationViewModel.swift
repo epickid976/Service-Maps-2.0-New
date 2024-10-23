@@ -33,7 +33,7 @@ class VerificationViewModel: ObservableObject {
         let result = await authenticationManager.login(logInForm: LoginForm(email: storageManager.userEmail ?? "", password: storageManager.passTemp ?? ""))
         
         switch result {
-        case .success(_):
+        case .success:
             completion(Result.success(true))
         case .failure(let error):
             if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
@@ -65,7 +65,7 @@ class VerificationViewModel: ObservableObject {
         let result = await authenticationManager.resendVerificationEmail()
         
         switch result {
-        case .success(_):
+        case .success:
             completion(Result.success(true))
         case .failure(let error):
             if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {

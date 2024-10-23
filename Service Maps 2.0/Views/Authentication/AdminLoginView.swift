@@ -34,7 +34,7 @@ struct AdminLoginView: View {
     
     
     //MARK: API
-    let congregationApi = CongregationAPI()
+    let congregationService = CongregationService()
     
     
     @State private var username: String = ""

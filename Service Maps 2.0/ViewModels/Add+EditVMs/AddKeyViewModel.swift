@@ -118,7 +118,7 @@ class AddKeyViewModel: ObservableObject {
         self.selectedTerritories = self.selectedTerritories
     }
     
-    func addToken() async -> Result<Bool, Error> {
+    func addToken() async -> Result<Void, Error> {
         withAnimation {
             loading = true
         }
@@ -150,7 +150,7 @@ class AddKeyViewModel: ObservableObject {
             
             switch await dataUploader.createToken(newTokenForm: newTokenForm, territories: Array(territoryObjectsSet)) {
             case .success(_):
-                return Result.success(true)
+                return Result.success(())
             case .failure(let error):
                 return Result.failure(error)
             }

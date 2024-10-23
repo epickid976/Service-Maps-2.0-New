@@ -28,7 +28,7 @@ class AuthorizationLevelManager: ObservableObject {
         }
         
         do {
-            _ = try await AuthenticationAPI().user()
+            _ = try await AuthenticationService().user().get()
         } catch {
             if let error = error.asAFError, error.responseCode == 401 {
                 authorizationProvider.authorizationToken = nil
@@ -42,7 +42,7 @@ class AuthorizationLevelManager: ObservableObject {
     func adminNeedLogin() async -> Bool {
             if existsAdminCredentials() {
                 do {
-                    _ = try await CongregationAPI().signIn(congregationId: authorizationProvider.congregationId!, congregationPass: authorizationProvider.congregationPass!)
+                    _ = try await CongregationService().signIn(congregationSignInForm: CongregationSignInForm(id: authorizationProvider.congregationId!, password: authorizationProvider.congregationPass!)).get()
                 } catch {
                     if let error = error.asAFError {
                         if error.responseCode == 401 {
@@ -217,10 +217,10 @@ class AuthorizationLevelManager: ObservableObject {
     func phoneNeedLogin() async -> Bool {
         if existsPhoneCredentials() {
             do {
-                _ = try await CongregationAPI().phoneSignIn(congregationSignInForm: CongregationSignInForm(
+                _ = try await CongregationService().phoneSignIn(congregationSignInForm: CongregationSignInForm(
                     id: Int64(authorizationProvider.phoneCongregationId!)!,
                     password: authorizationProvider.phoneCongregationPass!)
-                )
+                ).get()
             } catch {
                 if let error = error.asAFError, error.responseCode == 401 {
                     return true

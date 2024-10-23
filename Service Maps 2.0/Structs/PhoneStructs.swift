@@ -8,14 +8,14 @@
 import GRDB
 import ModifiedCopy
 
-struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+public struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+    public var id: String
     var congregation: String
     var number: Int64
     var description: String
     var image: String?
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(congregation)
         hasher.combine(description)
@@ -33,7 +33,7 @@ struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equat
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "phone_territories"
     }
     
@@ -42,14 +42,14 @@ struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equat
         }
 }
 
-struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+public struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+    public var id: String
     var congregation: String
     var number: String
     var territory: String
     var house: String?
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(congregation)
         hasher.combine(number)
@@ -58,7 +58,7 @@ struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, Equatabl
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "phone_numbers"
     }
     
@@ -68,14 +68,14 @@ struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, Equatabl
 }
 
 @Copyable
-struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
-    var id: String
+public struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+    public var id: String
     var phonenumber: String
     var date: Int64
     var notes: String
     var user: String
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(phonenumber)
         hasher.combine(date)
@@ -84,7 +84,7 @@ struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "phone_calls"
     }
     
@@ -94,10 +94,10 @@ struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
 }
 
 
-struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
     
     // This `id` will not be decoded from JSON
-    var id: String {
+    public var id: String {
         return "\(token)-\(userId)"
     }
     
@@ -106,7 +106,7 @@ struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
     var name: String
     var blocked: Bool
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(token)
         hasher.combine(userId)
         hasher.combine(name)
@@ -114,7 +114,7 @@ struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
     }
     
     // Define primary key
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "user_tokens"
     }
     
@@ -123,9 +123,9 @@ struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable,
         }
 }
 
-struct Recalls: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct Recalls: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
     
-    var id: Int64
+    public var id: Int64
     var user: String
     var house: String
     
@@ -133,7 +133,7 @@ struct Recalls: Codable, FetchableRecord, MutablePersistableRecord, Equatable, H
         return "\(user)-\(house)"
     }
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(user)
         hasher.combine(house)
     }
@@ -142,7 +142,7 @@ struct Recalls: Codable, FetchableRecord, MutablePersistableRecord, Equatable, H
             return "id"
         }
     
-    static var databaseTableName: String {
+    public static var databaseTableName: String {
         return "recalls"
     }
 }

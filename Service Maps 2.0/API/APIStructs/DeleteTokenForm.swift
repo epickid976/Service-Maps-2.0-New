@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct DeleteTokenForm: Codable {
+public struct DeleteTokenForm: Codable {
     var token: String
 }

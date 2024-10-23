@@ -168,13 +168,13 @@ class AddPhoneNumberViewModel: ObservableObject {
     @Published var loading = false
     
     
-    func addNumber() async -> Result<Bool, Error> {
+    func addNumber() async -> Result<Void, Error> {
         loading = true
         let numberObject = PhoneNumber(id: territory.id + String(Date().timeIntervalSince1970 * 1000), congregation: territory.congregation, number: numberText.removeFormatting(), territory: territory.id, house: houseText == "" ? nil : houseText)
         return await dataUploader.addPhoneNumber(phoneNumber: numberObject)
     }
     
-    func editNumber(number: PhoneNumber) async -> Result<Bool, Error> {
+    func editNumber(number: PhoneNumber) async -> Result<Void, Error> {
         loading = true
         let numberObject = PhoneNumber(id: number.id, congregation: number.congregation, number: numberText.removeFormatting(), territory: number.territory, house: houseText == "" ? nil : houseText)
         return await dataUploader.updatePhoneNumber(phoneNumber: numberObject)

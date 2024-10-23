@@ -68,7 +68,7 @@ class HousesViewModel: ObservableObject {
     }
     
     // Delete house logic
-    func deleteHouse(house: String) async -> Result<Bool, Error> {
+    func deleteHouse(house: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteHouse(houseId: house)
     }
 }

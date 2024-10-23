@@ -172,13 +172,13 @@ class SynchronizationManager: ObservableObject {
             var phoneCallsApi = [PhoneCall]()
             var recallsApi = [Recalls]()
             
-            let tokenApi = TokenAPI()
+            let tokenApi = TokenService()
             
             // Fetch Tokens
-            let ownedTokens = try await tokenApi.loadOwnedTokens()
+            let ownedTokens = try await tokenApi.loadOwnedTokens().get()
             tokensApi.append(contentsOf: ownedTokens)
             
-            let userTokens = try await tokenApi.loadUserTokens()
+            let userTokens = try await tokenApi.loadUserTokens().get()
             for token in userTokens {
                 if !tokensApi.contains(token) {
                     tokensApi.append(token)
@@ -202,13 +202,13 @@ class SynchronizationManager: ObservableObject {
             
             // Fetch Territories, Houses, Visits, and Territory Addresses
             if await AuthorizationLevelManager().existsAdminCredentials() {
-                let response = try await AdminAPI().allData()
+                let response = try await AdminService().allData().get()
                 territoriesApi = response.territories
                 housesApi = response.houses
                 visitsApi = response.visits
                 territoriesAddressesApi = response.addresses
             } else {
-                let response = try await UserAPI().loadTerritories()
+                let response = try await UserService().loadTerritories().get()
                 territoriesApi = response.territories
                 housesApi = response.houses
                 visitsApi = response.visits
@@ -217,7 +217,7 @@ class SynchronizationManager: ObservableObject {
             
             // Fetch Token Territories
             for token in tokensApi {
-                let response = try await tokenApi.getTerritoriesOfToken(token: token.id)
+                let response = try await tokenApi.getTerritoriesOfToken(token: token.id).get()
                 tokenTerritoriesApi.append(contentsOf: response)
             }
             
@@ -225,7 +225,7 @@ class SynchronizationManager: ObservableObject {
             
             // Fetch Phone Territories, Phone Numbers, and Phone Calls
             if await authorizationLevelManager.existsAdminCredentials() {
-                let result = await AdminAPI().allPhoneData()
+                let result = await AdminService().allPhoneData()
                 switch result {
                 case .success(let response):
                     phoneTerritoriesApi.append(contentsOf: response.territories)
@@ -239,7 +239,7 @@ class SynchronizationManager: ObservableObject {
                 }
                 
             } else {
-                let result = await UserAPI().allPhoneData()
+                let result = await UserService().allPhoneData()
                 switch result {
                 case .success(let response):
                     phoneTerritoriesApi.append(contentsOf: response.territories)
@@ -253,7 +253,7 @@ class SynchronizationManager: ObservableObject {
             }
             
             // Fetch Recalls
-            recallsApi = try await UserAPI().getRecalls()
+            recallsApi = try await UserService().getRecalls().get()
             
             // Fetch local data from the database (GRDB)
             let tokensDb = try handleResult(await grdbManager.fetchAllAsync(Token.self))
@@ -327,11 +327,11 @@ class SynchronizationManager: ObservableObject {
         var userTokensApi = [UserToken]()
         var tokenTerritoriesApi = [TokenTerritory]()
         
-        let tokenApi = TokenAPI()
-        let ownedTokens = try await tokenApi.loadOwnedTokens()
+        let tokenApi = TokenService()
+        let ownedTokens = try await tokenApi.loadOwnedTokens().get()
         tokensApi.append(contentsOf: ownedTokens)
         
-        let userTokens = try await tokenApi.loadUserTokens()
+        let userTokens = try await tokenApi.loadUserTokens().get()
         for token in userTokens {
             if !tokensApi.contains(token) {
                 tokensApi.append(token)
@@ -353,7 +353,7 @@ class SynchronizationManager: ObservableObject {
             }
         }
         for token in tokensApi {
-            let response = try await tokenApi.getTerritoriesOfToken(token: token.id)
+            let response = try await tokenApi.getTerritoriesOfToken(token: token.id).get()
             tokenTerritoriesApi.append(contentsOf: response)
         }
         
@@ -362,17 +362,18 @@ class SynchronizationManager: ObservableObject {
     @SyncActor
     private func fetchTerritoriesFromServer() async throws -> ([Territory], [House], [Visit], [TerritoryAddress]) {
         if await authorizationLevelManager.existsAdminCredentials() {
-            let response = try await AdminAPI().allData()
+            let response = try await AdminService().allData().get()
+            
             return (response.territories, response.houses, response.visits, response.addresses)
         } else {
-            let response = try await UserAPI().loadTerritories()
+            let response = try await UserService().loadTerritories().get()
             return (response.territories, response.houses, response.visits, response.addresses)
         }
     }
     @SyncActor
     private func fetchPhoneTerritoryDataFromServer() async throws -> ( [PhoneTerritory], [PhoneNumber], [PhoneCall]) {
         if await authorizationLevelManager.existsAdminCredentials() {
-            let result = await AdminAPI().allPhoneData()
+            let result = await AdminService().allPhoneData()
             switch result {
             case .success(let response):
                 return (response.territories, response.numbers, response.calls)
@@ -380,7 +381,7 @@ class SynchronizationManager: ObservableObject {
                 throw error
             }
         } else if await authorizationLevelManager.existsPhoneCredentials() {
-            let result = await UserAPI().allPhoneData()
+            let result = await UserService().allPhoneData()
             switch result {
             case .success(let response):
                 return (response.territories, response.numbers, response.calls)
@@ -393,7 +394,7 @@ class SynchronizationManager: ObservableObject {
     }
     @SyncActor
     private func fetchRecallsFromServer() async throws -> [Recalls] {
-        return try await UserAPI().getRecalls()
+        return try await UserService().getRecalls().get()
     }
     
     @SyncActor

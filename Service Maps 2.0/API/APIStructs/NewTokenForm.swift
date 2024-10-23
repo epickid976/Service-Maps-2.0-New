@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NewTokenForm: Codable {
+public struct NewTokenForm: Codable {
     var name: String
     var moderator: Bool
     var territories: String

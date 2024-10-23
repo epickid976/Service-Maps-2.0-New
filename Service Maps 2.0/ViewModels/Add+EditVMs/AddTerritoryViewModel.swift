@@ -38,13 +38,13 @@ class AddTerritoryViewModel: ObservableObject {
     
     @Published var loading = false
     
-    func addTerritory() async -> Result<Bool, Error>{
+    func addTerritory() async -> Result<Void, Error>{
         loading = true
         let territoryObject = Territory(id: "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)", congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int32(number!), description: description, image: imageToSend != nil ? "\(number!).png" : nil)
         return await dataUploader.addTerritory(territory: territoryObject, image: imageToSend)
     }
     
-    func editTerritory(territory: Territory) async -> Result<Bool, Error> {
+    func editTerritory(territory: Territory) async -> Result<Void, Error> {
         loading = true
         let territoryObject = Territory(id: territory.id, congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int32(number!), description: description, image: imageToSend != nil ? "\(territory.number).png" : nil)
         return await dataUploader.updateTerritory(territory: territoryObject, image: imageToSend)

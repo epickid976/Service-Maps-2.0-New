@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>H</key>
+	<string>M</string>
+	<key>HV</key>
+	<string>MCA</string>
+	<key>Hombre</key>
+	<string>Man</string>
+	<key>Hombre Volver</key>
+	<string>Man Call Again</string>
+	<key>M</key>
+	<string>W</string>
+	<key>MV</key>
+	<string>WCA</string>
+	<key>Mujer</key>
+	<string>Woman</string>
+	<key>Mujer Volver</key>
+	<string>Woman Call Again</string>
+	<key>N</key>
+	<string>C</string>
+	<key>NC</key>
+	<string>NH</string>
+	<key>NT</key>
+	<string>DV</string>
+	<key>Niño</key>
+	<string>Child</string>
+	<key>No Tocar</key>
+	<string>Don't Knock</string>
+	<key>No en casa</key>
+	<string>Not Home</string>
+	<key>O</key>
+	<string>B</string>
+	<key>OV</key>
+	<string>BCA</string>
+	<key>Ocupado</key>
+	<string>Busy</string>
+	<key>Ocupado Volver</key>
+	<string>Busy Call Again</string>
+	<key>UK</key>
+	<string>-</string>
+	<key>V</key>
+	<string>CA</string>
+	<key>Volver</key>
+	<string>Call Again</string>
+	<key>uk</key>
+	<string>-</string>
+</dict>
+</plist>

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserSimpleResponse: Codable {
+public struct UserSimpleResponse: Codable {
     var id: Int
     var name: String
     var blocked: Bool
