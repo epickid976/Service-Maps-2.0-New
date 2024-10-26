@@ -78,8 +78,8 @@ struct LoginWithEmailView: View {
             Task {
                 viewModel.loading = true
                 await self.viewModel.loginWithEmail(token: UniversalLinksManager.shared.dataFromUrl ?? "")
+                SynchronizationManager.shared.startupProcess(synchronizing: false)
             }
         }
     }
-    
 }

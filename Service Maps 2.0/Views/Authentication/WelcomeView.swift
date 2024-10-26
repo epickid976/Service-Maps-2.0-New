@@ -13,6 +13,7 @@ struct WelcomeView: View {
     
     init(onDone: @escaping () -> Void) {
         self.onDone = onDone
+        
     }
     
     @Environment(\.colorScheme) var colorScheme

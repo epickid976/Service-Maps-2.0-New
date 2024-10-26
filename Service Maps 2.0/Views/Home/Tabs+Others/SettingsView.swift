@@ -120,13 +120,22 @@ struct SettingsView: View {
                     }
                 }
             }
-            
-            .padding()
-            .onChange(of: viewModel.presentPolicy) { value in
-                if value {
-                    BottomPopup_Document(viewModel: viewModel).present()
-                }
+            .sheet(isPresented: $viewModel.presentPolicy) {
+                PrivacyPolicy(sheet: true)
+                    .presentationDragIndicator(.visible)
+                    .optionalViewModifier { content in
+                        if #available(iOS 16.4, *) {
+                            content
+                                .presentationCornerRadius(25)
+                        }
+                    }
             }
+            .padding()
+//            .onChange(of: viewModel.presentPolicy) { value in
+//                if value {
+//                    BottomPopup_Document(viewModel: viewModel).present()
+//                }
+//            }
             .fullScreenCover(isPresented: $viewModel.phoneBookLogin) {
                 PhoneLoginScreen {
                     if showBackButton {
@@ -361,8 +370,8 @@ struct CentrePopup_AboutApp: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
 
@@ -404,17 +413,17 @@ struct CentrePopup_Backup: CentrePopup {
             } else {
                 if let backupUrl {
                     HStack {
-                            Image(systemName: "doc.zipper")  // File icon
-                                .font(.system(size: 24))
-                                .foregroundColor(.blue)
-                            
-                            Text(backupUrl.lastPathComponent)  // Display the file name from the URL
-                                .font(.headline)
-                                .lineLimit(1)
-                                .foregroundColor(.primary)
-                                .fontWeight(.heavy)
-                        }
-                        .padding(.vertical, 10)
+                        Image(systemName: "doc.zipper")  // File icon
+                            .font(.system(size: 24))
+                            .foregroundColor(.blue)
+                        
+                        Text(backupUrl.lastPathComponent)  // Display the file name from the URL
+                            .font(.headline)
+                            .lineLimit(1)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                    }
+                    .padding(.vertical, 10)
                 } else {
                     Text("A backup copy of all the territories, addresses, houses, and visits that are in the app will be made. A zip file will be generated that will contain the folders and forms for each address. Please note that only the last visit will be exported. The process may take some time.")
                         .font(.headline)
@@ -491,8 +500,8 @@ struct CentrePopup_Backup: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
     
     func presentActivityViewController(with url: URL) {
@@ -596,8 +605,8 @@ struct CentrePopup_ShareApp: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
 #Preview {
@@ -652,7 +661,7 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
                             withAnimation { self.viewModel.loading = false }
                             
                             self.viewModel.showDeletionConfirmationAlert = false
-                            dismissLastPopup()
+                            dismissAllPopups()
                             if showBack {
                                 onDone()
                             }
@@ -676,8 +685,8 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
 
@@ -731,8 +740,8 @@ struct CentrePopup_Deletion: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
 
@@ -824,8 +833,8 @@ struct CentrePopup_EditUsername: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
         
     }
 }
@@ -835,11 +844,13 @@ struct BottomPopup_Document: BottomPopup {
     
     var body: some View {
         createContent()
+            .frame(height: 500)
     }
-    func configurePopup(config: BottomPopupConfig) -> BottomPopupConfig {
-        config
-//            .contentFillsWholeHeigh(true)
-//            .dragGestureEnabled(false)
+    func configurePopup(popup: BottomPopupConfig) -> BottomPopupConfig {
+        popup
+            .heightMode(.auto)
+            .tapOutsideToDismissPopup(false)
+            .enableDragGesture(false)
     }
     func createContent() -> some View {
         VStack(spacing: 0) {
@@ -851,6 +862,7 @@ struct BottomPopup_Document: BottomPopup {
         }
         .padding(.top, 20)
         .padding(.bottom, 8)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -862,9 +874,13 @@ private extension BottomPopup_Document {
             .hSpacing(.center)
     }
     func createScrollView() -> some View {
-        //VStack {
-        PrivacyPolicy(sheet: true)
-        //}
+        ScrollView {
+            VStack {
+                PrivacyPolicy(sheet: true)
+            }
+            .padding(.horizontal, 16)
+        }
+        .frame(maxHeight: .infinity)  // Allow the ScrollView to take the available space
     }
     func createConfirmButton() -> some View {
         Button {

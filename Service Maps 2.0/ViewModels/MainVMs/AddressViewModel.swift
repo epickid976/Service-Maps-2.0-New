@@ -58,7 +58,7 @@ class AddressViewModel: ObservableObject {
     }
     
     // Address deletion logic
-    func deleteAddress(address: String) async -> Result<Bool, Error> {
+    func deleteAddress(address: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteTerritoryAddress(territoryAddressId: address)
     }
     

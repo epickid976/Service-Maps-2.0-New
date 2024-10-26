@@ -68,7 +68,7 @@ class HousesViewModel: ObservableObject {
     }
     
     // Delete house logic
-    func deleteHouse(house: String) async -> Result<Bool, Error> {
+    func deleteHouse(house: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteHouse(houseId: house)
     }
 }
@@ -108,6 +108,15 @@ extension HousesViewModel {
         scrollToHouse(houseIdToScrollTo)
     }
 
+    // Handle scrolling to a specific house after data is received
+    private func scrollToHouse(_ houseIdToScrollTo: String?) {
+        if let houseIdToScrollTo = houseIdToScrollTo {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.houseIdToScrollTo = houseIdToScrollTo
+            }
+        }
+    }
+    
     // Sorting houses based on predicate
     private func sortHouses(_ houses: [HouseData]) -> [HouseData] {
         switch sortPredicate {
@@ -128,37 +137,67 @@ extension HousesViewModel {
         }
     }
 
-    // Handle scrolling to a specific house after data is received
-    private func scrollToHouse(_ houseIdToScrollTo: String?) {
-        if let houseIdToScrollTo = houseIdToScrollTo {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.houseIdToScrollTo = houseIdToScrollTo
-            }
-        }
-    }
-    
-    //Sort Houses for better readability
+    // Sort houses for better readability, considering both numbers and letters
     func sortHousesByNumber(houses: [HouseData], sort: HouseSortPredicate = .increasing) -> [HouseData] {
         var oddHouses: [HouseData] = []
         var evenHouses: [HouseData] = []
+        var nonNumericHouses: [HouseData] = []
 
         for house in houses {
-            if let number = Int(house.house.number.filter { "0"..."9" ~= $0 }) {
+            let houseNumber = house.house.number
+            // Check if there's a numeric portion in the house number
+            if let number = Int(houseNumber.filter { "0"..."9" ~= $0 }) {
+                // Determine if the house number is odd or even based on the numeric portion
                 if number % 2 == 0 {
                     evenHouses.append(house)
                 } else {
                     oddHouses.append(house)
                 }
+            } else {
+                // If no numeric portion exists (like "A" or "Y"), treat it as non-numeric
+                nonNumericHouses.append(house)
             }
         }
 
-        if sort == .increasing {
-            oddHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 < Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
-            evenHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 < Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
-        } else {
-            oddHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 > Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
-            evenHouses.sort { Int($0.house.number.filter { "0"..."9" ~= $0 }) ?? 0 > Int($1.house.number.filter { "0"..."9" ~= $0 }) ?? 0 }
+        // Sort odd and even houses using the natural sort key
+        let sortOrder: (HouseData, HouseData) -> Bool = {
+            lhs, rhs in
+            let lhsKey = self.naturalSortKey(lhs.house.number)
+            let rhsKey = self.naturalSortKey(rhs.house.number)
+            return sort == .increasing ? (lhsKey.lexicographicallyPrecedes(rhsKey, by: { self.compareLexicographically($0, $1) })) : (rhsKey.lexicographicallyPrecedes(lhsKey, by: { self.compareLexicographically($0, $1) }))
         }
-        return oddHouses + evenHouses
+
+        oddHouses.sort(by: sortOrder)
+        evenHouses.sort(by: sortOrder)
+        nonNumericHouses.sort(by: sortOrder) // Sort non-numeric houses as well
+
+        // Return odd, even, and non-numeric houses together
+        return oddHouses + evenHouses + nonNumericHouses
+    }
+
+    // Custom lexicographical comparison to handle mixed types (Int and String)
+    func compareLexicographically(_ lhs: Any, _ rhs: Any) -> Bool {
+        if let lhsInt = lhs as? Int, let rhsInt = rhs as? Int {
+            return lhsInt < rhsInt
+        }
+        if let lhsString = lhs as? String, let rhsString = rhs as? String {
+            return lhsString < rhsString
+        }
+        // Fallback to considering Ints smaller than Strings
+        return lhs is Int
+    }
+    
+    // Helper function to split a string into numeric and non-numeric parts
+    func naturalSortKey(_ houseNumber: String) -> [Any] {
+        let pattern = "([0-9]+)|([^0-9]+)"
+        let regex = try! NSRegularExpression(pattern: pattern)
+        let nsString = houseNumber as NSString
+        let matches = regex.matches(in: houseNumber, range: NSRange(location: 0, length: nsString.length))
+        
+        return matches.map {
+            let match = nsString.substring(with: $0.range)
+            // Convert numeric parts to Int, leave non-numeric parts as String
+            return Int(match) ?? match
+        }
     }
 }

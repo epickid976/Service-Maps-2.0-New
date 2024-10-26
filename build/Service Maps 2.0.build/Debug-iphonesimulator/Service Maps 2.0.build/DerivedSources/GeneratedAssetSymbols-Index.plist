@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>colors</key>
+	<array/>
+	<key>images</key>
+	<array>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/Jose/Service-Maps-2.0-New/Service Maps 2.0/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameAndroid</string>
+			<key>relativePath</key>
+			<string>./android.imageset</string>
+			<key>swiftSymbol</key>
+			<string>android</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/Jose/Service-Maps-2.0-New/Service Maps 2.0/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameITunesArtwork</string>
+			<key>relativePath</key>
+			<string>./ios/iTunesArtwork.imageset</string>
+			<key>swiftSymbol</key>
+			<string>iTunesArtwork</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/Jose/Service-Maps-2.0-New/Service Maps 2.0/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameIos</string>
+			<key>relativePath</key>
+			<string>./ios.imageset</string>
+			<key>swiftSymbol</key>
+			<string>ios</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/Jose/Service-Maps-2.0-New/Service Maps 2.0/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameMapImage</string>
+			<key>relativePath</key>
+			<string>./mapImage.imageset</string>
+			<key>swiftSymbol</key>
+			<string>map</string>
+		</dict>
+		<dict>
+			<key>catalogPath</key>
+			<string>/Users/Jose/Service-Maps-2.0-New/Service Maps 2.0/Assets.xcassets</string>
+			<key>objcSymbol</key>
+			<string>ACImageNameTestTerritoryImage</string>
+			<key>relativePath</key>
+			<string>./testTerritoryImage.imageset</string>
+			<key>swiftSymbol</key>
+			<string>testTerritory</string>
+		</dict>
+	</array>
+	<key>symbols</key>
+	<array/>
+</dict>
+</plist>

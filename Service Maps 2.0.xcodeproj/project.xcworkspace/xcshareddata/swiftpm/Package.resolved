@@ -1,5 +1,5 @@
 {
-  "originHash" : "5807969260a0b2446f9318870a9bc23102ee89defb1362ae4244a17717145400",
+  "originHash" : "b3b922aed778c89df5eb1fafa35c979d35ab9e2d015f6e042c2765af1e603b6e",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -98,6 +98,15 @@
       "state" : {
         "revision" : "311016d972aa751ae8ab0cd5897422ebe7db0501",
         "version" : "12.7.3"
+      }
+    },
+    {
+      "identity" : "papyrus",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/joshuawright11/papyrus",
+      "state" : {
+        "revision" : "598ae3c2a5cbbdef9e01cd2a0984f7cb2388a6ec",
+        "version" : "0.6.10"
       }
     },
     {

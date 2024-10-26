@@ -28,7 +28,7 @@ class AddVisitViewModel: ObservableObject {
     
     @Published var loading = false
     
-    func addVisit() async -> Result<Bool, Error> {
+    func addVisit() async -> Result<Void, Error> {
         withAnimation {
             loading = true
         }
@@ -37,7 +37,7 @@ class AddVisitViewModel: ObservableObject {
         return await dataUploader.addVisit(visit: visitObject)
     }
     
-    func editVisit(visit: Visit) async -> Result<Bool, Error> {
+    func editVisit(visit: Visit) async -> Result<Void, Error> {
         withAnimation {
             loading = true
         }

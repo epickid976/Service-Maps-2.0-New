@@ -27,7 +27,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 class CustomPopupSceneDelegate: PopupSceneDelegate {
    override init() { super.init()
        configBuilder = { $0
-           
+           .vertical { $0
+               .tapOutsideToDismissPopup(false)
+               .enableDragGesture(false)
+               
+           }
            .centre { $0
                .tapOutsideToDismissPopup(false)
                .backgroundColor(Color(UIColor.systemGray6).opacity(85))

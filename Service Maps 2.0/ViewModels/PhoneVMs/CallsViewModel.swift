@@ -60,7 +60,7 @@ class CallsViewModel: ObservableObject {
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     
-    func deleteCall(call: String) async -> Result<Bool, Error> {
+    func deleteCall(call: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deletePhoneCall(phoneCallId: call)
     }
     

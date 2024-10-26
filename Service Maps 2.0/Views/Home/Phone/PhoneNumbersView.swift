@@ -351,7 +351,7 @@ class NumbersViewModel: ObservableObject {
     @Published var loading = false
     @Published var noImage = false
     
-    func deleteNumber(number: String) async -> Result<Bool,Error> {
+    func deleteNumber(number: String) async -> Result<Void,Error> {
         return await dataUploaderManager.deletePhoneNumber(phoneNumberId: number)
     }
     

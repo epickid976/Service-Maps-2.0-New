@@ -101,7 +101,7 @@ struct AddKeyView: View {
                             ScrollView {
                                 LazyVStack {
                                     ForEach(territoryData, id: \.id) { dataWithKey in
-                                        viewModel.showSelectableTerritoriesList(dataWithKeys: dataWithKey, mainWindowSize: proxy.size).id(dataWithKey.id)
+                                        showSelectableTerritoriesList(dataWithKeys: dataWithKey, mainWindowSize: proxy.size).id(dataWithKey.id)
                                     }
                                 }
                             }
@@ -142,6 +142,55 @@ struct AddKeyView: View {
             }
             .navigationBarTitle("Add Key", displayMode: .automatic)
             .navigationBarBackButtonHidden(true)
+        }
+    }
+    
+    @ViewBuilder
+    func SelectableTerritoryItem(territoryData: TerritoryData, mainWindowSize: CGSize) -> some View {
+        Button(action: {
+            self.viewModel.toggleSelection(for: territoryData)
+        }) {
+            HStack {
+                Image(systemName: viewModel.isSelected(territoryData: territoryData) ? "checkmark.circle.fill" : "circle")
+                    .optionalViewModifier { content in
+                        if #available(iOS 17, *) {
+                            content
+                                .symbolEffect(.bounce, options: .speed(3.0), value: self.viewModel.isSelected(territoryData: territoryData))
+                                .animation(.bouncy, value: self.viewModel.isSelected(territoryData: territoryData))
+                        } else {
+                            content
+                                .animation(.bouncy, value: self.viewModel.isSelected(territoryData: territoryData))
+                        }
+                    }
+
+                CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, width: 0.8, mainWindowSize: mainWindowSize)
+                    .padding(2)
+            }
+            .padding(.horizontal, 10)
+        }.id(territoryData.territory.id)
+        .buttonStyle(PlainButtonStyle()) // Maintains original appearance
+    }
+    
+    @ViewBuilder
+    func showSelectableTerritoriesList(dataWithKeys: TerritoryDataWithKeys, mainWindowSize: CGSize) -> some View {
+        LazyVStack {
+            if !dataWithKeys.keys.isEmpty {
+                Text(self.viewModel.processData(dataWithKeys: dataWithKeys))
+                    .font(.title2)
+                    .lineLimit(1)
+                    .foregroundColor(.primary)
+                    .fontWeight(.bold)
+                    .hSpacing(.leading)
+                    .padding(5)
+                    .padding(.horizontal, 10)
+            } else {
+                Spacer()
+                    .frame(height: 20)
+            }
+        }
+        
+        ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
+            self.SelectableTerritoryItem(territoryData: territoryData, mainWindowSize: mainWindowSize).id(territoryData.territory.id)
         }
     }
 }

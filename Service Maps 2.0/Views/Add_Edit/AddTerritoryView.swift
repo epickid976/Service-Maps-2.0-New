@@ -150,7 +150,7 @@ struct AddTerritoryView: View {
                                         Task {
                                             let result = await viewModel.editTerritory(territory: territory!)
                                             switch result {
-                                            case .success(_):
+                                            case .success:
                                                 HapticManager.shared.trigger(.success)
                                                 withAnimation {
                                                     viewModel.loading = false
@@ -167,7 +167,7 @@ struct AddTerritoryView: View {
                                         Task {
                                             let result = await viewModel.addTerritory()
                                             switch result {
-                                            case .success(_):
+                                            case .success:
                                                 HapticManager.shared.trigger(.success)
                                                 withAnimation {
                                                     viewModel.loading = false

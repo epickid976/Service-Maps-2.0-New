@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct RequestResetForm: Codable {
+public struct RequestResetForm: Codable {
     var email: String
 }

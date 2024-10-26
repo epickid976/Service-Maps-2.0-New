@@ -26,7 +26,7 @@ class AddCallViewModel: ObservableObject {
     
     @Published var loading = false
     
-    func addCall() async -> Result<Bool, Error> {
+    func addCall() async -> Result<Void, Error> {
         withAnimation {
             loading = true
         }
@@ -34,7 +34,7 @@ class AddCallViewModel: ObservableObject {
         return await dataUploader.addPhoneCall(phoneCall: callObject)
     }
     
-    func editCall(call: PhoneCall) async -> Result<Bool, Error> {
+    func editCall(call: PhoneCall) async -> Result<Void, Error> {
         withAnimation {
             loading = true
         }

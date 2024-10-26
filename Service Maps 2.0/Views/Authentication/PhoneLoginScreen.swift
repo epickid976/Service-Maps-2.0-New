@@ -35,7 +35,7 @@ struct PhoneLoginScreen: View {
     @Environment(\.sizeCategory) var sizeCategory
     
     //MARK: API
-    let congregationApi = CongregationAPI()
+    let congregationService = CongregationService()
     
     
     @State private var username: String = ""
@@ -138,7 +138,7 @@ struct PhoneLoginScreen: View {
                                 }
                                 
                                 switch await AuthenticationManager().signInPhone(congregationSignInForm: CongregationSignInForm(id: Int64(username) ?? 0, password: password)) {
-                                case .success(_):
+                                case .success:
                                     HapticManager.shared.trigger(.success)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                         withAnimation {

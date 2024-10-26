@@ -717,7 +717,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                             try await Task.sleep(nanoseconds: 1_500_000_000)
                             if self.keyToDelete.0 != nil && self.keyToDelete.1 != nil {
                                 switch await self.viewModel.deleteKey(key: self.keyToDelete.0 ?? "") {
-                                case .success(_):
+                                case .success():
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         self.viewModel.loading = false
@@ -811,7 +811,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                         Task {
                             if let userId = self.viewModel.userToDelete?.id {
                                 switch await self.viewModel.deleteUser(user: userId) {
-                                case .success(_):
+                                case .success():
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         self.viewModel.loading = false
@@ -902,7 +902,7 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                         Task {
                             if let userAction = self.viewModel.blockUnblockAction {
                                 switch await self.viewModel.blockUnblockUserFromToken(user: userAction) {
-                                case .success(_):
+                                case .success():
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         self.viewModel.loading = false

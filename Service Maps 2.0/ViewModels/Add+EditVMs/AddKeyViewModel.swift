@@ -49,58 +49,8 @@ class AddKeyViewModel: ObservableObject {
     @Published var progress: CGFloat = 0.0
     @Published var optionsAnimation = false
     
-    
-    
-    @ViewBuilder
-    func showSelectableTerritoriesList(dataWithKeys: TerritoryDataWithKeys, mainWindowSize: CGSize) -> some View {
-        LazyVStack {
-            if !dataWithKeys.keys.isEmpty {
-                Text(self.processData(dataWithKeys: dataWithKeys))
-                    .font(.title2)
-                    .lineLimit(1)
-                    .foregroundColor(.primary)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(5)
-                    .padding(.horizontal, 10)
-            } else {
-                Spacer()
-                    .frame(height: 20)
-            }
-        }
-        
-        ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-            self.SelectableTerritoryItem(territoryData: territoryData, mainWindowSize: mainWindowSize).id(territoryData.territory.id)
-        }
-    }
-    
-    @ViewBuilder
-    func SelectableTerritoryItem(territoryData: TerritoryData, mainWindowSize: CGSize) -> some View {
-        Button(action: {
-            self.toggleSelection(for: territoryData)
-        }) {
-            HStack {
-                Image(systemName: isSelected(territoryData: territoryData) ? "checkmark.circle.fill" : "circle")
-                    .optionalViewModifier { content in
-                        if #available(iOS 17, *) {
-                            content
-                                .symbolEffect(.bounce, options: .speed(3.0), value: self.isSelected(territoryData: territoryData))
-                                .animation(.bouncy, value: self.isSelected(territoryData: territoryData))
-                        } else {
-                            content
-                                .animation(.bouncy, value: self.isSelected(territoryData: territoryData))
-                        }
-                    }
-
-                CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, width: 0.8, mainWindowSize: mainWindowSize)
-                    .padding(2)
-            }
-            .padding(.horizontal, 10)
-        }.id(territoryData.territory.id)
-        .buttonStyle(PlainButtonStyle()) // Maintains original appearance
-    }
                        
-    private func isSelected(territoryData: TerritoryData) -> Bool {
+    func isSelected(territoryData: TerritoryData) -> Bool {
         return selectedTerritories.contains(territoryData)
     }
 
@@ -118,7 +68,7 @@ class AddKeyViewModel: ObservableObject {
         self.selectedTerritories = self.selectedTerritories
     }
     
-    func addToken() async -> Result<Bool, Error> {
+    func addToken() async -> Result<Void, Error> {
         withAnimation {
             loading = true
         }
@@ -127,32 +77,36 @@ class AddKeyViewModel: ObservableObject {
         let tokenObject = Token(id: "", name: name, owner: "", congregation: dataStore.congregationName ?? "", moderator: servant)
         
         // Collect territories and avoid duplicates using a Set
-        var territoriesSet = Set<String>()
+        var territoriesSet = [String]()
         var territoryObjectsSet = Set<Territory>()
         
         // Populate the territories from selectedTerritories
         selectedTerritories.forEach { territory in
-            territoriesSet.insert(territory.territory.id)  // Use Set to avoid duplicates
+            territoriesSet.append(territory.territory.id)  // Use Set to avoid duplicates
             territoryObjectsSet.insert(territory.territory)
         }
+
+        // Handle editing token
         if let keyData = keyData {
-            // Editing existing token
             return await dataUploader.editToken(token: keyData.key.id, territories: Array(territoryObjectsSet)) // Convert set back to array
         } else {
             // Creating a new token
+            // Pass territories as a plain array of strings
+            let territoriesToSend = territoryObjectsSet.map { $0.id }
             let newTokenForm = NewTokenForm(
                 name: tokenObject.name,
                 moderator: tokenObject.moderator,
-                territories: Array(territoriesSet).description,  // Convert set to array and description
+                territories: territoriesToSend.description,  // Pass array directly, no .description
                 congregation: AuthorizationProvider.shared.congregationId ?? 0,
                 expire: tokenObject.expire
             )
             
+            // Call the API to create a new token
             switch await dataUploader.createToken(newTokenForm: newTokenForm, territories: Array(territoryObjectsSet)) {
             case .success(_):
-                return Result.success(true)
+                return .success(())
             case .failure(let error):
-                return Result.failure(error)
+                return .failure(error)
             }
         }
     }

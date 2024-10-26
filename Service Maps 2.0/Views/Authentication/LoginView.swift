@@ -257,7 +257,7 @@ struct LoginView: View {
                                 let result = await authenticationManager.requestPasswordReset(email: viewModel.username)
                                 
                                 switch result {
-                                case .success(_):
+                                case .success:
                                     viewModel.resetFeedbackText = "Request Successfully Sent"
                                     viewModel.resetFeedback = true
                                     HapticManager.shared.trigger(.success)
@@ -293,34 +293,33 @@ struct LoginView: View {
                         CustomButton(loading: loading, title: "Login") {
                             withAnimation { loading = true }
                             HapticManager.shared.trigger(.lightImpact)
+
                             let validation = viewModel.validate()
                             if validation {
                                 Task {
-                                    await viewModel.login() { result in
+                                    let result = await viewModel.login()
+
+                                    DispatchQueue.main.async {
                                         switch result {
-                                        case .success(_):
+                                        case .success:
                                             HapticManager.shared.trigger(.success)
-                                            DispatchQueue.main.async {
-                                                onDone()
-                                            }
+                                            onDone()
                                             
-                                            DispatchQueue.main.async{
-                                                withAnimation { loading = false }
-                                            }
-                                           
                                         case .failure(_):
                                             HapticManager.shared.trigger(.error)
-                                            withAnimation { loading = false }
+                                            viewModel.loginError = true
                                         }
+                                        
+                                        withAnimation { loading = false }
                                     }
                                 }
                             } else {
                                 HapticManager.shared.trigger(.error)
-                                withAnimation { viewModel.loginError = true }
-                                withAnimation { loading = false }
+                                withAnimation {
+                                    viewModel.loginError = true
+                                    loading = false
+                                }
                             }
-                            
-                            //withAnimation { loading = false }
                         }//.keyboardShortcut("\r", modifiers: .command)
                     }
                     .padding()

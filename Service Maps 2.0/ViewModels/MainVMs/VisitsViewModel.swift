@@ -64,15 +64,15 @@ class VisitsViewModel: ObservableObject {
     }
 
     // Methods for recall and deletion
-    func deleteVisit(visit: String) async -> Result<Bool, Error> {
+    func deleteVisit(visit: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteVisit(visitId: visit)
     }
 
-    func addRecall(user: String, house: String) async -> Result<Bool, Error> {
+    func addRecall(user: String, house: String) async -> Result<Void, Error> {
         return await dataUploaderManager.addRecall(user: user, house: house)
     }
 
-    func deleteRecall(id: Int64, user: String, house: String) async -> Result<Bool, Error> {
+    func deleteRecall(id: Int64, user: String, house: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteRecall(recall: Recalls(id: id, user: user, house: house))
     }
     

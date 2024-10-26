@@ -35,20 +35,13 @@ extension Result where Success == Bool {
 }
 
 extension Result {
-    /// Checks if the `Result` is a failure (contains an error).
-    var isError: Bool {
-        if case .failure(_) = self {
-            return true
-        }
+    var isSuccess: Bool {
+        if case .success = self { return true }
         return false
     }
-    
-    /// Optionally returns the error if it exists.
-    var error: Error? {
-        if case .failure(let error) = self {
-            return error
-        }
-        return nil
+
+    var isFailure: Bool {
+        return !isSuccess
     }
 }
 
@@ -135,6 +128,18 @@ extension Array {
         }
         
         return arrayOrdered
+    }
+}
+
+extension Array where Element == String {
+    func toJSON() -> String? {
+        guard let data = try? JSONSerialization.data(withJSONObject: self),
+              var string = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        // Force clean any unwanted escaping
+        string = string.replacingOccurrences(of: "\\", with: "")
+        return string
     }
 }
 

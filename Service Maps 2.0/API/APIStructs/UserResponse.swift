@@ -7,13 +7,8 @@
 
 import Foundation
 
-struct UserResponse: Codable {
+public struct UserResponse: Codable {
     var id: Int
     var name: String
     var email: String
-    var email_verified_at: String
-    var active: Int
-    var created_at: String
-    var updated_at: String
-    var deleted_at: String?
 }

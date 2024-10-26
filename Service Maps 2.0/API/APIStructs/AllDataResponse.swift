@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-struct AllDataResponse: Codable {
+public struct AllDataResponse: Codable {
     var territories: [Territory]
     var addresses: [TerritoryAddress]
     var houses: [House]

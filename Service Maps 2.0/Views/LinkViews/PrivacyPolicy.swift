@@ -24,8 +24,24 @@ struct PrivacyPolicy: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        WebView(url: URL(string: LinkScreens.PRIVACY_POLICY.rawValue)!)
-        .ignoresSafeArea()
+        VStack {
+            WebView(url: URL(string: LinkScreens.PRIVACY_POLICY.rawValue)!)
+            Button {
+                HapticManager.shared.trigger(.lightImpact)
+                presentationMode.wrappedValue.dismiss()
+            } label: {
+                Text("Dismiss")
+                    .font(.headline)
+                    .fontWeight(.heavy)
+                    .foregroundColor(.white)
+                    .frame(height: 44)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .cornerRadius(40)
+                    .padding(.horizontal, 28)
+                    .padding(.bottom, 10)
+            }
+        }
         .navigationTitle("Privacy Policy")
         .navigationBarTitleDisplayMode(.automatic)
         .toolbar {

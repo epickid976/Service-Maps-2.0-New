@@ -498,6 +498,7 @@ extension Color {
         )
     }
 }
+
 struct ViewOffsetKey: PreferenceKey {
     typealias Value = CGFloat
     static var defaultValue = CGFloat.zero

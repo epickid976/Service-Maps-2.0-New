@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Papyrus
 
 @MainActor
 class VerificationViewModel: ObservableObject {
@@ -29,66 +30,88 @@ class VerificationViewModel: ObservableObject {
     @ObservedObject var universalLinksManager = UniversalLinksManager.shared
     
     func checkVerification(completion: @escaping (Result<Bool, Error>) -> Void) async {
-        
         let result = await authenticationManager.login(logInForm: LoginForm(email: storageManager.userEmail ?? "", password: storageManager.passTemp ?? ""))
-        
+
         switch result {
-        case .success(_):
+        case .success:
             completion(Result.success(true))
         case .failure(let error):
-            if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                DispatchQueue.main.async {
-                    self.alertTitle = "No Internet Connection"
-                    self.alertMessage = "There was a problem with the internet connection. \nPlease check your internet connection and try again."
-                    self.showAlert = true
-                }
-                completion(Result.failure(error))
-            } else if error.asAFError?.responseCode == 422 {
-                DispatchQueue.main.async {
-                    self.alertTitle = "Not Verified"
-                    self.alertMessage = "Please check your email and verify your account."
-                    self.showAlert = true
-                }
-                completion(Result.failure(error))
-            } else {
-                DispatchQueue.main.async {
-                    self.alertTitle = "Error"
-                    self.alertMessage = "Error checking verification status. \nPlease try again."
-                    self.showAlert = true
-                }
-                completion(Result.failure(error))
-            }
+            handleVerificationError(error, completion: completion)
         }
+    }
+
+    private func handleVerificationError(_ error: Error, completion: @escaping (Result<Bool, Error>) -> Void) {
+        let errorTitle: String
+        let errorMessage: String
+
+        // Handle different types of errors
+        if let afError = error as? PapyrusError {
+            switch afError.response?.statusCode {
+            case -1009:
+                errorTitle = NSLocalizedString("No Internet Connection", comment: "")
+                errorMessage = NSLocalizedString("There was a problem with the internet connection. \nPlease check your internet connection and try again.", comment: "")
+            
+            case 422:
+                errorTitle = NSLocalizedString("Not Verified", comment: "")
+                errorMessage = NSLocalizedString("Please check your email and verify your account.", comment: "")
+            
+            default:
+                errorTitle = NSLocalizedString("Error", comment: "")
+                errorMessage = NSLocalizedString("Error checking verification status. \nPlease try again.", comment: "")
+            }
+        } else {
+            errorTitle = NSLocalizedString("Error", comment: "")
+            errorMessage = NSLocalizedString("An unexpected error occurred. Please try again.", comment: "")
+        }
+
+        // Display the error
+        DispatchQueue.main.async {
+            self.alertTitle = errorTitle
+            self.alertMessage = errorMessage
+            self.showAlert = true
+        }
+
+        completion(Result.failure(error))
     }
     
     func resendEmail(completion: @escaping (Result<Bool, Error>) -> Void) async {
         let result = await authenticationManager.resendVerificationEmail()
-        
+
         switch result {
-        case .success(_):
+        case .success:
             completion(Result.success(true))
         case .failure(let error):
-            if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                DispatchQueue.main.async {
-                    self.alertTitle = "No Internet Connection"
-                    self.alertMessage = "There was a problem with the internet connection. \nPlease check your internet connection and try again."
-                    self.showAlert = true
-                }
-                completion(Result.failure(error))
-            } else {
-                DispatchQueue.main.async {
-                    self.alertTitle = "Error"
-                    self.alertMessage = "There was a problem resending the email. \nPlease try again later."
-                    self.showAlert = true
-                }
-                completion(Result.failure(error))
-            }
+            handleResendEmailError(error, completion: completion)
         }
     }
-    
-    //    func activateEmail() async -> Result<Bool, Error> {
-    //        let extractedToken = universalLinksManager.extractFromURL(urlString: universalLinksManager.incomingUrl ?? "", after: <#T##String#>)
-    //        let result = await authenticationManager.activateEmail(token: <#T##String#>)
-    //    }
-    
+
+    private func handleResendEmailError(_ error: Error, completion: @escaping (Result<Bool, Error>) -> Void) {
+        let errorTitle: String
+        let errorMessage: String
+
+        // Handle different types of errors
+        if let afError = error as? PapyrusError {
+            switch afError.response?.statusCode {
+            case -1009:
+                errorTitle = NSLocalizedString("No Internet Connection", comment: "")
+                errorMessage = NSLocalizedString("There was a problem with the internet connection. \nPlease check your internet connection and try again.", comment: "")
+            
+            default:
+                errorTitle = NSLocalizedString("Error", comment: "")
+                errorMessage = NSLocalizedString("There was a problem resending the email. \nPlease try again later.", comment: "")
+            }
+        } else {
+            errorTitle = NSLocalizedString("Error", comment: "")
+            errorMessage = NSLocalizedString("An unexpected error occurred. Please try again.", comment: "")
+        }
+
+        // Display the error
+        DispatchQueue.main.async {
+            self.alertTitle = errorTitle
+            self.alertMessage = errorMessage
+            self.showAlert = true
+        }
+
+        completion(Result.failure(error))
+    }
 }

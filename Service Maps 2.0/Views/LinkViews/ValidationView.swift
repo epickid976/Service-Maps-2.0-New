@@ -8,6 +8,7 @@
 import SwiftUI
 import Lottie
 import NavigationTransitions
+import Papyrus
 
 struct ValidationView: View {
     

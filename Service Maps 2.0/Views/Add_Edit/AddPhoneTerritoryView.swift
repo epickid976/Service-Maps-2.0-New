@@ -255,7 +255,7 @@ class AddPhoneTerritoryViewModel: ObservableObject {
     
     @Published var loading = false
     
-    func addTerritory() async -> Result<Bool, Error>{
+    func addTerritory() async -> Result<Void, Error>{
         loading = true
         let territoryObject = PhoneTerritory(id: "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)", congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int64(number!), description: description, image: nil)
         if let imageToSend {
@@ -266,7 +266,7 @@ class AddPhoneTerritoryViewModel: ObservableObject {
        
     }
     
-    func editTerritory(territory: PhoneTerritory) async -> Result<Bool, Error> {
+    func editTerritory(territory: PhoneTerritory) async -> Result<Void, Error> {
         loading = true
         let territoryObject = PhoneTerritory(id: territory.id, congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int64(number!), description: description)
         return await dataUploader.updatePhoneTerritory(territory: territoryObject, image: imageToSend)

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LoginResponse: Codable {
+public struct LoginResponse: Codable {
     var access_token: String
     var token_type: String
     var expires_at: String
