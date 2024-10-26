@@ -11,7 +11,7 @@ import SwiftUI
 import Papyrus
 
 class AdminService {
-    private lazy var api: AdminRoutes = AdminRoutesAPI(provider: APIProvider.shared.provider)
+    private lazy var api: AdminRoutes = AdminRoutesAPI(provider: APIProvider().provider)
 
     // Fetch all data
     func allData() async -> Result<AllDataResponse, Error> {
@@ -50,12 +50,20 @@ class AdminService {
                 return .failure(NSError(domain: "ImageConversionError", code: 0, userInfo: nil))
             }
             
+            // Convert strings to Data
+            guard let congregationData = territory.congregation.data(using: .utf8),
+                  let numberData = String(territory.number).data(using: .utf8),
+                  let descriptionData = territory.description.data(using: .utf8),
+                  let imageStringData = (territory.image ?? "").data(using: .utf8) else {
+                return .failure(NSError(domain: "StringConversionError", code: 0, userInfo: nil))
+            }
+
             // Prepare parts for the API call
             let filePart = Part(data: imageData, name: "file", fileName: "territory.jpg", mimeType: "image/jpeg")
-            let congregationPart = territory.congregation
-            let numberPart = String(territory.number)
-            let descriptionPart = territory.description
-            let imagePart = territory.image ?? ""
+            let congregationPart = Part(data: congregationData, name: "congregation")
+            let numberPart = Part(data: numberData, name: "number")
+            let descriptionPart = Part(data: descriptionData, name: "description")
+            let imagePart = Part(data: imageStringData, name: "image")
 
             // Call the API
             try await api.addTerritory(
@@ -89,13 +97,22 @@ class AdminService {
                 return .failure(NSError(domain: "ImageConversionError", code: 0, userInfo: nil))
             }
             
+            // Convert strings to Data
+            guard let congregationData = territory.congregation.data(using: .utf8),
+                  let numberData = String(territory.number).data(using: .utf8),
+                  let descriptionData = territory.description.data(using: .utf8),
+                  let imageStringData = (territory.image ?? "").data(using: .utf8) else {
+                return .failure(NSError(domain: "StringConversionError", code: 0, userInfo: nil))
+            }
+
             // Prepare parts for the API call
             let filePart = Part(data: imageData, name: "file", fileName: "territory.jpg", mimeType: "image/jpeg")
-            let congregationPart = territory.congregation
-            let numberPart = String(territory.number)
-            let descriptionPart = territory.description
-            let imagePart = territory.image ?? ""
-            
+            let congregationPart = Part(data: congregationData, name: "congregation")
+            let numberPart = Part(data: numberData, name: "number")
+            let descriptionPart = Part(data: descriptionData, name: "description")
+            let imagePart = Part(data: imageStringData, name: "image")
+
+            // Call the API
             try await api.updateTerritory(
                 file: filePart,
                 congregation: congregationPart,
@@ -251,13 +268,22 @@ class AdminService {
                 return .failure(NSError(domain: "ImageConversionError", code: 0, userInfo: nil))
             }
             
+            // Convert strings to Data
+            guard let congregationData = phoneTerritory.congregation.data(using: .utf8),
+                  let numberData = String(phoneTerritory.number).data(using: .utf8),
+                  let descriptionData = phoneTerritory.description.data(using: .utf8),
+                  let imageStringData = (phoneTerritory.image ?? "").data(using: .utf8) else {
+                return .failure(NSError(domain: "StringConversionError", code: 0, userInfo: nil))
+            }
+
             // Prepare parts for the API call
             let filePart = Part(data: imageData, name: "file", fileName: "territory.jpg", mimeType: "image/jpeg")
-            let congregationPart = phoneTerritory.congregation
-            let numberPart = String(phoneTerritory.number)
-            let descriptionPart = phoneTerritory.description
-            let imagePart = phoneTerritory.image ?? ""
-            
+            let congregationPart = Part(data: congregationData, name: "congregation")
+            let numberPart = Part(data: numberData, name: "number")
+            let descriptionPart = Part(data: descriptionData, name: "description")
+            let imagePart = Part(data: imageStringData, name: "image")
+
+            // Perform API call
             try await api.addPhoneTerritory(
                 file: filePart,
                 congregation: congregationPart,
@@ -288,14 +314,23 @@ class AdminService {
             guard let imageData = image.jpegData(compressionQuality: 0.8) else {
                 return .failure(NSError(domain: "ImageConversionError", code: 0, userInfo: nil))
             }
-            
+
+            // Convert strings to Data
+            guard let congregationData = phoneTerritory.congregation.data(using: .utf8),
+                  let numberData = String(phoneTerritory.number).data(using: .utf8),
+                  let descriptionData = phoneTerritory.description.data(using: .utf8),
+                  let imageStringData = (phoneTerritory.image ?? "").data(using: .utf8) else {
+                return .failure(NSError(domain: "StringConversionError", code: 0, userInfo: nil))
+            }
+
             // Prepare parts for the API call
             let filePart = Part(data: imageData, name: "file", fileName: "territory.jpg", mimeType: "image/jpeg")
-            let congregationPart = phoneTerritory.congregation
-            let numberPart = String(phoneTerritory.number)
-            let descriptionPart = phoneTerritory.description
-            let imagePart = phoneTerritory.image ?? ""
-            
+            let congregationPart = Part(data: congregationData, name: "congregation")
+            let numberPart = Part(data: numberData, name: "number")
+            let descriptionPart = Part(data: descriptionData, name: "description")
+            let imagePart = Part(data: imageStringData, name: "image")
+
+            // Call the API
             try await api.updatePhoneTerritory(
                 file: filePart,
                 congregation: congregationPart,

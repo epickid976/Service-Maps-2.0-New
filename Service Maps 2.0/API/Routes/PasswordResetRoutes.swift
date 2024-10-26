@@ -12,8 +12,8 @@ import Papyrus
 public protocol PasswordResetRoutes {
     
     @POST("password/create")
-    func requestReset(requestResetForm: RequestResetForm) async throws
+    func requestReset(requestResetForm: Body<RequestResetForm>) async throws
 
     @POST("password/reset")
-    func resetPassword(resetPasswordForm: ResetPasswordForm) async throws -> UserResponse
+    func resetPassword(resetPasswordForm: Body<ResetPasswordForm>) async throws -> UserResponse
 }

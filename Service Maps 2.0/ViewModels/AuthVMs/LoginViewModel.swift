@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Papyrus
 
 @MainActor
 class LoginViewModel: ObservableObject {
@@ -20,9 +21,6 @@ class LoginViewModel: ObservableObject {
         self.showAlert = false
         self.alertTitle = ""
         self.alertMessage = ""
-#if DEBUG
-print("Testing file compile")
-#endif
     }
     
     @Published var username: String = ""
@@ -48,215 +46,197 @@ print("Testing file compile")
     
     
     func validate(forReset: Bool = false) -> Bool {
+        self.username = self.username.replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
         
         if !forReset {
-            if !self.isValidEmail(self.username) {
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.loginErrorText =  NSLocalizedString("Not a valid email.", comment: "")
-                        self.loginError = true
-                    }
-                }
+            guard self.isValidEmail(self.username) else {
+                showError(NSLocalizedString("Not a valid email.", comment: ""))
                 return false
             }
             
-            if self.username.contains(" ") {
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.loginErrorText =  NSLocalizedString("Email cannot contain spaces.", comment: "")
-                        self.loginError = true
-                    }
-                }
+            guard !self.username.contains(" ") else {
+                showError(NSLocalizedString("Email cannot contain spaces.", comment: ""))
                 return false
             }
         }
         
         if forReset {
-            if self.password.count < 6 {
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.loginErrorText =  NSLocalizedString("Password must be more than 6 characters.", comment: "")
-                        self.loginError = true
-                    }
-                }
+            guard self.password.count >= 6 else {
+                showError(NSLocalizedString("Password must be more than 6 characters.", comment: ""))
                 return false
             }
             
-            if self.password != self.username {
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.loginErrorText =  NSLocalizedString("Passwords must match.", comment: "")
-                        self.loginError = true
-                    }
-                }
+            guard self.password == self.username else {
+                showError(NSLocalizedString("Passwords must match.", comment: ""))
                 return false
             }
         }
         
-        if self.username.isEmpty || self.password.isEmpty {
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.loginErrorText =  NSLocalizedString("Fields cannot be empty", comment: "")
-                    self.loginError = true
-                }
-            }
+        guard !self.username.isEmpty && !self.password.isEmpty else {
+            showError(NSLocalizedString("Fields cannot be empty", comment: ""))
             return false
         }
         
-        
         return true
+    }
+
+    private func showError(_ message: String) {
+        DispatchQueue.main.async {
+            withAnimation {
+                self.loginErrorText = message
+                self.loginError = true
+            }
+        }
     }
     
     func validateForEmailLogin() -> Bool {
-        if !self.isValidEmail(self.username) {
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.loginErrorText =  NSLocalizedString("Not a valid email.", comment: "")
-                    self.loginError = true
-                }
-            }
+        guard isValidEmail(self.username) else {
+            showError(NSLocalizedString("Not a valid email.", comment: ""))
             return false
         }
         
-        if self.username.contains(" ") {
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.loginErrorText =  NSLocalizedString("Email cannot contain spaces.", comment: "")
-                    self.loginError = true
-                }
-            }
+        guard !self.username.contains(" ") else {
+            showError(NSLocalizedString("Email cannot contain spaces.", comment: ""))
             return false
         }
         
         return true
     }
-    
+
     func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: email)
+        return NSPredicate(format: "SELF MATCHES %@", emailRegEx).evaluate(with: email)
     }
     
     
-    func login(completion: @escaping (Result<Bool, Error>) -> Void) async {
-        
-        if !username.isEmpty && !password.isEmpty {
-            
-            DispatchQueue.main.async { withAnimation { self.loading = true } }
-            
-            let result = await self.authenticationManager.login(logInForm: LoginForm(email: self.username, password: self.password))
-            
-            switch result {
-            case .success(_):
-                DispatchQueue.main.async { // Update properties on the main thread
-                    withAnimation { self.loading = false; self.loginErrorText = "" }
-                }
-                completion(Result.success(true))
-            case .failure(let error):
-                // Handle any errors here
-                
-                
-                
-                
-                
-                if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                    DispatchQueue.main.async {
-                        self.alertTitle =  NSLocalizedString("No Internet Connection", comment: "")
-                        self.alertMessage =  NSLocalizedString("There was a problem with the internet connection. \nPlease check your internet connection and try again.", comment: "")
-                        self.loading = false
-                        self.showAlert = true
-                    }
-                    completion(Result.failure(error))
-                } else if error.asAFError?.responseCode == 401 {
-                    DispatchQueue.main.async {
-                        self.alertTitle =  NSLocalizedString("Invalid Credentials", comment: "")
-                        self.alertMessage =  NSLocalizedString("Email or Password is incorrect. Please try again.", comment: "")
-                        self.loading = false
-                        self.showAlert = true
-                    }
-                    completion(Result.failure(error))
-                } else {
-                    DispatchQueue.main.async {
-                        self.alertTitle =  NSLocalizedString("Error", comment: "")
-                        self.alertMessage =  NSLocalizedString("Error logging in. \nPlease try again.", comment: "")
-                        self.loading = false
-                        self.showAlert = true
-                    }
-                    completion(Result.failure(error))
-                }
+    func login() async -> Result<Void, Error> {
+        // Ensure both username and password are non-empty
+        guard !username.isEmpty, !password.isEmpty else {
+            DispatchQueue.main.async {
+                self.showAlert(title: NSLocalizedString("Error", comment: ""), message: NSLocalizedString("Fields cannot be empty", comment: ""))
             }
+            return .failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fields cannot be empty"]))
+        }
+
+        // Start loading animation
+        DispatchQueue.main.async { withAnimation { self.loading = true } }
+
+        // Perform login using Papyrus
+        let result = await self.authenticationManager.login(logInForm: LoginForm(email: self.username, password: self.password))
+
+        // Stop loading animation
+        DispatchQueue.main.async {
+            withAnimation { self.loading = false }
+        }
+
+        // Handle login result
+        switch result {
+        case .success:
+            DispatchQueue.main.async {
+                self.loginErrorText = ""
+            }
+            return .success(())
+
+        case .failure(let error):
+            DispatchQueue.main.async {
+                self.handleLoginError(error)
+            }
+            return .failure(error)
         }
     }
+
+    private func handleLoginError(_ error: Error) {
+        let errorMessage: String
+        let errorTitle: String
+
+        // Handle different types of Papyrus errors
+        if let papyrusError = error as? PapyrusError {
+            switch papyrusError.response?.statusCode {
+            case -1099:
+                errorTitle = NSLocalizedString("No Internet Connection", comment: "")
+                errorMessage = NSLocalizedString("There was a problem with the internet connection. \nPlease check your internet connection and try again.", comment: "")
+                
+            case 401:
+                errorTitle = NSLocalizedString("Invalid Credentials", comment: "")
+                errorMessage = NSLocalizedString("Email or Password is incorrect. Please try again.", comment: "")
+                
+            default:
+                errorTitle = NSLocalizedString("Error", comment: "")
+                errorMessage = NSLocalizedString("Error logging in. \nPlease try again.", comment: "")
+            }
+        } else {
+            // Fallback for any other error types
+            errorTitle = NSLocalizedString("Error", comment: "")
+            errorMessage = NSLocalizedString("An unexpected error occurred. Please try again.", comment: "")
+        }
+
+        // Show the alert
+        showAlert(title: errorTitle, message: errorMessage)
+    }
+
+    private func showAlert(title: String, message: String) {
+        self.alertTitle = title
+        self.alertMessage = message
+        self.showAlert = true
+    }
     
+    // Function to send login email
     func sendLoginEmail() async {
         if validateForEmailLogin() {
             DispatchQueue.main.async { withAnimation { self.loading = true } }
-            
-            switch await authenticationManager.loginEmail(email: self.username) {
+
+            let result = await authenticationManager.loginEmail(email: self.username)
+            DispatchQueue.main.async { withAnimation { self.loading = false } }
+
+            switch result {
             case .success:
                 HapticManager.shared.trigger(.success)
                 DispatchQueue.main.async {
-                    withAnimation {
-                        self.loading = false
-                        self.loginErrorText = ""
-                        self.loginError = false
-                        self.emailSent = true
-                        UniversalLinksManager.shared.resetLink()
-                    }
-                }
-            case .failure(let error):
-                HapticManager.shared.trigger(.error)
-                if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                    DispatchQueue.main.async {
-                        self.loginErrorText =  NSLocalizedString("No Internet Connection. Please try again later.", comment: "")
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.loginErrorText =  NSLocalizedString("Error Logging in. Please try again later", comment: "")
-                    }
-                }
-                self.loginError = true
-                self.errorEmailSent = true
-                withAnimation { self.loading = false}
-            }
-            
-        }
-    }
-    
-    func loginWithEmail(token: String) async  {
-            DispatchQueue.main.async { withAnimation { self.loading = true } }
-            
-        switch await authenticationManager.loginEmailToken(token: token) {
-        case .success:
-                DispatchQueue.main.async { withAnimation { self.loading = false } }
-                HapticManager.shared.trigger(.success)
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.loading = false
-                        self.loginErrorText = ""
-                        self.loginError = false
-                        
-                    }
+                    self.loginErrorText = ""
+                    self.loginError = false
+                    self.emailSent = true
                     UniversalLinksManager.shared.resetLink()
                 }
             case .failure(let error):
-                DispatchQueue.main.async { withAnimation { self.loading = false } }
                 HapticManager.shared.trigger(.error)
-                if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                    DispatchQueue.main.async {
-                        self.loginErrorText =  NSLocalizedString("No Internet Connection. Please try again later.", comment: "")
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.loginErrorText =  NSLocalizedString("Error Logging in. Please try again later", comment: "")
-                    }
+                DispatchQueue.main.async {
+                    self.handleLoginError(error)
                 }
                 self.loginError = true
+                self.errorEmailSent = true
             }
+        }
     }
-    func resetPassword(password: String, token: String ) async {
-        switch await authenticationManager.resetPassword( password: password, token: token) {
+
+    // Function to login with email token
+    func loginWithEmail(token: String) async {
+        DispatchQueue.main.async { withAnimation { self.loading = true } }
+
+        let result = await authenticationManager.loginEmailToken(token: token)
+        DispatchQueue.main.async { withAnimation { self.loading = false } }
+
+        switch result {
+        case .success:
+            HapticManager.shared.trigger(.success)
+            DispatchQueue.main.async {
+                self.loginErrorText = ""
+                self.loginError = false
+                UniversalLinksManager.shared.resetLink()
+            }
+        case .failure(let error):
+            HapticManager.shared.trigger(.error)
+            DispatchQueue.main.async {
+                self.handleLoginError(error)
+            }
+            self.loginError = true
+        }
+    }
+
+    // Function to reset password
+    func resetPassword(password: String, token: String) async {
+        let result = await authenticationManager.resetPassword(password: password, token: token)
+
+        switch result {
         case .success:
             HapticManager.shared.trigger(.success)
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -266,17 +246,10 @@ print("Testing file compile")
             }
         case .failure(let error):
             HapticManager.shared.trigger(.error)
-            if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                DispatchQueue.main.async {
-                    self.loginErrorText =  NSLocalizedString("No Internet Connection. Please try again later.", comment: "")
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.loginErrorText =  NSLocalizedString("Error Resetting Password. Please try again later", comment: "")
-                }
+            DispatchQueue.main.async {
+                self.handleLoginError(error)
             }
             self.loginError = true
-            withAnimation { self.loading = false}
         }
     }
 }

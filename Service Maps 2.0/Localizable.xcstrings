@@ -521,6 +521,9 @@
         }
       }
     },
+    "An unexpected error occurred. Please try again." : {
+
+    },
     "Android" : {
 
     },
@@ -1780,6 +1783,9 @@
         }
       }
     },
+    "Error checking verification status. \nPlease try again." : {
+
+    },
     "Error deleting address, please try again later" : {
       "localizations" : {
         "es" : {
@@ -1925,6 +1931,7 @@
       }
     },
     "Error Logging in. Please try again later" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1973,6 +1980,7 @@
       }
     },
     "Error Resetting Password. Please try again later" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1987,6 +1995,9 @@
           }
         }
       }
+    },
+    "Error signing up. \nPlease try again." : {
+
     },
     "Error updating address." : {
       "localizations" : {
@@ -2974,6 +2985,7 @@
       }
     },
     "No Internet Connection. Please try again later." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3078,6 +3090,9 @@
           }
         }
       }
+    },
+    "Not Verified" : {
+
     },
     "Note: %@" : {
       "extractionState" : "stale",
@@ -3612,6 +3627,9 @@
           }
         }
       }
+    },
+    "Please check your email and verify your account." : {
+
     },
     "Please fill out all the required fields." : {
       "localizations" : {
@@ -4261,6 +4279,9 @@
           }
         }
       }
+    },
+    "There was a problem resending the email. \nPlease try again later." : {
+
     },
     "There was a problem with the internet connection. \nPlease check your internet connection and try again." : {
       "localizations" : {

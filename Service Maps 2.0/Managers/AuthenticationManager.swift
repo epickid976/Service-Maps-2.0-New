@@ -30,8 +30,9 @@ class AuthenticationManager: ObservableObject {
     }
     
     func login(logInForm: LoginForm) async -> Result<LoginResponse, Error> {
-        let result = await authenticationApi.login(loginForm: logInForm)
+        let result = await authenticationApi.login(logInForm: logInForm)
         
+        print("Result: \(result)")
         if let logInResponse = try? result.get() {
             self.dataStore.passTemp = nil
             self.authorizationProvider.authorizationToken = logInResponse.access_token
@@ -85,6 +86,7 @@ class AuthenticationManager: ObservableObject {
         return await authenticationApi.resendEmailValidation(email: userEmail)
     }
     
+    
     func signInAdmin(congregationSignInForm: CongregationSignInForm) async -> Result<CongregationResponse, Error> {
         let result = await congregationApi.signIn(congregationSignInForm: congregationSignInForm)
         
@@ -134,7 +136,7 @@ class AuthenticationManager: ObservableObject {
         let result = await congregationApi.phoneSignIn(congregationSignInForm: congregationSignInForm)
         
         if let congregationResponse = try? result.get() {
-            await authorizationLevelManager.setPhoneCredentials(password: congregationSignInForm.password, congregationResponse: congregationResponse)
+            authorizationLevelManager.setPhoneCredentials(password: congregationSignInForm.password, congregationResponse: congregationResponse)
             dataStore.phoneCongregationName = congregationResponse.name
         }
         

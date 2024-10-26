@@ -9,7 +9,7 @@ import Foundation
 import Papyrus
 
 class CongregationService {
-    private lazy var api: CongregationRoutes = CongregationRoutesAPI(provider: APIProvider.shared.provider)
+    private lazy var api: CongregationRoutes = CongregationRoutesAPI(provider: APIProvider().provider)
 
     // Congregation Sign-In
     func signIn(congregationSignInForm: CongregationSignInForm) async -> Result<CongregationResponse, Error> {

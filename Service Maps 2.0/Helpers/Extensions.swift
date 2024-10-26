@@ -131,6 +131,18 @@ extension Array {
     }
 }
 
+extension Array where Element == String {
+    func toJSON() -> String? {
+        guard let data = try? JSONSerialization.data(withJSONObject: self),
+              var string = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        // Force clean any unwanted escaping
+        string = string.replacingOccurrences(of: "\\", with: "")
+        return string
+    }
+}
+
 extension String {
     func isValidPhoneNumber() -> Bool {
         // Use a regular expression to match a valid phone number format

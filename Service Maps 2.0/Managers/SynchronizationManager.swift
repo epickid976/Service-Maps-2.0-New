@@ -238,7 +238,7 @@ class SynchronizationManager: ObservableObject {
                     }
                 }
                 
-            } else {
+            } else if await authorizationLevelManager.existsPhoneCredentials() {
                 let result = await UserService().allPhoneData()
                 switch result {
                 case .success(let response):

@@ -14,9 +14,9 @@ import Papyrus
 public protocol CongregationRoutes {
     
     @POST("congregation/sign")
-        func signIn(congregationSignInForm: CongregationSignInForm) async throws -> CongregationResponse
-
-        @POST("congregation/phone/sign")
-        func phoneSignIn(congregationSignInForm: CongregationSignInForm) async throws -> CongregationResponse
+    func signIn(congregationSignInForm: Body<CongregationSignInForm>) async throws -> CongregationResponse
+    
+    @POST("congregation/phone/sign")
+    func phoneSignIn(congregationSignInForm: Body<CongregationSignInForm>) async throws -> CongregationResponse
 }
 

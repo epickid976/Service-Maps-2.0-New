@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Papyrus
 
 @MainActor
 class SignupViewModel: ObservableObject {
@@ -116,52 +117,56 @@ class SignupViewModel: ObservableObject {
         Task {
             let result = await authenticationManager.signUp(signUpForm: SignUpForm(name: "\(name) \(lastName)", email: username, password: password, password_confirmation: password))
             
-            
             switch result {
             case .success:
-                DispatchQueue.main.async { // Update properties on the main thread
-                    withAnimation { self.loading = false
-                        // Handle success case
-                        completion(Result.success(true))
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.loading = false
+                        completion(.success(true))
                     }
                 }
             case .failure(let error):
-                if error.asAFError?.responseCode == -1009 || error.asAFError?.responseCode == nil {
-                    DispatchQueue.main.async {
-                        self.alertTitle =  NSLocalizedString("No Internet Connection", comment: "")
-                        self.alertMessage =  NSLocalizedString("There was a problem with the internet connection. \nPlease check your internet connection and try again.", comment: "")
-                        self.loading = false
-                        self.showAlert = true
-                    }
-                    completion(Result.failure(error))
-                } else if error.asAFError?.responseCode == 401 {
-                    DispatchQueue.main.async {
-                        self.alertTitle =  NSLocalizedString("Invalid Credentials", comment: "")
-                        self.alertMessage =  NSLocalizedString("Email or Password is incorrect. Please try again.", comment: "")
-                        self.loading = false
-                        self.showAlert = true
-                    }
-                    completion(Result.failure(error))
-                } else if error.asAFError?.responseCode == 422 {
-                    DispatchQueue.main.async {
-                        self.alertTitle =  NSLocalizedString("Email Taken", comment: "")
-                        self.alertMessage =  NSLocalizedString("It seems this email is taken. Try logging in.", comment: "")
-                        self.loading = false
-                        self.showAlert = true
-                    }
-                    completion(Result.failure(error))
-                } else {
-                    DispatchQueue.main.async {
-                        self.alertTitle =  NSLocalizedString("Error", comment: "")
-                        self.alertMessage =  NSLocalizedString("Error logging in. \nPlease try again.", comment: "")
-                        self.loading = false
-                        self.showAlert = true
-                    }
-                    completion(Result.failure(error))
-                }
+                handleSignUpError(error, completion: completion)
             }
-            return completion(Result.success(true))
         }
+    }
+
+    private func handleSignUpError(_ error: Error, completion: @escaping (Result<Bool, Error>) -> Void) {
+        let errorTitle: String
+        let errorMessage: String
+        
+        if let afError = error as? PapyrusError {
+            switch afError.response?.statusCode {
+            case -1009:
+                errorTitle = NSLocalizedString("No Internet Connection", comment: "")
+                errorMessage = NSLocalizedString("There was a problem with the internet connection. \nPlease check your internet connection and try again.", comment: "")
+                
+            case 401:
+                errorTitle = NSLocalizedString("Invalid Credentials", comment: "")
+                errorMessage = NSLocalizedString("Email or Password is incorrect. Please try again.", comment: "")
+                
+            case 422:
+                errorTitle = NSLocalizedString("Email Taken", comment: "")
+                errorMessage = NSLocalizedString("It seems this email is taken. Try logging in.", comment: "")
+                
+            default:
+                errorTitle = NSLocalizedString("Error", comment: "")
+                errorMessage = NSLocalizedString("Error signing up. \nPlease try again.", comment: "")
+            }
+        } else {
+            errorTitle = NSLocalizedString("Error", comment: "")
+            errorMessage = NSLocalizedString("An unexpected error occurred. Please try again.", comment: "")
+        }
+        
+        // Show the error alert
+        DispatchQueue.main.async {
+            self.alertTitle = errorTitle
+            self.alertMessage = errorMessage
+            self.loading = false
+            self.showAlert = true
+        }
+        
+        completion(.failure(error))
     }
 }
 

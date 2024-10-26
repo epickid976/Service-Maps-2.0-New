@@ -10,7 +10,7 @@ import Alamofire
 import PapyrusCore
 
 class PasswordResetService {
-    private lazy var api: PasswordResetRoutes = PasswordResetRoutesAPI(provider: APIProvider.shared.provider)
+    private lazy var api: PasswordResetRoutes = PasswordResetRoutesAPI(provider: APIProvider().provider)
 
     // Request password reset
     func requestReset(email: String) async -> Result<Void, Error> {

@@ -15,31 +15,31 @@ public protocol TokenRoutes {
     @GET("tokens/loaduser")
     func loadUserTokens() async throws -> [Token]
 
-    @GET("tokens/territories/{token}")
-    func getTerritoriesOfToken(token: String) async throws -> [TokenTerritory]
-
+    @GET("tokens/territories/:token")
+    func getTerritoriesOfToken(token: Path<String>) async throws -> [TokenTerritory]
+    
     @POST("tokens/new")
-    func createToken(newTokenForm: NewTokenForm) async throws -> Token
+    func createToken(newTokenForm: Body<NewTokenForm>) async throws -> CreateTokenResponse
 
     @POST("tokens/edit")
-    func editToken(editTokenForm: EditTokenForm) async throws
+    func editToken(editTokenForm: Body<EditTokenForm>) async throws
 
     @POST("tokens/delete")
-    func deleteToken(deleteTokenForm: DeleteTokenForm) async throws
+    func deleteToken(deleteTokenForm: Body<DeleteTokenForm>) async throws
 
     @POST("tokens/unregister")
-    func unregister(deleteTokenForm: DeleteTokenForm) async throws
+    func unregister(deleteTokenForm: Body<DeleteTokenForm>) async throws
 
     @POST("tokens/register")
-    func register(deleteTokenForm: DeleteTokenForm) async throws
+    func register(deleteTokenForm: Body<DeleteTokenForm>) async throws
 
     @POST("tokens/tokenusers")
-    func usersOfToken(deleteTokenForm: DeleteTokenForm) async throws -> [UserSimpleResponse]
+    func usersOfToken(deleteTokenForm: Body<DeleteTokenForm>) async throws -> [UserSimpleResponse]
 
     @POST("tokens/tokenuserremove")
-    func removeUserFromToken(tokenAndUserIdForm: TokenAndUserIdForm) async throws
+    func removeUserFromToken(tokenAndUserIdForm: Body<TokenAndUserIdForm>) async throws
 
     @POST("tokens/blockunblock")
-    func blockUnblockUserFromToken(tokenAndUserIdForm: TokenAndUserIdForm) async throws
+    func blockUnblockUserFromToken(tokenAndUserIdForm: Body<TokenAndUserIdForm>) async throws
 }
 

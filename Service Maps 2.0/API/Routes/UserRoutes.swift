@@ -17,7 +17,7 @@ public protocol UserRoutes {
     func allPhoneData() async throws -> AllPhoneDataResponse
     
     @POST("users/territories/update")
-    func updateTerritory(territory: Territory) async throws
+    func updateTerritory(territory: Body<Territory>) async throws
     
     @Multipart
     @POST("users/territories/update")
@@ -30,32 +30,32 @@ public protocol UserRoutes {
     ) async throws
     
     @POST("users/territories/address/update")
-    func updateTerritoryAddress(territoryAddress: TerritoryAddress) async throws
+    func updateTerritoryAddress(territoryAddress: Body<TerritoryAddress>) async throws
     
     @POST("users/houses/update")
-    func updateHouse(house: House) async throws
+    func updateHouse(house: Body<House>) async throws
     
     @POST("users/visits/add")
-    func addVisit(visit: Visit) async throws
+    func addVisit(visit: Body<Visit>) async throws
     
     @POST("users/visits/update")
-    func updateVisit(visit: Visit) async throws
+    func updateVisit(visit: Body<Visit>) async throws
     
     @POST("users/phone/calls/add")
-    func addPhoneCall(phoneCall: PhoneCall) async throws
+    func addPhoneCall(phoneCall: Body<PhoneCall>) async throws
     
     @POST("users/phone/calls/update")
-    func updatePhoneCall(phoneCall: PhoneCall) async throws
+    func updatePhoneCall(phoneCall: Body<PhoneCall>) async throws
     
     @POST("users/phone/calls/delete")
-    func deletePhoneCall(phoneCall: PhoneCall) async throws
+    func deletePhoneCall(phoneCall: Body<PhoneCall>) async throws
     
-    @POST("users/recalls")
+    @GET("users/recalls")
     func getRecalls() async throws -> [Recalls]
     
     @POST("users/addRecall")
-    func addRecall(recall: Recalls) async throws
+    func addRecall(recall: Body<Recalls>) async throws
     
     @POST("users/removeRecall")
-    func removeRecall(recall: Recalls) async throws
+    func removeRecall(recall: Body<Recalls>) async throws
 }

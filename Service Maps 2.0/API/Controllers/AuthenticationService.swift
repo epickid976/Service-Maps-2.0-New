@@ -7,9 +7,10 @@
 
 import Foundation
 
-class AuthenticationService {
-    private lazy var api: AuthenticationRoutes = AuthenticationRoutesAPI(provider: APIProvider.shared.provider)
 
+class AuthenticationService {
+    private lazy var api: AuthenticationRoutes = AuthenticationRoutesAPI(provider: APIProvider().provider)
+    
     // Sign up a new user with their details
     func signUp(signUpForm: SignUpForm) async -> Result<Void, Error> {
         do {
@@ -19,17 +20,17 @@ class AuthenticationService {
             return .failure(error)
         }
     }
-
+    
     // Log in the user and return the login response
-    func login(loginForm: LoginForm) async -> Result<LoginResponse, Error> {
+    func login(logInForm: LoginForm) async -> Result<LoginResponse, Error> {
         do {
-            let response = try await api.login(loginForm: loginForm)
+            let response = try await api.login(logInForm: logInForm)
             return .success(response)
         } catch {
             return .failure(error)
         }
     }
-
+    
     // Log in the user using just an email (no password)
     func loginEmail(email: String) async -> Result<Void, Error> {
         do {
@@ -39,7 +40,7 @@ class AuthenticationService {
             return .failure(error)
         }
     }
-
+    
     // Log in using a token sent via email
     func loginEmailToken(token: String) async -> Result<LoginResponse, Error> {
         do {
@@ -49,7 +50,7 @@ class AuthenticationService {
             return .failure(error)
         }
     }
-
+    
     // Resend email validation to a user
     func resendEmailValidation(email: String) async -> Result<Void, Error> {
         do {
@@ -59,7 +60,7 @@ class AuthenticationService {
             return .failure(error)
         }
     }
-
+    
     // Activate a user’s account using a token
     func activateEmail(token: String) async -> Result<Void, Error> {
         do {
@@ -69,7 +70,7 @@ class AuthenticationService {
             return .failure(error)
         }
     }
-
+    
     // Log out the current user
     func logout() async -> Result<Void, Error> {
         do {
@@ -79,30 +80,17 @@ class AuthenticationService {
             return .failure(error)
         }
     }
-
+    
     // Fetch details of the currently authenticated user
     func user() async -> Result<UserResponse, Error> {
         do {
-                let response = try await api.user()
-
-                // Check for "Unauthenticated" in the response
-                if response.contains("Unauthenticated") {
-                    // Handle this case gracefully
-                    print("User is unauthenticated")
-                    throw NSError(domain: "Unauthenticated Server Request ERROR", code: 401, userInfo: nil)
-                }
-
-                // Decode the JSON response
-                let decoder = JSONDecoder()
-                let jsonData = response.data(using: .utf8)!
-                let userResponse = try decoder.decode(UserResponse.self, from: jsonData)
-                
-            return Result.success(userResponse)
-            } catch {
-                return .failure(error)
-            }
+            let response = try await api.user()
+            return Result.success(response)
+        } catch {
+            return .failure(error)
+        }
     }
-
+    
     // Delete the current user’s account
     func deleteAccount() async -> Result<Void, Error> {
         do {
@@ -112,7 +100,7 @@ class AuthenticationService {
             return .failure(error)
         }
     }
-
+    
     // Edit the username of the current user
     func editUserName(userName: String) async -> Result<Void, Error> {
         do {

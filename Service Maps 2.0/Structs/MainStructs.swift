@@ -143,6 +143,47 @@ public struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatab
     }
 }
 
+// For the specific problematic endpoint
+public struct CreateTokenResponse: Decodable {
+    let token: Token
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Use the custom decoding logic here
+        let id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
+        let name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        let owner = try container.decodeIfPresent(String.self, forKey: .owner) ?? ""
+        
+        // Handle congregation
+        let congregation: String
+        if let congregationInt = try container.decodeIfPresent(Int64.self, forKey: .congregation) {
+            congregation = String(congregationInt)
+        } else if let congregationStr = try container.decodeIfPresent(String.self, forKey: .congregation) {
+            congregation = congregationStr
+        } else {
+            congregation = ""
+        }
+        
+        let moderator = try container.decodeIfPresent(Bool.self, forKey: .moderator) ?? false
+        let expire = try container.decodeIfPresent(Int64.self, forKey: .expire)
+        let user = try container.decodeIfPresent(String.self, forKey: .user)
+        
+        // Create the Token using the normal initializer
+        self.token = Token(id: id,
+                          name: name,
+                          owner: owner,
+                          congregation: congregation,
+                          moderator: moderator,
+                          expire: expire,
+                          user: user)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name, owner, congregation, moderator, expire, user
+    }
+}
+
 public struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable {
     
     var token: String

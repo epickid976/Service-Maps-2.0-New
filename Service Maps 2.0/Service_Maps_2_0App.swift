@@ -47,36 +47,20 @@ struct Service_Maps_2_0App: App {
                 case .HomeScreen:
                     HomeTabView()
                 case .WelcomeScreen:
-                    WelcomeView() {
-                        Task {
-                            SynchronizationManager.shared.startupProcess(synchronizing: true)
-                        }
-                    }
+                    WelcomeView() { Task { SynchronizationManager.shared.startupProcess(synchronizing: true) } }
                 case .LoginScreen:
                     LoginView() {
                         Task {
                             synchronizationManager.startupProcess(synchronizing: true)
+                            SynchronizationManager.shared.startupProcess(synchronizing: false)
                         }
                     }
                 case .AdministratorLoginScreen:
-                    AdminLoginView() {
-                        Task {
-                             synchronizationManager.startupProcess(synchronizing: true)
-                        }
-                    }
+                    AdminLoginView() { Task { synchronizationManager.startupProcess(synchronizing: true) } }
                 case .PhoneLoginScreen:
-                    PhoneLoginScreen() {
-                        Task {
-                             synchronizationManager.startupProcess(synchronizing: true)
-                        }
-                    }
-                    
+                    PhoneLoginScreen() { Task { synchronizationManager.startupProcess(synchronizing: true) } }
                 case .ValidationScreen:
-                    VerificationView() {
-                        Task {
-                            synchronizationManager.startupProcess(synchronizing: true)
-                        }
-                    }
+                    VerificationView() { Task { synchronizationManager.startupProcess(synchronizing: true) } }
                 case .LoadingScreen:
                     LoadingView()
                 case .NoDataScreen:
@@ -85,16 +69,12 @@ struct Service_Maps_2_0App: App {
                     ValidationView()
                 case .RegisterKeyView:
                     RegisterKeyView()
-                    
                 case .ResetPasswordView:
                     ResetPassword()
-                    
                 case .PrivacyPolicyView:
                     PrivacyPolicy()
-                    
                 case .loginWithEmailView:
                     LoginWithEmailView()
-                    
                 }
             }.environment(\.font, Font.system(.body, design: .rounded))
             .onOpenURL(perform: { url in

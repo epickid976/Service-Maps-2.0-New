@@ -11,7 +11,7 @@ import SwiftUI
 import Papyrus
 
 class UserService {
-    private lazy var api: UserRoutes = UserRoutesAPI(provider: APIProvider.shared.provider)
+    private lazy var api: UserRoutes = UserRoutesAPI(provider: APIProvider().provider)
 
     func loadTerritories() async -> Result<AllDataResponse, Error> {
         do {

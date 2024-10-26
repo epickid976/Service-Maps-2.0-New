@@ -6,100 +6,111 @@
 //
 
 import Foundation
-import Alamofire
 import SwiftUI
 import Papyrus
 
 class APIProvider {
-    static let shared = APIProvider()
-
+    private enum HeaderKeys {
+        static let contentType = "Content-Type"
+        static let xRequestedWith = "X-Requested-With"
+        static let authorization = "Authorization"
+        static let token = "token"
+        static let congregationId = "congregationId"
+        static let congregationPass = "congregationPass"
+        static let phoneId = "phoneId"
+        static let phonePass = "phonePass"
+    }
+    
     let provider: Provider
+    
+    private enum APIError: Error {
+        case invalidSelf
+    }
 
-    private init() {
-        provider = Provider(baseURL: "https://servicemaps.ejvapps.online/api/")
+    init() {
+        provider = Self.makeProvider()
+    }
+    
+    private static func makeProvider() -> Provider {
+        return Provider(baseURL: "https://servicemaps.ejvapps.online/api/")
             .modifyRequests { (req: inout RequestBuilder) in
-                // Adding headers directly here instead of using a separate modifier
-                let authorizationProvider = AuthorizationProvider.shared
-
-                req.addHeader("Content-Type", value: "application/json")
-                req.addHeader("X-Requested-With", value: "XMLHttpRequest")
-
-                // Conditional headers based on the authorization provider
-                if let authorizationToken = authorizationProvider.authorizationToken {
-                    req.addHeader("Authorization", value: "Bearer \(authorizationToken)")
+                // Clear existing headers first to ensure no carry-over
+                req.headers.removeAll()
+                
+                // Add common headers
+                req.addHeader(HeaderKeys.contentType, value: "application/json", convertToHeaderCase: false)
+                req.addHeader(HeaderKeys.xRequestedWith, value: "XMLHttpRequest", convertToHeaderCase: false)
+                
+                // Add authorization headers
+                let auth = AuthorizationProvider.shared
+                
+                if let token = auth.authorizationToken {
+                    req.addHeader(HeaderKeys.authorization, value: "Bearer \(token)", convertToHeaderCase: false)
                 }
-                if let token = authorizationProvider.token {
-                    req.addHeader("token", value: token)
+                if let token = auth.token {
+                    req.addHeader(HeaderKeys.token, value: token, convertToHeaderCase: false)
                 }
-                if let congregationId = authorizationProvider.congregationId {
-                    if congregationId != 0 {
-                        req.addHeader("congregationId", value: String(congregationId))
-                    }
+                if let congregationId = auth.congregationId, congregationId != 0 {
+                    req.addHeader(HeaderKeys.congregationId, value: String(congregationId), convertToHeaderCase: false)
                 }
-                if let congregationPass = authorizationProvider.congregationPass {
-                    req.addHeader("congregationPass", value: congregationPass)
+                if let congregationPass = auth.congregationPass {
+                    req.addHeader(HeaderKeys.congregationPass, value: congregationPass, convertToHeaderCase: false)
                 }
-                if let phoneCongregationId = authorizationProvider.phoneCongregationId {
-                    req.addHeader("phoneId", value: phoneCongregationId)
+                if let phoneId = auth.phoneCongregationId {
+                    req.addHeader(HeaderKeys.phoneId, value: phoneId, convertToHeaderCase: false)
                 }
-                if let phoneCongregationPass = authorizationProvider.phoneCongregationPass {
-                    req.addHeader("phonePass", value: phoneCongregationPass)
+                if let phonePass = auth.phoneCongregationPass {
+                    req.addHeader(HeaderKeys.phonePass, value: phonePass, convertToHeaderCase: false)
                 }
+                
+                #if DEBUG
+                print("\n📋 Final Headers:")
+                req.headers.forEach { key, value in
+                    print("   \(key): \(value)")
+                }
+                #endif
             }
             .intercept { req, next in
-                // 🌐 Logging the Request
-                print("\n🌐📤 Sending request to: \(req.url?.absoluteString ?? "Unknown URL")")
-                print("🌐 Method: \(req.method)")
-                print("🌐 Headers: \(req.headers)")
-                if let body = req.body {
-                    print("🌐 Body: \(String(describing: String(data: body, encoding: .utf8)))")
+                // Log request
+                #if DEBUG
+                print("\n🌐📤 REQUEST:")
+                print("📍 URL: \(req.url?.absoluteString ?? "Unknown URL")")
+                print("🔄 Method: \(req.method)")
+                print("📋 Headers: \(req.headers)")
+                if let body = req.body,
+                   let bodyString = String(data: body, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
+                    print("📦 Body: \(bodyString)")
                 }
-
-                // Proceed with the request
+                #endif
+                
+                // Track timing and execute request
                 let start = Date()
                 let response = try await next(req)
-
-                // 💬 Logging the Response
                 let elapsedTime = String(format: "%.2fs", Date().timeIntervalSince(start))
-                print("\n💬 Response received from: \(req.url?.absoluteString ?? "Unknown URL")")
-                let statusCode = response.statusCode.map { "\($0)" } ?? "N/A"
-                print("💬 Status Code: \(statusCode) (after \(elapsedTime))")
-                if let body = response.body {
-                    print("💬 Response Body: \(String(describing: String(data: body, encoding: .utf8)))")
+                
+                // Log response
+                #if DEBUG
+                print("\n💬 RESPONSE:")
+                print("📍 URL: \(req.url?.absoluteString ?? "Unknown URL")")
+                print("⏱ Time: \(elapsedTime)")
+                print("📊 Status: \(response.statusCode.map(String.init) ?? "N/A")")
+                
+                if let body = response.body,
+                   let bodyString = String(data: body, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
+                    print("📦 Body: \(bodyString)")
                 }
-
+                
+                if let error = response.error {
+                    print("❌ Error: \(error)")
+                }
+                print("Complete response \(response)")
+                #endif
+                
                 return response
             }
     }
 }
 
-struct SharedHeaderModifier: RequestModifier {
-    func modify(req: inout RequestBuilder) throws {
-        let authorizationProvider = AuthorizationProvider.shared
-        
-        req.addHeader("Content-Type", value: "application/json")
-        req.addHeader("X-Requested-With", value: "XMLHttpRequest")
-        
-        if let authorizationToken = authorizationProvider.authorizationToken {
-            req.addHeader("Authorization", value: "Bearer \(authorizationToken)")
-        }
-        if let token = authorizationProvider.token {
-            req.addHeader("token", value: token)
-        }
-        if let congregationId = authorizationProvider.congregationId {
-            req.addHeader("congregationId", value: String(congregationId))
-        }
-        if let congregationPass = authorizationProvider.congregationPass {
-            req.addHeader("congregationPass", value: congregationPass)
-        }
-        if let phoneCongregationId = authorizationProvider.phoneCongregationId {
-            req.addHeader("phoneId", value: phoneCongregationId)
-        }
-        if let phoneCongregationPass = authorizationProvider.phoneCongregationPass {
-            req.addHeader("phonePass", value: phoneCongregationPass)
-        }
-    }
-}
 
 //class ApiRequestAsync {
 //    
