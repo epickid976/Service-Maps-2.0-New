@@ -484,9 +484,7 @@ struct CentrePopup_AddRecall: CentrePopup {
                     }
                     Task {
                         switch await viewModel.addRecall(user: user ?? "", house: house) {
-                        case .success(let success):
-                            
-                            
+                        case .success(_):
                             viewModel.loading = false
                             dismissLastPopup()
                             viewModel.showRecallAddedToast = true
@@ -495,7 +493,7 @@ struct CentrePopup_AddRecall: CentrePopup {
                                     self.viewModel.recallAdded = true
                                 }
                             }
-                        case .failure(let failure):
+                        case .failure(_):
                             viewModel.ifFailed = true
                         }
                     }

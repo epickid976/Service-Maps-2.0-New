@@ -7,6 +7,6 @@
 
 import Foundation
 
-public struct SingleTokenForm: Codable {
+public struct SingleTokenForm: Codable, Sendable {
     var token: String
 }

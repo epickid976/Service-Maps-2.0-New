@@ -8,8 +8,9 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class UniversalLinksManager: ObservableObject {
-    
+    static let shared = UniversalLinksManager()
     @Published var linkState: LinkScreens? = nil
     @Published var dataFromUrl: String? = nil
     
@@ -86,14 +87,5 @@ class UniversalLinksManager: ObservableObject {
     func resetLink() {
         linkState = nil
         dataFromUrl = nil
-    }
-
-        
-    class var shared: UniversalLinksManager {
-        struct Static {
-            static let instance = UniversalLinksManager()
-        }
-        
-        return Static.instance
     }
 }

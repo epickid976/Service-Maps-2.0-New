@@ -7,7 +7,8 @@
 
 import Foundation
 
-class StorageManager: ObservableObject {
+@MainActor
+class StorageManager: ObservableObject, @unchecked Sendable {
   static let shared = StorageManager()
   let defaults = UserDefaults.standard
 
@@ -16,14 +17,14 @@ class StorageManager: ObservableObject {
   }
 
   //MARK: Keys
-  private var userEmailKey = "userEmailKey"
-  private var userNameKey = "userNameKey"
-  private var congregationnameKey = "congregationnameKey"
-  private var passTempKey = "passTempKey"
-  private var synchronizedKey = "synchronizedKey"
-  private var pendingChangesKey = "pendingChangesKey"
-  private var lastTimeKey = "lastSyncKey"
-    private var phoneCongregationNameKey = "phoneCongregationNameKey"
+  private let userEmailKey = "userEmailKey"
+  private let userNameKey = "userNameKey"
+  private let congregationnameKey = "congregationnameKey"
+  private let passTempKey = "passTempKey"
+  private let synchronizedKey = "synchronizedKey"
+  private let pendingChangesKey = "pendingChangesKey"
+  private let lastTimeKey = "lastSyncKey"
+    private let phoneCongregationNameKey = "phoneCongregationNameKey"
 
   //MARK: Published Variables
   @Published var userEmail: String? = nil {

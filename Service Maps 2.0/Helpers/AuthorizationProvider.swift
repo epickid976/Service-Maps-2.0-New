@@ -8,7 +8,10 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class AuthorizationProvider: ObservableObject {
+    static let shared = AuthorizationProvider()
+    
     let defaults = UserDefaults.standard
     
     private init() {
@@ -72,14 +75,6 @@ class AuthorizationProvider: ObservableObject {
         congregationPass = nil
         phoneCongregationId = nil
         phoneCongregationPass = nil
-    }
-    
-    class var shared: AuthorizationProvider {
-        struct Static {
-            static let instance = AuthorizationProvider()
-        }
-        
-        return Static.instance
     }
 }
 

@@ -14,7 +14,7 @@ actor ProgressTracker {
         return processedItems / totalItems
     }
 }
-
+@MainActor
 class BackupManager: ObservableObject {
     @Published var isBackingUp: Bool = false
     @Published var backup = false
@@ -45,6 +45,7 @@ class BackupManager: ObservableObject {
     private let noteFields2 = (1...24).map { "Nombre colocaciones y observacionesRow2_\($0)" }
     private let noteFields3 = (1...24).map { "Nombre colocaciones y observacionesRow3_\($0)" }
     private let noteFields4 = (1...24).map { "Nombre colocaciones y observacionesRow4_\($0)" }
+    
     
     func cancelBackup() {
         backupTask?.cancel()
@@ -474,7 +475,7 @@ class BackupManager: ObservableObject {
         
         // Use the new zip method provided in your URL extension
         do {
-            let zipURL = try await sourceURL.zip(toFileAt: destinationURL)
+            _ = try await sourceURL.zip(toFileAt: destinationURL)
         } catch {
             print("Failed to zip the folder: \(error.localizedDescription)")
             throw error

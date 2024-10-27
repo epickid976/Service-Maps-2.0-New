@@ -8,7 +8,7 @@
 import Foundation
 import Papyrus
 
-class CongregationService {
+class CongregationService: @unchecked Sendable {
     private lazy var api: CongregationRoutes = CongregationRoutesAPI(provider: APIProvider().provider)
 
     // Congregation Sign-In

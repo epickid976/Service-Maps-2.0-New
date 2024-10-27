@@ -10,7 +10,7 @@ import BackgroundTasks
 import SwiftUI
 import Combine
 
-
+@MainActor
 class DataUploaderManager: ObservableObject {
     
     @Published private var authorizationLevelManager = AuthorizationLevelManager()
@@ -522,7 +522,6 @@ class DataUploaderManager: ObservableObject {
         }
     }
     
-    @BackgroundActor
     func blockUnblockUserFromToken(userToken: String, blocked: Bool) async -> Result<Void, Error> {
         let result = await grdbManager.fetchByIdAsync(UserToken.self, id: userToken)
         
@@ -531,7 +530,15 @@ class DataUploaderManager: ObservableObject {
             guard let userTokenEntity = userTokenEntity else {
                 return .failure(CustomErrors.NotFound)
             }
-            let apiResult = await tokenApi.blockUnblockUserFromToken(token: userTokenEntity.token, userId: userTokenEntity.userId, blocked: blocked)
+            
+            // Directly use Task.detached for TokenService call
+            let apiResult: Result<Void, Error> = await Task.detached {
+                await self.tokenApi.blockUnblockUserFromToken(
+                    token: userTokenEntity.token,
+                    userId: userTokenEntity.userId,
+                    blocked: blocked
+                )
+            }.value
             
             switch apiResult {
             case .success:

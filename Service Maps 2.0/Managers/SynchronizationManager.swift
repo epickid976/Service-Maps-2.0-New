@@ -14,8 +14,9 @@ import GRDB
 @globalActor actor SyncActor: GlobalActor {
     static var shared = SyncActor()
 }
-
+@MainActor
 class SynchronizationManager: ObservableObject {
+    static let shared = SynchronizationManager()
     // MARK: - Published Properties
     @Published private var grdbManager = GRDBManager.shared
     @Published private var dataStore = StorageManager.shared
@@ -33,24 +34,25 @@ class SynchronizationManager: ObservableObject {
     private var syncTimer: DispatchSourceTimer?
     
     
-    @SyncActor
-    func startSyncAndHaptics() {
-        // Ensure haptic feedback and synchronization are non-blocking
-        syncTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
-        syncTimer?.schedule(deadline: .now(), repeating: 1)
-        syncTimer?.setEventHandler { [weak self] in
-            guard let self = self, !self.dataStore.synchronized else {
-                self?.syncTimer?.cancel()
-                return
-            }
-            DispatchQueue.main.async {
-                HapticManager.shared.trigger(.lightImpact)  // Keep this non-blocking
-            }
-        }
-        syncTimer?.resume()  // Start the timer
-    }
+//    @MainActor
+//    func startSyncAndHaptics() {
+//        // Ensure haptic feedback and synchronization are non-blocking
+//        syncTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
+//        syncTimer?.schedule(deadline: .now(), repeating: 1)
+//        syncTimer?.setEventHandler { [weak self] in
+//            guard let self = self, !self.dataStore.synchronized else {
+//                self?.syncTimer?.cancel()
+//                return
+//            }
+//            DispatchQueue.main.async {
+//                HapticManager.shared.trigger(.lightImpact)  // Keep this non-blocking
+//            }
+//        }
+//        syncTimer?.resume()  // Start the timer
+//    }
     
     // MARK: - Startup Process
+    @MainActor
     func startupProcess(synchronizing: Bool, clearSynchronizing: Bool = false) {
         //allData()
         if clearSynchronizing {
@@ -81,7 +83,7 @@ class SynchronizationManager: ObservableObject {
             }
         }
     }
-    
+    @MainActor
     private func loadStartupState() -> StartupState {
         // Fetching data from GRDB synchronously using Result type handling
         let territoryEntitiesResult = grdbManager.fetchAll(Territory.self)
@@ -130,7 +132,7 @@ class SynchronizationManager: ObservableObject {
             return .AdminLogin
         }
         
-        if await !authorizationLevelManager.existsAdminCredentials(), await authorizationLevelManager.phoneNeedLogin() {
+        if !authorizationLevelManager.existsAdminCredentials(), await authorizationLevelManager.phoneNeedLogin() {
             return .PhoneLogin
         }
         
@@ -149,7 +151,7 @@ class SynchronizationManager: ObservableObject {
         }
         
         // Start sync with haptics feedback
-        startSyncAndHaptics()
+        //await startSyncAndHaptics()
         
         // Begin fetching and syncing data
         do {
@@ -256,17 +258,17 @@ class SynchronizationManager: ObservableObject {
             recallsApi = try await UserService().getRecalls().get()
             
             // Fetch local data from the database (GRDB)
-            let tokensDb = try handleResult(await grdbManager.fetchAllAsync(Token.self))
-            let userTokensDb = try handleResult(await grdbManager.fetchAllAsync(UserToken.self))
-            let territoriesDb = try handleResult(await grdbManager.fetchAllAsync(Territory.self))
-            let housesDb = try handleResult(await grdbManager.fetchAllAsync(House.self))
-            let visitsDb = try handleResult(await grdbManager.fetchAllAsync(Visit.self))
-            let territoriesAddressesDb = try handleResult(await grdbManager.fetchAllAsync(TerritoryAddress.self))
-            let tokenTerritoriesDb = try handleResult(await grdbManager.fetchAllAsync(TokenTerritory.self))
-            let phoneTerritoriesDb = try handleResult(await grdbManager.fetchAllAsync(PhoneTerritory.self))
-            let phoneCallsDb = try handleResult(await grdbManager.fetchAllAsync(PhoneCall.self))
-            let phoneNumbersDb = try handleResult(await grdbManager.fetchAllAsync(PhoneNumber.self))
-            let recallsDb = try handleResult(await grdbManager.fetchAllAsync(Recalls.self))
+            let tokensDb = try await handleResult(await grdbManager.fetchAllAsync(Token.self))
+            let userTokensDb = try await handleResult(await grdbManager.fetchAllAsync(UserToken.self))
+            let territoriesDb = try await  handleResult(await grdbManager.fetchAllAsync(Territory.self))
+            let housesDb = try await  handleResult(await grdbManager.fetchAllAsync(House.self))
+            let visitsDb = try await  handleResult(await grdbManager.fetchAllAsync(Visit.self))
+            let territoriesAddressesDb = try await  handleResult(await grdbManager.fetchAllAsync(TerritoryAddress.self))
+            let tokenTerritoriesDb = try await  handleResult(await grdbManager.fetchAllAsync(TokenTerritory.self))
+            let phoneTerritoriesDb = try await  handleResult(await grdbManager.fetchAllAsync(PhoneTerritory.self))
+            let phoneCallsDb = try await  handleResult(await grdbManager.fetchAllAsync(PhoneCall.self))
+            let phoneNumbersDb = try await  handleResult(await grdbManager.fetchAllAsync(PhoneNumber.self))
+            let recallsDb = try await  handleResult(await grdbManager.fetchAllAsync(Recalls.self))
             print("TokenTerritoriesApi \(tokenTerritoriesApi)")
             // Synchronize Tokens
             await comparingAndSynchronize(apiList: tokensApi, dbList: tokensDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
@@ -300,9 +302,8 @@ class SynchronizationManager: ObservableObject {
             
             // Synchronize Recalls
             await comparingAndSynchronize(apiList: recallsApi, dbList: recallsDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            print("TokenTerritoriesDbAfter \(try handleResult(await grdbManager.fetchAllAsync(TokenTerritory.self)))")
             // Finalize synchronization
-            startupProcess(synchronizing: false)
+            await startupProcess(synchronizing: false)
             DispatchQueue.main.async {
                 self.dataStore.lastTime = Date.now
                 self.dataStore.synchronized = true
@@ -396,40 +397,41 @@ class SynchronizationManager: ObservableObject {
     private func fetchRecallsFromServer() async throws -> [Recalls] {
         return try await UserService().getRecalls().get()
     }
-    
+
     @SyncActor
-    private func comparingAndSynchronize<T: Identifiable & Equatable>(
+    private func comparingAndSynchronize<T: Identifiable & Equatable & Sendable>(
         apiList: [T],
         dbList: [T],
-        updateMethod: @escaping ([T]) async -> Result<String, Error>, // Batch updates
-        addMethod: @escaping ([T]) async -> Result<String, Error>,    // Batch additions
-        deleteMethod: @escaping ([T]) async -> Result<String, Error>  // Batch deletions
+        updateMethod: @Sendable @escaping ([T]) async -> Result<String, Error>,
+        addMethod: @Sendable @escaping ([T]) async -> Result<String, Error>,
+        deleteMethod: @Sendable @escaping ([T]) async -> Result<String, Error>
     ) async {
+        // Initialize the OperationQueue for background batching
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 3  // Adjust based on performance needs
+
+        // Prepare lists for batching
         var updates: [T] = []
         var additions: [T] = []
         
+        // Dictionary setup for identifying updates, additions, and deletions
         var dbDict = Dictionary(dbList.map { ($0.id, $0) }, uniquingKeysWith: { (_, new) in new })
-        
-        // Collect updates and additions
         for apiModel in apiList {
             if let dbModel = dbDict[apiModel.id] {
                 if dbModel != apiModel {
                     updates.append(apiModel)
                 }
-                // Remove from dbDict to identify models that need deletion later
                 dbDict.removeValue(forKey: apiModel.id)
             } else {
                 additions.append(apiModel)
             }
         }
-        
-        // Remaining models in dbDict are those that need deletion
         let deletions = Array(dbDict.values)
-        
-        // Perform batch operations
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask {
-                if !updates.isEmpty {
+
+        // Helper functions for batch processing in the background
+        func handleUpdates(_ updates: [T]) -> Operation {
+            let operation = BlockOperation {
+                Task {
                     let result = await updateMethod(updates)
                     switch result {
                     case .success(let message):
@@ -439,9 +441,13 @@ class SynchronizationManager: ObservableObject {
                     }
                 }
             }
-            
-            group.addTask {
-                if !additions.isEmpty {
+            operationQueue.addOperation(operation)
+            return operation
+        }
+
+        func handleAdditions(_ additions: [T]) -> Operation {
+            let operation = BlockOperation {
+                Task {
                     let result = await addMethod(additions)
                     switch result {
                     case .success(let message):
@@ -451,9 +457,13 @@ class SynchronizationManager: ObservableObject {
                     }
                 }
             }
-            
-            group.addTask {
-                if !deletions.isEmpty {
+            operationQueue.addOperation(operation)
+            return operation
+        }
+
+        func handleDeletions(_ deletions: [T]) -> Operation {
+            let operation = BlockOperation {
+                Task {
                     let result = await deleteMethod(deletions)
                     switch result {
                     case .success(let message):
@@ -463,6 +473,29 @@ class SynchronizationManager: ObservableObject {
                     }
                 }
             }
+            operationQueue.addOperation(operation)
+            return operation
+        }
+
+        // Trigger batch operations
+        let updateOp = !updates.isEmpty ? handleUpdates(updates) : nil
+        let additionOp = !additions.isEmpty ? handleAdditions(additions) : nil
+        let deletionOp = !deletions.isEmpty ? handleDeletions(deletions) : nil
+
+        // Add a completion barrier block that runs after all operations are finished
+        operationQueue.addBarrierBlock {
+            Task { @MainActor in
+                print("All batch operations completed.")
+                // Perform any final actions that require main thread access
+            }
+        }
+
+        // Optional: Ensure completion by adding dependencies
+        if let updateOp = updateOp, let additionOp = additionOp {
+            additionOp.addDependency(updateOp)
+        }
+        if let deletionOp = deletionOp, let updateOp = updateOp {
+            deletionOp.addDependency(updateOp)
         }
     }
     
@@ -560,14 +593,6 @@ class SynchronizationManager: ObservableObject {
         case .failure(let error):
             throw error
         }
-    }
-    
-    class var shared: SynchronizationManager {
-        struct Static {
-            static let instance = SynchronizationManager()
-        }
-        
-        return Static.instance
     }
 }
 

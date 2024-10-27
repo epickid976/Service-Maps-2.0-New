@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 import PapyrusCore
 
-class PasswordResetService {
+class PasswordResetService: @unchecked Sendable {
     private lazy var api: PasswordResetRoutes = PasswordResetRoutesAPI(provider: APIProvider().provider)
 
     // Request password reset

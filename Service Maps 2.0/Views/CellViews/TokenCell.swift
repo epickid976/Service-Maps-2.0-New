@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+@MainActor
 struct TokenCell: View {
     @ObservedObject var dataStore = StorageManager.shared
     var keyData: KeyData

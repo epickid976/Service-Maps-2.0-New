@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ResetPasswordForm: Codable {
+public struct ResetPasswordForm: Codable , Sendable{
     var password: String
     var password_confirmation: String
     var token: String

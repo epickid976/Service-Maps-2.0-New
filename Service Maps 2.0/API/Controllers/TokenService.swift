@@ -7,8 +7,9 @@
 import Foundation
 import Papyrus
 
-class TokenService {
-    lazy var api: TokenRoutes = TokenRoutesAPI(provider: APIProvider().provider)
+
+class TokenService: @unchecked Sendable {
+    private let api: TokenRoutes = TokenRoutesAPI(provider: APIProvider().provider)
     
     // Load owned tokens
     func loadOwnedTokens() async -> Result<[Token], Error> {

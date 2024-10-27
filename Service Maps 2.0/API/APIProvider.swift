@@ -25,59 +25,70 @@ class APIProvider {
     
     private enum APIError: Error {
         case invalidSelf
+        case authDataUnavailable
     }
 
     init() {
         provider = Self.makeProvider()
     }
     
+    // Fetch auth data from main actor in a way that can be cached
+    private static func getAuthHeaders() async throws -> [String: String] {
+        // Switch to main actor just for fetching the auth data
+        return await MainActor.run {
+            var headers: [String: String] = [:]
+            let auth = AuthorizationProvider.shared
+            
+            if let token = auth.authorizationToken {
+                headers[HeaderKeys.authorization] = "Bearer \(token)"
+            }
+            if let token = auth.token {
+                headers[HeaderKeys.token] = token
+            }
+            if let congregationId = auth.congregationId, congregationId != 0 {
+                headers[HeaderKeys.congregationId] = String(congregationId)
+            }
+            if let congregationPass = auth.congregationPass {
+                headers[HeaderKeys.congregationPass] = congregationPass
+            }
+            if let phoneId = auth.phoneCongregationId {
+                headers[HeaderKeys.phoneId] = phoneId
+            }
+            if let phonePass = auth.phoneCongregationPass {
+                headers[HeaderKeys.phonePass] = phonePass
+            }
+            
+            return headers
+        }
+    }
+    
     private static func makeProvider() -> Provider {
         return Provider(baseURL: "https://servicemaps.ejvapps.online/api/")
             .modifyRequests { (req: inout RequestBuilder) in
-                // Clear existing headers first to ensure no carry-over
-                req.headers.removeAll()
-                
-                // Add common headers
-                req.addHeader(HeaderKeys.contentType, value: "application/json", convertToHeaderCase: false)
-                req.addHeader(HeaderKeys.xRequestedWith, value: "XMLHttpRequest", convertToHeaderCase: false)
-                
-                // Add authorization headers
-                let auth = AuthorizationProvider.shared
-                
-                if let token = auth.authorizationToken {
-                    req.addHeader(HeaderKeys.authorization, value: "Bearer \(token)", convertToHeaderCase: false)
-                }
-                if let token = auth.token {
-                    req.addHeader(HeaderKeys.token, value: token, convertToHeaderCase: false)
-                }
-                if let congregationId = auth.congregationId, congregationId != 0 {
-                    req.addHeader(HeaderKeys.congregationId, value: String(congregationId), convertToHeaderCase: false)
-                }
-                if let congregationPass = auth.congregationPass {
-                    req.addHeader(HeaderKeys.congregationPass, value: congregationPass, convertToHeaderCase: false)
-                }
-                if let phoneId = auth.phoneCongregationId {
-                    req.addHeader(HeaderKeys.phoneId, value: phoneId, convertToHeaderCase: false)
-                }
-                if let phonePass = auth.phoneCongregationPass {
-                    req.addHeader(HeaderKeys.phonePass, value: phonePass, convertToHeaderCase: false)
-                }
-                
-                #if DEBUG
-                print("\n📋 Final Headers:")
-                req.headers.forEach { key, value in
-                    print("   \(key): \(value)")
-                }
-                #endif
+                // Set base headers
+                req.headers = [
+                    HeaderKeys.contentType: "application/json",
+                    HeaderKeys.xRequestedWith: "XMLHttpRequest"
+                ]
             }
-            .intercept { req, next in
+            .intercept { [self] request, next in
+                
+                // Create mutable copy of the request
+                var modifiedRequest = request
+                
+                // Fetch auth headers before making the request
+                let authHeaders = try await getAuthHeaders()
+                
+                // Add auth headers to the request
+                modifiedRequest.headers.merge(authHeaders) { current, _ in current }
+                
                 // Log request
                 #if DEBUG
                 print("\n🌐📤 REQUEST:")
-                print("📍 URL: \(req.url?.absoluteString ?? "Unknown URL")")
-                print("🔄 Method: \(req.method)")
-                print("📋 Headers: \(req.headers)")
-                if let body = req.body,
+                print("📍 URL: \(modifiedRequest.url?.absoluteString ?? "Unknown URL")")
+                print("🔄 Method: \(modifiedRequest.method)")
+                print("📋 Headers: \(modifiedRequest.headers)")
+                if let body = modifiedRequest.body,
                    let bodyString = String(data: body, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
                     print("📦 Body: \(bodyString)")
                 }
@@ -85,13 +96,13 @@ class APIProvider {
                 
                 // Track timing and execute request
                 let start = Date()
-                let response = try await next(req)
+                let response = try await next(modifiedRequest)
                 let elapsedTime = String(format: "%.2fs", Date().timeIntervalSince(start))
                 
                 // Log response
                 #if DEBUG
                 print("\n💬 RESPONSE:")
-                print("📍 URL: \(req.url?.absoluteString ?? "Unknown URL")")
+                print("📍 URL: \(modifiedRequest.url?.absoluteString ?? "Unknown URL")")
                 print("⏱ Time: \(elapsedTime)")
                 print("📊 Status: \(response.statusCode.map(String.init) ?? "N/A")")
                 
