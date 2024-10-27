@@ -10,7 +10,7 @@ import Alamofire
 import SwiftUI
 import Papyrus
 
-class UserService {
+class UserService: @unchecked Sendable {
     private lazy var api: UserRoutes = UserRoutesAPI(provider: APIProvider().provider)
 
     func loadTerritories() async -> Result<AllDataResponse, Error> {

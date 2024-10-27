@@ -84,7 +84,7 @@ struct ValidationView: View {
     
 }
 
-
+@MainActor
 class ValidationViewModel: ObservableObject {
     
     @ObservedObject var universalLinksManager = UniversalLinksManager.shared

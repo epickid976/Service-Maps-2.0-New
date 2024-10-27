@@ -22,7 +22,7 @@ func getBuildNumber() -> String {
 }
 
 @discardableResult
-func isUpdateAvailable(completion: @escaping (Bool?, Error?) -> Void) throws -> URLSessionDataTask {
+func isUpdateAvailable(completion: @Sendable @escaping (Bool?, Error?) -> Void) throws -> URLSessionDataTask {
     guard let info = Bundle.main.infoDictionary,
         let currentVersion = info["CFBundleShortVersionString"] as? String,
         let identifier = info["CFBundleIdentifier"] as? String,

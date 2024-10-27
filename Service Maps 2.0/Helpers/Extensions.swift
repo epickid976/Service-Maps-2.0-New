@@ -320,6 +320,7 @@ extension String {
     }
 }
 
+@MainActor
 func openMail(emailTo:String, subject: String, body: String) {
     if let url = URL(string: "mailto:\(emailTo)?subject=\(subject.fixToBrowserString())&body=\(body.fixToBrowserString())"),
        UIApplication.shared.canOpenURL(url)
@@ -337,6 +338,7 @@ extension Result where Success == Bool {
     }
 }
 
+@MainActor
 func openMaps(searchQuery: String) {
         let encodedQuery = searchQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         if let url = URL(string: "maps://?q=\(encodedQuery)") {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct TokenAndUserIdForm: Codable {
+public struct TokenAndUserIdForm: Codable, Sendable {
     var token: String
     var userid: String
     var blocked: Bool = false

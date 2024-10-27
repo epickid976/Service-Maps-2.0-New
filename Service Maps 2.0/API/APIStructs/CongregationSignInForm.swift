@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CongregationSignInForm: Codable {
+public struct CongregationSignInForm: Codable, Sendable {
     var id: Int64
     var password: String
 }

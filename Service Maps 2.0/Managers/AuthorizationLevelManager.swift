@@ -10,6 +10,7 @@ import Alamofire
 import GRDB
 import SwiftUICore
 
+@MainActor
 class AuthorizationLevelManager: ObservableObject {
     private var grdbManager = GRDBManager.shared
     @ObservedObject private var authorizationProvider = AuthorizationProvider.shared
@@ -21,9 +22,9 @@ class AuthorizationLevelManager: ObservableObject {
     }
     
     // Check if the user needs to log in
-    
+    @BackgroundActor
     func userNeedLogin() async -> Bool {
-        if !userHasLogged() {
+        if await !userHasLogged() {
             return true
         }
         
@@ -31,7 +32,7 @@ class AuthorizationLevelManager: ObservableObject {
             _ = try await AuthenticationService().user().get()
         } catch {
             if let error = error.asAFError, error.responseCode == 401 {
-                authorizationProvider.authorizationToken = nil
+                await MainActor.run { authorizationProvider.authorizationToken = nil }
                 return true
             }
         }
@@ -39,8 +40,9 @@ class AuthorizationLevelManager: ObservableObject {
     }
     
     // Check if the admin needs to log in
+    @BackgroundActor
     func adminNeedLogin() async -> Bool {
-            if existsAdminCredentials() {
+        if await existsAdminCredentials() {
                 do {
                     _ = try await CongregationService().signIn(congregationSignInForm: CongregationSignInForm(id: authorizationProvider.congregationId!, password: authorizationProvider.congregationPass!)).get()
                 } catch {
@@ -75,11 +77,13 @@ class AuthorizationLevelManager: ObservableObject {
     }
     
     // Set user credentials from login response
+    @MainActor
     func setUserCredential(logInResponse: LoginResponse) {
         authorizationProvider.authorizationToken = logInResponse.access_token
     }
     
     // Set admin credentials
+    @MainActor
     func setAdminCredentials(password: String, congregationResponse: CongregationResponse) {
         authorizationProvider.congregationId = Int64(congregationResponse.id)
         authorizationProvider.congregationPass = password
@@ -115,11 +119,13 @@ class AuthorizationLevelManager: ObservableObject {
         }
     
     // Check if admin credentials exist
+    @MainActor
     func existsAdminCredentials() -> Bool {
         return authorizationProvider.congregationId != nil && authorizationProvider.congregationPass != nil
     }
     
     // Check if the user has moderator access using GRDB
+    @MainActor
     func existsModeratorAccess() -> Bool {
         do {
             return try grdbManager.dbPool.read { db in
@@ -209,13 +215,15 @@ class AuthorizationLevelManager: ObservableObject {
     }
     
     // Check if phone credentials exist
+    @MainActor
     func existsPhoneCredentials() -> Bool {
         return authorizationProvider.phoneCongregationId != nil && authorizationProvider.phoneCongregationPass != nil
     }
     
     // Check if phone login is required
+    @BackgroundActor
     func phoneNeedLogin() async -> Bool {
-        if existsPhoneCredentials() {
+        if await existsPhoneCredentials() {
             do {
                 _ = try await CongregationService().phoneSignIn(congregationSignInForm: CongregationSignInForm(
                     id: Int64(authorizationProvider.phoneCongregationId!)!,

@@ -21,13 +21,13 @@ extension BackgroundActor {
     }
 }
 
-class GRDBManager: ObservableObject {
-    static let shared = GRDBManager()
-    var dbPool: DatabasePool  // Use DatabasePool for concurrent reads and writes
+final class GRDBManager: ObservableObject, Sendable {
+    @MainActor static let shared = GRDBManager()
+    let dbPool: DatabasePool  // Use DatabasePool for concurrent reads and writes
     
-    @ObservedObject var dataStore = StorageManager.shared
     
-    var cancellables = Set<AnyCancellable>()
+    
+    @MainActor var cancellables = Set<AnyCancellable>()
     
     private init() {
         // Setup code with DatabasePool for concurrent access
@@ -36,8 +36,19 @@ class GRDBManager: ObservableObject {
             .appendingPathComponent("ServiceMaps.sqlite").path
         
         // Initialize DatabasePool
+        
         dbPool = try! DatabasePool(path: databasePath)
         try! setupMigrations()
+    }
+    
+    @MainActor
+    func getUserName() -> String? {
+        return StorageManager.shared.userName
+    }
+    
+    @MainActor
+    func getUserEmail() -> String? {
+        return StorageManager.shared.userEmail
     }
     
     // Setup migrations
@@ -168,7 +179,7 @@ class GRDBManager: ObservableObject {
     // MARK: - Synchronous CRUD Methods
     
     // General Add using Result type
-    func add<T: MutablePersistableRecord>(_ object: T) -> Result<Void, Error> {
+    @Sendable func add<T: MutablePersistableRecord>(_ object: T) -> Result<Void, Error> {
         do {
             try dbPool.write { db in  // Use dbPool.write for writes
                 var object = object
@@ -181,7 +192,7 @@ class GRDBManager: ObservableObject {
     }
     
     // General Edit using Result type
-    func edit<T: MutablePersistableRecord>(_ object: T) -> Result<Void, Error> {
+    @Sendable func edit<T: MutablePersistableRecord>(_ object: T) -> Result<Void, Error> {
         do {
             try dbPool.write { db in
                 try object.update(db, onConflict: .replace)
@@ -194,7 +205,7 @@ class GRDBManager: ObservableObject {
     
     // General Delete using Result type
     @discardableResult
-    func delete<T: MutablePersistableRecord>(_ object: T) -> Result<Void, Error> {
+    @Sendable func delete<T: MutablePersistableRecord>(_ object: T) -> Result<Void, Error> {
         do {
             try dbPool.write { db in
                 try object.delete(db)
@@ -207,7 +218,7 @@ class GRDBManager: ObservableObject {
     }
     
     // General Fetch method to retrieve all objects of a type using Result type
-    func fetchAll<T: FetchableRecord & TableRecord>(_ type: T.Type) -> Result<[T], Error> {
+    @Sendable func fetchAll<T: FetchableRecord & TableRecord>(_ type: T.Type) -> Result<[T], Error> {
         do {
             let objects = try dbPool.read { db in  // Use dbPool.read for concurrent reads
                 try T.fetchAll(db)
@@ -218,7 +229,7 @@ class GRDBManager: ObservableObject {
         }
     }
     
-    func fetchById<T: FetchableRecord & MutablePersistableRecord, Key: DatabaseValueConvertible>(_ type: T.Type, id: Key) -> Result<T?, Error> {
+    @Sendable func fetchById<T: FetchableRecord & MutablePersistableRecord, Key: DatabaseValueConvertible>(_ type: T.Type, id: Key) -> Result<T?, Error> {
         do {
             let object = try dbPool.read { db in
                 try T.fetchOne(db, key: id)
@@ -232,7 +243,7 @@ class GRDBManager: ObservableObject {
     // MARK: - Asynchronous CRUD Methods
     
     @BackgroundActor
-    func addAsync<T: MutablePersistableRecord>(_ object: T) async -> Result<String, Error> {
+    @Sendable func addAsync<T: MutablePersistableRecord & Sendable>(_ object: T) async -> Result<String, Error> {
         do {
             try await dbPool.write { db in
                 var mutableObject = object  // Make a mutable copy inside the write block
@@ -246,7 +257,7 @@ class GRDBManager: ObservableObject {
     }
     
     @BackgroundActor
-    func editAsync<T: MutablePersistableRecord>(_ object: T) async -> Result<String, Error> {
+    @Sendable func editAsync<T: MutablePersistableRecord & Sendable>(_ object: T ) async -> Result<String, Error> {
         do {
             try await dbPool.write { db in
                 try object.update(db, onConflict: .replace)
@@ -258,7 +269,7 @@ class GRDBManager: ObservableObject {
     }
     
     @BackgroundActor
-    func deleteAsync<T: MutablePersistableRecord>(_ object: T) async -> Result<String, Error> {
+    @Sendable func deleteAsync<T: MutablePersistableRecord & Sendable>(_ object: T) async -> Result<String, Error> {
         do {
             _ = try await dbPool.write { db in
                 try object.delete(db)
@@ -270,7 +281,7 @@ class GRDBManager: ObservableObject {
     }
     
     @BackgroundActor
-    func addBulkAsync<T: MutablePersistableRecord>(_ objects: [T]) async -> Result<String, Error> {
+    @Sendable func addBulkAsync<T: MutablePersistableRecord & Sendable>(_ objects: [T]) async -> Result<String, Error> {
         do {
             try await dbPool.write { db in
                 for object in objects {
@@ -285,7 +296,7 @@ class GRDBManager: ObservableObject {
     }
     
     @BackgroundActor
-    func deleteBulkAsync<T: MutablePersistableRecord>(_ objects: [T]) async -> Result<String, Error> {
+    @Sendable func deleteBulkAsync<T: MutablePersistableRecord & Sendable>(_ objects: [T]) async -> Result<String, Error> {
         do {
             try await dbPool.write { db in
                 for object in objects {
@@ -302,7 +313,7 @@ class GRDBManager: ObservableObject {
     }
     
     @BackgroundActor
-    func editBulkAsync<T: MutablePersistableRecord>(_ objects: [T]) async -> Result<String, Error> {
+    @Sendable func editBulkAsync<T: MutablePersistableRecord & Sendable>(_ objects: [T]) async -> Result<String, Error> {
         do {
             try await dbPool.write { db in
                 for object in objects {
@@ -316,7 +327,7 @@ class GRDBManager: ObservableObject {
     }
     
     @BackgroundActor
-    func fetchAllAsync<T: FetchableRecord & TableRecord>(_ type: T.Type) async -> Result<[T], Error> {
+    @Sendable func fetchAllAsync<T: FetchableRecord & TableRecord & Sendable>(_ type: T.Type) async -> Result<[T], Error> {
         do {
             let result = try await dbPool.read { db in
                 try T.fetchAll(db)
@@ -328,7 +339,7 @@ class GRDBManager: ObservableObject {
     }
 
     @BackgroundActor
-    func fetchByIdAsync<T: FetchableRecord & MutablePersistableRecord, Key: DatabaseValueConvertible>(_ type: T.Type, id: Key) async -> Result<T?, Error> {
+    @Sendable func fetchByIdAsync<T: FetchableRecord & MutablePersistableRecord & Sendable, Key: DatabaseValueConvertible & Sendable>(_ type: T.Type, id: Key) async -> Result<T?, Error> {
         do {
             let result = try await dbPool.read { db in
                 try T.fetchOne(db, key: id)
@@ -340,7 +351,7 @@ class GRDBManager: ObservableObject {
     }
     
     // Fetch the first territory from the Territory table
-    func fetchFirstTerritory() -> Territory? {
+    @Sendable func fetchFirstTerritory() -> Territory? {
         do {
             return try dbPool.read { db in
                 try Territory.fetchOne(db) // Fetch the first Territory object
@@ -461,7 +472,7 @@ class GRDBManager: ObservableObject {
         return transformedFlow.eraseToAnyPublisher()
     }
     
-    
+    @MainActor
     func getAddressData(territoryId: String) -> AnyPublisher<[AddressData], Never> {
         
         // Observations for addresses and houses
@@ -512,7 +523,7 @@ class GRDBManager: ObservableObject {
         return flow
     }
     
-    
+    @MainActor
     func getHouseData(addressId: String) -> AnyPublisher<[HouseData], Never> {
         
         // Observations for houses and visits
@@ -578,7 +589,7 @@ class GRDBManager: ObservableObject {
         return flow
     }
     
-    
+    @MainActor
     func getVisitData(houseId: String) -> AnyPublisher<[VisitData], Never> {
         
         // Observation for visits related to the houseId
@@ -593,8 +604,8 @@ class GRDBManager: ObservableObject {
             .setFailureType(to: Never.self) // Set failure type to Never
         
             .flatMap { visits -> AnyPublisher<[VisitData], Never> in
-                let email = self.dataStore.userEmail
-                let name = self.dataStore.userName
+                let email = self.getUserEmail()
+                let name = self.getUserName()
                 
                 var data = [VisitData]()
                 
@@ -627,7 +638,7 @@ class GRDBManager: ObservableObject {
         return flow
     }
     
-    
+    @MainActor
     func getKeyData() -> AnyPublisher<[KeyData], Never> {
         
         // Observations for tokens, territories, and token-territories
@@ -696,7 +707,7 @@ class GRDBManager: ObservableObject {
         return flow
     }
     
-    
+    @MainActor
     func getPhoneData() -> AnyPublisher<[PhoneData], Never> {
         
         // Observations for phone territories and phone numbers
@@ -750,7 +761,7 @@ class GRDBManager: ObservableObject {
         return transformedFlow.eraseToAnyPublisher()
     }
     
-    
+    @MainActor
     func getPhoneNumbersData(phoneTerritoryId: String) -> AnyPublisher<[PhoneNumbersData], Never> {
         
         // Observations for phone numbers and phone calls
@@ -807,7 +818,7 @@ class GRDBManager: ObservableObject {
         return flow
     }
     
-    
+    @MainActor
     func getPhoneCallData(phoneNumberId: String) -> AnyPublisher<[PhoneCallData], Never> {
         
         // Observation for phone calls
@@ -821,8 +832,8 @@ class GRDBManager: ObservableObject {
             .catch { _ in Just([]) } // Handle errors by emitting an empty array
             .setFailureType(to: Never.self)
             .flatMap { phoneCalls -> AnyPublisher<[PhoneCallData], Never> in
-                let email = self.dataStore.userEmail
-                let name = self.dataStore.userName
+                let email = self.getUserEmail()
+                let name = self.getUserName()
                 var data = [PhoneCallData]()
                 
                 // Filter phone calls by phoneNumberId
@@ -1108,7 +1119,7 @@ class GRDBManager: ObservableObject {
             }
             .eraseToAnyPublisher()
     }
-    
+    @MainActor
     func phoneCallAccessLevel(call: PhoneCall, email: String) -> AccessLevel {
         if AuthorizationLevelManager().existsAdminCredentials() {
             return .Admin

@@ -11,8 +11,9 @@ import Ably
 
 let ABLY_KEY_SUBSCRIBE_ONLY = "DsHCCQ.qNceOA:3V_gM3AwmdS0M6zpHSRSxVSGV9HqyK6CpvvC8LB3KeQ"
 
-
+@MainActor
 class RealtimeManager: ObservableObject {
+    static let shared = RealtimeManager()
     
     @ObservedObject private var dataStorageProvider = StorageManager.shared
     @ObservedObject private var authorizationProvider = AuthorizationProvider.shared
@@ -184,14 +185,6 @@ class RealtimeManager: ObservableObject {
         } catch {
             print("Error saving phone call to database: \(error)")
         }
-    }
-
-    class var shared: RealtimeManager {
-        struct Static {
-            static let instance = RealtimeManager()
-        }
-        
-        return Static.instance
     }
 }
 

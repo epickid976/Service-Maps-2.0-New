@@ -8,7 +8,7 @@
 import Foundation
 
 
-class AuthenticationService {
+class AuthenticationService: @unchecked Sendable {
     private lazy var api: AuthenticationRoutes = AuthenticationRoutesAPI(provider: APIProvider().provider)
     
     // Sign up a new user with their details

@@ -242,16 +242,20 @@ struct AccessView: View {
                         HapticManager.shared.trigger(.lightImpact)
                         let url = URL(string: getShareLink(id: keyData.key.id))
                         let territories = keyData.territories.map { String($0.number) }
-                        
                         let itemSource = CustomActivityItemSource(keyName: keyData.key.name, territories: territories, url: url!)
-                        
+
                         let av = UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
-                        
-                        UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
-                        
-                        if UIDevice.current.userInterfaceIdiom == .pad {
-                            av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
-                            av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+
+                        // Find the active UIWindowScene
+                        if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+                           let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+                            
+                            rootVC.present(av, animated: true, completion: nil)
+                            
+                            if UIDevice.current.userInterfaceIdiom == .pad {
+                                av.popoverPresentationController?.sourceView = windowScene.windows.first
+                                av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                            }
                         }
                         
                         
@@ -319,11 +323,17 @@ struct AccessView: View {
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.40) {
                     HapticManager.shared.trigger(.lightImpact)
-                    UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
                     
-                    if UIDevice.current.userInterfaceIdiom == .pad {
-                        av.popoverPresentationController?.sourceView = UIApplication.shared.windows.first
-                        av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                    // Find the active UIWindowScene
+                    if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+                       let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+                        
+                        rootVC.present(av, animated: true, completion: nil)
+                        
+                        if UIDevice.current.userInterfaceIdiom == .pad {
+                            av.popoverPresentationController?.sourceView = windowScene.windows.first
+                            av.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2.1, y: UIScreen.main.bounds.height / 1.3, width: 200, height: 200)
+                        }
                     }
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.50) {

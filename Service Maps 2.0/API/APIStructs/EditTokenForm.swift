@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct EditTokenForm: Codable {
+public struct EditTokenForm: Codable, Sendable{
     var token: String
     var territories: String
 }

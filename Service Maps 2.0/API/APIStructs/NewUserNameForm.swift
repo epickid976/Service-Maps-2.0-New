@@ -7,6 +7,6 @@
 
 import Foundation
 
-public struct NewUserNameForm: Codable {
+public struct NewUserNameForm: Codable, Sendable {
     var username: String
 }

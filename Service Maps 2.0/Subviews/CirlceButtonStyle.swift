@@ -53,7 +53,7 @@ struct CircleButtonStyle: ButtonStyle {
             
     }
 }
-
+@MainActor
 struct PillButtonStyle: ButtonStyle {
     
     var imageName: String

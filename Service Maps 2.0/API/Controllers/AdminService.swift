@@ -10,7 +10,7 @@ import Alamofire
 import SwiftUI
 import Papyrus
 
-class AdminService {
+class AdminService: @unchecked Sendable {
     private lazy var api: AdminRoutes = AdminRoutesAPI(provider: APIProvider().provider)
 
     // Fetch all data

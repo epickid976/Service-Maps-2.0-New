@@ -96,7 +96,7 @@ struct LottieAnimationUIView: UIViewRepresentable {
             self.parent = parent
         }
         
-        @objc func handleTapGesture(_ gesture: UITapGestureRecognizer) {
+        @MainActor @objc func handleTapGesture(_ gesture: UITapGestureRecognizer) {
             parent.animationProgress = 0
             parent.shouldRestartAnimation = true
             parent.restartAnimation()

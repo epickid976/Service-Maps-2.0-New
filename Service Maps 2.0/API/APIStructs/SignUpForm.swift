@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SignUpForm: Codable {
+public struct SignUpForm: Codable, Sendable {
     var name: String
     var email: String
     var password: String

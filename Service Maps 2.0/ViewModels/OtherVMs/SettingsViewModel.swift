@@ -420,25 +420,32 @@ class SettingsViewModel: ObservableObject {
                     try isUpdateAvailable { [self] (update, error) in
                         if let update {
                             if update {
-                                self.showUpdateToastMessage = NSLocalizedString("Update available. Redirecting to App Store...", comment: "")
-                                self.showUpdateToast = true
-                                
+                                DispatchQueue.main.async {
+                                    self.showUpdateToastMessage = NSLocalizedString("Update available. Redirecting to App Store...", comment: "")
+                                    self.showUpdateToast = true
+                                }
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                     UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103")!)
                                 }
                             } else {
-                                self.showUpdateToastMessage = NSLocalizedString("App is up to date!", comment: "")
-                                self.showUpdateToast = true
+                                DispatchQueue.main.async {
+                                    self.showUpdateToastMessage = NSLocalizedString("App is up to date!", comment: "")
+                                    self.showUpdateToast = true
+                                }
                             }
                         }
                        
                        if let error {
                            if error.localizedDescription == NSLocalizedString("The operation couldn’t be completed. (NSURLErrorDomain error -1009.)", comment: "") {
-                               self.showUpdateToastMessage = NSLocalizedString("No internet connection", comment: "")
-                               self.showUpdateToast = true
+                               DispatchQueue.main.async {
+                                   self.showUpdateToastMessage = NSLocalizedString("No internet connection", comment: "")
+                                   self.showUpdateToast = true
+                               }
                            } else {
-                               self.showUpdateToastMessage = error.localizedDescription
-                               self.showUpdateToast = true
+                               DispatchQueue.main.async {
+                                   self.showUpdateToastMessage = error.localizedDescription
+                                   self.showUpdateToast = true
+                               }
                            }
                        }
                     }

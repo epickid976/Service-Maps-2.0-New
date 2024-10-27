@@ -4,7 +4,7 @@
 //
 //  Created by Jose Blanco on 10/22/24.
 //
-import Papyrus
+@preconcurrency import Papyrus
 
 @API
 public protocol TokenRoutes {

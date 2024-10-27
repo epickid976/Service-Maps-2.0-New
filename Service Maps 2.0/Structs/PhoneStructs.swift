@@ -8,7 +8,7 @@
 import GRDB
 import ModifiedCopy
 
-public struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var congregation: String
     var number: Int64
@@ -42,7 +42,7 @@ public struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord
         }
 }
 
-public struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var congregation: String
     var number: String
@@ -68,7 +68,7 @@ public struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, E
 }
 
 @Copyable
-public struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var phonenumber: String
     var date: Int64
@@ -94,7 +94,7 @@ public struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equ
 }
 
 
-public struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     
     // This `id` will not be decoded from JSON
     public var id: String {
@@ -123,7 +123,7 @@ public struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equ
         }
 }
 
-public struct Recalls: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct Recalls: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     
     public var id: Int64
     var user: String

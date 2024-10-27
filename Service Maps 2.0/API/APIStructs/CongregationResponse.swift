@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CongregationResponse: Codable {
+public struct CongregationResponse: Codable, Sendable {
     var id: String
     var name: String
     var created_at: String

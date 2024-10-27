@@ -8,6 +8,7 @@
 import UIKit // Or SwiftUI, depending on your project
 import SwiftUI
 
+@MainActor
 class HapticManager {
     // Feedback Generators
     @ObservedObject var preferencesViewModel = ColumnViewModel()

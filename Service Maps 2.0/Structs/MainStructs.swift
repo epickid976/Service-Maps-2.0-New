@@ -8,7 +8,7 @@
 import GRDB
 import Foundation
 
-public struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var congregation: String
     var number: Int32
@@ -42,7 +42,7 @@ public struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equ
     }
 }
 
-public struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var territory: String
     var address: String
@@ -65,7 +65,7 @@ public struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableReco
     }
 }
 
-public struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var territory_address: String
     var number: String
@@ -88,7 +88,7 @@ public struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatab
     }
 }
 
-public struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var house: String
     var date: Int64
@@ -115,7 +115,7 @@ public struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatab
     }
 }
 
-public struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable {
+public struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var name: String
     var owner: String
@@ -144,7 +144,7 @@ public struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatab
 }
 
 // For the specific problematic endpoint
-public struct CreateTokenResponse: Decodable {
+public struct CreateTokenResponse: Decodable, Sendable {
     let token: Token
     
     public init(from decoder: Decoder) throws {
@@ -184,7 +184,7 @@ public struct CreateTokenResponse: Decodable {
     }
 }
 
-public struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable {
+public struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Sendable {
     
     var token: String
     var territory: String
