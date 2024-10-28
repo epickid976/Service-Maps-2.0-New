@@ -184,9 +184,6 @@ struct PhoneTerritoriesScreen: View {
                                     viewModel.showAddedToast = true
                                 }
                                 
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    viewModel.showAddedToast = false
-                                }
                             }
                         }
                         .navigationDestination(isPresented: $searchViewDestination) {

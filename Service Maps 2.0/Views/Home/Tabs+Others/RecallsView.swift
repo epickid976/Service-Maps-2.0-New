@@ -335,9 +335,6 @@ struct CentrePopup_RemoveRecall: CentrePopup {
                                         self.viewModel.ifFailed = false
                                         self.viewModel.recallToRemove = nil
                                         self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showToast = false
-                                        }
                                     }
                                     HapticManager.shared.trigger(.success)
                                 case .failure(_):

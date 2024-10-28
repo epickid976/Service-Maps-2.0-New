@@ -9,7 +9,7 @@ import Foundation
 import BackgroundTasks
 import SwiftUI
 import Combine
-
+import GRDB
 @MainActor
 class DataUploaderManager: ObservableObject {
     
@@ -26,381 +26,274 @@ class DataUploaderManager: ObservableObject {
     // MARK: - Territory Methods
     @BackgroundActor
     func addTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Void, Error> {
-        let result = image == nil ? await adminApi.addTerritory(territory: territory)
-        : await adminApi.addTerritory(territory: territory, image: image!)
+        let apiResult = image == nil
+            ? await adminApi.addTerritory(territory: territory)
+            : await adminApi.addTerritory(territory: territory, image: image!)
         
-        switch result {
-        case .success:
-            return await grdbManager.addAsync(territory).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.addAsync(territory).get() // Ignore the result but handle any errors
         }
     }
     
     @BackgroundActor
     func updateTerritory(territory: Territory, image: UIImage? = nil) async -> Result<Void, Error> {
-        let result = image != nil ? await adminApi.updateTerritory(territory: territory, image: image!) : await adminApi.updateTerritory(territory: territory)
-        
-        switch result {
-        case .success:
-            return await grdbManager.editAsync(territory).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = image == nil
+            ? await adminApi.updateTerritory(territory: territory)
+            : await adminApi.updateTerritory(territory: territory, image: image!)
+
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.editAsync(territory).get() // Ignore the result but handle errors
         }
     }
     
     @BackgroundActor
     func deleteTerritory(territoryId: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(Territory.self, id: territoryId)
+        // Attempt to fetch the territory, handling the optional result
+        let fetchResult = await grdbManager.fetchByIdAsync(Territory.self, id: territoryId)
         
-        switch result {
-        case .success(let territory):
-            guard let territory = territory else {
-                return .failure(CustomErrors.NotFound)
-            }
-            
-            let apiResult = await adminApi.deleteTerritory(territory: territory)
-            
-            switch apiResult {
-            case .success:
-                let dbResult = await grdbManager.deleteAsync(territory).map { _ in () }
-                return dbResult
-            case .failure(let error):
-                return .failure(error)
-            }
-            
-        case .failure(let error):
-            return .failure(error)
+        guard case .success(let territory) = fetchResult, let unwrappedTerritory = territory else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        // Proceed with deletion if territory was found
+        let apiResult = await adminApi.deleteTerritory(territory: unwrappedTerritory)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedTerritory).get() // Ignore result but handle errors
         }
     }
     
     // MARK: - TerritoryAddress Methods
     @BackgroundActor
     func addTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Void, Error> {
-        let result = await adminApi.addTerritoryAddress(territoryAddress: territoryAddress)
-        
-        switch result {
-        case .success:
-            return await grdbManager.addAsync(territoryAddress).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await adminApi.addTerritoryAddress(territoryAddress: territoryAddress)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.addAsync(territoryAddress).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func deleteTerritoryAddress(territoryAddressId: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(TerritoryAddress.self, id: territoryAddressId)
+        let fetchResult = await grdbManager.fetchByIdAsync(TerritoryAddress.self, id: territoryAddressId)
+
+        guard case .success(let territoryAddress) = fetchResult, let unwrappedTerritoryAddress = territoryAddress else {
+            return .failure(CustomErrors.NotFound)
+        }
         
-        switch result {
-        case .success(let territoryAddress):
-            guard let territoryAddress = territoryAddress else {
-                return .failure(CustomErrors.NotFound)
-            }
-            
-            let apiResult = await adminApi.deleteTerritoryAddress(territoryAddress: territoryAddress)
-            
-            switch apiResult {
-            case .success:
-                let dbResult = await grdbManager.deleteAsync(territoryAddress).map { _ in () }
-                return dbResult
-            case .failure(let error):
-                return .failure(error)
-            }
-            
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await adminApi.deleteTerritoryAddress(territoryAddress: unwrappedTerritoryAddress)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedTerritoryAddress).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func updateTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Void, Error> {
-        let result = await adminApi.updateTerritoryAddress(territoryAddress: territoryAddress)
-        
-        switch result {
-        case .success:
-            return await grdbManager.editAsync(territoryAddress).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await adminApi.updateTerritoryAddress(territoryAddress: territoryAddress)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.editAsync(territoryAddress).get() // Ignore result but handle errors
         }
     }
     
     // MARK: - House Methods
     @BackgroundActor
     func addHouse(house: House) async -> Result<Void, Error> {
-        let result = await adminApi.addHouse(house: house)
-        
-        switch result {
-        case .success:
-            return await grdbManager.addAsync(house).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await adminApi.addHouse(house: house)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.addAsync(house).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func deleteHouse(houseId: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(House.self, id: houseId)
-        
-        switch result {
-        case .success(let house):
-            guard let house = house else {
-                return .failure(CustomErrors.NotFound)
-            }
-            
-            let apiResult = await adminApi.deleteHouse(house: house)
-            
-            switch apiResult {
-            case .success:
-                let dbResult = await grdbManager.deleteAsync(house).map { _ in () }
-                return dbResult
-            case .failure(let error):
-                return .failure(error)
-            }
-            
-        case .failure(let error):
-            return .failure(error)
+        let fetchResult = await grdbManager.fetchByIdAsync(House.self, id: houseId)
+
+        guard case .success(let house) = fetchResult, let unwrappedHouse = house else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        let apiResult = await adminApi.deleteHouse(house: unwrappedHouse)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedHouse).get() // Ignore result but handle errors
         }
     }
     
     // MARK: - Visit Methods
     @BackgroundActor
     func addVisit(visit: Visit) async -> Result<Void, Error> {
-        let result: Result<Void, Error>
-        
-        if await authorizationLevelManager.existsAdminCredentials() {
-            result = await adminApi.addVisit(visit: visit)
-        } else {
-            // Simply await the function if it returns Void
-            await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
-            result = await userApi.addVisit(visit: visit)
-        }
-        
-        switch result {
-        case .success:
-            return await grdbManager.addAsync(visit).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult: Result<Void, Error> = await authorizationLevelManager.existsAdminCredentials()
+            ? await adminApi.addVisit(visit: visit)
+            : {
+                await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
+                return await userApi.addVisit(visit: visit)
+            }()
+
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.addAsync(visit).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func updateVisit(visit: Visit) async -> Result<Void, Error> {
-        let result: Result<Void, Error>
-        
-        if await authorizationLevelManager.existsAdminCredentials() {
-            result = await adminApi.updateVisit(visit: visit)
-        } else {
-            // Same as before, await this if it's Void
-            await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
-            result = await userApi.updateVisit(visit: visit)
-        }
-        
-        switch result {
-        case .success:
-            return await grdbManager.editAsync(visit).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult: Result<Void, Error> = await authorizationLevelManager.existsAdminCredentials()
+            ? await adminApi.updateVisit(visit: visit)
+            : {
+                await authorizationLevelManager.setAuthorizationTokenFor(model: visit)
+                return await userApi.updateVisit(visit: visit)
+            }()
+
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.editAsync(visit).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func deleteVisit(visitId: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(Visit.self, id: visitId)
-        
-        switch result {
-        case .success(let visit):
-            guard let visit = visit else {
-                return .failure(CustomErrors.NotFound)
-            }
-            let apiResult = await adminApi.deleteVisit(visit: visit)
-            
-            switch apiResult {
-            case .success:
-                return await grdbManager.deleteAsync(visit).map { _ in () }
-            case .failure(let error):
-                return .failure(error)
-            }
-            
-        case .failure(let error):
-            return .failure(error)
+        let fetchResult = await grdbManager.fetchByIdAsync(Visit.self, id: visitId)
+
+        guard case .success(let visit) = fetchResult, let unwrappedVisit = visit else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        let apiResult = await adminApi.deleteVisit(visit: unwrappedVisit)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedVisit).get() // Ignore result but handle errors
         }
     }
     
     // MARK: - PhoneTerritory Methods
     @BackgroundActor
     func addPhoneTerritory(territory: PhoneTerritory, image: UIImage? = nil) async -> Result<Void, Error> {
-        let result: Result<Void, Error>
-        if let image = image {
-            result = await adminApi.addPhoneTerritory(phoneTerritory: territory, image: image)
-        } else {
-            result = await adminApi.addPhoneTerritory(phoneTerritory: territory)
-        }
+        let apiResult = image == nil
+            ? await adminApi.addPhoneTerritory(phoneTerritory: territory)
+            : await adminApi.addPhoneTerritory(phoneTerritory: territory, image: image!)
         
-        switch result {
-        case .success:
-            return await grdbManager.addAsync(territory).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.addAsync(territory).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func updatePhoneTerritory(territory: PhoneTerritory, image: UIImage? = nil) async -> Result<Void, Error> {
-        let result: Result<Void, Error>
-        if await authorizationLevelManager.existsAdminCredentials() {
-            result = image == nil ?
-            await adminApi.updatePhoneTerritory(phoneTerritory: territory) :
-            await adminApi.updatePhoneTerritory(phoneTerritory: territory, image: image!)
-        } else {
+        // Only proceed if admin credentials exist
+        guard await authorizationLevelManager.existsAdminCredentials() else {
             return .failure(CustomErrors.ErrorUploading)
         }
+
+        let apiResult = image == nil
+            ? await adminApi.updatePhoneTerritory(phoneTerritory: territory)
+            : await adminApi.updatePhoneTerritory(phoneTerritory: territory, image: image!)
         
-        switch result {
-        case .success:
-            return await grdbManager.editAsync(territory).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.editAsync(territory).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func deletePhoneTerritory(territoryId: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(PhoneTerritory.self, id: territoryId)
+        let fetchResult = await grdbManager.fetchByIdAsync(PhoneTerritory.self, id: territoryId)
         
-        switch result {
-        case .success(let territory):
-            guard let territory = territory else {
-                return .failure(CustomErrors.NotFound)
-            }
-            let apiResult = await adminApi.deletePhoneTerritory(phoneTerritory: territory)
-            switch apiResult {
-            case .success:
-                return await grdbManager.deleteAsync(territory).map { _ in () }
-            case .failure(let error):
-                return .failure(error)
-            }
-        case .failure(let error):
-            return .failure(error)
+        guard case .success(let territory) = fetchResult, let unwrappedTerritory = territory else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        let apiResult = await adminApi.deletePhoneTerritory(phoneTerritory: unwrappedTerritory)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedTerritory).get() // Ignore result but handle errors
         }
     }
     
     // MARK: - PhoneNumber Methods
     @BackgroundActor
     func addPhoneNumber(phoneNumber: PhoneNumber) async -> Result<Void, Error> {
-        let result = await adminApi.addPhoneNumber(phoneNumber: phoneNumber)
-        switch result {
-        case .success:
-            return await grdbManager.addAsync(phoneNumber).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await adminApi.addPhoneNumber(phoneNumber: phoneNumber)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.addAsync(phoneNumber).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func updatePhoneNumber(phoneNumber: PhoneNumber) async -> Result<Void, Error> {
-        let result = await adminApi.updatePhoneNumber(phoneNumber: phoneNumber)
-        switch result {
-        case .success:
-            return await grdbManager.editAsync(phoneNumber).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await adminApi.updatePhoneNumber(phoneNumber: phoneNumber)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.editAsync(phoneNumber).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func deletePhoneNumber(phoneNumberId: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(PhoneNumber.self, id: phoneNumberId)
+        let fetchResult = await grdbManager.fetchByIdAsync(PhoneNumber.self, id: phoneNumberId)
         
-        switch result {
-        case .success(let phoneNumber):
-            guard let phoneNumber = phoneNumber else {
-                return .failure(CustomErrors.NotFound)
-            }
-            let apiResult = await adminApi.deletePhoneNumber(phoneNumber: phoneNumber)
-            switch apiResult {
-            case .success:
-                return await grdbManager.deleteAsync(phoneNumber).map { _ in () }
-            case .failure(let error):
-                return .failure(error)
-            }
-        case .failure(let error):
-            return .failure(error)
+        guard case .success(let phoneNumber) = fetchResult, let unwrappedPhoneNumber = phoneNumber else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        let apiResult = await adminApi.deletePhoneNumber(phoneNumber: unwrappedPhoneNumber)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedPhoneNumber).get() // Ignore result but handle errors
         }
     }
     
     // MARK: - PhoneCall Methods
     @BackgroundActor
     func addPhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
-        let result = if await authorizationLevelManager.existsAdminCredentials() {
-            await adminApi.addPhoneCall(phoneCall: phoneCall)
-        } else {
-            await userApi.addPhoneCall(phoneCall: phoneCall)
-        }
-        
-        switch result {
-        case .success:
-            return await grdbManager.addAsync(phoneCall).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await authorizationLevelManager.existsAdminCredentials()
+            ? await adminApi.addPhoneCall(phoneCall: phoneCall)
+            : await userApi.addPhoneCall(phoneCall: phoneCall)
+
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.addAsync(phoneCall).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func updatePhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
-        let result = if await authorizationLevelManager.existsAdminCredentials() {
-            await adminApi.updatePhoneCall(phoneCall: phoneCall)
-        } else {
-            await userApi.updatePhoneCall(phoneCall: phoneCall)
-        }
-        
-        switch result {
-        case .success:
-            return await grdbManager.editAsync(phoneCall).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await authorizationLevelManager.existsAdminCredentials()
+            ? await adminApi.updatePhoneCall(phoneCall: phoneCall)
+            : await userApi.updatePhoneCall(phoneCall: phoneCall)
+
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.editAsync(phoneCall).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func deletePhoneCall(phoneCallId: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(PhoneCall.self, id: phoneCallId)
-        
-        switch result {
-        case .success(let phoneCall):
-            guard let phoneCall = phoneCall else {
-                return .failure(CustomErrors.NotFound)
-            }
-            let apiResult = await adminApi.deletePhoneCall(phoneCall: phoneCall)
-            switch apiResult {
-            case .success:
-                return await grdbManager.deleteAsync(phoneCall).map { _ in () }
-            case .failure(let error):
-                return .failure(error)
-            }
-        case .failure(let error):
-            return .failure(error)
+        let fetchResult = await grdbManager.fetchByIdAsync(PhoneCall.self, id: phoneCallId)
+
+        guard case .success(let phoneCall) = fetchResult, let unwrappedPhoneCall = phoneCall else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        let apiResult = await adminApi.deletePhoneCall(phoneCall: unwrappedPhoneCall)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedPhoneCall).get() // Ignore result but handle errors
         }
     }
     
     // MARK: - Token and TokenTerritory Methods
     @BackgroundActor
     func createToken(newTokenForm: NewTokenForm, territories: [Territory]) async -> Result<Token, Error> {
-        let token = await tokenApi.createToken(name: newTokenForm.name, moderator: newTokenForm.moderator, territories: newTokenForm.territories, congregation: newTokenForm.congregation, expire: newTokenForm.expire)
-        
-        var tokenTerritories = [TokenTerritory]()
-        if let tokenUnwrapped = try? token.get() {
-            _ = await grdbManager.addAsync(tokenUnwrapped)
+        let apiResult = await tokenApi.createToken(
+            name: newTokenForm.name,
+            moderator: newTokenForm.moderator,
+            territories: newTokenForm.territories,
+            congregation: newTokenForm.congregation,
+            expire: newTokenForm.expire
+        )
+
+        if let token = try? apiResult.get() {
+            // Add token to database
+            _ = try? await grdbManager.addAsync(token).get()
             
-            for territory in territories {
-                let newTokenTerritory = TokenTerritory(token: tokenUnwrapped.id, territory: territory.id)
-                tokenTerritories.append(newTokenTerritory)
+            // Prepare TokenTerritory entries and add them to the database
+            let tokenTerritories = territories.map {
+                TokenTerritory(token: token.id, territory: $0.id)
             }
             
             for tokenTerritory in tokenTerritories {
-                _ = await grdbManager.addAsync(tokenTerritory)
+                _ = try? await grdbManager.addAsync(tokenTerritory).get()
             }
-            
-            return .success(tokenUnwrapped)
+
+            return .success(token)
         } else {
             return .failure(NSError(domain: "Could not create token", code: 0, userInfo: nil))
         }
@@ -410,51 +303,35 @@ class DataUploaderManager: ObservableObject {
     func editToken(token: String, territories: [Territory]) async -> Result<Void, Error> {
         let territoriesToSend = territories.map { $0.id }
         
-        let result = await tokenApi.editToken(tokenId: token, territories: territoriesToSend.description)
-        
-        switch result {
-        case .success:
+        let apiResult = await tokenApi.editToken(tokenId: token, territories: territoriesToSend.description)
+        return await performApiAndDbUpdate(apiResult) {
+            // Remove old token territories
             let fetchResult = await grdbManager.fetchAllAsync(TokenTerritory.self)
-            
-            switch fetchResult {
-            case .success(let tokenTerritories):
+            if case .success(let tokenTerritories) = fetchResult {
                 for oldTokenTerritory in tokenTerritories where oldTokenTerritory.token == token {
-                    _ = await grdbManager.deleteAsync(oldTokenTerritory)
+                    _ = try await grdbManager.deleteAsync(oldTokenTerritory).get()
                 }
-                for territory in territories {
-                    let newTokenTerritory = TokenTerritory(token: token, territory: territory.id)
-                    _ = await grdbManager.addAsync(newTokenTerritory)
-                }
-                return .success(())
-            case .failure(let fetchError):
-                return .failure(fetchError)
             }
             
-        case .failure(let error):
-            return .failure(error)
+            // Add new token territories
+            for territory in territories {
+                let newTokenTerritory = TokenTerritory(token: token, territory: territory.id)
+                _ = try await grdbManager.addAsync(newTokenTerritory).get()
+            }
         }
     }
     
     @BackgroundActor
     func deleteToken(tokenId: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(Token.self, id: tokenId)
+        let fetchResult = await grdbManager.fetchByIdAsync(Token.self, id: tokenId)
         
-        switch result {
-        case .success(let token):
-            guard let token = token else {
-                return .failure(CustomErrors.NotFound)
-            }
-            let apiResult = await tokenApi.deleteToken(token: token.id)
-            
-            switch apiResult {
-            case .success:
-                return await grdbManager.deleteAsync(token).map { _ in () }
-            case .failure(let error):
-                return .failure(error)
-            }
-            
-        case .failure(let error):
-            return .failure(error)
+        guard case .success(let token) = fetchResult, let unwrappedToken = token else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        let apiResult = await tokenApi.deleteToken(token: unwrappedToken.id)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedToken).get() // Ignore result but handle errors
         }
     }
     
@@ -462,99 +339,83 @@ class DataUploaderManager: ObservableObject {
     @BackgroundActor
     func addRecall(user: String, house: String) async -> Result<Void, Error> {
         let recall = Recalls(id: Date.now.millisecondsSince1970, user: user, house: house)
-        
-        let result = await userApi.addRecall(recall: recall)
-        
-        switch result {
-        case .success:
-            return await grdbManager.addAsync(recall).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await userApi.addRecall(recall: recall)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.addAsync(recall).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func deleteRecall(recall: Recalls) async -> Result<Void, Error> {
-        let result = await userApi.removeRecall(recall: recall)
-        
-        switch result {
-        case .success:
-            return await grdbManager.deleteAsync(recall).map { _ in () }
-        case .failure(let error):
-            return .failure(error)
+        let apiResult = await userApi.removeRecall(recall: recall)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(recall).get() // Ignore result but handle errors
         }
     }
     
     @BackgroundActor
     func unregisterToken(myToken: String) async -> Result<Void, Error> {
-        let result = await tokenApi.unregister(token: myToken)
-        
-        return result.map { _ in () }
+        return await tokenApi.unregister(token: myToken).map { _ in () }
     }
-    
+
     @BackgroundActor
     func registerToken(myToken: String) async -> Result<Void, Error> {
-        let result = await tokenApi.register(token: myToken)
-        
-        return result.map { _ in () }
+        return await tokenApi.register(token: myToken).map { _ in () }
     }
     
     @BackgroundActor
     func deleteUserFromToken(userToken: String) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(UserToken.self, id: userToken)
-        
-        switch result {
-        case .success(let userTokenEntity):
-            guard let userTokenEntity = userTokenEntity else {
-                return .failure(CustomErrors.NotFound)
-            }
-            let apiResult = await tokenApi.removeUserFromToken(token: userTokenEntity.token, userId: userTokenEntity.userId)
-            
-            switch apiResult {
-            case .success:
-                return await grdbManager.deleteAsync(userTokenEntity).map { _ in () }
-            case .failure(let error):
-                return .failure(error)
-            }
-            
-        case .failure(let error):
-            return .failure(error)
+        let fetchResult = await grdbManager.fetchByIdAsync(UserToken.self, id: userToken)
+
+        guard case .success(let userTokenEntity) = fetchResult, let unwrappedUserToken = userTokenEntity else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        let apiResult = await tokenApi.removeUserFromToken(token: unwrappedUserToken.token, userId: unwrappedUserToken.userId)
+        return await performApiAndDbUpdate(apiResult) {
+            _ = try await grdbManager.deleteAsync(unwrappedUserToken).get() // Ignore result but handle errors
         }
     }
     
-    func blockUnblockUserFromToken(userToken: String, blocked: Bool) async -> Result<Void, Error> {
-        let result = await grdbManager.fetchByIdAsync(UserToken.self, id: userToken)
+    @BackgroundActor
+    func blockUnblockUserFromToken(userToken: UserToken, blocked: Bool) async -> Result<Void, Error> {
+        let exists = await grdbManager.exists(UserToken.self, matching: ["userId": userToken.userId, "token": userToken.token])
         
-        switch result {
-        case .success(let userTokenEntity):
-            guard let userTokenEntity = userTokenEntity else {
-                return .failure(CustomErrors.NotFound)
-            }
-            
-            // Directly use Task.detached for TokenService call
-            let apiResult: Result<Void, Error> = await Task.detached {
-                await self.tokenApi.blockUnblockUserFromToken(
-                    token: userTokenEntity.token,
-                    userId: userTokenEntity.userId,
-                    blocked: blocked
-                )
-            }.value
-            
-            switch apiResult {
-            case .success:
-                let updatedUserToken = UserToken(
-                    token: userTokenEntity.token,
-                    userId: userTokenEntity.userId,
-                    name: userTokenEntity.name,
-                    blocked: blocked
-                )
-                return await grdbManager.editAsync(updatedUserToken).map { _ in () }
-            case .failure(let error):
-                return .failure(error)
-            }
-            
-        case .failure(let error):
+        guard exists else {
+            return .failure(CustomErrors.NotFound)
+        }
+
+        let apiResult = await tokenApi.blockUnblockUserFromToken(token: userToken.token, userId: userToken.userId, blocked: blocked)
+        return await performApiAndDbUpdate(apiResult) {
+            var updatedUserToken = userToken
+            updatedUserToken.blocked = blocked
+            _ = try await grdbManager.editAsync(updatedUserToken).get() // Ignore result but handle errors
+        }
+    }
+    
+    // Helper for handling API call results and performing a database action
+    @BackgroundActor
+    private func performApiAndDbUpdate(_ apiResult: Result<Void, Error>, dbAction: () async throws -> Void) async -> Result<Void, Error> {
+        // Handle the API result
+        if case .failure(let apiError) = apiResult {
+            return .failure(apiError)
+        }
+        
+        // Attempt the database action and handle any errors
+        do {
+            try await dbAction()
+            return .success(())
+        } catch {
             return .failure(error)
         }
+    }
+
+    // Helper for safely fetching an entity from the database
+    @BackgroundActor
+    private func fetchEntity<T: FetchableRecord & MutablePersistableRecord & Sendable>(_ type: T.Type, id: String) async -> Result<T, Error> {
+        guard let entity = try? await grdbManager.fetchByIdAsync(type, id: id).get() else {
+            return .failure(CustomErrors.NotFound)
+        }
+        return .success(entity)
     }
 }

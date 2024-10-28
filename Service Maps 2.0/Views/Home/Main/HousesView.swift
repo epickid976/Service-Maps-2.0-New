@@ -391,9 +391,6 @@ struct CentrePopup_AddHouse: CentrePopup {
 //                }
                 viewModel.showAddedToast = true
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    viewModel.showAddedToast = false
-                }
             }
         }, onDismiss: {
             viewModel.presentSheet = false

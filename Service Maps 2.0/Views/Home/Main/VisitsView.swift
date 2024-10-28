@@ -542,7 +542,6 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                 if !viewModel.loading {
                     CustomBackButton() {
                         withAnimation {
-                            //self.viewModel.showAlert = false
                             dismissLastPopup()
                             
                         }
@@ -556,7 +555,7 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                     }
                     Task {
                         switch await viewModel.deleteRecall(id: viewModel.getRecallId(house: house) ?? Date().millisecondsSince1970 ,user: user ?? "", house: house) {
-                        case .success(let success):
+                        case .success(_):
                             viewModel.loading = false
                             dismissLastPopup()
                             viewModel.showRecallAddedToast = true
@@ -565,7 +564,7 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                                     self.viewModel.recallAdded = false
                                 }
                             }
-                        case .failure(let failure):
+                        case .failure(_):
                             viewModel.ifFailed = true
                         }
                     }

@@ -597,6 +597,6 @@ class SynchronizationManager: ObservableObject {
 }
 
 struct UserAction {
-    var id: String
+    var userToken: UserToken
     var isBlocked: Bool
 }

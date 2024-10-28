@@ -153,14 +153,17 @@ final class GRDBManager: ObservableObject, Sendable {
             }
         }
         
-        // Migration to create the "user_tokens" table
-        migrator.registerMigration("createUserTokens") { db in
+        // Migration to drop and recreate "user_tokens" with composite primary key
+        migrator.registerMigration("recreateUserTokensWithCompositeKey") { db in
+            try db.drop(table: "user_tokens")
             try db.create(table: "user_tokens") { t in
-                t.column("id", .text).primaryKey()
-                t.column("token", .text).notNull() // Removed .references("tokens", onDelete: .cascade)
+                t.column("token", .text).notNull()
                 t.column("userId", .text).notNull()
                 t.column("name", .text).notNull()
                 t.column("blocked", .boolean).notNull()
+                
+                // Define composite primary key
+                t.primaryKey(["token", "userId"])
             }
         }
         
@@ -264,6 +267,7 @@ final class GRDBManager: ObservableObject, Sendable {
             }
             return .success("Edited successfully")
         } catch {
+            print("Database Error \(error)")
             return .failure(error)
         }
     }
@@ -1290,6 +1294,26 @@ final class GRDBManager: ObservableObject, Sendable {
             }
         } catch {
             return nil
+        }
+    }
+}
+
+extension GRDBManager {
+    func exists<T: FetchableRecord & MutablePersistableRecord & Sendable>(
+        _ type: T.Type,
+        matching keys: [String: DatabaseValueConvertible & Sendable]
+    ) async -> Bool {
+        do {
+            return try await dbPool.read { db in
+                var query = type.all()
+                for (column, value) in keys {
+                    query = query.filter(Column(column) == value)
+                }
+                return try query.fetchCount(db) > 0
+            }
+        } catch {
+            print("Error checking existence with composite keys: \(error)")
+            return false
         }
     }
 }

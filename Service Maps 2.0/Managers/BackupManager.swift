@@ -11,7 +11,8 @@ actor ProgressTracker {
     }
     
     func getProgress(totalItems: Double) -> Double {
-        return processedItems / totalItems
+        guard totalItems > 0 else { return 1.0 }
+        return min(1.0, max(0.0, processedItems / totalItems))
     }
 }
 @MainActor
@@ -78,24 +79,21 @@ class BackupManager: ObservableObject {
     // Main backup function with cancellation check
     @BackgroundActor
     func backupFiles() async -> Result<URL, Error> {
-        // Check if backup is already in progress
-        if await isBackingUp == true {
+        if await isBackingUp {
             return Result.failure(NSError(domain: "Backup in Progress", code: 100, userInfo: nil))
         }
         
-        // Reset progress and mark as backing up
         DispatchQueue.main.async {
             self.progress = 0.0  // Reset progress
             self.isBackingUp = true
         }
         
-        // Start fetching data directly from GRDB
+        // Fetch data from the database
         var territories = [Territory]()
         var addresses = [TerritoryAddress]()
         var houses = [House]()
         var visits = [Visit]()
         
-        // Fetch data from database
         let territoriesResult = await grdbManager.fetchAllAsync(Territory.self)
         let addressesResult = await grdbManager.fetchAllAsync(TerritoryAddress.self)
         let housesResult = await grdbManager.fetchAllAsync(House.self)
@@ -107,19 +105,13 @@ class BackupManager: ObservableObject {
             houses = allHouses
             addresses = allAddresses
             visits = allVisits
-            
         case (.failure(let error), _, _, _), (_, .failure(let error), _, _), (_, _, .failure(let error), _), (_, _, _, .failure(let error)):
-            // Handle errors
             return Result.failure(error)
         }
         
-        // Calculate total items for progress tracking
         let totalItems = Double(territories.count + addresses.count)
-        
-        guard let pdfURL = Bundle.main.url(forResource: "s8NEW", withExtension: "pdf"),
-              let pdfDoc = PDFDocument(url: pdfURL) else {
-            return Result.failure(CustomErrors.GenericError)
-        }
+        let progressTracker = ProgressTracker()
+        var writeTasks = [Task<Void, Never>]()
         
         let date = await getCurrentDate()
         guard let backupFolder = await createBackupFolder(date: date) else {
@@ -128,13 +120,6 @@ class BackupManager: ObservableObject {
         
         let data = await orderAllData(territories: territories, addressesList: addresses, houseList: houses, visits: visits)
         
-        // Tasks to handle PDF writing
-        var writeTasks = [Task<Void, Never>]()
-        
-        // Create a progress tracker
-        let progressTracker = ProgressTracker()
-        
-        // Process data and write to files
         for territory in data {
             if Task.isCancelled {
                 return .failure(NSError(domain: "Backup Canceled", code: 1, userInfo: nil))
@@ -147,61 +132,50 @@ class BackupManager: ObservableObject {
                 doors += address.houses.count
             }
             
-            // Save text file for territory
             await saveTerritoryTextFile(territory: territory.territory, territoryFolder: territoryFolderURL, doors: doors)
             
-            // Process each address for backup
             for address in territory.addresses {
                 if Task.isCancelled {
                     return .failure(NSError(domain: "Backup Canceled", code: 1, userInfo: nil))
                 }
                 
-                // Increment progress as an address is processed
                 await progressTracker.incrementProcessedItems()
-                let progress = await progressTracker.getProgress(totalItems: totalItems)
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.progress = progress
-                    }
-                }
+                await updateProgress(progressTracker: progressTracker, totalItems: totalItems)
                 
-                // Process address backup
                 await processAddressBackup(address, territoryFolderURL: territoryFolderURL, territoryNumber: String(territory.territory.number), writeTasks: &writeTasks)
             }
         }
         
-        // Await all tasks to finish
         for task in writeTasks {
             if Task.isCancelled {
                 return .failure(NSError(domain: "Backup Canceled", code: 1, userInfo: nil))
             }
             await task.value
-            
-            // Increment progress as each task finishes
             await progressTracker.incrementProcessedItems()
-            let progress = await progressTracker.getProgress(totalItems: totalItems)
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.progress = progress
-                }
-            }
+            await updateProgress(progressTracker: progressTracker, totalItems: totalItems)
         }
         
-        // Zip the backup folder
         let zipFileName = "Backup-\(date).zip"
         let zipFileURL = backupFolder.deletingLastPathComponent().appendingPathComponent(zipFileName)
-        
         let result = await performFileOperations(sourceURL: backupFolder, backupFolder: backupFolder, zipFileURL: zipFileURL)
+        
         if case .failure(let error) = result {
             return .failure(error)
         }
         
-        // Mark backup as complete
         DispatchQueue.main.async {
             self.isBackingUp = false
         }
         
         return .success(zipFileURL)
+    }
+
+    @MainActor
+    private func updateProgress(progressTracker: ProgressTracker, totalItems: Double) async {
+        let progress = await progressTracker.getProgress(totalItems: totalItems)
+        withAnimation {
+            self.progress = min(max(progress, 0.0), 1.0)
+        }
     }
     
     @MainActor // Marking this function to run on the main actor since `FileManager` isn't sendable

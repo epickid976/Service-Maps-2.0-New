@@ -487,7 +487,7 @@ struct AccessViewUsersView: View {
                                                             DispatchQueue.main.async {
                                                                 context.state.wrappedValue = .closed
                                                                 // Set the block/unblock action here with a UserAction object
-                                                                self.viewModel.blockUnblockAction = UserAction(id: keyData.id, isBlocked: keyData.blocked)
+                                                                self.viewModel.blockUnblockAction = UserAction(userToken: keyData, isBlocked: keyData.blocked)
                                                                 CentrePopup_BlockOrUnblockUser(viewModel: viewModel).present()
                                                             }
                                                         }
@@ -556,7 +556,7 @@ struct AccessViewUsersView: View {
                                                                     DispatchQueue.main.async {
                                                                         context.state.wrappedValue = .closed
                                                                         // Set the block/unblock action here with a UserAction object
-                                                                        self.viewModel.blockUnblockAction = UserAction(id: keyData.id, isBlocked: keyData.blocked)
+                                                                        self.viewModel.blockUnblockAction = UserAction(userToken: keyData, isBlocked: keyData.blocked)
                                                                         CentrePopup_BlockOrUnblockUser(viewModel: viewModel).present()
                                                                     }
                                                                 }
@@ -736,9 +736,6 @@ struct CentrePopup_DeleteKey: CentrePopup {
                                     self.viewModel.keyToDelete = (nil,nil)
                                         //self.viewModel.showAlert = false
                                      self.viewModel.showToast = true
-                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                        self.viewModel.showToast = false
-                                    }
                                     
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -830,9 +827,6 @@ struct CentrePopup_DeleteUser: CentrePopup {
                                     dismissLastPopup()
                                     self.viewModel.userToDelete = (nil, nil)
                                     self.viewModel.showToast = true
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                        self.viewModel.showToast = false
-                                    }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
                                     withAnimation {
@@ -916,17 +910,13 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
                                         self.viewModel.loading = false
-                                        self.viewModel.getKeyUsers()  // Update the list of users after block/unblock
+                                        //self.viewModel.getKeyUsers()  // Update the list of users after block/unblock
                                     }
                                     dismissLastPopup()
                                     if userAction.isBlocked {
                                         self.viewModel.showUserUnblockAlert = true
                                     } else {
                                         self.viewModel.showUserBlockAlert = true
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                        self.viewModel.showUserBlockAlert = false
-                                        self.viewModel.showUserUnblockAlert = false
                                     }
                                     self.viewModel.blockUnblockAction = nil
                                 case .failure(_):
@@ -936,6 +926,8 @@ struct CentrePopup_BlockOrUnblockUser: CentrePopup {
                                     }
                                     self.viewModel.ifFailed = true
                                 }
+                            } else {
+                                print("NO UNBLOCK")
                             }
                         }
                     }

@@ -355,9 +355,6 @@ struct CentrePopup_DeleteCall: CentrePopup {
                                         self.viewModel.ifFailed = false
                                         self.viewModel.callToDelete = nil
                                         self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showToast = false
-                                        }
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -404,12 +401,8 @@ struct CentrePopup_AddCall: CentrePopup {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismissLastPopup()
-                //viewModel.synchronizationManager.startupProcess(synchronizing: true)
                 viewModel.showAddedToast = true
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    viewModel.showAddedToast = false
-                }
             }
         } onDismiss: {
             viewModel.presentSheet = false

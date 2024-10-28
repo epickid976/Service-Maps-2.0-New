@@ -435,9 +435,6 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                                         self.viewModel.ifFailed = false
                                         self.viewModel.addressToDelete = (nil,nil)
                                         self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                            self.viewModel.showToast = false
-                                        }
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -487,9 +484,6 @@ struct CentrePopup_AddAddress: CentrePopup {
                 //viewModel.getAddresses()
                 viewModel.showAddedToast = true
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    viewModel.showAddedToast = false
-                }
             }
         }, onDismiss: {
             viewModel.presentSheet = false
