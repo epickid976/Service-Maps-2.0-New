@@ -155,7 +155,9 @@ final class GRDBManager: ObservableObject, Sendable {
         
         // Migration to drop and recreate "user_tokens" with composite primary key
         migrator.registerMigration("recreateUserTokensWithCompositeKey") { db in
-            try db.drop(table: "user_tokens")
+            if try db.tableExists("user_tokens") {
+                        try db.drop(table: "user_tokens")
+                    }
             try db.create(table: "user_tokens") { t in
                 t.column("token", .text).notNull()
                 t.column("userId", .text).notNull()
