@@ -28,7 +28,7 @@ struct CustomButton: View {
                         ActivityIndicatorView(isVisible: $alwaysLoading, type: .growingArc(.primary, lineWidth: 1.0))
                             .frame(width: 25, height: 25)
                         Spacer()
-                    }.frame(width: .infinity)
+                    }.frame(maxWidth: .infinity)
                 } else {
                     ActivityIndicatorView(isVisible: $alwaysLoading, type: .growingArc(.primary, lineWidth: 1.0))
                         .frame(width: 25, height: 25)

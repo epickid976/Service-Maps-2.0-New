@@ -150,7 +150,7 @@ class AccessViewModel: ObservableObject {
     // Function to handle blocking/unblocking users
     func blockUnblockUserFromToken(user: UserAction) async -> Result<Void, Error> {
         // Use the 'user' struct to pass the necessary information (id and isBlocked)
-        return await dataUploaderManager.blockUnblockUserFromToken(userToken: user.id, blocked: !user.isBlocked)
+        return await dataUploaderManager.blockUnblockUserFromToken(userToken: user.userToken, blocked: !user.isBlocked)
     }
     
 }

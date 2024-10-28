@@ -569,8 +569,6 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                                         self.viewModel.territoryToDelete = (nil,nil)
                                         self.viewModel.showToast = true
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.20) {
-                                            self.viewModel.showToast = false
-                                            //self.showAlert = false
                                             dismissLastPopup()
                                         }
                                     }

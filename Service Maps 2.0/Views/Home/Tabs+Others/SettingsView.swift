@@ -500,7 +500,6 @@ struct CentrePopup_Backup: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            .tapOutsideToDismissPopup(true)
     }
     
     func presentActivityViewController(with url: URL) {
