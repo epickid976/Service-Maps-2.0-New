@@ -9,43 +9,11 @@ import Foundation
 import SwiftUI
 import NavigationTransitions
 
-extension Result where Success == Bool {
-
-    @discardableResult
-    func onSuccess(_ closure: (Bool) throws -> Void) rethrows -> Self {
-        switch self {
-        case .success(let value):
-            try closure(value) // Execute closure with the boolean value
-        case .failure:
-            break // Do nothing on failure
-        }
-        return self // Return self for chaining
-    }
-
-    @discardableResult
-    func onFailure(_ closure: (Error) -> Void) -> Self {
-        switch self {
-        case .success:
-            break // Do nothing on success
-        case .failure(let error):
-            closure(error) // Execute closure with the error
-        }
-        return self // Return self for chaining
-    }
-}
-
-extension Result {
-    var isSuccess: Bool {
-        if case .success = self { return true }
-        return false
-    }
-
-    var isFailure: Bool {
-        return !isSuccess
-    }
-}
+// MARK: - Array Extensions
 
 extension Array {
+    /// Filters the array in place, removing elements that don't meet the specified criteria.
+    /// - Parameter isIncluded: A closure that determines if an element should be kept.
     mutating func filterInPlace(isIncluded: (Element) throws -> Bool) rethrows {
         var writeIndex = self.startIndex
         for readIndex in self.indices {
@@ -63,21 +31,16 @@ extension Array {
 }
 
 extension Array {
+    /// Removes elements in place based on a specified condition.
+    /// - Parameter shouldRemove: Closure returning true for elements to be removed.
     mutating func removeInPlace(where shouldRemove: (Element) throws -> Bool) rethrows {
         var writeIndex = self.startIndex
         for readIndex in self.indices {
             let element = self[readIndex]
-            if try shouldRemove(element) {
-                continue // Skip elements we want to remove
-            }
-            // If we're not removing, move the element to the write position
-            if writeIndex != readIndex {
-                self[writeIndex] = element
-            }
+            if try shouldRemove(element) { continue }
+            if writeIndex != readIndex { self[writeIndex] = element }
             writeIndex = self.index(after: writeIndex)
         }
-        
-        // Remove the tail elements that we've skipped over
         removeLast(self.distance(from: writeIndex, to: self.endIndex))
     }
 }
@@ -101,51 +64,59 @@ extension Array {
 }
 
 extension Array {
+    /// Divides the array into subarrays of a specific size.
+    /// - Parameter smallSize: Max size for each subarray.
+    /// - Returns: An array of arrays with each inner array containing up to `smallSize` elements.
     func divideIn(_ smallSize: Int) -> [[Element]] {
         var sublistList = [[Element]]()
         var start = 0
-        
         while start < self.count {
             let end = Swift.min(start + smallSize, self.count)
             let actual = Array(self[start..<end])
             sublistList.append(actual)
             start += smallSize
         }
-        
         return sublistList
     }
 }
 
 extension Array {
-    func unique<T:Hashable>(map: ((Element) -> (T)))  -> [Element] {
-        var set = Set<T>() //the unique list kept in a Set for fast retrieval
-        var arrayOrdered = [Element]() //keeping the unique list of elements but ordered
+    /// Returns an array with unique elements based on a specified property.
+    /// - Parameter map: Closure mapping elements to a unique identifier.
+    /// - Returns: An array with unique elements, preserving order.
+    func unique<T: Hashable>(map: ((Element) -> (T))) -> [Element] {
+        var set = Set<T>() // Keeps unique values for fast checking
+        var arrayOrdered = [Element]() // Maintains order
         for value in self {
             if !set.contains(map(value)) {
                 set.insert(map(value))
                 arrayOrdered.append(value)
             }
         }
-        
         return arrayOrdered
     }
 }
 
 extension Array where Element == String {
+    /// Converts the array of strings to a JSON string.
+    /// - Returns: JSON string representation of the array or nil if conversion fails.
     func toJSON() -> String? {
         guard let data = try? JSONSerialization.data(withJSONObject: self),
               var string = String(data: data, encoding: .utf8) else {
             return nil
         }
-        // Force clean any unwanted escaping
+        // Remove unwanted escaping
         string = string.replacingOccurrences(of: "\\", with: "")
         return string
     }
 }
 
+// MARK: - String Extensions
+
 extension String {
+    /// Validates if the string is in phone number format.
+    /// - Returns: True if the string matches a standard phone format.
     func isValidPhoneNumber() -> Bool {
-        // Use a regular expression to match a valid phone number format
         let phoneRegex = "^\\(\\d{3}\\) \\d{3}-\\d{4}$"
         let phoneTest = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
         return phoneTest.evaluate(with: self)
@@ -153,21 +124,25 @@ extension String {
 }
 
 extension String {
-  func removeFormatting() -> String {
-    return replacingOccurrences(of: "(", with: "").replacingOccurrences(of: ")", with: "").replacingOccurrences(of: "-", with: "").replacingOccurrences(of: " ", with: "")
-  }
+    /// Removes special formatting characters from the string.
+    /// - Returns: String without formatting characters like '(', ')', '-', and spaces.
+    func removeFormatting() -> String {
+        return replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
+            .replacingOccurrences(of: "-", with: "")
+            .replacingOccurrences(of: " ", with: "")
+    }
 }
 
 extension String {
+    /// Formats a raw number string into a standard phone format.
+    /// - Returns: Formatted phone number, e.g., "(XXX) XXX-XXXX".
     func formatPhoneNumber() -> String {
         let cleanNumber = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-        
         let mask = "(XXX) XXX-XXXX"
-        
         var result = ""
         var startIndex = cleanNumber.startIndex
         let endIndex = cleanNumber.endIndex
-        
         for char in mask where startIndex < endIndex {
             if char == "X" {
                 result.append(cleanNumber[startIndex])
@@ -176,53 +151,85 @@ extension String {
                 result.append(char)
             }
         }
-        
         return result
     }
 }
 
+extension String {
+    /// Replaces certain characters with their browser-safe equivalents.
+    func fixToBrowserString() -> String {
+        self.replacingOccurrences(of: ";", with: "%3B")
+            .replacingOccurrences(of: "\n", with: "%0D%0A")
+            .replacingOccurrences(of: "!", with: "%21")
+            .replacingOccurrences(of: "\"", with: "%22")
+            .replacingOccurrences(of: "\\", with: "%5C")
+            .replacingOccurrences(of: "/", with: "%2F")
+            .replacingOccurrences(of: "‘", with: "%91")
+            .replacingOccurrences(of: ",", with: "%2C")
+    }
+}
+
+// MARK: - Date Extensions and Date-related Functions
+
+/// Checks if a given date is within the last two weeks.
 func isInLastTwoWeeks(_ visitDate: Date) -> Bool {
-  let today = Date()
-  let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: today)!
-  return twoWeeksAgo <= visitDate && visitDate <= today
+    let today = Date()
+    let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: today)!
+    return twoWeeksAgo <= visitDate && visitDate <= today
 }
 
-func areEqual(tokenModel: Token, tokenObject: Token) -> Bool {
-  return tokenModel.id == tokenObject.id &&
-         tokenModel.name == tokenObject.name &&
-         tokenModel.owner == tokenObject.owner &&
-         tokenModel.congregation == tokenObject.congregation &&
-         tokenModel.moderator == tokenObject.moderator &&
-         tokenModel.expire == tokenObject.expire &&
-         tokenModel.user == tokenObject.user
-}
+extension Date {
+    /// Converts the date to milliseconds since 1970.
+    var millisecondsSince1970: Int64 {
+        Int64((self.timeIntervalSince1970 * 1000.0).rounded())
+    }
 
-struct RoundedCorner: Shape {
-
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
+    /// Creates a date from milliseconds since 1970.
+    init(milliseconds: Int64) {
+        self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
     }
 }
 
-extension AnyNavigationTransition {
-    static var zoom: Self {
-        .init(Zoom())
+extension Calendar {
+    private var currentDate: Date { return Date() }
+
+    /// Determines if a date falls within the current week.
+    func isDateInThisWeek(_ date: Date) -> Bool {
+        return isDate(date, equalTo: currentDate, toGranularity: .weekOfYear)
+    }
+
+    /// Determines if a date falls within the current month.
+    func isDateInThisMonth(_ date: Date) -> Bool {
+        return isDate(date, equalTo: currentDate, toGranularity: .month)
+    }
+
+    /// Determines if a date falls within the current year.
+    func isDateInThisYear(_ date: Date) -> Bool {
+        return isDate(date, equalTo: currentDate, toGranularity: .year)
     }
 }
 
-struct Zoom: NavigationTransitions.NavigationTransition {
-    var body: some NavigationTransitions.NavigationTransition {
-        MirrorPush {
-            Scale(0.5)
-            OnInsertion {
-                ZPosition(1)
-                Opacity()
-            }
+extension Calendar {
+    
+    func isDateInNextWeek(_ date: Date) -> Bool {
+        guard let nextWeek = self.date(byAdding: DateComponents(weekOfYear: 1), to: currentDate) else {
+            return false
         }
+        return isDate(date, equalTo: nextWeek, toGranularity: .weekOfYear)
+    }
+    
+    func isDateInNextMonth(_ date: Date) -> Bool {
+        guard let nextMonth = self.date(byAdding: DateComponents(month: 1), to: currentDate) else {
+            return false
+        }
+        return isDate(date, equalTo: nextMonth, toGranularity: .month)
+    }
+    
+    func isDateInFollowingMonth(_ date: Date) -> Bool {
+        guard let followingMonth = self.date(byAdding: DateComponents(month: 2), to: currentDate) else {
+            return false
+        }
+        return isDate(date, equalTo: followingMonth, toGranularity: .month)
     }
 }
 
@@ -259,66 +266,48 @@ func formattedDate(date: Date, withTime: Bool = true) -> String {
     }
 }
 
-extension Calendar {
-    private var currentDate: Date { return Date() }
-    
-    func isDateInThisWeek(_ date: Date) -> Bool {
-        return isDate(date, equalTo: currentDate, toGranularity: .weekOfYear)
-    }
-    
-    func isDateInThisMonth(_ date: Date) -> Bool {
-        return isDate(date, equalTo: currentDate, toGranularity: .month)
-    }
-    
-    func isDateInThisYear(_ date: Date) -> Bool {
-        return isDate(date, equalTo: currentDate, toGranularity: .year)
-    }
-    
-    func isDateInNextWeek(_ date: Date) -> Bool {
-        guard let nextWeek = self.date(byAdding: DateComponents(weekOfYear: 1), to: currentDate) else {
-            return false
-        }
-        return isDate(date, equalTo: nextWeek, toGranularity: .weekOfYear)
-    }
-    
-    func isDateInNextMonth(_ date: Date) -> Bool {
-        guard let nextMonth = self.date(byAdding: DateComponents(month: 1), to: currentDate) else {
-            return false
-        }
-        return isDate(date, equalTo: nextMonth, toGranularity: .month)
-    }
-    
-    func isDateInFollowingMonth(_ date: Date) -> Bool {
-        guard let followingMonth = self.date(byAdding: DateComponents(month: 2), to: currentDate) else {
-            return false
-        }
-        return isDate(date, equalTo: followingMonth, toGranularity: .month)
+
+func areEqual(tokenModel: Token, tokenObject: Token) -> Bool {
+  return tokenModel.id == tokenObject.id &&
+         tokenModel.name == tokenObject.name &&
+         tokenModel.owner == tokenObject.owner &&
+         tokenModel.congregation == tokenObject.congregation &&
+         tokenModel.moderator == tokenObject.moderator &&
+         tokenModel.expire == tokenObject.expire &&
+         tokenModel.user == tokenObject.user
+}
+
+/// Rounded Corner and Animation Functions
+struct RoundedCorner: Shape {
+
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }
 
-extension Date {
-    var millisecondsSince1970:Int64 {
-        Int64((self.timeIntervalSince1970 * 1000.0).rounded())
-    }
-    
-    init(milliseconds:Int64) {
-        self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
+extension AnyNavigationTransition {
+    static var zoom: Self {
+        .init(Zoom())
     }
 }
 
-extension String {
-    func fixToBrowserString() -> String {
-        self.replacingOccurrences(of: ";", with: "%3B")
-            .replacingOccurrences(of: "\n", with: "%0D%0A")
-            .replacingOccurrences(of: "!", with: "%21")
-            .replacingOccurrences(of: "\"", with: "%22")
-            .replacingOccurrences(of: "\\", with: "%5C")
-            .replacingOccurrences(of: "/", with: "%2F")
-            .replacingOccurrences(of: "‘", with: "%91")
-            .replacingOccurrences(of: ",", with: "%2C")
-            //more symbols fixes here: https://mykindred.com/htmlspecialchars.php
+struct Zoom: NavigationTransitions.NavigationTransition {
+    var body: some NavigationTransitions.NavigationTransition {
+        MirrorPush {
+            Scale(0.5)
+            OnInsertion {
+                ZPosition(1)
+                Opacity()
+            }
+        }
     }
 }
+
+// Additional utility functions
 
 @MainActor
 func openMail(emailTo:String, subject: String, body: String) {

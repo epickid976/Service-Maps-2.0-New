@@ -10,17 +10,23 @@ import UIKit
 
 public extension UIDevice {
     
-    
+    // MARK: - Device Model Name
 
+    /// Returns the device model name based on its internal identifier.
+    /// Maps hardware identifiers to user-friendly device names for iOS devices.
+    /// Example: "iPhone14,3" will be mapped to "iPhone 13 Pro Max".
     static let modelName: String = {
         var systemInfo = utsname()
         uname(&systemInfo)
         let machineMirror = Mirror(reflecting: systemInfo.machine)
+        
+        // Build the device identifier string
         let identifier = machineMirror.children.reduce("") { identifier, element in
             guard let value = element.value as? Int8, value != 0 else { return identifier }
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
-
+        /// Maps the device identifier to a human-readable device name.
+        /// Includes mapping for various iPhone, iPad, iPod, and Apple TV models.
         func mapToDevice(identifier: String) -> String { // swiftlint:disable:this cyclomatic_complexity
             #if os(iOS)
             switch identifier {
@@ -114,14 +120,20 @@ public extension UIDevice {
         return mapToDevice(identifier: identifier)
     }()
     
+    // MARK: - Device Checks
+
+    /// Checks if the device is a compact iPhone model.
+    /// Returns `true` for iPhone SE (2nd and 3rd generations).
     static let isCompactPhone: Bool = {
         return modelName == "iPhone SE (2nd generation)" || modelName == "iPhone SE (3rd generation)"
     }()
     
+    /// Checks if the app is running on a simulator.
     static let isSimulator: Bool = {
         return modelName.contains("Simulator")
     }()
     
+    /// Checks if the simulator is running as a compact iPhone model (like iPhone SE).
     static let isSimulatorCompactPhone: Bool = {
         return isSimulator && modelName.contains("iPhone SE")
     }()
