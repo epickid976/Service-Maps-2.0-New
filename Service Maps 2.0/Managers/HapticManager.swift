@@ -74,8 +74,8 @@ enum HapticType {
     case softSuccess, softError, softWarning
 }
 
-import SwiftUI
 
+@MainActor
 extension NavigationLink {
     func onTapHaptic(_ type: HapticType) -> some View {
         self.simultaneousGesture(TapGesture().onEnded {

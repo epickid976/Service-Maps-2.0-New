@@ -92,6 +92,14 @@ struct CustomField: View {
                     }
                 }
                 //.textContentType(.oneTimeCode)
+                .toolbar {
+                                   ToolbarItemGroup(placement: .keyboard) {
+                                       Spacer()
+                                       Button("Done") {
+                                           isFocused.wrappedValue = false // Dismiss the keyboard
+                                       }
+                                   }
+                               }
         } else {
             HStack {
                 SecureTextField(placeholder: placeholder, text: $text, isSecure: $isSecure)
