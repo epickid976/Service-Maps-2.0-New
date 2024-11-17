@@ -13,11 +13,13 @@ import UIKit
 import Lottie
 import AlertKit
 import MijickPopups
+import Toasts
 
 struct AccessView: View {
     @StateObject var viewModel: AccessViewModel
     
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentToast) var presentToast
     @ObservedObject var databaseManager = GRDBManager.shared
     
     @State var animationDone = false
@@ -80,7 +82,7 @@ struct AccessView: View {
                                         if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                                                 ForEach(viewModel.keyData!, id: \.key.id) { keyData in
-                                                    NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
+                                                    NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
                                                         keyCell(keyData: keyData).id(keyData.id)
                                                             .transition(.customBackInsertion)
                                                     }
@@ -89,7 +91,7 @@ struct AccessView: View {
                                         } else {
                                             LazyVGrid(columns: [GridItem(.flexible())]) {
                                                 ForEach(viewModel.keyData!, id: \.key.id) { keyData in
-                                                    NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key))) {
+                                                    NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
                                                         keyCell(keyData: keyData).id(keyData.key.id)
                                                             .transition(.customBackInsertion)
                                                     }.onTapHaptic(.lightImpact)
@@ -121,8 +123,7 @@ struct AccessView: View {
 //                            }
 //                        }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
-                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
+                        
                         .navigationDestination(isPresented: $viewModel.presentSheet) {
                             AddKeyView(keyData: keydataToEdit) {
                                 //synchronizationManager.startupProcess(synchronizing: true)
@@ -216,7 +217,13 @@ struct AccessView: View {
                     Button {
                         HapticManager.shared.trigger(.lightImpact)
                         self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
-                        CentrePopup_DeleteKey(viewModel: viewModel).present()
+                        CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: viewModel.keyToDelete){
+                            let toast = ToastValue(
+                             icon: Image(systemName: "trash.circle.fill"),
+                                message: "Key Deleted"
+                            )
+                            presentToast(toast)
+                        }.present()
                     } label: {
                         HStack {
                             Image(systemName: "trash")
@@ -275,7 +282,13 @@ struct AccessView: View {
             ) {
                 HapticManager.shared.trigger(.lightImpact)
                 context.state.wrappedValue = .closed
-                CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)).present()
+                CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)){
+                    let toast = ToastValue(
+                     icon: Image(systemName: "trash.circle.fill"),
+                        message: "Key Deleted"
+                    )
+                    presentToast(toast)
+                }.present()
             }
             .font(.title.weight(.semibold))
             .foregroundColor(.white)
@@ -391,6 +404,8 @@ struct AccessViewUsersView: View {
     @StateObject var viewModel = AccessViewModel()
     
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentToast) var presentToast
+    
     @ObservedObject var databaseManager = GRDBManager.shared
     
     @State var animationDone = false
@@ -467,7 +482,13 @@ struct AccessViewUsersView: View {
                                                                         
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                         //self.showAlert = true
-                                                                        CentrePopup_DeleteUser(viewModel: viewModel).present()
+                                                                        CentrePopup_DeleteUser(viewModel: viewModel){
+                                                                            let toast = ToastValue(
+                                                                             icon: Image(systemName: "trash.circle.fill"),
+                                                                                message: "User Deleted"
+                                                                            )
+                                                                            presentToast(toast)
+                                                                        }.present()
                                                                     }
                                                                 } label: {
                                                                     HStack {
@@ -503,7 +524,13 @@ struct AccessViewUsersView: View {
                                                             DispatchQueue.main.async {
                                                                 context.state.wrappedValue = .closed
                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)  // Set userToDelete for deletion
-                                                                CentrePopup_DeleteUser(viewModel: viewModel).present()
+                                                                CentrePopup_DeleteUser(viewModel: viewModel){
+                                                                    let toast = ToastValue(
+                                                                     icon: Image(systemName: "trash.circle.fill"),
+                                                                        message: "User Deleted"
+                                                                    )
+                                                                    presentToast(toast)
+                                                                }.present()
                                                             }
                                                         }
                                                         .font(.title.weight(.semibold))
@@ -536,7 +563,13 @@ struct AccessViewUsersView: View {
                                                                             DispatchQueue.main.async {
                                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                                 //self.showAlert = true
-                                                                                CentrePopup_DeleteUser(viewModel: viewModel).present()
+                                                                                CentrePopup_DeleteUser(viewModel: viewModel){
+                                                                                    let toast = ToastValue(
+                                                                                     icon: Image(systemName: "trash.circle.fill"),
+                                                                                        message: "User Deleted"
+                                                                                    )
+                                                                                    presentToast(toast)
+                                                                                }.present()
                                                                             }
                                                                         } label: {
                                                                             HStack {
@@ -572,7 +605,13 @@ struct AccessViewUsersView: View {
                                                                         context.state.wrappedValue = .closed
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                         //self.showAlert = true
-                                                                        CentrePopup_DeleteUser(viewModel: viewModel).present()
+                                                                        CentrePopup_DeleteUser(viewModel: viewModel){
+                                                                            let toast = ToastValue(
+                                                                             icon: Image(systemName: "trash.circle.fill"),
+                                                                                message: "User Deleted"
+                                                                            )
+                                                                            presentToast(toast)
+                                                                        }.present()
                                                                     }
                                                                 }
                                                                 .font(.title.weight(.semibold))
@@ -599,9 +638,6 @@ struct AccessViewUsersView: View {
                         }
                     }.hSpacing(.center)
                         .animation(.easeInOut(duration: 0.25), value: viewModel.keyUsers == nil || viewModel.keyUsers != nil)
-                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                        .alert(isPresent: $viewModel.showUserBlockAlert, view: alertViewBlocked)
-                        .alert(isPresent: $viewModel.showUserUnblockAlert, view: alertViewUnblocked)
                         .navigationBarTitle("\(currentKey.name)", displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
@@ -630,6 +666,24 @@ struct AccessViewUsersView: View {
             viewModel.currentKey = nil
             viewModel.keyUsers = nil
         }
+        .onChange(of: viewModel.showUserBlockAlert) { value in
+            if value {
+                let toast = ToastValue(
+                    icon: Image(systemName: "exclamationmark.octagon.fill").foregroundStyle(.red),
+                    message: "User Blocked"
+                )
+                presentToast(toast)
+            }
+        }
+        .onChange(of: viewModel.showUserUnblockAlert) { value in
+            if value {
+                let toast = ToastValue(
+                    icon: Image(systemName: "checkmark.diamond.fill").foregroundStyle(.green),
+                    message: "User Unblocked"
+                )
+                presentToast(toast)
+            }
+        }
     }
     
     @ViewBuilder
@@ -643,7 +697,13 @@ struct AccessViewUsersView: View {
                         DispatchQueue.main.async {
                             self.viewModel.userToDelete = (keyData.id, keyData.name)
                             //self.showAlert = true
-                            CentrePopup_DeleteUser(viewModel: viewModel).present()
+                            CentrePopup_DeleteUser(viewModel: viewModel){
+                                let toast = ToastValue(
+                                 icon: Image(systemName: "trash.circle.fill"),
+                                    message: "User Deleted"
+                                )
+                                presentToast(toast)
+                            }.present()
                         }
                     } label: {
                         HStack {
@@ -664,7 +724,13 @@ struct AccessViewUsersView: View {
                         context.state.wrappedValue = .closed
                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                         //self.showAlert = true
-                        CentrePopup_DeleteUser(viewModel: viewModel).present()
+                        CentrePopup_DeleteUser(viewModel: viewModel){
+                            let toast = ToastValue(
+                             icon: Image(systemName: "trash.circle.fill"),
+                                message: "User Deleted"
+                            )
+                            presentToast(toast)
+                        }.present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -683,6 +749,13 @@ struct AccessViewUsersView: View {
 struct CentrePopup_DeleteKey: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
     var keyToDelete: (String?,String?)
+    var onDone: () -> Void
+    
+    init(viewModel: AccessViewModel, keyToDelete: (String?, String?), onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.keyToDelete = keyToDelete
+        self.onDone = onDone
+    }
     
     var body: some View {
         ZStack {
@@ -734,8 +807,7 @@ struct CentrePopup_DeleteKey: CentrePopup {
                                     }
                                     dismissLastPopup()
                                     self.viewModel.keyToDelete = (nil,nil)
-                                        //self.viewModel.showAlert = false
-                                     self.viewModel.showToast = true
+                                    onDone()
                                     
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -772,6 +844,12 @@ struct CentrePopup_DeleteKey: CentrePopup {
 
 struct CentrePopup_DeleteUser: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
+    var onDone: () -> Void
+    
+    init(viewModel: AccessViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -826,7 +904,7 @@ struct CentrePopup_DeleteUser: CentrePopup {
                                     }
                                     dismissLastPopup()
                                     self.viewModel.userToDelete = (nil, nil)
-                                    self.viewModel.showToast = true
+                                    onDone()
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
                                     withAnimation {

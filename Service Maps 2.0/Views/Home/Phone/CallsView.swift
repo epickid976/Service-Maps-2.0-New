@@ -14,15 +14,15 @@ import UIKit
 import Lottie
 import AlertKit
 import MijickPopups
+import Toasts
 
 struct CallsView: View {
     @StateObject var viewModel: CallsViewModel
     var phoneNumber: PhoneNumber
-    @StateObject var realtimeManager = RealtimeManager.shared
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.presentToast) var presentToast
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @State var showFab = true
@@ -139,7 +139,13 @@ struct CallsView: View {
                         .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber).present()
+                                CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber){
+                                    let toast = ToastValue(
+                                     icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                        message: "Call Added"
+                                    )
+                                    presentToast(toast)
+                             }.present()
                             }
                         }
                         //.scrollIndicators(.never)
@@ -233,7 +239,13 @@ struct CallsView: View {
                         HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             self.viewModel.callToDelete = callData.phoneCall.id
-                            CentrePopup_DeleteCall(viewModel: viewModel).present()
+                            CentrePopup_DeleteCall(viewModel: viewModel){
+                                let toast = ToastValue(
+                                 icon: Image(systemName: "checkmark.circle.fill"),
+                                    message: "Call Deleted"
+                                )
+                                presentToast(toast)
+                         }.present()
                         }
                     } label: {
                         HStack {
@@ -264,7 +276,13 @@ struct CallsView: View {
                     context.state.wrappedValue = .closed
                     DispatchQueue.main.async {
                         self.viewModel.callToDelete = callData.phoneCall.id
-                        CentrePopup_DeleteCall(viewModel: viewModel).present()
+                        CentrePopup_DeleteCall(viewModel: viewModel){
+                            let toast = ToastValue(
+                             icon: Image(systemName: "checkmark.circle.fill"),
+                                message: "Call Deleted"
+                            )
+                            presentToast(toast)
+                     }.present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -301,6 +319,12 @@ struct CallsView: View {
 
 struct CentrePopup_DeleteCall: CentrePopup {
     @ObservedObject var viewModel: CallsViewModel
+    var onDone: () -> Void
+    
+    init(viewModel: CallsViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -354,7 +378,7 @@ struct CentrePopup_DeleteCall: CentrePopup {
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.callToDelete = nil
-                                        self.viewModel.showToast = true
+                                        onDone()
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -391,6 +415,13 @@ struct CentrePopup_DeleteCall: CentrePopup {
 struct CentrePopup_AddCall: CentrePopup {
     @ObservedObject var viewModel: CallsViewModel
     @State var phoneNumber: PhoneNumber
+    var onDone: () -> Void
+    
+    init(viewModel: CallsViewModel, phoneNumber: PhoneNumber, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.phoneNumber = phoneNumber
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -401,7 +432,7 @@ struct CentrePopup_AddCall: CentrePopup {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismissLastPopup()
-                viewModel.showAddedToast = true
+               onDone()
                 
             }
         } onDismiss: {

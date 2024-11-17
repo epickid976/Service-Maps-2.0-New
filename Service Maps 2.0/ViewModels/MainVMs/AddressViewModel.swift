@@ -45,8 +45,6 @@ class AddressViewModel: ObservableObject {
     @Published var showAlert = false
     @Published var ifFailed = false
     @Published var loading = false
-    @Published var showToast = false
-    @Published var showAddedToast = false
     @Published var territoryAddressIdToScrollTo: String? = nil
     @Published var isShowingSearch = false
     @Published var showImageViewer = false
@@ -58,6 +56,7 @@ class AddressViewModel: ObservableObject {
     }
     
     // Address deletion logic
+    @BackgroundActor
     func deleteAddress(address: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteTerritoryAddress(territoryAddressId: address)
     }

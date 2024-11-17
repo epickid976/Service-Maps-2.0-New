@@ -14,6 +14,7 @@ import UIKit
 import Lottie
 import AlertKit
 import MijickPopups
+import Toasts
 
 struct HousesView: View {
     var address: TerritoryAddress
@@ -21,6 +22,7 @@ struct HousesView: View {
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentToast) var presentToast
     @ObservedObject var viewModel: HousesViewModel
     
     @State var showFab = true
@@ -33,8 +35,6 @@ struct HousesView: View {
         
     }
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    let alertViewDeleted = AlertAppleMusic17View(title: "House Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    let alertViewAdded = AlertAppleMusic17View(title: "House Added", subtitle: nil, icon: .done)
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -120,11 +120,15 @@ struct HousesView: View {
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.houseData == nil || viewModel.houseData != nil)
-                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddHouse(viewModel: viewModel, address: address).present()
+                                CentrePopup_AddHouse(viewModel: viewModel, address: address){
+                                    let toast = ToastValue(
+                                     icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                        message: "House Added"
+                                    )
+                                    presentToast(toast)
+                                }.present()
                             }
                         }
                         .navigationBarTitle(address.address, displayMode: .automatic)
@@ -221,7 +225,7 @@ struct HousesView: View {
     @ViewBuilder
     func houseCellView(houseData: HouseData, mainWindowSize: CGSize) -> some View {
         SwipeView {
-            NavigationLink(destination: NavigationLazyView(VisitsView(house: houseData.house))) {
+            NavigationLink(destination: NavigationLazyView(VisitsView(house: houseData.house).installToast(position: .bottom))) {
                 HouseCell(house: houseData, mainWindowSize: mainWindowSize)
                     .padding(.bottom, 2)
                     .overlay(
@@ -238,7 +242,13 @@ struct HousesView: View {
                                             self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
                                             //self.showAlert = true
                                             if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-                                                CentrePopup_DeleteHouse(viewModel: viewModel).present()
+                                                CentrePopup_DeleteHouse(viewModel: viewModel) {
+                                                    let toast = ToastValue(
+                                                     icon: Image(systemName: "trash.circle.fill"),
+                                                        message: "House Deleted"
+                                                    )
+                                                    presentToast(toast)
+                                                }.present()
                                             }
                                         }
                                     } label: {
@@ -267,7 +277,13 @@ struct HousesView: View {
                         self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
                         //self.showAlert = true
                         if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-                            CentrePopup_DeleteHouse(viewModel: viewModel).present()
+                            CentrePopup_DeleteHouse(viewModel: viewModel){
+                                let toast = ToastValue(
+                                 icon: Image(systemName: "trash.circle.fill"),
+                                    message: "House Deleted"
+                                )
+                                presentToast(toast)
+                            }.present()
                         }
                     }
                 }
@@ -290,6 +306,12 @@ struct HousesView: View {
 
 struct CentrePopup_DeleteHouse: CentrePopup {
     @ObservedObject var viewModel: HousesViewModel
+    var onDone: () -> Void
+    
+    init(viewModel: HousesViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
     
     var body: some View {
         ZStack {
@@ -342,7 +364,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.houseToDelete = (nil,nil)
-                                        self.viewModel.showToast = true
+                                        onDone()
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -379,17 +401,20 @@ struct CentrePopup_DeleteHouse: CentrePopup {
 struct CentrePopup_AddHouse: CentrePopup {
     @ObservedObject var viewModel: HousesViewModel
     @State var address: TerritoryAddress
+    var onDone: () -> Void
+    
+    init(viewModel: HousesViewModel, address: TerritoryAddress, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.address = address
+        self.onDone = onDone
+    }
     
     var body: some View {
         AddHouseView(house: viewModel.currentHouse, address: address, onDone: {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismissLastPopup()
-                //viewModel.synchronizationManager.startupProcess(synchronizing: true)
-//                DispatchQueue.main.async {
-//                    viewModel.getHouses()
-//                }
-                viewModel.showAddedToast = true
+                onDone()
                 
             }
         }, onDismiss: {

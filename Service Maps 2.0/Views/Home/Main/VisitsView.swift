@@ -13,6 +13,7 @@ import UIKit
 import Lottie
 import AlertKit
 import MijickPopups
+import Toasts
 
 struct VisitsView: View {
     
@@ -29,19 +30,13 @@ struct VisitsView: View {
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
     @State private var isScrollingDown = false
-    
-    @StateObject var realtimeManager = RealtimeManager.shared
+    @Environment(\.presentToast) var presentToast
     
     init(house: House, visitIdToScrollTo: String? = nil) {
         self.house = house
         let initialViewModel = VisitsViewModel(house: house, visitIdToScrollTo: visitIdToScrollTo)
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
-    
-    let alertViewDeleted = AlertAppleMusic17View(title: "Visit Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    let alertViewAdded = AlertAppleMusic17View(title: "Visit Added", subtitle: nil, icon: .done)
-    
-    let alertRecallAdded = AlertAppleMusic17View(title: "Recall Added", subtitle: nil, icon: .done)
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -133,12 +128,18 @@ struct VisitsView: View {
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.visitData == nil || viewModel.visitData != nil)
-                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
-                        .alert(isPresent: $viewModel.showRecallAddedToast, view: alertRecallAdded)
+                        
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddVisit(viewModel: viewModel, house: house).present()
+                                CentrePopup_AddVisit(viewModel: viewModel, house: house
+                                ) {
+                                       let toast = ToastValue(
+                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                           message: "Visit Added"
+                                       )
+                                       presentToast(toast)
+                                }.present()
+                                
                             }
                         }
                         //.scrollIndicators(.never)
@@ -164,9 +165,21 @@ struct VisitsView: View {
                                     Button("", action: { 
                                         viewModel.revisitAnimation.toggle()
                                         if viewModel.recallAdded {
-                                            CentrePopup_DeleteRecall(viewModel: viewModel, house: house.id).present()
+                                            CentrePopup_DeleteRecall(viewModel: viewModel, house: house.id) {
+                                                let toast = ToastValue(
+                                                    icon: Image(systemName: "trash.circle.fill"),
+                                                    message: "Recall Deleted"
+                                                )
+                                                presentToast(toast)
+                                            }.present()
                                         } else {
-                                            CentrePopup_AddRecall(viewModel: viewModel, house: house.id).present()
+                                            CentrePopup_AddRecall(viewModel: viewModel, house: house.id) {
+                                                let toast = ToastValue(
+                                                 icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                                    message: "Recall Added"
+                                                )
+                                                presentToast(toast)
+                                            }.present()
                                         }
                                     })
                                     .buttonStyle(CircleButtonStyle(imageName: viewModel.recallAdded ? "person.fill.checkmark"  : "person.badge.plus.fill", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.revisitAnimationprogress, animation: $viewModel.revisitAnimation))
@@ -187,7 +200,7 @@ struct VisitsView: View {
 //                                }
 //                            }
 //                        }
-//                        .onChange(of: realtimeManager.lastMessage) { value in
+//                        .onChange(of: RealtimeManager.shared.lastMessage) { value in
 //                            if value != nil {
 //                                viewModel.getVisits()
 //                            }
@@ -218,8 +231,6 @@ struct VisitsView: View {
                 .animation(.spring(), value: hideFloatingButton)
                 .vSpacing(.bottom).hSpacing(.trailing)
                 .padding()
-               // //.keyboardShortcut("+", modifiers: .command)
-                
             }
         }
     }
@@ -265,7 +276,13 @@ struct VisitsView: View {
                     DispatchQueue.main.async {
                         self.viewModel.visitToDelete = visitData.visit.id
                         //self.viewModel.showAlert = true
-                        CentrePopup_DeleteVisit(viewModel: viewModel).present()
+                        CentrePopup_DeleteVisit(viewModel: viewModel) {
+                            let toast = ToastValue(
+                             icon: Image(systemName: "trash.circle.fill"),
+                                message: "Visit Deleted"
+                            )
+                            presentToast(toast)
+                        }.present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -302,7 +319,12 @@ struct VisitsView: View {
 
 struct CentrePopup_DeleteVisit: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
+    var onDone: () -> Void
     
+    init(viewModel: VisitsViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
     var body: some View {
         createContent()
     }
@@ -356,8 +378,7 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.visitToDelete = nil
-                                        self.viewModel.showToast = true
-                                    
+                                        onDone()
                                 case .failure(_):
                                     withAnimation {
                                         self.viewModel.loading = false
@@ -392,7 +413,14 @@ struct CentrePopup_DeleteVisit: CentrePopup {
 
 struct CentrePopup_AddVisit: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
+    var onDone: () -> Void
     var house: House
+    
+    init(viewModel: VisitsViewModel, house: House, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+        self.house = house
+    }
     
     var body: some View {
         createContent()
@@ -403,11 +431,8 @@ struct CentrePopup_AddVisit: CentrePopup {
             
                 viewModel.presentSheet = false
                 dismissLastPopup()
-                
-                //viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                viewModel.showAddedToast = true
-                
             
+                onDone()
         } onDismiss: {
             viewModel.presentSheet = false
             dismissLastPopup()
@@ -441,6 +466,13 @@ struct CentrePopup_AddRecall: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
     let house: String
     let user = StorageManager.shared.userEmail
+    var onDone: () -> Void
+    
+    init(viewModel: VisitsViewModel, house: String, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.house = house
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -487,12 +519,7 @@ struct CentrePopup_AddRecall: CentrePopup {
                         case .success(_):
                             viewModel.loading = false
                             dismissLastPopup()
-                            viewModel.showRecallAddedToast = true
-                            withAnimation {
-                                DispatchQueue.main.async {
-                                    self.viewModel.recallAdded = true
-                                }
-                            }
+                            onDone()
                         case .failure(_):
                             viewModel.ifFailed = true
                         }
@@ -515,6 +542,13 @@ struct CentrePopup_DeleteRecall: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
     let house: String
     let user = StorageManager.shared.userEmail
+    var onDone: () -> Void
+    
+    init(viewModel: VisitsViewModel, house: String, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.house = house
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -558,12 +592,7 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                         case .success(_):
                             viewModel.loading = false
                             dismissLastPopup()
-                            viewModel.showRecallAddedToast = true
-                            withAnimation {
-                                DispatchQueue.main.async {
-                                    self.viewModel.recallAdded = false
-                                }
-                            }
+                            onDone()
                         case .failure(_):
                             viewModel.ifFailed = true
                         }

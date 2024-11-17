@@ -150,20 +150,7 @@ struct LoginDefaultScreen: View {
                 }
             )
             
-            .toolbar{
-                ToolbarItemGroup(placement: .keyboard){
-                    Spacer()
-                    
-                    Button("Done"){
-                        HapticManager.shared.trigger(.lightImpact)
-                        DispatchQueue.main.async {
-                            emailFocus = false
-                            passwordFocus = false
-                            hideKeyboard()
-                        }
-                    }
-                }
-            }
+            
             .navigationBarBackButtonHidden(true)
         }.ignoresSafeArea().onChange(of: universalLinksManager.determineDestination()) { value in
             if value == .ResetPasswordView || value == .loginWithEmailView {
@@ -344,21 +331,6 @@ struct LoginView: View {
                     )
                 }
             )
-            
-            .toolbar{
-                ToolbarItemGroup(placement: .keyboard){
-                    Spacer()
-                    
-                    Button("Done"){
-                        HapticManager.shared.trigger(.lightImpact)
-                        DispatchQueue.main.async {
-                            emailFocus = false
-                            passwordFocus = false
-                            hideKeyboard()
-                        }
-                    }
-                }
-            }
             .navigationBarBackButtonHidden(true)
         }.ignoresSafeArea()
     }

@@ -40,8 +40,6 @@ class HousesViewModel: ObservableObject {
     @Published var showAlert = false
     @Published var ifFailed = false
     @Published var loading = false
-    @Published var showToast = false
-    @Published var showAddedToast = false
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     
@@ -68,6 +66,7 @@ class HousesViewModel: ObservableObject {
     }
     
     // Delete house logic
+    @BackgroundActor
     func deleteHouse(house: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteHouse(houseId: house)
     }

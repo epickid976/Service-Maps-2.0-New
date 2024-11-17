@@ -348,3 +348,13 @@ func daysSince(date: Date) -> Int {
     let components = calendar.dateComponents([.day], from: date, to: currentDate)
     return components.day ?? 0 // Default to 0 if the calculation fails
 }
+
+@MainActor
+func resignFirstResponderManually() {
+    UIApplication.shared.sendAction(
+        #selector(UIResponder.resignFirstResponder),
+        to: nil,
+        from: nil,
+        for: nil
+    )
+}

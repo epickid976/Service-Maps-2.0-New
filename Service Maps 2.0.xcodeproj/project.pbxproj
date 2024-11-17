@@ -35,6 +35,9 @@
 		821C12782A7811CD0050D106 /* AdminService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12772A7811CD0050D106 /* AdminService.swift */; };
 		821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74C2BD9EA46001D092D /* AppDelegate.swift */; };
 		821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74E2BD9EB66001D092D /* apple-app-site-association */; };
+		8226D9642CE7FC140090CD64 /* Papyrus in Frameworks */ = {isa = PBXBuildFile; productRef = 8226D9632CE7FC140090CD64 /* Papyrus */; };
+		8226D9662CE7FC140090CD64 /* PapyrusAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 8226D9652CE7FC140090CD64 /* PapyrusAlamofire */; };
+		8226D9682CE7FC140090CD64 /* PapyrusCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8226D9672CE7FC140090CD64 /* PapyrusCore */; };
 		8228B6052C2901A7002B7886 /* RealtimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8228B6042C2901A7002B7886 /* RealtimeManager.swift */; };
 		8228B6082C29BB68002B7886 /* Ably in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6072C29BB68002B7886 /* Ably */; };
 		8228B6122C29C148002B7886 /* ModifiedCopy in Frameworks */ = {isa = PBXBuildFile; productRef = 8228B6112C29C148002B7886 /* ModifiedCopy */; };
@@ -84,6 +87,7 @@
 		8255F1962C1A79AF00445A82 /* EditTokenForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1952C1A79AF00445A82 /* EditTokenForm.swift */; };
 		825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B42BD04E9F00F18AC9 /* AddressData.swift */; };
 		825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */; };
+		82608AB22CE9992F00BCC7D7 /* Toasts in Frameworks */ = {isa = PBXBuildFile; productRef = 82608AB12CE9992F00BCC7D7 /* Toasts */; };
 		826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */; };
 		826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766F2A729FDE000A4BAA /* HomeTabView.swift */; };
 		826B76722A729FE1000A4BAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 826B76712A729FE1000A4BAA /* Assets.xcassets */; };
@@ -139,9 +143,6 @@
 		82DBE4DF2C24FE7800C16B35 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */; };
 		82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBEA992A880B9E002048DC /* ResetPassword.swift */; };
 		82DDE2CD2C193BD4003B65A5 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */; };
-		82DFB5D72CC9160000699FDA /* Papyrus in Frameworks */ = {isa = PBXBuildFile; productRef = 82DFB5D62CC9160000699FDA /* Papyrus */; };
-		82DFB5D92CC9160000699FDA /* PapyrusAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 82DFB5D82CC9160000699FDA /* PapyrusAlamofire */; };
-		82DFB5DB2CC9160000699FDA /* PapyrusCore in Frameworks */ = {isa = PBXBuildFile; productRef = 82DFB5DA2CC9160000699FDA /* PapyrusCore */; };
 		82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EC3E922A9CFF68000E2926 /* HousesView.swift */; };
 		82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F288862A86C21100930849 /* VerificationViewModel.swift */; };
 		82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */; };
@@ -334,7 +335,7 @@
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
 				82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */,
 				828C4CD62C3A31CC00E147C3 /* ImageViewer in Frameworks */,
-				82DFB5DB2CC9160000699FDA /* PapyrusCore in Frameworks */,
+				8226D9682CE7FC140090CD64 /* PapyrusCore in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
 				82BED49F2CC567F400183E19 /* MijickPopups in Frameworks */,
@@ -342,10 +343,11 @@
 				822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */,
 				828C4CD82C3A31CC00E147C3 /* ImageViewerRemote in Frameworks */,
 				8228B6122C29C148002B7886 /* ModifiedCopy in Frameworks */,
-				82DFB5D72CC9160000699FDA /* Papyrus in Frameworks */,
+				8226D9642CE7FC140090CD64 /* Papyrus in Frameworks */,
 				8228B6082C29BB68002B7886 /* Ably in Frameworks */,
-				82DFB5D92CC9160000699FDA /* PapyrusAlamofire in Frameworks */,
+				8226D9662CE7FC140090CD64 /* PapyrusAlamofire in Frameworks */,
 				82CAFE162CC34E2200B3796D /* GRDB in Frameworks */,
+				82608AB22CE9992F00BCC7D7 /* Toasts in Frameworks */,
 				8228B6142C29C148002B7886 /* ModifiedCopyClient in Frameworks */,
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
@@ -805,9 +807,10 @@
 				828C4CD72C3A31CC00E147C3 /* ImageViewerRemote */,
 				82CAFE152CC34E2200B3796D /* GRDB */,
 				82BED49E2CC567F400183E19 /* MijickPopups */,
-				82DFB5D62CC9160000699FDA /* Papyrus */,
-				82DFB5D82CC9160000699FDA /* PapyrusAlamofire */,
-				82DFB5DA2CC9160000699FDA /* PapyrusCore */,
+				8226D9632CE7FC140090CD64 /* Papyrus */,
+				8226D9652CE7FC140090CD64 /* PapyrusAlamofire */,
+				8226D9672CE7FC140090CD64 /* PapyrusCore */,
+				82608AB12CE9992F00BCC7D7 /* Toasts */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -854,7 +857,8 @@
 				828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */,
 				82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */,
 				82CAFE142CC34E2200B3796D /* XCRemoteSwiftPackageReference "GRDB" */,
-				82DFB5D52CC9160000699FDA /* XCRemoteSwiftPackageReference "papyrus" */,
+				8226D9622CE7FC140090CD64 /* XCRemoteSwiftPackageReference "papyrus" */,
+				82608AB02CE9992F00BCC7D7 /* XCRemoteSwiftPackageReference "swiftui-toasts" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1174,7 +1178,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.3;
+				MARKETING_VERSION = 3.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1215,7 +1219,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.3;
+				MARKETING_VERSION = 3.1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1253,6 +1257,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8226D9622CE7FC140090CD64 /* XCRemoteSwiftPackageReference "papyrus" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/joshuawright11/papyrus";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 		8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ably/ably-cocoa";
@@ -1325,6 +1337,14 @@
 				minimumVersion = 0.13.4;
 			};
 		};
+		82608AB02CE9992F00BCC7D7 /* XCRemoteSwiftPackageReference "swiftui-toasts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sunghyun-k/swiftui-toasts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.0;
+			};
+		};
 		82659D782C6FBD8700580BE6 /* XCRemoteSwiftPackageReference "PopupView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Mijick/PopupView.git";
@@ -1357,14 +1377,6 @@
 				kind = branch;
 			};
 		};
-		82DFB5D52CC9160000699FDA /* XCRemoteSwiftPackageReference "papyrus" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/joshuawright11/papyrus";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.0;
-			};
-		};
 		82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/exyte/FloatingButton";
@@ -1376,6 +1388,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8226D9632CE7FC140090CD64 /* Papyrus */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8226D9622CE7FC140090CD64 /* XCRemoteSwiftPackageReference "papyrus" */;
+			productName = Papyrus;
+		};
+		8226D9652CE7FC140090CD64 /* PapyrusAlamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8226D9622CE7FC140090CD64 /* XCRemoteSwiftPackageReference "papyrus" */;
+			productName = PapyrusAlamofire;
+		};
+		8226D9672CE7FC140090CD64 /* PapyrusCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8226D9622CE7FC140090CD64 /* XCRemoteSwiftPackageReference "papyrus" */;
+			productName = PapyrusCore;
+		};
 		8228B6072C29BB68002B7886 /* Ably */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */;
@@ -1441,6 +1468,11 @@
 			package = 822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
 			productName = NavigationTransitions;
 		};
+		82608AB12CE9992F00BCC7D7 /* Toasts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82608AB02CE9992F00BCC7D7 /* XCRemoteSwiftPackageReference "swiftui-toasts" */;
+			productName = Toasts;
+		};
 		828C4CD52C3A31CC00E147C3 /* ImageViewer */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 828C4CD42C3A31CC00E147C3 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */;
@@ -1465,21 +1497,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82CAFE142CC34E2200B3796D /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
-		};
-		82DFB5D62CC9160000699FDA /* Papyrus */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 82DFB5D52CC9160000699FDA /* XCRemoteSwiftPackageReference "papyrus" */;
-			productName = Papyrus;
-		};
-		82DFB5D82CC9160000699FDA /* PapyrusAlamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 82DFB5D52CC9160000699FDA /* XCRemoteSwiftPackageReference "papyrus" */;
-			productName = PapyrusAlamofire;
-		};
-		82DFB5DA2CC9160000699FDA /* PapyrusCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 82DFB5D52CC9160000699FDA /* XCRemoteSwiftPackageReference "papyrus" */;
-			productName = PapyrusCore;
 		};
 		82F768FF2BE92FA2001FA3CF /* FloatingButton */ = {
 			isa = XCSwiftPackageProductDependency;

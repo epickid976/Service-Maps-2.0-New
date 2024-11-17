@@ -4,10 +4,10 @@
 //
 //  Created by Jose Blanco on 10/22/24.
 //
-@preconcurrency import Papyrus
 
+@preconcurrency import Papyrus
 @API
-public protocol TokenRoutes {
+public protocol TokenRoutes: Sendable  {
     
     @GET("tokens/loadown")
     func loadOwnedTokens() async throws -> [Token]

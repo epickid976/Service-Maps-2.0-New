@@ -150,158 +150,169 @@ class SynchronizationManager: ObservableObject {
             self.dataStore.synchronized = false
         }
         
-        // Start sync with haptics feedback
-        //await startSyncAndHaptics()
-        
-        // Begin fetching and syncing data
         do {
-            // Periodically check if credentials have changed
+            // Periodically check for credential changes
             try await periodicCheckForCredentialChanges(
                 initialIsAdmin: initialIsAdmin,
                 initialHasPhoneCredentials: initialHasPhoneCredentials
             )
             
-            // Fetch server data
-            var tokensApi = [Token]()
-            var userTokensApi = [UserToken]()
-            var tokenTerritoriesApi = [TokenTerritory]()
-            var territoriesApi = [Territory]()
-            var housesApi = [House]()
-            var visitsApi = [Visit]()
-            var territoriesAddressesApi = [TerritoryAddress]()
-            var phoneTerritoriesApi = [PhoneTerritory]()
-            var phoneNumbersApi = [PhoneNumber]()
-            var phoneCallsApi = [PhoneCall]()
-            var recallsApi = [Recalls]()
+            // Fetch all data concurrently
+            async let tokenData = fetchTokensFromServer()
+            async let territoryData = fetchTerritoriesFromServer()
+            async let phoneData = fetchPhoneTerritoryDataFromServer()
+            async let recallsData = fetchRecallsFromServer()
             
-            let tokenApi = TokenService()
+            // Wait for all async operations to complete and destructure the results
+            let ((tokens, userTokens, tokenTerritories),
+                 (territories, houses, visits, territoryAddresses),
+                 (phoneTerritories, phoneNumbers, phoneCalls),
+                 recalls) = try await (tokenData, territoryData, phoneData, recallsData)
             
-            // Fetch Tokens
-            let ownedTokens = try await tokenApi.loadOwnedTokens().get()
-            tokensApi.append(contentsOf: ownedTokens)
+            // Fetch local data concurrently
+            async let tokensDb = handleResult(await grdbManager.fetchAllAsync(Token.self))
+            async let userTokensDb = handleResult(await grdbManager.fetchAllAsync(UserToken.self))
+            async let territoriesDb = handleResult(await grdbManager.fetchAllAsync(Territory.self))
+            async let housesDb = handleResult(await grdbManager.fetchAllAsync(House.self))
+            async let visitsDb = handleResult(await grdbManager.fetchAllAsync(Visit.self))
+            async let territoryAddressesDb = handleResult(await grdbManager.fetchAllAsync(TerritoryAddress.self))
+            async let tokenTerritoriesDb = handleResult(await grdbManager.fetchAllAsync(TokenTerritory.self))
+            async let phoneTerritoriesDb = handleResult(await grdbManager.fetchAllAsync(PhoneTerritory.self))
+            async let phoneCallsDb = handleResult(await grdbManager.fetchAllAsync(PhoneCall.self))
+            async let phoneNumbersDb = handleResult(await grdbManager.fetchAllAsync(PhoneNumber.self))
+            async let recallsDb = handleResult(await grdbManager.fetchAllAsync(Recalls.self))
             
-            let userTokens = try await tokenApi.loadUserTokens().get()
-            for token in userTokens {
-                if !tokensApi.contains(token) {
-                    tokensApi.append(token)
-                }
-            }
+            // Wait for all database operations to complete
+            let dbResults = try await (
+                tokensDb, userTokensDb, territoriesDb, housesDb, visitsDb,
+                territoryAddressesDb, tokenTerritoriesDb, phoneTerritoriesDb,
+                phoneCallsDb, phoneNumbersDb, recallsDb
+            )
             
-            // Fetch User Tokens if Admin Credentials exist
-            //if await AuthorizationLevelManager().existsAdminCredentials() {
-            for token in tokensApi {
-                let usersResult = await tokenApi.usersOfToken(token: token.id)
-                switch usersResult {
-                case .success(let users):
-                    for user in users {
-                        userTokensApi.append(UserToken(token: token.id, userId: String(user.id), name: user.name, blocked: user.blocked))
-                    }
-                case .failure(let error):
-                    print("Failed to fetch users for token \(token.id): \(error)")
-                }
-            }
-            //}
-            
-            // Fetch Territories, Houses, Visits, and Territory Addresses
-            if await AuthorizationLevelManager().existsAdminCredentials() {
-                let response = try await AdminService().allData().get()
-                territoriesApi = response.territories
-                housesApi = response.houses
-                visitsApi = response.visits
-                territoriesAddressesApi = response.addresses
-            } else {
-                let response = try await UserService().loadTerritories().get()
-                territoriesApi = response.territories
-                housesApi = response.houses
-                visitsApi = response.visits
-                territoriesAddressesApi = response.addresses
-            }
-            
-            // Fetch Token Territories
-            for token in tokensApi {
-                let response = try await tokenApi.getTerritoriesOfToken(token: token.id).get()
-                tokenTerritoriesApi.append(contentsOf: response)
-            }
-            
-            
-            
-            // Fetch Phone Territories, Phone Numbers, and Phone Calls
-            if await authorizationLevelManager.existsAdminCredentials() {
-                let result = await AdminService().allPhoneData()
-                switch result {
-                case .success(let response):
-                    phoneTerritoriesApi.append(contentsOf: response.territories)
-                    phoneCallsApi.append(contentsOf: response.calls)
-                    phoneNumbersApi.append(contentsOf: response.numbers)
-                case .failure(let error):
-                    print(error)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        self.dataStore.synchronized = true
-                    }
+            // Perform synchronization operations concurrently
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                // Tokens synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: tokens,
+                        dbList: dbResults.0,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
                 }
                 
-            } else if await authorizationLevelManager.existsPhoneCredentials() {
-                let result = await UserService().allPhoneData()
-                switch result {
-                case .success(let response):
-                    phoneTerritoriesApi.append(contentsOf: response.territories)
-                    phoneCallsApi.append(contentsOf: response.calls)
-                    phoneNumbersApi.append(contentsOf: response.numbers)
-                case .failure(_):
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        self.dataStore.synchronized = true
-                    }
+                // User Tokens synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: userTokens,
+                        dbList: dbResults.1,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
                 }
+                
+                // Territories synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: territories,
+                        dbList: dbResults.2,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
+                }
+                
+                // Houses synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: houses,
+                        dbList: dbResults.3,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
+                }
+                
+                // Visits synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: visits,
+                        dbList: dbResults.4,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
+                }
+                
+                // Territory Addresses synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: territoryAddresses,
+                        dbList: dbResults.5,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
+                }
+                
+                // Token Territories synchronization
+                group.addTask {
+                    await self.comparingAndSynchronizeTokenTerritories(
+                        apiList: tokenTerritories,
+                        dbList: dbResults.6
+                    )
+                }
+                
+                // Phone Territories synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: phoneTerritories,
+                        dbList: dbResults.7,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
+                }
+                
+                // Phone Calls synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: phoneCalls,
+                        dbList: dbResults.8,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
+                }
+                
+                // Phone Numbers synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: phoneNumbers,
+                        dbList: dbResults.9,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
+                }
+                
+                // Recalls synchronization
+                group.addTask {
+                    await self.comparingAndSynchronize(
+                        apiList: recalls,
+                        dbList: dbResults.10,
+                        updateMethod: self.grdbManager.editBulkAsync,
+                        addMethod: self.grdbManager.addBulkAsync,
+                        deleteMethod: self.grdbManager.deleteBulkAsync
+                    )
+                }
+                
+                // Wait for all synchronization tasks to complete
+                try await group.waitForAll()
             }
             
-            // Fetch Recalls
-            recallsApi = try await UserService().getRecalls().get()
-            
-            // Fetch local data from the database (GRDB)
-            let tokensDb = try await handleResult(await grdbManager.fetchAllAsync(Token.self))
-            let userTokensDb = try await handleResult(await grdbManager.fetchAllAsync(UserToken.self))
-            let territoriesDb = try await  handleResult(await grdbManager.fetchAllAsync(Territory.self))
-            let housesDb = try await  handleResult(await grdbManager.fetchAllAsync(House.self))
-            let visitsDb = try await  handleResult(await grdbManager.fetchAllAsync(Visit.self))
-            let territoriesAddressesDb = try await  handleResult(await grdbManager.fetchAllAsync(TerritoryAddress.self))
-            let tokenTerritoriesDb = try await  handleResult(await grdbManager.fetchAllAsync(TokenTerritory.self))
-            let phoneTerritoriesDb = try await  handleResult(await grdbManager.fetchAllAsync(PhoneTerritory.self))
-            let phoneCallsDb = try await  handleResult(await grdbManager.fetchAllAsync(PhoneCall.self))
-            let phoneNumbersDb = try await  handleResult(await grdbManager.fetchAllAsync(PhoneNumber.self))
-            let recallsDb = try await  handleResult(await grdbManager.fetchAllAsync(Recalls.self))
-            print("TokenTerritoriesApi \(tokenTerritoriesApi)")
-            // Synchronize Tokens
-            await comparingAndSynchronize(apiList: tokensApi, dbList: tokensDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize User Tokens
-            await comparingAndSynchronize(apiList: userTokensApi, dbList: userTokensDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize Territories
-            await comparingAndSynchronize(apiList: territoriesApi, dbList: territoriesDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize Houses
-            await comparingAndSynchronize(apiList: housesApi, dbList: housesDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize Visits
-            await comparingAndSynchronize(apiList: visitsApi, dbList: visitsDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize Territory Addresses
-            await comparingAndSynchronize(apiList: territoriesAddressesApi, dbList: territoriesAddressesDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize Phone Territories
-            await comparingAndSynchronize(apiList: phoneTerritoriesApi, dbList: phoneTerritoriesDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize Phone Calls
-            await comparingAndSynchronize(apiList: phoneCallsApi, dbList: phoneCallsDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize Phone Numbers
-            await comparingAndSynchronize(apiList: phoneNumbersApi, dbList: phoneNumbersDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
-            
-            // Synchronize Token Territories
-            await comparingAndSynchronizeTokenTerritories(apiList: tokenTerritoriesApi, dbList: tokenTerritoriesDb)
-            
-            // Synchronize Recalls
-            await comparingAndSynchronize(apiList: recallsApi, dbList: recallsDb, updateMethod: grdbManager.editBulkAsync, addMethod: grdbManager.addBulkAsync, deleteMethod: grdbManager.deleteBulkAsync)
             // Finalize synchronization
             await startupProcess(synchronizing: false)
             DispatchQueue.main.async {
@@ -310,11 +321,9 @@ class SynchronizationManager: ObservableObject {
             }
             
         } catch SynchronizationError.credentialsChanged {
-            // Resynchronize if the credentials changed
             print("Credentials changed during sync, restarting synchronization.")
-            await synchronize() // Restart the synchronization with the updated credentials
+            await synchronize()
         } catch {
-            // Handle other synchronization errors
             print("Synchronization failed with error: \(error.localizedDescription)")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.dataStore.synchronized = true
@@ -408,7 +417,7 @@ class SynchronizationManager: ObservableObject {
     ) async {
         // Initialize the OperationQueue for background batching
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 3  // Adjust based on performance needs
+        operationQueue.maxConcurrentOperationCount = 10  // Adjust based on performance needs
 
         // Prepare lists for batching
         var updates: [T] = []

@@ -69,6 +69,7 @@ class TerritoryViewModel: ObservableObject {
         getRecentTerritories()
     }
     
+    @BackgroundActor
     func deleteTerritory(territory: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteTerritory(territoryId: territory)
     }

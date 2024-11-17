@@ -7,7 +7,8 @@
 
 import Foundation
 import SwiftUI
-import Papyrus
+@preconcurrency import Papyrus
+
 
 class APIProvider {
     private enum HeaderKeys {
@@ -33,33 +34,32 @@ class APIProvider {
     }
     
     // Fetch auth data from main actor in a way that can be cached
+    @BackgroundActor
     private static func getAuthHeaders() async throws -> [String: String] {
         // Switch to main actor just for fetching the auth data
-        return await MainActor.run {
             var headers: [String: String] = [:]
-            let auth = AuthorizationProvider.shared
+        let auth = await AuthorizationProvider.shared
             
-            if let token = auth.authorizationToken {
+        if let token = await auth.authorizationToken {
                 headers[HeaderKeys.authorization] = "Bearer \(token)"
             }
-            if let token = auth.token {
+        if let token = await auth.token {
                 headers[HeaderKeys.token] = token
             }
-            if let congregationId = auth.congregationId, congregationId != 0 {
+        if let congregationId = await auth.congregationId, congregationId != 0 {
                 headers[HeaderKeys.congregationId] = String(congregationId)
             }
-            if let congregationPass = auth.congregationPass {
+        if let congregationPass = await auth.congregationPass {
                 headers[HeaderKeys.congregationPass] = congregationPass
             }
-            if let phoneId = auth.phoneCongregationId {
+        if let phoneId = await auth.phoneCongregationId {
                 headers[HeaderKeys.phoneId] = phoneId
             }
-            if let phonePass = auth.phoneCongregationPass {
+        if let phonePass = await auth.phoneCongregationPass {
                 headers[HeaderKeys.phonePass] = phonePass
             }
             
             return headers
-        }
     }
     
     private static func makeProvider() -> Provider {

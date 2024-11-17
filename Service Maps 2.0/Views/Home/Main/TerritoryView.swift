@@ -15,7 +15,7 @@ import AlertKit
 import Nuke
 import FloatingButton
 import MijickPopups
-
+import Toasts
 
 struct TerritoryView: View {
     @Environment(\.dismissSearch) private var dismissSearch
@@ -30,7 +30,7 @@ struct TerritoryView: View {
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.presentToast) var presentToast
     @State var searchViewDestination = false
     
     init(territoryIdToScrollTo: String? = nil) {
@@ -38,8 +38,6 @@ struct TerritoryView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
-    let alertViewDeleted = AlertAppleMusic17View(title: "Territory Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    let alertViewAdded = AlertAppleMusic17View(title: "Territory Added", subtitle: nil, icon: .done)
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -179,20 +177,13 @@ struct TerritoryView: View {
                                 }
                             }
                             .animation(.easeInOut(duration: 0.25), value: viewModel.territoryData == nil || viewModel.territoryData != nil)
-                            .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                            .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                             .navigationDestination(isPresented: $viewModel.presentSheet) {
                                 AddTerritoryView(territory: viewModel.currentTerritory) {
-                                    DispatchQueue.main.async {
-                                        // withAnimation {
-                                        // viewModel.getTerritories()
-                                        // }
-                                    }
-                                    DispatchQueue.main.async {
-                                        viewModel.showAddedToast = true
-                                    }
-                                    
-                                    
+                                    let toast = ToastValue(
+                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                        message: "Territory Added"
+                                    )
+                                    presentToast(toast)
                                 }
                             }
                             .navigationDestination(isPresented: $searchViewDestination) {
@@ -333,7 +324,7 @@ struct TerritoryView: View {
     func territoryCell(dataWithKeys: TerritoryDataWithKeys, territoryData: TerritoryData, mainViewSize: CGSize) -> some View {
         LazyVStack {
             SwipeView {
-                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory))) {
+                NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory).installToast(position: .bottom))) {
                     CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, mainWindowSize: mainViewSize)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16) // Same shape as the cell
@@ -361,7 +352,13 @@ struct TerritoryView: View {
                                         Button {
                                             HapticManager.shared.trigger(.lightImpact)
                                             DispatchQueue.main.async {
-                                                CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).present()
+                                                CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
+                                                    let toast = ToastValue(
+                                                        icon: Image(systemName: "trash.circle.fill"),
+                                                        message: "Territory Deleted"
+                                                    )
+                                                    presentToast(toast)
+                                                }.present()
                                             }
                                         } label: {
                                             HStack {
@@ -398,7 +395,13 @@ struct TerritoryView: View {
                         DispatchQueue.main.async {
                             context.state.wrappedValue = .closed
                             self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                            CentrePopup_DeleteTerritoryAlert(viewModel: viewModel).present()
+                            CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
+                                let toast = ToastValue(
+                                    icon: Image(systemName: "trash.circle.fill"),
+                                    message: "Territory Deleted"
+                                )
+                                presentToast(toast)
+                            }.present()
                         }
                     }
                     .font(.title.weight(.semibold))
@@ -509,6 +512,12 @@ struct ViewOffsetKey: PreferenceKey, Sendable {
 
 struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
     @ObservedObject var viewModel: TerritoryViewModel
+    var onDone: () -> Void
+    
+    init(viewModel: TerritoryViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()

@@ -10,7 +10,7 @@ import NavigationTransitions
 import BackgroundTasks
 import Nuke
 import MijickPopups
-
+import Toasts
 //ORIGINAL NEW
 
 @main
@@ -22,7 +22,6 @@ struct Service_Maps_2_0App: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     @StateObject var universalLinksManager = UniversalLinksManager.shared
-    @StateObject var realtimeManager = RealtimeManager.shared
     
     @StateObject private var navigationHistoryManager = NavigationHistoryManager()
     
@@ -45,7 +44,7 @@ struct Service_Maps_2_0App: App {
                 case .SplashScreen:
                     SplashScreenView()
                 case .HomeScreen:
-                    HomeTabView()
+                    HomeTabView().installToast(position: .bottom)
                 case .WelcomeScreen:
                     WelcomeView() { Task { SynchronizationManager.shared.startupProcess(synchronizing: true) } }
                 case .LoginScreen:
@@ -85,34 +84,39 @@ struct Service_Maps_2_0App: App {
             .navigationTransition(
                 .fade(.in)
             )
-        
+            .installToast(position: .bottom)
             
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
-                if isMoreThanFiveMinutesOld(date: StorageManager.shared.lastTime) {
-                    Task {
+                Task {
+                    if isMoreThanFiveMinutesOld(date: StorageManager.shared.lastTime) {
                         synchronizationManager.startupProcess(synchronizing: true)
                     }
-                }
-                Task {
-                    do {
-                        try await realtimeManager.initAblyConnection()
-                        print("Ably connection initialized")
-                        realtimeManager.subscribeToChanges {
-                            switch $0 {
-                            case .success:
-                                print("Subscribed to changes")
-                            case .failure(let error):
-                                print("Error: \(error)")
+                    Task {
+                        do {
+                            // Always reinitialize connection when admin status changes
+                            try await RealtimeManager.shared.initAblyConnection()
+                            print("Ably connection initialized")
+                            
+                            // Subscribe to changes
+                            await RealtimeManager.shared.subscribeToChanges { result in
+                                switch result {
+                                case .success:
+                                    print("Subscribed to changes")
+                                case .failure(let error):
+                                    print("Error: \(error)")
+                                }
                             }
+                        } catch {
+                            print("Error: \(error)")
                         }
-                    } catch {
-                        print("Error: \(error)")
                     }
                 }
             } else if newPhase == .background {
-                realtimeManager.unsubscribeToChanges()
+                Task {
+                    await RealtimeManager.shared.unsubscribeToChanges()
+                }
             }
         }
         

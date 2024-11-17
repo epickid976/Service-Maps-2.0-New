@@ -12,7 +12,6 @@ import Combine
 struct HouseCell: View {
     @State var revisitView: Bool = false
     @StateObject private var visitViewModel: VisitsViewModel
-    @StateObject private var realtimeManager = RealtimeManager.shared
     @State private var house: HouseData
     @State private var cancellable: AnyCancellable?
     
@@ -56,7 +55,7 @@ struct HouseCell: View {
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .onAppear(perform: onAppear)
-        .onChange(of: realtimeManager.lastMessage, perform: onMessageChange)
+        //.onChange(of: RealtimeManager.shared.lastMessage, perform: onMessageChange)
         .onDisappear(perform: onDisappear)
     }
     

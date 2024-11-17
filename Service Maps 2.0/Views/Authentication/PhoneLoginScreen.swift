@@ -239,21 +239,6 @@ struct PhoneLoginScreen: View {
         //.animation(.spring(duration: 1.0), value: synchronizationManager.startupState)
         .navigationViewStyle(StackNavigationViewStyle())
         .navigationTransition(.zoom.combined(with: .fade(.in)))
-        .toolbar{
-            ToolbarItemGroup(placement: .keyboard){
-                Spacer()
-                
-                Button("Done"){
-                    HapticManager.shared.trigger(.lightImpact)
-                    DispatchQueue.main.async {
-                        emailFocus = false
-                        passwordFocus = false
-                        hideKeyboard()
-                    }
-                }
-                
-            }
-        }
     }
     
     func validate() -> Bool {

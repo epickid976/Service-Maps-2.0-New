@@ -6,10 +6,9 @@
 //
 
 import Foundation
-import Papyrus
-
+@preconcurrency import Papyrus
 @API
-public protocol PasswordResetRoutes {
+public protocol PasswordResetRoutes: Sendable  {
     
     @POST("password/create")
     func requestReset(requestResetForm: Body<RequestResetForm>) async throws

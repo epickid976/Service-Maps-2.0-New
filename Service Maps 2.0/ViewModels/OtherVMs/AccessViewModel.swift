@@ -92,7 +92,7 @@ class AccessViewModel: ObservableObject {
                 let tokenTerritoryResult = grdbManager.fetchAll(TokenTerritory.self)
                 
                 // Fetch the token by ID
-                let tokenResult = grdbManager.fetchById(Token.self, id: key)
+                let tokenResult = await grdbManager.fetchById(Token.self, id: key)
                 
                 switch (tokenTerritoryResult, tokenResult) {
                 case (.success(let tokenTerritoryEntities), .success(let keyToDelete)):

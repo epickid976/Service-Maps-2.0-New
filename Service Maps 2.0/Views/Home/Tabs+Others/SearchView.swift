@@ -146,16 +146,6 @@ struct SearchView: View {
                         .scrollDismissesKeyboard(.never)
                         
                 }.animation(.easeInOut(duration: 0.5), value: searchViewModel.scrollViewID)
-                .toolbar{
-                    ToolbarItemGroup(placement: .keyboard){
-                        Spacer()
-                        Button("Done"){
-                            DispatchQueue.main.async {
-                                hideKeyboard()
-                            }
-                        }.foregroundColor(.primary)
-                    }
-                }
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarLeading) {
                         HStack {

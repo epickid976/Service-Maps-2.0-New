@@ -91,15 +91,16 @@ struct CustomField: View {
                         content
                     }
                 }
-                //.textContentType(.oneTimeCode)
                 .toolbar {
-                                   ToolbarItemGroup(placement: .keyboard) {
-                                       Spacer()
-                                       Button("Done") {
-                                           isFocused.wrappedValue = false // Dismiss the keyboard
-                                       }
-                                   }
-                               }
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") {
+                            HapticManager.shared.trigger(.lightImpact)
+                            isFocused.wrappedValue = false // Dismiss the keyboard
+                            resignFirstResponderManually()
+                        }.tint(.primary).bold()
+                    }
+                }
         } else {
             HStack {
                 SecureTextField(placeholder: placeholder, text: $text, isSecure: $isSecure)

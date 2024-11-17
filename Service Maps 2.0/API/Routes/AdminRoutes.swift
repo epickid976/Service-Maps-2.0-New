@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import Papyrus
+@preconcurrency import Papyrus
 
 @API
-public protocol AdminRoutes {
+public protocol AdminRoutes: Sendable {
     
     @GET("admin/alldata")
     func allData() async throws -> AllDataResponse

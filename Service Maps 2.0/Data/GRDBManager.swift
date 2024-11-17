@@ -177,6 +177,71 @@ final class GRDBManager: ObservableObject, Sendable {
             }
         }
         
+        migrator.registerMigration("addIndexes") { db in
+            // Index for fast lookup on "territory" column in "territory_addresses"
+            try db.create(index: "idx_territory_addresses_on_territory",
+                          on: "territory_addresses",
+                          columns: ["territory"],
+                          ifNotExists: true)
+            
+            // Index for fast lookup on "territory_address" column in "houses"
+            try db.create(index: "idx_houses_on_territory_address",
+                          on: "houses",
+                          columns: ["territory_address"],
+                          ifNotExists: true)
+            
+            // Index for fast lookup on "house" column in "visits"
+            try db.create(index: "idx_visits_on_house",
+                          on: "visits",
+                          columns: ["house"],
+                          ifNotExists: true)
+
+            // Compound index for "moderator" and "expire" columns in "tokens" to optimize token filtering
+            try db.create(index: "idx_tokens_on_moderator_and_expire",
+                          on: "tokens",
+                          columns: ["moderator", "expire"],
+                          ifNotExists: true)
+
+            // Conditional index on "tokens" for non-expired tokens
+            try db.create(index: "idx_tokens_on_user_and_expire",
+                          on: "tokens",
+                          columns: ["user", "expire"],
+                          unique: false,
+                          ifNotExists: true,
+                          condition: Column("expire") > Int64(Date().timeIntervalSince1970 * 1000))
+
+            // Index for the composite key in "token_territories"
+            try db.create(index: "idx_token_territories_on_token_and_territory",
+                          on: "token_territories",
+                          columns: ["token", "territory"],
+                          ifNotExists: true)
+            
+            // Index for fast lookup on "territory" column in "token_territories"
+            try db.create(index: "idx_token_territories_on_territory",
+                          on: "token_territories",
+                          columns: ["territory"],
+                          ifNotExists: true)
+            
+            // Index for fast lookup on "house" column in "recalls"
+            try db.create(index: "idx_recalls_on_house",
+                          on: "recalls",
+                          columns: ["house"],
+                          ifNotExists: true)
+
+            // Index for fast lookup on "territory" column in "phone_numbers"
+            try db.create(index: "idx_phone_numbers_on_territory",
+                          on: "phone_numbers",
+                          columns: ["territory"],
+                          ifNotExists: true)
+            
+            // Index for fast lookup on "phonenumber" column in "phone_calls"
+            try db.create(index: "idx_phone_calls_on_phonenumber",
+                          on: "phone_calls",
+                          columns: ["phonenumber"],
+                          ifNotExists: true)
+        }
+        
+        
         // Apply all migrations
         try migrator.migrate(dbPool)
     }
@@ -357,9 +422,10 @@ final class GRDBManager: ObservableObject, Sendable {
     }
     
     // Fetch the first territory from the Territory table
-    @Sendable func fetchFirstTerritory() -> Territory? {
+    @BackgroundActor
+    @Sendable func fetchFirstTerritory() async -> Territory? {
         do {
-            return try dbPool.read { db in
+            return try await dbPool.read { db in
                 try Territory.fetchOne(db) // Fetch the first Territory object
             }
         } catch {

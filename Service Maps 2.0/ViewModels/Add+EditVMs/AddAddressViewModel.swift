@@ -24,16 +24,21 @@ class AddAddressViewModel: ObservableObject {
     
     @Published var loading = false
     
-    
+    @BackgroundActor
     func addAddress() async -> Result<Void, Error> {
-        loading = true
-        let addressObject = TerritoryAddress(id: territory.id + String(Date().timeIntervalSince1970 * 1000), territory: territory.id, address: addressText)
+        await MainActor.run {
+            loading = true
+        }
+        let addressObject = await TerritoryAddress(id: territory.id + String(Date().timeIntervalSince1970 * 1000), territory: territory.id, address: addressText)
         return await dataUploader.addTerritoryAddress(territoryAddress: addressObject)
     }
     
+    @BackgroundActor
     func editAddress(address: TerritoryAddress) async -> Result<Void, Error> {
-        loading = true
-        let addressObject = TerritoryAddress(id: address.id, territory: territory.id, address: addressText)
+        await MainActor.run {
+            loading = true
+        }
+        let addressObject = await TerritoryAddress(id: address.id, territory: territory.id, address: addressText)
         return await dataUploader.updateTerritoryAddress(territoryAddress: addressObject)
     }
     

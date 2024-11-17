@@ -7,7 +7,7 @@
 import Foundation
 import Papyrus
 
-
+@BackgroundActor
 class TokenService: @unchecked Sendable {
     private let api: TokenRoutes = TokenRoutesAPI(provider: APIProvider().provider)
     

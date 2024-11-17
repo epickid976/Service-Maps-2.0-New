@@ -37,16 +37,20 @@ class AddTerritoryViewModel: ObservableObject {
     @Published var error = ""
     
     @Published var loading = false
-    
+    @BackgroundActor
     func addTerritory() async -> Result<Void, Error>{
-        loading = true
-        let territoryObject = Territory(id: "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)", congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int32(number!), description: description, image: imageToSend != nil ? "\(number!).png" : nil)
+        await MainActor.run {
+            loading = true
+        }
+        let territoryObject = await Territory(id: "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)", congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int32(number!), description: description, image: imageToSend != nil ? "\(number!).png" : nil)
         return await dataUploader.addTerritory(territory: territoryObject, image: imageToSend)
     }
-    
+    @BackgroundActor
     func editTerritory(territory: Territory) async -> Result<Void, Error> {
-        loading = true
-        let territoryObject = Territory(id: territory.id, congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int32(number!), description: description, image: imageToSend != nil ? "\(territory.number).png" : nil)
+        await MainActor.run {
+            loading = true
+        }
+        let territoryObject = await Territory(id: territory.id, congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int32(number!), description: description, image: imageToSend != nil ? "\(territory.number).png" : nil)
         return await dataUploader.updateTerritory(territory: territoryObject, image: imageToSend)
     }
     

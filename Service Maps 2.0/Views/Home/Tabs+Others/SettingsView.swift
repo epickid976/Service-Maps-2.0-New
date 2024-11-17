@@ -35,7 +35,6 @@ struct SettingsView: View {
     @Environment(\.mainWindowSize) var mainWindowSize
     
     @Environment(\.requestReview) var requestReview
-    @StateObject var realtimeManager = RealtimeManager.shared
     
     var body: some View {
         let alertUpdate = AlertAppleMusic17View(title: viewModel.showUpdateToastMessage, subtitle: nil, icon: .custom(UIImage(systemName: "arrow.triangle.2.circlepath.circle")!))
@@ -102,12 +101,16 @@ struct SettingsView: View {
                     }
                     synchronizationManager.startupProcess(synchronizing: true)
                     viewModel.presentSheet = false
+                    
                     Task {
                         do {
-                            try await realtimeManager.initAblyConnection()
+                            // Always reinitialize connection when admin status changes
+                            try await RealtimeManager.shared.initAblyConnection()
                             print("Ably connection initialized")
-                            realtimeManager.subscribeToChanges {
-                                switch $0 {
+                            
+                            // Subscribe to changes
+                            await RealtimeManager.shared.subscribeToChanges { result in
+                                switch result {
                                 case .success:
                                     print("Subscribed to changes")
                                 case .failure(let error):
@@ -824,17 +827,6 @@ struct CentrePopup_EditUsername: CentrePopup {
         }
         .onAppear {
             usernameFocus = true // Focus on the text field when the view appears
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button("Done") {
-                    HapticManager.shared.trigger(.lightImpact)
-                    usernameFocus = false // Dismiss the keyboard when "Done" is tapped
-                }
-                .tint(.primary)
-                .fontWeight(.bold)
-            }
         }
         .padding(.top, 5)
         .padding(.bottom, 5)

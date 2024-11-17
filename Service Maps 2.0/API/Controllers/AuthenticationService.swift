@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Papyrus
 
-
+@BackgroundActor
 class AuthenticationService: @unchecked Sendable {
     private lazy var api: AuthenticationRoutes = AuthenticationRoutesAPI(provider: APIProvider().provider)
     

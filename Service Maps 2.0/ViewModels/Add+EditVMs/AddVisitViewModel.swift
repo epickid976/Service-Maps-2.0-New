@@ -28,20 +28,22 @@ class AddVisitViewModel: ObservableObject {
     
     @Published var loading = false
     
+    @BackgroundActor
     func addVisit() async -> Result<Void, Error> {
-        withAnimation {
-            loading = true
+        await MainActor.run {
+            withAnimation { loading = true }
         }
         let date = Date.now.millisecondsSince1970
-        let visitObject = Visit(id: "\(house.id)-\(date)", house: house.id, date: (date), symbol: selectedOption.forServer, notes: notes, user: StorageManager.shared.userName ?? "")
+        let visitObject = await Visit(id: "\(house.id)-\(date)", house: house.id, date: (date), symbol: selectedOption.forServer, notes: notes, user: StorageManager.shared.userEmail ?? "")
         return await dataUploader.addVisit(visit: visitObject)
     }
     
+    @BackgroundActor
     func editVisit(visit: Visit) async -> Result<Void, Error> {
-        withAnimation {
-            loading = true
+        await MainActor.run {
+            withAnimation { loading = true }
         }
-        let visitObject = Visit(id: visit.id, house: house.id, date: visit.date, symbol: selectedOption.forServer, notes: notes, user: StorageManager.shared.userName ?? "")
+        let visitObject = await Visit(id: visit.id, house: house.id, date: visit.date, symbol: selectedOption.forServer, notes: notes, user: StorageManager.shared.userEmail ?? "")
         return await dataUploader.updateVisit(visit: visitObject)
     }
     

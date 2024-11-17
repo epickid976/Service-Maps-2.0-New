@@ -6,12 +6,10 @@
 //
 
 import Foundation
-import Alamofire
-import Papyrus
-
+@preconcurrency import Papyrus
 //MARK: Papyrus API Protocol
 @API
-public protocol CongregationRoutes {
+public protocol CongregationRoutes: Sendable  {
     
     @POST("congregation/sign")
     func signIn(congregationSignInForm: Body<CongregationSignInForm>) async throws -> CongregationResponse

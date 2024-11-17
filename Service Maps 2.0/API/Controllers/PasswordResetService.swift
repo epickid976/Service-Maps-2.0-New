@@ -9,6 +9,7 @@ import Foundation
 import Alamofire
 import PapyrusCore
 
+@BackgroundActor
 class PasswordResetService: @unchecked Sendable {
     private lazy var api: PasswordResetRoutes = PasswordResetRoutesAPI(provider: APIProvider().provider)
 

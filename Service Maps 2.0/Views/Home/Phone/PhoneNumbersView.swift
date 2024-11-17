@@ -15,6 +15,7 @@ import Nuke
 import Lottie
 import AlertKit
 import MijickPopups
+import Toasts
 
 struct PhoneNumbersView: View {
     var territory: PhoneTerritory
@@ -31,13 +32,11 @@ struct PhoneNumbersView: View {
     @State var highlightedNumberId: String?
     
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentToast) var presentToast
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @State var isLoading = false
-    
-    let alertViewDeleted = AlertAppleMusic17View(title: "Number Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    let alertViewAdded = AlertAppleMusic17View(title: "Number Added", subtitle: nil, icon: .done)
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -132,11 +131,15 @@ struct PhoneNumbersView: View {
                                 self.previousViewOffset = currentOffset
                             }
                         }
-                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddNumber(viewModel: viewModel, territory: territory).present()
+                                CentrePopup_AddNumber(viewModel: viewModel, territory: territory){
+                                    let toast = ToastValue(
+                                     icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                        message: "Number Added"
+                                    )
+                                    presentToast(toast)
+                             }.present()
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil || viewModel.phoneNumbersData != nil)
@@ -234,7 +237,13 @@ struct PhoneNumbersView: View {
                                             DispatchQueue.main.async {
                                                 self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
                                                 
-                                                CentrePopup_DeletePhoneNumber(viewModel: viewModel).present()
+                                                CentrePopup_DeletePhoneNumber(viewModel: viewModel){
+                                                    let toast = ToastValue(
+                                                     icon: Image(systemName: "trash.circle.fill"),
+                                                        message: "Number Deleted"
+                                                    )
+                                                    presentToast(toast)
+                                             }.present()
                                             }
                                         } label: {
                                             HStack {
@@ -284,7 +293,13 @@ struct PhoneNumbersView: View {
                         DispatchQueue.main.async {
                             self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
                             
-                            CentrePopup_DeletePhoneNumber(viewModel: viewModel).present()
+                            CentrePopup_DeletePhoneNumber(viewModel: viewModel){
+                                let toast = ToastValue(
+                                 icon: Image(systemName: "trash.circle.fill"),
+                                    message: "Number Deleted"
+                                )
+                                presentToast(toast)
+                         }.present()
                         }
                     }
                     .font(.title.weight(.semibold))
@@ -554,6 +569,12 @@ public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
 
 struct CentrePopup_DeletePhoneNumber: CentrePopup {
     @ObservedObject var viewModel: NumbersViewModel
+    var onDone: () -> Void
+    
+    init(viewModel: NumbersViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -609,7 +630,7 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.numberToDelete = (nil,nil)
-                                        self.viewModel.showToast = true
+                                        onDone()
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -646,6 +667,13 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
 struct CentrePopup_AddNumber: CentrePopup {
     @ObservedObject var viewModel: NumbersViewModel
     @State var territory: PhoneTerritory
+    var onDone: () -> Void
+    
+    init(viewModel: NumbersViewModel, territory: PhoneTerritory, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.territory = territory
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -656,9 +684,7 @@ struct CentrePopup_AddNumber: CentrePopup {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismissLastPopup()
-                //viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                //viewModel.getNumbers()
-                viewModel.showAddedToast = true
+                onDone()
             }
         }, onDismiss: {
             viewModel.presentSheet = false
@@ -691,7 +717,6 @@ struct CentrePopup_AddNumber: CentrePopup {
 
 struct PhoneNumberCell: View {
     @ObservedObject var callViewModel: CallsViewModel
-    @StateObject var realtimeManager = RealtimeManager.shared
     @State var numbersData: PhoneNumbersData
     var mainWindowSize: CGSize
     @State private var cancellable: AnyCancellable?
@@ -767,12 +792,6 @@ struct PhoneNumberCell: View {
                 }
             }
             .frame(maxWidth: mainWindowSize.width * 0.90)
-        }
-        .onChange(of: realtimeManager.lastMessage) { value in
-            if value != nil {
-                callViewModel.getCalls()
-            }
-            
         }
         .onAppear {
             callViewModel.getCalls()

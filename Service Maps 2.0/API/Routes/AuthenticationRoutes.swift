@@ -7,13 +7,12 @@
 
 import Foundation
 import Alamofire
-import Papyrus
-
+@preconcurrency import Papyrus
 
 
 //MARK: Papyrus API Protocol
 @API
-public protocol AuthenticationRoutes {
+public protocol AuthenticationRoutes: Sendable  {
     
     ///# Login
     @POST("auth/login")

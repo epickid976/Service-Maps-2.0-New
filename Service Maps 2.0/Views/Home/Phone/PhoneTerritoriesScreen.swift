@@ -14,6 +14,7 @@ import Lottie
 import AlertKit
 import Nuke
 import MijickPopups
+import Toasts
 
 struct PhoneTerritoriesScreen: View {
     @StateObject var viewModel: PhoneScreenViewModel
@@ -23,10 +24,7 @@ struct PhoneTerritoriesScreen: View {
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
-    
-    let alertViewDeleted = AlertAppleMusic17View(title: "Territory Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    let alertViewAdded = AlertAppleMusic17View(title: "Territory Added", subtitle: nil, icon: .done)
-    
+    @Environment(\.presentToast) var presentToast
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     
@@ -174,15 +172,15 @@ struct PhoneTerritoriesScreen: View {
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.phoneData == nil || viewModel.phoneData != nil)
-                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .navigationDestination(isPresented: $viewModel.presentSheet) {
                             AddPhoneTerritoryView(territory: viewModel.currentTerritory) {
                                 //synchronizationManager.startupProcess(synchronizing: true)
                                 viewModel.getTeritories()
-                                DispatchQueue.main.async {
-                                    viewModel.showAddedToast = true
-                                }
+                                let toast = ToastValue(
+                                 icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                    message: "Territory Added"
+                                )
+                                presentToast(toast)
                                 
                             }
                         }
@@ -307,7 +305,13 @@ struct PhoneTerritoriesScreen: View {
                                     Button {
                                         DispatchQueue.main.async {
                                             self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
-                                            CentrePopup_DeletePhoneTerritory(viewModel: viewModel).present()
+                                            CentrePopup_DeletePhoneTerritory(viewModel: viewModel) {
+                                                let toast = ToastValue(
+                                                 icon: Image(systemName: "trash.circle.fill"),
+                                                    message: "Territory Deleted"
+                                                )
+                                                presentToast(toast)
+                                            }.present()
                                         }
                                     } label: {
                                         HStack {
@@ -357,7 +361,13 @@ struct PhoneTerritoriesScreen: View {
                     DispatchQueue.main.async {
                         context.state.wrappedValue = .closed
                         self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
-                        CentrePopup_DeletePhoneTerritory(viewModel: viewModel).present()
+                        CentrePopup_DeletePhoneTerritory(viewModel: viewModel) {
+                            let toast = ToastValue(
+                             icon: Image(systemName: "trash.circle.fill"),
+                                message: "Territory Deleted"
+                            )
+                            presentToast(toast)
+                        }.present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -388,6 +398,12 @@ struct PhoneTerritoriesScreen: View {
 }
 struct CentrePopup_DeletePhoneTerritory: CentrePopup {
     @ObservedObject var viewModel: PhoneScreenViewModel
+    var onDone: () -> Void
+    
+    init(viewModel: PhoneScreenViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -442,7 +458,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                                         }
                                         dismissLastPopup()
                                         self.viewModel.territoryToDelete = (nil,nil)
-                                        self.viewModel.showToast = true
+                                        onDone()
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)

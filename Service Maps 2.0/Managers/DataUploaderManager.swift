@@ -10,6 +10,7 @@ import BackgroundTasks
 import SwiftUI
 import Combine
 import GRDB
+
 @MainActor
 class DataUploaderManager: ObservableObject {
     
@@ -19,7 +20,7 @@ class DataUploaderManager: ObservableObject {
     
     private var adminApi = AdminService()
     private var userApi = UserService()
-    private var tokenApi = TokenService()
+    //private var tokenApi = TokenService()
     
     @ObservedObject private var grdbManager = GRDBManager.shared
     
@@ -272,7 +273,7 @@ class DataUploaderManager: ObservableObject {
     // MARK: - Token and TokenTerritory Methods
     @BackgroundActor
     func createToken(newTokenForm: NewTokenForm, territories: [Territory]) async -> Result<Token, Error> {
-        let apiResult = await tokenApi.createToken(
+        let apiResult = await TokenService().createToken(
             name: newTokenForm.name,
             moderator: newTokenForm.moderator,
             territories: newTokenForm.territories,
@@ -303,7 +304,7 @@ class DataUploaderManager: ObservableObject {
     func editToken(token: String, territories: [Territory]) async -> Result<Void, Error> {
         let territoriesToSend = territories.map { $0.id }
         
-        let apiResult = await tokenApi.editToken(tokenId: token, territories: territoriesToSend.description)
+        let apiResult = await TokenService().editToken(tokenId: token, territories: territoriesToSend.description)
         return await performApiAndDbUpdate(apiResult) {
             // Remove old token territories
             let fetchResult = await grdbManager.fetchAllAsync(TokenTerritory.self)
@@ -329,7 +330,7 @@ class DataUploaderManager: ObservableObject {
             return .failure(CustomErrors.NotFound)
         }
 
-        let apiResult = await tokenApi.deleteToken(token: unwrappedToken.id)
+        let apiResult = await TokenService().deleteToken(token: unwrappedToken.id)
         return await performApiAndDbUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedToken).get() // Ignore result but handle errors
         }
@@ -355,12 +356,12 @@ class DataUploaderManager: ObservableObject {
     
     @BackgroundActor
     func unregisterToken(myToken: String) async -> Result<Void, Error> {
-        return await tokenApi.unregister(token: myToken).map { _ in () }
+        return await TokenService().unregister(token: myToken).map { _ in () }
     }
 
     @BackgroundActor
     func registerToken(myToken: String) async -> Result<Void, Error> {
-        return await tokenApi.register(token: myToken).map { _ in () }
+        return await TokenService().register(token: myToken).map { _ in () }
     }
     
     @BackgroundActor
@@ -371,7 +372,7 @@ class DataUploaderManager: ObservableObject {
             return .failure(CustomErrors.NotFound)
         }
 
-        let apiResult = await tokenApi.removeUserFromToken(token: unwrappedUserToken.token, userId: unwrappedUserToken.userId)
+        let apiResult = await TokenService().removeUserFromToken(token: unwrappedUserToken.token, userId: unwrappedUserToken.userId)
         return await performApiAndDbUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedUserToken).get() // Ignore result but handle errors
         }
@@ -385,7 +386,7 @@ class DataUploaderManager: ObservableObject {
             return .failure(CustomErrors.NotFound)
         }
 
-        let apiResult = await tokenApi.blockUnblockUserFromToken(token: userToken.token, userId: userToken.userId, blocked: blocked)
+        let apiResult = await TokenService().blockUnblockUserFromToken(token: userToken.token, userId: userToken.userId, blocked: blocked)
         return await performApiAndDbUpdate(apiResult) {
             var updatedUserToken = userToken
             updatedUserToken.blocked = blocked

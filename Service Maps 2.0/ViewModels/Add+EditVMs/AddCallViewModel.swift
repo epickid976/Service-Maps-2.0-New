@@ -30,7 +30,7 @@ class AddCallViewModel: ObservableObject {
         withAnimation {
             loading = true
         }
-        let callObject = PhoneCall(id: "\(phoneNumber.id)-\(Date.now.millisecondsSince1970)", phonenumber: phoneNumber.id, date: (Date.now.millisecondsSince1970), notes: notes, user: StorageManager.shared.userName ?? "")
+        let callObject = PhoneCall(id: "\(phoneNumber.id)-\(Date.now.millisecondsSince1970)", phonenumber: phoneNumber.id, date: (Date.now.millisecondsSince1970), notes: notes, user: StorageManager.shared.userEmail ?? "")
         return await dataUploader.addPhoneCall(phoneCall: callObject)
     }
     
@@ -38,7 +38,7 @@ class AddCallViewModel: ObservableObject {
         withAnimation {
             loading = true
         }
-        let callObject = PhoneCall(id: call.id, phonenumber: call.phonenumber, date: call.date, notes: notes, user: StorageManager.shared.userName ?? "")
+        let callObject = PhoneCall(id: call.id, phonenumber: call.phonenumber, date: call.date, notes: notes, user: StorageManager.shared.userEmail ?? "")
         return await dataUploader.updatePhoneCall(phoneCall: callObject)
     }
     

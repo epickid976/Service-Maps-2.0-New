@@ -24,11 +24,14 @@ class AddHouseViewModel: ObservableObject {
     
     @Published var loading = false
     
+    @BackgroundActor
     func addHouse() async -> Result<Void, Error> {
-        withAnimation {
-            loading = true
+        await MainActor.run {
+            withAnimation {
+                loading = true
+            }
         }
-        let houseObject = House(id: "\(address.address)-\(number)", territory_address: address.id, number: number)
+        let houseObject = await House(id: "\(address.address)-\(number)", territory_address: address.id, number: number)
         return await dataUploader.addHouse(house: houseObject)
     }
     

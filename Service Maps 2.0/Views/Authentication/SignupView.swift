@@ -174,22 +174,6 @@ struct SignupView: View {
             .navigationTransition(
                 .slide.combined(with: .fade(.in))
             )
-           .toolbar{
-                ToolbarItemGroup(placement: .keyboard){
-                    Spacer()
-                    Button("Done"){
-                        HapticManager.shared.trigger(.lightImpact)
-                        DispatchQueue.main.async {
-                            firstNameFocus = false
-                            lastNameFocus = false
-                            emailFocus = false
-                            confirmPasswordFocus = false
-                            passwordFocus = false
-                            hideKeyboard()
-                        }
-                    }.tint(.primary).bold()
-                }
-            }
         }
     }
 }

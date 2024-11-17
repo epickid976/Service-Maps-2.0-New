@@ -67,33 +67,35 @@ class AddKeyViewModel: ObservableObject {
         // Force view update by reassigning the array
         self.selectedTerritories = self.selectedTerritories
     }
-    
+    @BackgroundActor
     func addToken() async -> Result<Void, Error> {
-        withAnimation {
-            loading = true
+        await MainActor.run {
+            withAnimation {
+                loading = true
+            }
         }
         
         // Create token object
-        let tokenObject = Token(id: "", name: name, owner: "", congregation: dataStore.congregationName ?? "", moderator: servant)
+        let tokenObject = await Token(id: "", name: name, owner: "", congregation: dataStore.congregationName ?? "", moderator: servant)
         
         // Collect territories and avoid duplicates using a Set
         var territoriesSet = [String]()
         var territoryObjectsSet = Set<Territory>()
         
         // Populate the territories from selectedTerritories
-        selectedTerritories.forEach { territory in
+        await selectedTerritories.forEach { territory in
             territoriesSet.append(territory.territory.id)  // Use Set to avoid duplicates
             territoryObjectsSet.insert(territory.territory)
         }
 
         // Handle editing token
-        if let keyData = keyData {
+        if let keyData = await keyData {
             return await dataUploader.editToken(token: keyData.key.id, territories: Array(territoryObjectsSet)) // Convert set back to array
         } else {
             // Creating a new token
             // Pass territories as a plain array of strings
             let territoriesToSend = territoryObjectsSet.map { $0.id }
-            let newTokenForm = NewTokenForm(
+            let newTokenForm = await NewTokenForm(
                 name: tokenObject.name,
                 moderator: tokenObject.moderator,
                 territories: territoriesToSend.description,  // Pass array directly, no .description

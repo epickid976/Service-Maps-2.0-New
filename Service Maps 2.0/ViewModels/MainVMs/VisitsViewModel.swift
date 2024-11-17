@@ -40,12 +40,8 @@ class VisitsViewModel: ObservableObject {
     @Published var recallAdded = false
     
     @Published var visitToDelete: String?
-    @Published var showAlert = false
     @Published var ifFailed = false
     @Published var loading = false
-    @Published var showToast = false
-    @Published var showAddedToast = false
-    @Published var showRecallAddedToast = false
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     @Published var search: String = "" {

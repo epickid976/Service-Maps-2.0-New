@@ -119,20 +119,6 @@ struct ResetPassword: View {
                 }
             )
             
-            .toolbar{
-                ToolbarItemGroup(placement: .keyboard){
-                    Spacer()
-                    
-                    Button("Done"){
-                        HapticManager.shared.trigger(.lightImpact)
-                        DispatchQueue.main.async {
-                            passwordConfirmationFocus = false
-                            passwordFocus = false
-                            hideKeyboard()
-                        }
-                    }
-                }
-            }
             .navigationBarBackButtonHidden(true)
         }.ignoresSafeArea()
     }

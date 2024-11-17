@@ -6,11 +6,11 @@
 //
 
 import Foundation
-import Alamofire
 import SwiftUI
 import Papyrus
 
-class AdminService: @unchecked Sendable {
+@BackgroundActor
+class AdminService {
     private lazy var api: AdminRoutes = AdminRoutesAPI(provider: APIProvider().provider)
 
     // Fetch all data

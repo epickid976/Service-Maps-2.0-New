@@ -14,6 +14,7 @@ import Lottie
 import AlertKit
 import MijickPopups
 import ImageViewerRemote
+import Toasts
 
 struct TerritoryAddressView: View {
     var territory: Territory
@@ -30,6 +31,7 @@ struct TerritoryAddressView: View {
     }
     
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentToast) var presentToast
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -143,12 +145,16 @@ struct TerritoryAddressView: View {
                                 self.previousViewOffset = currentOffset
                             }
                         }
-                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || viewModel.addressData != nil)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddAddress(viewModel: viewModel, territory: territory).present()
+                                CentrePopup_AddAddress(viewModel: viewModel, territory: territory){
+                                    let toast = ToastValue(
+                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                        message: "Address Added"
+                                    )
+                                    presentToast(toast)
+                                }.present()
                             }
                         }
                     }
@@ -246,7 +252,7 @@ struct TerritoryAddressView: View {
         }
         LazyVStack {
             SwipeView {
-                NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address))) {
+                NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address).installToast(position: .bottom))) {
                     HStack(spacing: 10) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(addressData.address.address)")
@@ -298,7 +304,13 @@ struct TerritoryAddressView: View {
                                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
                                             //self.showAlert = true
                                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-                                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).present()
+                                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel){
+                                                    let toast = ToastValue(
+                                                     icon: Image(systemName: "trash.circle.fill"),
+                                                        message: "Address Added"
+                                                    )
+                                                    presentToast(toast)
+                                                }.present()
                                             }
                                         }
                                     } label: {
@@ -342,7 +354,13 @@ struct TerritoryAddressView: View {
                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
                             //self.showAlert = true
                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel).present()
+                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel){
+                                    let toast = ToastValue(
+                                     icon: Image(systemName: "trash.circle.fill"),
+                                        message: "Address Deleted"
+                                    )
+                                    presentToast(toast)
+                                }.present()
                             }
                         }
                     }
@@ -377,6 +395,12 @@ struct TerritoryAddressView: View {
 
 struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
     @ObservedObject var viewModel: AddressViewModel
+    var onDone: () -> Void
+    
+    init(viewModel: AddressViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -434,7 +458,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.addressToDelete = (nil,nil)
-                                        self.viewModel.showToast = true
+                                        onDone()
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -470,6 +494,13 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
 struct CentrePopup_AddAddress: CentrePopup {
     @ObservedObject var viewModel: AddressViewModel
     @State var territory: Territory
+    var onDone: () -> Void
+    
+    init(viewModel: AddressViewModel, territory: Territory, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.territory = territory
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -480,10 +511,7 @@ struct CentrePopup_AddAddress: CentrePopup {
             DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismissLastPopup()
-                //viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                //viewModel.getAddresses()
-                viewModel.showAddedToast = true
-                
+                onDone()
             }
         }, onDismiss: {
             viewModel.presentSheet = false

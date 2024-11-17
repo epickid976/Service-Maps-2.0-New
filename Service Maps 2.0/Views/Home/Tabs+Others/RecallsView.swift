@@ -16,14 +16,17 @@ import UIKit
 import Lottie
 import AlertKit
 import MijickPopups
+import Toasts
 
 struct RecallsView: View {
     @StateObject private var viewModel = RecallViewModel()
     
     @Environment(\.mainWindowSize) var mainWindowSize
+    @Environment(\.presentToast) var presentToast
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
     
     var body: some View {
         GeometryReader { proxy in
@@ -65,13 +68,15 @@ struct RecallsView: View {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                                                     ForEach(viewModel.recalls!, id: \.recall.id) { recall in
-                                                        RecallRow(viewModel: viewModel, recall: recall, mainWindowSize: mainWindowSize).id(recall.recall.id)
+                                                        RecallRow(viewModel: viewModel, recall: recall, mainWindowSize: mainWindowSize).installToast(position: .bottom)
+                                                            .id(recall.recall.id)
                                                     }
                                                 }
                                             } else {
                                                 LazyVGrid(columns: [GridItem(.flexible())], spacing: 16) {
                                                     ForEach(viewModel.recalls!, id: \.recall.id) { recall in
-                                                        RecallRow(viewModel: viewModel, recall: recall, mainWindowSize: mainWindowSize).id(recall.recall.id)
+                                                        RecallRow(viewModel: viewModel, recall: recall, mainWindowSize: mainWindowSize).installToast(position: .bottom)
+                                                            .id(recall.recall.id)
                                                     }
                                                 }
                                             }
@@ -94,18 +99,6 @@ struct RecallsView: View {
                     }.refreshable {
                         viewModel.synchronizationManager.startupProcess(synchronizing: true)
                     }
-//                    .onChange(of: viewModel.dataStore.synchronized) { value in
-//                        if value {
-//                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                                viewModel.getRecalls()
-//                            }
-//                        }
-//                    }
-//                    .onChange(of: RealtimeManager.shared.lastMessage) { value in
-//                        if value != nil {
-//                            viewModel.getRecalls()
-//                        }
-//                    }
                     
                     
                 }
@@ -213,7 +206,7 @@ struct RecallRow: View {
     var recall: RecallData
     var mainWindowSize: CGSize
     var revisitView: Bool = true
-    
+    @Environment(\.presentToast) var presentToast
     var body: some View {
         
         VStack {
@@ -234,7 +227,13 @@ struct RecallRow: View {
                         //self.viewModel.showAlert = true
                         //CentrePopup_DeleteVisit(viewModel: viewModel).present()
                         self.viewModel.recallToRemove = recall.recall.house
-                        CentrePopup_RemoveRecall(viewModel: viewModel, recall: recall).present()
+                        CentrePopup_RemoveRecall(viewModel: viewModel, recall: recall){
+                            let toast = ToastValue(
+                             icon: Image(systemName: "trash.circle.fill"),
+                                message: "Recall Removed"
+                            )
+                            presentToast(toast)
+                        }.present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -279,6 +278,13 @@ struct RecallRow: View {
 struct CentrePopup_RemoveRecall: CentrePopup {
     @ObservedObject var viewModel: RecallViewModel
     @State var recall: RecallData
+    var onDone: () -> Void
+    
+    init(viewModel: RecallViewModel, recall: RecallData, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.recall = recall
+        self.onDone = onDone
+    }
     
     var body: some View {
         createContent()
@@ -334,7 +340,7 @@ struct CentrePopup_RemoveRecall: CentrePopup {
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.recallToRemove = nil
-                                        self.viewModel.showToast = true
+                                        onDone()
                                     }
                                     HapticManager.shared.trigger(.success)
                                 case .failure(_):

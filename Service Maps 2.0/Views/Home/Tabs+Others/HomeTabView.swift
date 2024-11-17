@@ -10,6 +10,7 @@ import CoreData
 import UIKit
 import NavigationTransitions
 import MijickPopups
+import Toasts
 
 struct HomeTabView: View {
     
@@ -22,35 +23,35 @@ struct HomeTabView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 if selectedTab == 0 {
-                    TerritoryView()
+                    TerritoryView().installToast(position: .bottom)
                         .tag(0)
                         .tabItem {
                             Image(systemName: "1.circle")
                             Text("Tab 1")
                         }
                 } else if selectedTab == 1 && (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
-                        PhoneTerritoriesScreen()
+                        PhoneTerritoriesScreen().installToast(position: .bottom)
                         .tag(1)
                         .tabItem {
                             Image(systemName: "2.circle")
                             Text("Tab 2")
                         }
                 } else if selectedTab == 2 {
-                    RecallsView()
+                    RecallsView().installToast(position: .bottom)
                         .tag(1)
                         .tabItem {
                             Image(systemName: "2.circle")
                             Text("Tab 2")
                         }
                 } else if selectedTab == 3 {
-                    AccessView()
+                    AccessView().installToast(position: .bottom)
                         .tag(1)
                         .tabItem {
                             Image(systemName: "2.circle")
                             Text("Tab 2")
                         }
                 } else if selectedTab == 4 {
-                    SettingsView()
+                    SettingsView().installToast(position: .bottom)
                         .tag(2)
                         .tabItem {
                             Image(systemName: "3.circle")
