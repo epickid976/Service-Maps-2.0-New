@@ -167,8 +167,8 @@ struct VisitsView: View {
                                         if viewModel.recallAdded {
                                             CentrePopup_DeleteRecall(viewModel: viewModel, house: house.id) {
                                                 let toast = ToastValue(
-                                                    icon: Image(systemName: "trash.circle.fill"),
-                                                    message: "Recall Deleted"
+                                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                    message: NSLocalizedString("Recall Deleted", comment: "")
                                                 )
                                                 presentToast(toast)
                                             }.present()
@@ -278,8 +278,8 @@ struct VisitsView: View {
                         //self.viewModel.showAlert = true
                         CentrePopup_DeleteVisit(viewModel: viewModel) {
                             let toast = ToastValue(
-                             icon: Image(systemName: "trash.circle.fill"),
-                                message: "Visit Deleted"
+                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                message: NSLocalizedString("Visit Deleted", comment: "")
                             )
                             presentToast(toast)
                         }.present()

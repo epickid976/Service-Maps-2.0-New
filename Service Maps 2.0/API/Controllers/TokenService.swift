@@ -43,7 +43,6 @@ class TokenService: @unchecked Sendable {
     
     // Create token
     func createToken(name: String, moderator: Bool, territories: String, congregation: Int64, expire: Int64?) async -> Result<Token, Error> {
-        print("Territories String: \(territories)")
         do {
             let token = try await api.createToken(newTokenForm: NewTokenForm(name: name, moderator: moderator, territories: territories, congregation: congregation, expire: expire))
             return .success(token.token)

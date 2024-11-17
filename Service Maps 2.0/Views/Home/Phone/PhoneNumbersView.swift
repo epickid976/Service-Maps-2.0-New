@@ -239,8 +239,8 @@ struct PhoneNumbersView: View {
                                                 
                                                 CentrePopup_DeletePhoneNumber(viewModel: viewModel){
                                                     let toast = ToastValue(
-                                                     icon: Image(systemName: "trash.circle.fill"),
-                                                        message: "Number Deleted"
+                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                        message: NSLocalizedString("Number Deleted", comment: "")
                                                     )
                                                     presentToast(toast)
                                              }.present()
@@ -295,8 +295,8 @@ struct PhoneNumbersView: View {
                             
                             CentrePopup_DeletePhoneNumber(viewModel: viewModel){
                                 let toast = ToastValue(
-                                 icon: Image(systemName: "trash.circle.fill"),
-                                    message: "Number Deleted"
+                                 icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    message: NSLocalizedString("Number Deleted", comment: "")
                                 )
                                 presentToast(toast)
                          }.present()

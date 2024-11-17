@@ -354,8 +354,8 @@ struct TerritoryView: View {
                                             DispatchQueue.main.async {
                                                 CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
                                                     let toast = ToastValue(
-                                                        icon: Image(systemName: "trash.circle.fill"),
-                                                        message: "Territory Deleted"
+                                                        icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                        message: NSLocalizedString("Territory Deleted", comment: "")
                                                     )
                                                     presentToast(toast)
                                                 }.present()
@@ -397,8 +397,8 @@ struct TerritoryView: View {
                             self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
                             CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
                                 let toast = ToastValue(
-                                    icon: Image(systemName: "trash.circle.fill"),
-                                    message: "Territory Deleted"
+                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    message: NSLocalizedString("Territory Deleted", comment: "")
                                 )
                                 presentToast(toast)
                             }.present()

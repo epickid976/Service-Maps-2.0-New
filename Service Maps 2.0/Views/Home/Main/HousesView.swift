@@ -244,8 +244,8 @@ struct HousesView: View {
                                             if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
                                                 CentrePopup_DeleteHouse(viewModel: viewModel) {
                                                     let toast = ToastValue(
-                                                     icon: Image(systemName: "trash.circle.fill"),
-                                                        message: "House Deleted"
+                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                        message: NSLocalizedString("House Deleted", comment: "")
                                                     )
                                                     presentToast(toast)
                                                 }.present()
@@ -279,8 +279,8 @@ struct HousesView: View {
                         if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
                             CentrePopup_DeleteHouse(viewModel: viewModel){
                                 let toast = ToastValue(
-                                 icon: Image(systemName: "trash.circle.fill"),
-                                    message: "House Deleted"
+                                 icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    message: NSLocalizedString("House Deleted", comment: "")
                                 )
                                 presentToast(toast)
                             }.present()

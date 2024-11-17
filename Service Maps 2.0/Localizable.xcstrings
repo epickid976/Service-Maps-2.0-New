@@ -457,6 +457,12 @@
         }
       }
     },
+    "Address Added" : {
+
+    },
+    "Address Deleted" : {
+
+    },
     "Address is required." : {
       "localizations" : {
         "es" : {
@@ -522,7 +528,20 @@
       }
     },
     "An unexpected error occurred. Please try again." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un error ocurrió. Por favor intente más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une erreur est survenue. Ressayez plus tard."
+          }
+        }
+      }
     },
     "Android" : {
 
@@ -1784,7 +1803,20 @@
       }
     },
     "Error checking verification status. \nPlease try again." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un error ocurrió al verificar el estatus. Por favor intente más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une erreur est survenue en vérifiant le status. Ressayez plus tard."
+          }
+        }
+      }
     },
     "Error deleting address, please try again later" : {
       "localizations" : {
@@ -1997,7 +2029,20 @@
       }
     },
     "Error signing up. \nPlease try again." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un error ocurrió al inscribirse. Por favor intente más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une erreur est survenue lors de l’inscription. Veuillez réessayer plus tard."
+          }
+        }
+      }
     },
     "Error updating address." : {
       "localizations" : {
@@ -2321,6 +2366,9 @@
         }
       }
     },
+    "House Deleted" : {
+
+    },
     "House: %@" : {
       "localizations" : {
         "es" : {
@@ -2457,6 +2505,9 @@
           }
         }
       }
+    },
+    "Key Deleted" : {
+
     },
     "Key Name" : {
       "localizations" : {
@@ -3092,7 +3143,20 @@
       }
     },
     "Not Verified" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No verificado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas vérifié"
+          }
+        }
+      }
     },
     "Note: %@" : {
       "extractionState" : "stale",
@@ -3264,6 +3328,9 @@
           }
         }
       }
+    },
+    "Number Deleted" : {
+
     },
     "Number is required." : {
       "localizations" : {
@@ -3629,7 +3696,20 @@
       }
     },
     "Please check your email and verify your account." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor chequee su correo y verifique su cuenta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez votre e-mail et votre compte."
+          }
+        }
+      }
     },
     "Please fill out all the required fields." : {
       "localizations" : {
@@ -3678,6 +3758,12 @@
           }
         }
       }
+    },
+    "Recall Deleted" : {
+
+    },
+    "Recall Removed" : {
+
     },
     "Recalls" : {
       "localizations" : {
@@ -4216,6 +4302,9 @@
         }
       }
     },
+    "Territory Deleted" : {
+
+    },
     "That is not a valid phone number." : {
       "localizations" : {
         "es" : {
@@ -4281,7 +4370,20 @@
       }
     },
     "There was a problem resending the email. \nPlease try again later." : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un error ocurrió al reenviar el correo. Por favor intente más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il y a eu un problème en renvoyant l’email. Ressayez plus tard."
+          }
+        }
+      }
     },
     "There was a problem with the internet connection. \nPlease check your internet connection and try again." : {
       "localizations" : {
@@ -4459,6 +4561,9 @@
         }
       }
     },
+    "User Deleted" : {
+
+    },
     "Users" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4513,6 +4618,9 @@
           }
         }
       }
+    },
+    "Visit Deleted" : {
+
     },
     "Volver" : {
       "localizations" : {

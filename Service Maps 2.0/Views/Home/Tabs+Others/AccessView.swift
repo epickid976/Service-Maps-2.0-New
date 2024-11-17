@@ -219,8 +219,8 @@ struct AccessView: View {
                         self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
                         CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: viewModel.keyToDelete){
                             let toast = ToastValue(
-                             icon: Image(systemName: "trash.circle.fill"),
-                                message: "Key Deleted"
+                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                message: NSLocalizedString("Key Deleted", comment: "")
                             )
                             presentToast(toast)
                         }.present()
@@ -284,8 +284,8 @@ struct AccessView: View {
                 context.state.wrappedValue = .closed
                 CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)){
                     let toast = ToastValue(
-                     icon: Image(systemName: "trash.circle.fill"),
-                        message: "Key Deleted"
+                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                        message: NSLocalizedString("Key Deleted", comment: "")
                     )
                     presentToast(toast)
                 }.present()
@@ -484,8 +484,8 @@ struct AccessViewUsersView: View {
                                                                         //self.showAlert = true
                                                                         CentrePopup_DeleteUser(viewModel: viewModel){
                                                                             let toast = ToastValue(
-                                                                             icon: Image(systemName: "trash.circle.fill"),
-                                                                                message: "User Deleted"
+                                                                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                                                message: NSLocalizedString("User Deleted", comment: "")
                                                                             )
                                                                             presentToast(toast)
                                                                         }.present()
@@ -526,8 +526,8 @@ struct AccessViewUsersView: View {
                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)  // Set userToDelete for deletion
                                                                 CentrePopup_DeleteUser(viewModel: viewModel){
                                                                     let toast = ToastValue(
-                                                                     icon: Image(systemName: "trash.circle.fill"),
-                                                                        message: "User Deleted"
+                                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                                        message: NSLocalizedString("User Deleted", comment: "")
                                                                     )
                                                                     presentToast(toast)
                                                                 }.present()
@@ -565,8 +565,8 @@ struct AccessViewUsersView: View {
                                                                                 //self.showAlert = true
                                                                                 CentrePopup_DeleteUser(viewModel: viewModel){
                                                                                     let toast = ToastValue(
-                                                                                     icon: Image(systemName: "trash.circle.fill"),
-                                                                                        message: "User Deleted"
+                                                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                                                        message: NSLocalizedString("User Deleted", comment: "")
                                                                                     )
                                                                                     presentToast(toast)
                                                                                 }.present()
@@ -607,8 +607,8 @@ struct AccessViewUsersView: View {
                                                                         //self.showAlert = true
                                                                         CentrePopup_DeleteUser(viewModel: viewModel){
                                                                             let toast = ToastValue(
-                                                                             icon: Image(systemName: "trash.circle.fill"),
-                                                                                message: "User Deleted"
+                                                                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                                                message: NSLocalizedString("User Deleted", comment: "")
                                                                             )
                                                                             presentToast(toast)
                                                                         }.present()
@@ -699,8 +699,8 @@ struct AccessViewUsersView: View {
                             //self.showAlert = true
                             CentrePopup_DeleteUser(viewModel: viewModel){
                                 let toast = ToastValue(
-                                 icon: Image(systemName: "trash.circle.fill"),
-                                    message: "User Deleted"
+                                 icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    message: NSLocalizedString("User Deleted", comment: "")
                                 )
                                 presentToast(toast)
                             }.present()
@@ -726,8 +726,8 @@ struct AccessViewUsersView: View {
                         //self.showAlert = true
                         CentrePopup_DeleteUser(viewModel: viewModel){
                             let toast = ToastValue(
-                             icon: Image(systemName: "trash.circle.fill"),
-                                message: "User Deleted"
+                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                message: NSLocalizedString("User Deleted", comment: "")
                             )
                             presentToast(toast)
                         }.present()

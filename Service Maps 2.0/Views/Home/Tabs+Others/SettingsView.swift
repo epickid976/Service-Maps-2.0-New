@@ -99,27 +99,11 @@ struct SettingsView: View {
                     if showBackButton {
                         presentationMode.wrappedValue.dismiss()
                     }
-                    synchronizationManager.startupProcess(synchronizing: true)
-                    viewModel.presentSheet = false
-                    
                     Task {
-                        do {
-                            // Always reinitialize connection when admin status changes
-                            try await RealtimeManager.shared.initAblyConnection()
-                            print("Ably connection initialized")
-                            
-                            // Subscribe to changes
-                            await RealtimeManager.shared.subscribeToChanges { result in
-                                switch result {
-                                case .success:
-                                    print("Subscribed to changes")
-                                case .failure(let error):
-                                    print("Error: \(error)")
-                                }
-                            }
-                        } catch {
-                            print("Error: \(error)")
-                        }
+                        // First complete startup process
+                        synchronizationManager.startupProcess(synchronizing: true)
+                        viewModel.presentSheet = false
+                        
                     }
                 }
             }

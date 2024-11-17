@@ -229,8 +229,8 @@ struct RecallRow: View {
                         self.viewModel.recallToRemove = recall.recall.house
                         CentrePopup_RemoveRecall(viewModel: viewModel, recall: recall){
                             let toast = ToastValue(
-                             icon: Image(systemName: "trash.circle.fill"),
-                                message: "Recall Removed"
+                                icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                message: NSLocalizedString("Recall Removed", comment: "")
                             )
                             presentToast(toast)
                         }.present()

@@ -306,8 +306,8 @@ struct TerritoryAddressView: View {
                                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
                                                 CentrePopup_DeleteTerritoryAddress(viewModel: viewModel){
                                                     let toast = ToastValue(
-                                                     icon: Image(systemName: "trash.circle.fill"),
-                                                        message: "Address Added"
+                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                        message: NSLocalizedString("Address Added", comment: "")
                                                     )
                                                     presentToast(toast)
                                                 }.present()
@@ -356,8 +356,8 @@ struct TerritoryAddressView: View {
                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
                                 CentrePopup_DeleteTerritoryAddress(viewModel: viewModel){
                                     let toast = ToastValue(
-                                     icon: Image(systemName: "trash.circle.fill"),
-                                        message: "Address Deleted"
+                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                        message: NSLocalizedString("Address Deleted", comment: "")
                                     )
                                     presentToast(toast)
                                 }.present()

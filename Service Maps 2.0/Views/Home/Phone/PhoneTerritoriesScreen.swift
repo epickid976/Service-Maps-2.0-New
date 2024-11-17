@@ -307,8 +307,8 @@ struct PhoneTerritoriesScreen: View {
                                             self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
                                             CentrePopup_DeletePhoneTerritory(viewModel: viewModel) {
                                                 let toast = ToastValue(
-                                                 icon: Image(systemName: "trash.circle.fill"),
-                                                    message: "Territory Deleted"
+                                                 icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                    message: NSLocalizedString("Territory Deleted", comment: "")
                                                 )
                                                 presentToast(toast)
                                             }.present()
@@ -363,8 +363,8 @@ struct PhoneTerritoriesScreen: View {
                         self.viewModel.territoryToDelete = (String(phoneData.territory.id), String(phoneData.territory.number))
                         CentrePopup_DeletePhoneTerritory(viewModel: viewModel) {
                             let toast = ToastValue(
-                             icon: Image(systemName: "trash.circle.fill"),
-                                message: "Territory Deleted"
+                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                message: NSLocalizedString("Territory Deleted", comment: "")
                             )
                             presentToast(toast)
                         }.present()

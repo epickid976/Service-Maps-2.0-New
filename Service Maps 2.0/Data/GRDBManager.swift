@@ -371,11 +371,15 @@ final class GRDBManager: ObservableObject, Sendable {
         do {
             try await dbPool.write { db in
                 for object in objects {
+#if DEBUG
                     print("Deleting object: \(object)")
+#endif
                     try object.delete(db) // Log before deletion
                 }
             }
+#if DEBUG
             print("All objects deleted successfully")
+#endif
             return .success("Bulk deleted successfully")
         } catch {
             print("Error during deletion: \(error)")
@@ -697,7 +701,9 @@ final class GRDBManager: ObservableObject, Sendable {
                         VisitData(
                             id: UUID(),
                             visit: visit.user == email ? visitModel :  visit,
-                            accessLevel: visit.user == email ? .Moderator : AuthorizationLevelManager().getAccessLevel(model: visit)
+                            accessLevel: AuthorizationLevelManager().existsAdminCredentials()
+                                ? .Admin
+                            : (visit.user == email ? .Moderator : AuthorizationLevelManager().getAccessLevel(model: visit) )
                         )
                     )
                 }

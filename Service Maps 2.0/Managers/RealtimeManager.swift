@@ -59,7 +59,7 @@ class RealtimeManager: ObservableObject {
                 
                 Task {
                     do {
-                        try await Task.sleep(for: .milliseconds(1000))
+                        try await Task.sleep(for: .seconds(1))
                         try await self.processMessage(message)
                         await MainActor.run {
                             self.lastMessage = Date()
@@ -75,12 +75,21 @@ class RealtimeManager: ObservableObject {
     }
     
     func unsubscribeToChanges() async {
-        await MainActor.run {
-            channel?.unsubscribe()
-            channel = nil
-            ably = nil
-            isSubscribed = false
+        guard let channel = channel else {
+            print("No active channel to unsubscribe.")
+            return
         }
+
+        await MainActor.run {
+            channel.unsubscribe()
+            print("Unsubscribed from channel: \(channel.name)")
+        }
+
+        // Clear channel and Ably state
+        self.channel = nil
+        ably = nil
+        isSubscribed = false
+        print("Cleared Ably connection and subscription state.")
     }
     
     // Check subscription status
@@ -93,8 +102,10 @@ class RealtimeManager: ObservableObject {
         switch message.name {
         case "visit":
             try await doVisit(message)
+            //print("Test")
         case "call":
             try await doCall(message)
+            //print("Test")
         default:
             break
         }
