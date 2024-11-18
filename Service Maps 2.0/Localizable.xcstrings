@@ -436,7 +436,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajouter Revisite"
+            "value" : "Ajouter Retour"
           }
         }
       }
@@ -458,10 +458,36 @@
       }
     },
     "Address Added" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dirección Borrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adresse Supprimée"
+          }
+        }
+      }
     },
     "Address Deleted" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dirección Borrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adresse Supprimée"
+          }
+        }
+      }
     },
     "Address is required." : {
       "localizations" : {
@@ -765,7 +791,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Êtes-vous sur de vouloir supprimer la revisite?"
+            "value" : "Êtes-vous sur de vouloir supprimer le retour?"
           }
         }
       }
@@ -929,7 +955,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En ajoutant cette maison comme revisite, elle s'ajoutera a la page de revisites et vous pourrez la voir plus facilement. "
+            "value" : "En ajoutant cette maison comme retour, elle s'ajoutera a la page de retours et vous pourrez la voir plus facilement. "
           }
         }
       }
@@ -945,7 +971,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En supprimant cette maison comme revisite, elle sera supprimé de la page de revisites.  "
+            "value" : "En supprimant cette maison comme retour, elle sera supprimée de la page de retours.  "
           }
         }
       }
@@ -1749,7 +1775,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Une erreur est survenu en supprimant la revisite, essayez plus tard."
+            "value" : "Une erreur est survenu en supprimant le retour, essayez plus tard."
           }
         }
       }
@@ -2006,7 +2032,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Une erreur est survenu en supprimant la revisite, essayez plus tard."
+            "value" : "Une erreur est survenu en supprimant le retour, essayez plus tard."
           }
         }
       }
@@ -2367,7 +2393,20 @@
       }
     },
     "House Deleted" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casa Borrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maison Supprimée"
+          }
+        }
+      }
     },
     "House: %@" : {
       "localizations" : {
@@ -2507,7 +2546,20 @@
       }
     },
     "Key Deleted" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Llave Borrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clé Supprimée"
+          }
+        }
+      }
     },
     "Key Name" : {
       "localizations" : {
@@ -3330,7 +3382,20 @@
       }
     },
     "Number Deleted" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Número Borrado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéro Supprimé"
+          }
+        }
+      }
     },
     "Number is required." : {
       "localizations" : {
@@ -3760,10 +3825,36 @@
       }
     },
     "Recall Deleted" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisita Borrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retour Supprimé"
+          }
+        }
+      }
     },
     "Recall Removed" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisita Borrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retour Supprimé"
+          }
+        }
+      }
     },
     "Recalls" : {
       "localizations" : {
@@ -3776,7 +3867,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Revisites"
+            "value" : "Retours"
           }
         }
       }
@@ -3856,7 +3947,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Supprimer Revisite"
+            "value" : "Supprimer Retour"
           }
         }
       }
@@ -4303,7 +4394,20 @@
       }
     },
     "Territory Deleted" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territorio Borrado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territoire Supprimé"
+          }
+        }
+      }
     },
     "That is not a valid phone number." : {
       "localizations" : {
@@ -4562,7 +4666,20 @@
       }
     },
     "User Deleted" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuario Borrado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisateur Supprimé"
+          }
+        }
+      }
     },
     "Users" : {
       "extractionState" : "stale",
@@ -4620,7 +4737,20 @@
       }
     },
     "Visit Deleted" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visita Borrada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visite Supprimée"
+          }
+        }
+      }
     },
     "Volver" : {
       "localizations" : {
