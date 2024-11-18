@@ -67,7 +67,7 @@ struct PhoneLoginScreen: View {
                     .padding([.leading, .trailing])
                     .padding(.bottom, -50)
                 
-                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" || UIDevice.isSimulatorCompactPhone{
                     LottieAnimationUIView(animationName: "phonebook", shouldLoop: true, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
                         .frame(width: 200, height: 200)
                         .padding(50)

@@ -22,7 +22,6 @@ class SignupViewModel: ObservableObject {
     
     // Input properties
     @Published var name: String = ""
-    @Published var lastName: String = ""
     @Published var username: String = ""
     @Published var password: String = ""
     @Published var passwordConfirmation: String = ""
@@ -51,7 +50,7 @@ class SignupViewModel: ObservableObject {
     
     func validate() -> Bool {
         
-        if self.username.isEmpty || self.password.isEmpty || self.name.isEmpty || self.lastName.isEmpty || self.passwordConfirmation.isEmpty {
+        if self.username.isEmpty || self.password.isEmpty || self.name.isEmpty || self.passwordConfirmation.isEmpty {
             DispatchQueue.main.async {
                 withAnimation {
                     self.loginErrorText = NSLocalizedString("Fields cannot be empty", comment: "")
@@ -115,7 +114,7 @@ class SignupViewModel: ObservableObject {
     // Signup function
     func signUp(completion: @escaping (Result<Bool, Error>) -> Void) async {
         Task {
-            let result = await authenticationManager.signUp(signUpForm: SignUpForm(name: "\(name) \(lastName)", email: username, password: password, password_confirmation: password))
+            let result = await authenticationManager.signUp(signUpForm: SignUpForm(name: "\(name)", email: username, password: password, password_confirmation: password))
             
             switch result {
             case .success:

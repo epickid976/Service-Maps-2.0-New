@@ -16,6 +16,7 @@ enum CustomErrors: Error {
     case NoCongregation
     case GenericError
     case Duplicate
+    case FailedToFetchData
     
     var localizedDescription: String {
         switch self {
@@ -35,6 +36,8 @@ enum CustomErrors: Error {
             return "ERROR ERROR"
         case .Duplicate:
             return "Duplicate"
+        case .FailedToFetchData:
+            return "Failed to fetch data"
         }
     }
 }

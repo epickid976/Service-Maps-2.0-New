@@ -18,33 +18,32 @@ import MijickPopups
 import Toasts
 
 struct PhoneNumbersView: View {
+    
     var territory: PhoneTerritory
     
-    @ObservedObject var viewModel: NumbersViewModel
-    //@StateObject var callsViewModel: CallsViewModel
     init(territory: PhoneTerritory, phoneNumberToScrollTo: String? = nil) {
         self.territory = territory
         
         let initialViewModel = NumbersViewModel(territory: territory, phoneNumberToScrollTo: phoneNumberToScrollTo)
-        _viewModel = ObservedObject(wrappedValue: initialViewModel)
+        _viewModel = StateObject(wrappedValue: initialViewModel)
     }
-    
-    @State var highlightedNumberId: String?
     
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
+    @Environment(\.mainWindowSize) var mainWindowSize
+    
+    @StateObject var viewModel: NumbersViewModel
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    @State var highlightedNumberId: String?
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @State var isLoading = false
-    
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
+    
     let minimumOffset: CGFloat = 60
-    @Environment(\.mainWindowSize) var mainWindowSize
-    
-    @ObservedObject var preferencesViewModel = ColumnViewModel()
-    
     
     var body: some View {
         GeometryReader { proxy in
@@ -164,11 +163,11 @@ struct PhoneNumbersView: View {
                     .height(min: 180, max: viewModel.noImage ? 200 : 350.0)
                     .allowsHeaderGrowth()
                     .collapseProgress($viewModel.progress)
-                    .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
-                        Task {
-                           synchronizationManager.startupProcess(synchronizing: true)
-                        }
-                    }
+//                    .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
+//                        Task {
+//                           synchronizationManager.startupProcess(synchronizing: true)
+//                        }
+//                    }
                     .scrollIndicators(.never)
                     .coordinateSpace(name: "scroll")
                 }
@@ -338,11 +337,8 @@ class NumbersViewModel: ObservableObject {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @Published var phoneNumbersData: Optional<[PhoneNumbersData]> = nil
-    
-    
-    
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-    
+
     @Published var currentNumber: PhoneNumber?
     @Published var numberToDelete: (String?,String?)
     
@@ -450,45 +446,53 @@ class NumbersViewModel: ObservableObject {
     
     @ViewBuilder
     var smallHeader: some View {
-        HStack(spacing: 12.0) {
-            HStack {
-                Image(systemName: "numbersign").imageScale(.large).fontWeight(.heavy)
-                    .foregroundColor(.primary).font(.title2)
-                Text("\(territory.number)")
-                    .font(.largeTitle)
+        HStack(spacing: 16) {
+            // Number and Title Section
+            HStack(spacing: 8) {
+                Text("№")
+                    .font(.title2)
                     .bold()
-                    .fontWeight(.heavy)
+                Text("\(territory.number)")
+                    .font(.title)
+                    .bold()
             }
-            
-            Divider()
-                .frame(maxHeight: 75)
-                .padding(.horizontal, -5)
-            if !(progress < 0.98) {
+            .foregroundColor(.primary)
+
+            // Divider
+            if !(progress < 0.98) { // Show image only if progress is sufficient
+                Divider()
+                    .frame(height: 40)
+                    .padding(.horizontal, 4)
+
+                // Image Section
                 LazyImage(url: URL(string: territory.getImageURL())) { state in
                     if let image = state.image {
-                        image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 75, maxHeight: 60)
+                        image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 60, maxHeight: 60)
                     } else if state.error != nil {
                         Image(uiImage: UIImage(named: "mapImage")!)
                             .resizable()
-                            .frame(width: 75, height: 75)
+                            .frame(width: 60, height: 60)
                         //.padding(.bottom, 125)
                     } else {
                         ProgressView().progressViewStyle(.circular)
                     }
                 }
-                
-                .cornerRadius(10)
-                .padding(.horizontal, 2)
+                .padding(.horizontal, 4)
             }
+
+            // Description Section
             Text(territory.description)
                 .font(.body)
-                .fontWeight(.heavy)
+                .bold()
                 .lineLimit(2)
+                .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+
+           // Spacer() // Push content to edges for a cleaner look
         }
-        .frame(maxHeight: 75)
-        .animation(.easeInOut(duration: 0.25), value: progress)
         .padding(.horizontal)
+        .frame(height: 60)
+        .animation(.easeInOut(duration: 0.2), value: progress) // Smooth transition on progress change
         .hSpacing(.center)
     }
     
@@ -716,13 +720,13 @@ struct CentrePopup_AddNumber: CentrePopup {
 }
 
 struct PhoneNumberCell: View {
-    @ObservedObject var callViewModel: CallsViewModel
+    @StateObject var callViewModel: CallsViewModel
     @State var numbersData: PhoneNumbersData
     var mainWindowSize: CGSize
     @State private var cancellable: AnyCancellable?
     
     init(numbersData: PhoneNumbersData, mainWindowSize: CGSize) {
-        self._callViewModel = ObservedObject(initialValue: CallsViewModel(phoneNumber: numbersData.phoneNumber))
+        self._callViewModel = StateObject(wrappedValue: CallsViewModel(phoneNumber: numbersData.phoneNumber))
         self.numbersData = numbersData
         self.mainWindowSize = mainWindowSize
     }
@@ -799,8 +803,10 @@ struct PhoneNumberCell: View {
                 .subscribe(on: DispatchQueue.main)
                 .sink { newCall in
                     // Check if the update is for the correct house and if it's a new/different visit
-                    if newCall.phonenumber == numbersData.phoneNumber.id, newCall != numbersData.phoneCall {
-                        numbersData.phoneCall = newCall  // Update the state with the new visit
+                    if let newCall = newCall, newCall.phonenumber == self.numbersData.phoneNumber.id, newCall != numbersData.phoneCall {
+                        numbersData.phoneCall = newCall
+                    } else if newCall == nil {
+                        numbersData.phoneCall = nil
                     }
                 }
         }

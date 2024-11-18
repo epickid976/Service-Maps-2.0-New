@@ -92,13 +92,15 @@ struct CustomField: View {
                     }
                 }
                 .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
-                        Button("Done") {
-                            HapticManager.shared.trigger(.lightImpact)
-                            isFocused.wrappedValue = false // Dismiss the keyboard
-                            resignFirstResponderManually()
-                        }.tint(.primary).bold()
+                    if isFocused.wrappedValue {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("Done") {
+                                HapticManager.shared.trigger(.lightImpact)
+                                isFocused.wrappedValue = false // Dismiss the keyboard
+                                resignFirstResponderManually()
+                            }.tint(.primary).bold()
+                        }
                     }
                 }
         } else {

@@ -97,21 +97,6 @@ struct AddAddressView: View {
             .ignoresSafeArea(.keyboard)
             .navigationBarTitle("\(title) Address", displayMode: .large)
             .navigationBarBackButtonHidden()
-//            .toolbar{
-//                ToolbarItemGroup(placement: .keyboard){
-//                    Spacer()
-//                    Button {
-//                        DispatchQueue.main.async {
-//                            hideKeyboard()
-//                        }
-//                    } label: {
-//                        Text("Done")
-//                            .tint(.primary)
-//                            .fontWeight(.bold)
-//                            .font(.body)
-//                    }
-//                }
-//            }
             
         }//.ignoresSafeArea(.keyboard)
             .onAppear {

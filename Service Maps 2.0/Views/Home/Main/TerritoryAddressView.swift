@@ -19,9 +19,6 @@ import Toasts
 struct TerritoryAddressView: View {
     var territory: Territory
     
-    @ObservedObject var preferencesViewModel = ColumnViewModel()
-    
-    @StateObject var viewModel: AddressViewModel
     init(territory: Territory, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
         self.imageURL = territory.getImageURL()
@@ -32,21 +29,23 @@ struct TerritoryAddressView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
+    @Environment(\.mainWindowSize) var mainWindowSize
+    
+    @StateObject var viewModel: AddressViewModel
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
-    
-    let alertViewDeleted = AlertAppleMusic17View(title: "Address Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!)) 
-    let alertViewAdded = AlertAppleMusic17View(title: "Address Added", subtitle: nil, icon: .done)
-    
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
+    
     let minimumOffset: CGFloat = 60
     
     @State var highlightedTerritoryAddressId: String?
     @State var imageURL = String()
     
-    @Environment(\.mainWindowSize) var mainWindowSize
+    
     var body: some View {
         GeometryReader { proxy in
             ZStack {

@@ -24,8 +24,7 @@ struct SignupView: View {
     @State var alwaysLoading = true
     @State var loading = false
     //Focus
-    @FocusState private var firstNameFocus: Bool
-    @FocusState private var lastNameFocus: Bool
+    @FocusState private var nameFocus: Bool
     @FocusState private var emailFocus: Bool
     @FocusState private var passwordFocus: Bool
     @FocusState private var confirmPasswordFocus: Bool
@@ -56,23 +55,14 @@ struct SignupView: View {
                            .padding(.vertical, -30)
                     }
                     
-                    Text("First Name")
+                    Text("Name")
                         .font(.headline)
                         .fontWeight(.semibold)
                         .frame(alignment: .leading)
                         .hSpacing(.leading)
                         .padding(.leading)
                     
-                    CustomField(text: $viewModel.name, isFocused: $firstNameFocus, textfield: true, keyboardContentType: .givenName, placeholder: NSLocalizedString("first name", comment: ""))
-                    
-                    Text("Last Name")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .frame(alignment: .leading)
-                        .hSpacing(.leading)
-                        .padding(.leading)
-                    
-                    CustomField(text: $viewModel.lastName, isFocused: $lastNameFocus, textfield: true, keyboardContentType: .familyName,  placeholder: NSLocalizedString("last name", comment: "") )
+                    CustomField(text: $viewModel.name, isFocused: $nameFocus, textfield: true, keyboardContentType: .givenName, placeholder: NSLocalizedString("name", comment: ""))
                     
                     
                     Text("Email")
@@ -111,12 +101,11 @@ struct SignupView: View {
                                 HapticManager.shared.trigger(.lightImpact)
                                 dismiss()
                                 viewModel.name = ""
-                                viewModel.lastName = ""
                                 viewModel.username = ""
                                 viewModel.password = ""
                                 viewModel.passwordConfirmation = ""
                                 viewModel.loginError = false
-                            }//.keyboardShortcut("\r", modifiers: [.command, .shift])
+                            }
                         }
                         
                         CustomButton(loading: loading, title: "Sign up") {
@@ -192,7 +181,7 @@ extension View {
 #endif
 
 struct KeyboardAdaptive: ViewModifier {
-    @ObservedObject private var keyboard = KeyboardResponder()
+    @StateObject private var keyboard = KeyboardResponder()
     var active = false
     func body(content: Content) -> some View {
         content

@@ -35,9 +35,6 @@ struct CallsView: View {
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
-    let alertViewDeleted = AlertAppleMusic17View(title: "Call Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    let alertViewAdded = AlertAppleMusic17View(title: "Call Added", subtitle: nil, icon: .done)
-    
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 60
@@ -52,7 +49,7 @@ struct CallsView: View {
             ZStack {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
-                        VStack {
+                        LazyVStack {
                             if viewModel.callsData == nil && viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
@@ -125,7 +122,6 @@ struct CallsView: View {
                             let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
                             if ( abs(offsetDifference) > minimumOffset) {
                                 if offsetDifference > 0 {
-                                    
                                     hideFloatingButton = false
                                 } else {
                                     
@@ -135,8 +131,6 @@ struct CallsView: View {
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.callsData == nil || viewModel.callsData != nil)
-                        .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
-                        .alert(isPresent: $viewModel.showAddedToast, view: alertViewAdded)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
                                 CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber){
@@ -414,7 +408,7 @@ struct CentrePopup_DeleteCall: CentrePopup {
 }
 struct CentrePopup_AddCall: CentrePopup {
     @ObservedObject var viewModel: CallsViewModel
-    @State var phoneNumber: PhoneNumber
+    var phoneNumber: PhoneNumber
     var onDone: () -> Void
     
     init(viewModel: CallsViewModel, phoneNumber: PhoneNumber, onDone: @escaping () -> Void) {
@@ -429,12 +423,9 @@ struct CentrePopup_AddCall: CentrePopup {
     
     func createContent() -> some View {
         AddCallView(call: viewModel.currentCall, phoneNumber: phoneNumber) {
-            DispatchQueue.main.async {
                 viewModel.presentSheet = false
                 dismissLastPopup()
                onDone()
-                
-            }
         } onDismiss: {
             viewModel.presentSheet = false
             dismissLastPopup()

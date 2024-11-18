@@ -203,9 +203,9 @@ struct LoginView: View {
                     
                     LottieAnimationUIView(animationName: "LoginAnimation", shouldLoop: false, shouldRestartAnimation: $restartAnimation, animationProgress: $animationProgress)
                         .optionalViewModifier { content in
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" || UIDevice.isSimulatorCompactPhone {
                                 content
-                                    .frame(width: 150, height: 150)
+                                    .frame(width: 300, height: 300)
                             } else {
                                 content
                                     .frame(width: 400, height: 400)

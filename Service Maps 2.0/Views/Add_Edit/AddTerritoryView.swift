@@ -192,22 +192,6 @@ struct AddTerritoryView: View {
                     .ignoresSafeArea(.keyboard)
                     .navigationBarTitle("\(title) Territory", displayMode: .large)
                     .navigationBarBackButtonHidden()
-                    .toolbar{
-                        ToolbarItemGroup(placement: .keyboard){
-                            Spacer()
-                            Button {
-                                HapticManager.shared.trigger(.lightImpact)
-                                DispatchQueue.main.async {
-                                    hideKeyboard()
-                                }
-                            } label: {
-                                Text("Done")
-                                    .tint(.primary)
-                                    .fontWeight(.bold)
-                                    .font(.body)
-                            }
-                        }
-                    }
                 }
                 .navigationTransition(
                     .zoom.combined(with: .fade(.out))

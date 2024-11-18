@@ -34,14 +34,14 @@ struct TokenCell: View {
                         .font(.headline)
                         .lineLimit(2)
                         .foregroundColor(.primary)
-                        .fontWeight(.heavy)
+                        .fontWeight(.bold)
                         .hSpacing(.leading)
                 } else {
                     Text("Level: Publisher")
                         .font(.headline)
                         .lineLimit(2)
                         .foregroundColor(.primary)
-                        .fontWeight(.heavy)
+                        .fontWeight(.bold)
                         .hSpacing(.leading)
                 }
                 
@@ -49,15 +49,15 @@ struct TokenCell: View {
                     .font(.headline)
                     .lineLimit(2)
                     .foregroundColor(.primary)
-                    .fontWeight(.heavy)
+                    .fontWeight(.bold)
                     .hSpacing(.leading)
                 
                 Text(keyData.key.user == dataStore.userEmail ? dataStore.userName ?? "" : keyData.key.user ?? keyData.key.owner)
-                    .font(.headline)
+                    .font(.subheadline)
                     .lineLimit(2)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.secondaryLabel)
                     .fontWeight(.heavy)
-                    .hSpacing(.trailing)
+                    .hSpacing(.trailing).vSpacing(.bottom)
                 
             }
             .frame(maxWidth: .infinity)

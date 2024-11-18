@@ -114,45 +114,54 @@ class AddressViewModel: ObservableObject {
     
     @ViewBuilder
     var smallHeader: some View {
-        HStack(spacing: 12.0) {
-            HStack {
-                Image(systemName: "numbersign").imageScale(.large).fontWeight(.heavy)
-                    .foregroundColor(.primary).font(.title2)
-                Text("\(territory.number)")
-                    .font(.largeTitle)
+        HStack(spacing: 16) {
+            // Number and Title Section
+            HStack(spacing: 8) {
+                Text("№")
+                    .font(.title2)
                     .bold()
-                    .fontWeight(.heavy)
+                Text("\(territory.number)")
+                    .font(.title)
+                    .bold()
             }
-            
-            Divider()
-                .frame(maxHeight: 75)
-                .padding(.horizontal, -5)
-            if !(progress < 0.98) {
+            .foregroundColor(.primary)
+
+            // Divider
+            if !(progress < 0.98) { // Show image only if progress is sufficient
+                Divider()
+                    .frame(height: 40)
+                    .padding(.horizontal, 4)
+
+                // Image Section
                 LazyImage(url: URL(string: territory.getImageURL())) { state in
                     if let image = state.image {
-                        image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 75, maxHeight: 60)
+                        image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 60, maxHeight: 60)
                     } else if state.error != nil {
                         Image(uiImage: UIImage(named: "mapImage")!)
                             .resizable()
-                            .frame(width: 75, height: 75)
+                            .frame(width: 60, height: 60)
                         //.padding(.bottom, 125)
                     } else {
                         ProgressView().progressViewStyle(.circular)
                     }
                 }
-                
                 .cornerRadius(10)
-                .padding(.horizontal, 2)
+                .padding(.horizontal, 4)
             }
+
+            // Description Section
             Text(territory.description)
                 .font(.body)
-                .fontWeight(.heavy)
+                .bold()
                 .lineLimit(2)
+                .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+
+           // Spacer() // Push content to edges for a cleaner look
         }
-        .frame(maxHeight: 75)
-        .animation(.easeInOut(duration: 0.25), value: progress)
         .padding(.horizontal)
+        .frame(height: 60)
+        .animation(.easeInOut(duration: 0.2), value: progress) // Smooth transition on progress change
         .hSpacing(.center)
     }
 }

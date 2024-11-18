@@ -886,7 +886,14 @@ final class GRDBManager: ObservableObject, Sendable {
                 }
                 
                 // Return sorted phone numbers by house number
-                let sortedData = data.sorted { $0.phoneNumber.house ?? "0" < $1.phoneNumber.house ?? "0" }
+                
+                let sortedData = data.sorted { $0.phoneNumber.house ?? "0" < $1.phoneNumber.house ?? "0" }.map { item -> PhoneNumbersData in
+                    var modifiedItem = item
+                    if let house = modifiedItem.phoneNumber.house {
+                        modifiedItem.phoneNumber.house = house.replacingOccurrences(of: ".0", with: "")
+                    }
+                    return modifiedItem
+                }
                 
                 return Just(sortedData)
                     .eraseToAnyPublisher()

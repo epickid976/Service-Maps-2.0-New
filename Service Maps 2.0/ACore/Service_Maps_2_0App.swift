@@ -11,7 +11,8 @@ import BackgroundTasks
 import Nuke
 import MijickPopups
 import Toasts
-//ORIGINAL NEW
+
+//MARK: -ORIGINAL NEW-
 
 @main
 struct Service_Maps_2_0App: App {
@@ -175,8 +176,9 @@ extension EnvironmentValues {
 }
 
 class ColumnViewModel: ObservableObject {
-    @AppStorage("columnViewPreference") var isColumnViewEnabled = true // Use @AppStorage for UserDefaults
+    
+    @AppStorage("columnViewPreference") var isColumnViewEnabled = true
 
-    @AppStorage("hapticFeedback") var hapticFeedback = true // Use @AppStorage for UserDefaults
-    // Add any other relevant view logic here
+    @AppStorage("hapticFeedback") var hapticFeedback = true
+    
 }

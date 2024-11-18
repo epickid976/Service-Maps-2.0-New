@@ -26,19 +26,26 @@ class AddCallViewModel: ObservableObject {
     
     @Published var loading = false
     
+    @BackgroundActor
     func addCall() async -> Result<Void, Error> {
-        withAnimation {
-            loading = true
+        await MainActor.run {
+            withAnimation {
+                loading = true
+            }
         }
-        let callObject = PhoneCall(id: "\(phoneNumber.id)-\(Date.now.millisecondsSince1970)", phonenumber: phoneNumber.id, date: (Date.now.millisecondsSince1970), notes: notes, user: StorageManager.shared.userEmail ?? "")
+        let date = Date.now.millisecondsSince1970
+        let callObject = await PhoneCall(id: "\(phoneNumber.id)-\(date)", phonenumber: phoneNumber.id, date: (date), notes: notes, user: StorageManager.shared.userEmail ?? "")
         return await dataUploader.addPhoneCall(phoneCall: callObject)
     }
     
+    @BackgroundActor
     func editCall(call: PhoneCall) async -> Result<Void, Error> {
-        withAnimation {
-            loading = true
+        await MainActor.run {
+            withAnimation {
+                loading = true
+            }
         }
-        let callObject = PhoneCall(id: call.id, phonenumber: call.phonenumber, date: call.date, notes: notes, user: StorageManager.shared.userEmail ?? "")
+        let callObject = await PhoneCall(id: call.id, phonenumber: call.phonenumber, date: call.date, notes: notes, user: StorageManager.shared.userEmail ?? "")
         return await dataUploader.updatePhoneCall(phoneCall: callObject)
     }
     

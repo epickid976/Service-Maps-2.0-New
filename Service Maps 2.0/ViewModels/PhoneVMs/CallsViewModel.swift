@@ -19,7 +19,7 @@ class CallsViewModel: ObservableObject {
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
-    let latestCallUpdatePublisher = PassthroughSubject<PhoneCall, Never>()
+    let latestCallUpdatePublisher = PassthroughSubject<PhoneCall?, Never>()
     private var cancellables = Set<AnyCancellable>()
     
     @Published var callsData: Optional<[PhoneCallData]> = nil
@@ -76,32 +76,51 @@ class CallsViewModel: ObservableObject {
 
 @MainActor
 extension CallsViewModel {
+    // Fetch and observe call data using GRDB
     func getCalls(callToScrollTo: String? = nil) {
         GRDBManager.shared.getPhoneCallData(phoneNumberId: phoneNumber.id)
-            .subscribe(on: DispatchQueue.main)
-            .receive(on: DispatchQueue.main) // Update on main thread
-            .sink(receiveCompletion: { completion in
+            .receive(on: DispatchQueue.main)  // Ensure UI updates on the main thread
+            .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
-                    // Handle errors here
-                    print("Error retrieving territory data: \(error)")
+                    print("Error retrieving phone call data: \(error)")
+                    self?.ifFailed = true
                 }
-            }, receiveValue: { callData in
-                DispatchQueue.main.async {
-                    self.callsData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date}
-                    
-                    if let latestCall = callData.sorted(by: { $0.phoneCall.date > $1.phoneCall.date }).first?.phoneCall {
-                        self.latestCallUpdatePublisher.send(latestCall)
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        if let callToScrollTo = callToScrollTo {
-                            self.callToScrollTo = callToScrollTo
-                        }
-                    }
-                }
-                
+            }, receiveValue: { [weak self] callData in
+                self?.handleCallData(callData, callToScrollTo: callToScrollTo)
             })
             .store(in: &cancellables)
+    }
+
+    // Process call data and determine the latest call
+    private func handleCallData(_ callData: [PhoneCallData], callToScrollTo: String?) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Sort calls by date
+            let sortedData = callData.sorted { $0.phoneCall.date > $1.phoneCall.date }
+
+            // Determine the latest call
+            let latestCall: PhoneCall? = sortedData.first?.phoneCall
+
+            // Update the UI on the main thread
+            DispatchQueue.main.async {
+                if sortedData.isEmpty || latestCall == nil {
+                    self.latestCallUpdatePublisher.send(nil)
+                } else {
+                    self.latestCallUpdatePublisher.send(latestCall)
+                }
+
+                self.callsData = sortedData
+                self.scrollToCall(callToScrollTo)
+            }
+        }
+    }
+
+    // Scroll to the specified call after data is received
+    private func scrollToCall(_ callToScrollTo: String?) {
+        if let callToScrollTo = callToScrollTo {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.callToScrollTo = callToScrollTo
+            }
+        }
     }
 }
 

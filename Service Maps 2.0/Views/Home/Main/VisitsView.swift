@@ -17,35 +17,31 @@ import Toasts
 
 struct VisitsView: View {
     
-    @StateObject var viewModel: VisitsViewModel
-    
-    var house: House
-    
-    @State var animationDone = false
-    @State var animationProgressTime: AnimationProgressTime = 0
-    @Environment(\.presentationMode) var presentationMode
-    
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    
-    @State var showFab = true
-    @State var scrollOffset: CGFloat = 0.00
-    @State private var isScrollingDown = false
-    @Environment(\.presentToast) var presentToast
-    
     init(house: House, visitIdToScrollTo: String? = nil) {
         self.house = house
         let initialViewModel = VisitsViewModel(house: house, visitIdToScrollTo: visitIdToScrollTo)
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
+    var house: House
     
+    @StateObject var viewModel: VisitsViewModel
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.mainWindowSize) var mainWindowSize
+    @Environment(\.presentToast) var presentToast
+    
+    @State var animationDone = false
+    @State var animationProgressTime: AnimationProgressTime = 0
+    @State var showFab = true
+    @State var scrollOffset: CGFloat = 0.00
+    @State private var isScrollingDown = false
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 60
-    @Environment(\.mainWindowSize) var mainWindowSize
-    
     @State var highlightedVisitId: String?
     
-    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    let minimumOffset: CGFloat = 60
     
     var body: some View {
         GeometryReader { proxy in

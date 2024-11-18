@@ -114,22 +114,6 @@ struct AddPhoneNumberScreen: View {
             .ignoresSafeArea(.keyboard)
             .navigationBarTitle("\(title) Number", displayMode: .large)
             .navigationBarBackButtonHidden()
-            .toolbar{
-                ToolbarItemGroup(placement: .keyboard){
-                    Spacer()
-                    Button {
-                        HapticManager.shared.trigger(.lightImpact)
-                        DispatchQueue.main.async {
-                            hideKeyboard()
-                        }
-                    } label: {
-                        Text("Done")
-                            .tint(.primary)
-                            .fontWeight(.bold)
-                            .font(.body)
-                    }
-                }
-            }
             
         }.ignoresSafeArea(.keyboard)
             .onAppear {
