@@ -510,15 +510,17 @@ class SynchronizationManager: ObservableObject {
     
     @SyncActor
     private func periodicCheckForCredentialChanges(initialIsAdmin: Bool, initialHasPhoneCredentials: Bool) async throws {
-        for _ in 0..<5 { // Periodically check 5 times (adjust as needed)
-            try await Task.sleep(nanoseconds: 1_000_000_000) // Check every 1 second
-            
-            let currentIsAdmin = await AuthorizationLevelManager().existsAdminCredentials()
-            let currentHasPhoneCredentials = await AuthorizationLevelManager().existsPhoneCredentials()
-            
-            // If credentials changed, throw an error to restart sync
-            if currentIsAdmin != initialIsAdmin || currentHasPhoneCredentials != initialHasPhoneCredentials {
-                throw SynchronizationError.credentialsChanged
+        Task.detached {
+            for _ in 0..<5 { // Periodically check 5 times (adjust as needed)
+                try await Task.sleep(nanoseconds: 1_000_000_000) // Check every 1 second
+                
+                let currentIsAdmin = await AuthorizationLevelManager().existsAdminCredentials()
+                let currentHasPhoneCredentials = await AuthorizationLevelManager().existsPhoneCredentials()
+                
+                // If credentials changed, throw an error to restart sync
+                if currentIsAdmin != initialIsAdmin || currentHasPhoneCredentials != initialHasPhoneCredentials {
+                    throw SynchronizationError.credentialsChanged
+                }
             }
         }
     }

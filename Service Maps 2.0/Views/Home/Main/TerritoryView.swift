@@ -577,9 +577,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                                         
                                         self.viewModel.territoryToDelete = (nil,nil)
                                         self.viewModel.showToast = true
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.20) {
                                             dismissLastPopup()
-                                        }
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
