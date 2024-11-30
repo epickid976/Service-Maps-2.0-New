@@ -23,7 +23,7 @@ struct HousesView: View {
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
-    @ObservedObject var viewModel: HousesViewModel
+    @StateObject var viewModel: HousesViewModel
     
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
@@ -31,10 +31,11 @@ struct HousesView: View {
     init(address: TerritoryAddress, houseIdToScrollTo: String? = nil) {
         self.address = address
         let initialViewModel = HousesViewModel(territoryAddress: address, houseIdToScrollTo: houseIdToScrollTo)
-        _viewModel = ObservedObject(wrappedValue: initialViewModel)
+        _viewModel = StateObject(wrappedValue: initialViewModel)
         
     }
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var dataStore = StorageManager.shared
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -50,7 +51,7 @@ struct HousesView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
                         LazyVStack {
-                            if viewModel.houseData == nil && !viewModel.dataStore.synchronized {
+                            if viewModel.houseData == nil && !dataStore.synchronized {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
                                         .playing(loopMode: .loop)
@@ -147,8 +148,8 @@ struct HousesView: View {
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
-                                    Button("", action: { viewModel.syncAnimation.toggle(); synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                    Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $dataStore.synchronized, lastTime: $dataStore.lastTime))
                                     
                                     Menu {
                                         Picker("Sort", selection: $viewModel.sortPredicate) {

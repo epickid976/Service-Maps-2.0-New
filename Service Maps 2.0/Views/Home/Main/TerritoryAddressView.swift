@@ -34,6 +34,7 @@ struct TerritoryAddressView: View {
     @StateObject var viewModel: AddressViewModel
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var dataStore = StorageManager.shared
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -222,7 +223,7 @@ struct TerritoryAddressView: View {
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         HStack {
-                            Button("", action: { viewModel.syncAnimation.toggle();
+                            Button("", action: { viewModel.syncAnimation = true;
                                 viewModel.synchronizationManager.startupProcess(synchronizing: true)  }) //.ke yboardShortcut("s", modifiers: .command)
                                 .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                             //                    if viewModel.isAdmin {

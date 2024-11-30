@@ -163,7 +163,7 @@ struct SettingsView: View {
             
             ToolbarItemGroup(placement: .topBarTrailing) {
                 HStack {
-                    Button("", action: { viewModel.syncAnimation.toggle();  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                    Button("", action: { viewModel.syncAnimation = true;  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         .disabled(self.viewModel.showEditNamePopup || self.viewModel.presentPolicy || self.viewModel.showDeletionConfirmationAlert || self.viewModel.showDeletionAlert || self.viewModel.showSharePopup || self.viewModel.presentSheet || self.viewModel.showAlert)
                     

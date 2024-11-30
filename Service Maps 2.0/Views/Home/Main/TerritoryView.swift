@@ -214,7 +214,7 @@ struct TerritoryView: View {
                                 ToolbarItemGroup(placement: .topBarTrailing) {
                                     HStack {
                                         
-                                        Button("", action: { viewModel.syncAnimation.toggle(); synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
+                                        Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                             .padding(.leading, viewModel.territoryData == nil || dataStore.synchronized ? 0 : 50)//.animation(.spring(), value: viewModel.dataStore.synchronized)
                                         if viewModel.territoryData == nil || dataStore.synchronized {
