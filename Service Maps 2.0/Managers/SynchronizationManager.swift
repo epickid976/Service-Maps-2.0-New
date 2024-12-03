@@ -14,6 +14,7 @@ import GRDB
 @globalActor actor SyncActor: GlobalActor {
     static var shared = SyncActor()
 }
+
 @MainActor
 class SynchronizationManager: ObservableObject {
     static let shared = SynchronizationManager()
@@ -33,23 +34,6 @@ class SynchronizationManager: ObservableObject {
     // MARK: - Start Synchronization with Haptics
     private var syncTimer: DispatchSourceTimer?
     
-    
-//    @MainActor
-//    func startSyncAndHaptics() {
-//        // Ensure haptic feedback and synchronization are non-blocking
-//        syncTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global(qos: .background))
-//        syncTimer?.schedule(deadline: .now(), repeating: 1)
-//        syncTimer?.setEventHandler { [weak self] in
-//            guard let self = self, !self.dataStore.synchronized else {
-//                self?.syncTimer?.cancel()
-//                return
-//            }
-//            DispatchQueue.main.async {
-//                HapticManager.shared.trigger(.lightImpact)  // Keep this non-blocking
-//            }
-//        }
-//        syncTimer?.resume()  // Start the timer
-//    }
     
     // MARK: - Startup Process
     @MainActor
@@ -141,9 +125,16 @@ class SynchronizationManager: ObservableObject {
     
     @SyncActor
     func synchronize() async {
+        let startSync = Date()
+        print("Synchronization started at \(startSync)")
+        
         // Store initial admin and phone credentials at the start
+        let startInitialCreds = Date()
         let initialIsAdmin = await AuthorizationLevelManager().existsAdminCredentials()
         let initialHasPhoneCredentials = await AuthorizationLevelManager().existsPhoneCredentials()
+        let endInitialCreds = Date()
+        print(initialIsAdmin ? "Admin credentials found" : "No admin credentials found")
+        print("Initial credential check completed in \(endInitialCreds.timeIntervalSince(startInitialCreds)) seconds")
         
         // Mark synchronization as not completed
         DispatchQueue.main.async {
@@ -152,24 +143,30 @@ class SynchronizationManager: ObservableObject {
         
         do {
             // Periodically check for credential changes
+            let startPeriodicCheck = Date()
             try await periodicCheckForCredentialChanges(
                 initialIsAdmin: initialIsAdmin,
                 initialHasPhoneCredentials: initialHasPhoneCredentials
             )
+            let endPeriodicCheck = Date()
+            print("Periodic credential check completed in \(endPeriodicCheck.timeIntervalSince(startPeriodicCheck)) seconds")
             
             // Fetch all data concurrently
+            let startFetchApi = Date()
             async let tokenData = fetchTokensFromServer()
             async let territoryData = fetchTerritoriesFromServer()
             async let phoneData = fetchPhoneTerritoryDataFromServer()
             async let recallsData = fetchRecallsFromServer()
             
-            // Wait for all async operations to complete and destructure the results
             let ((tokens, userTokens, tokenTerritories),
                  (territories, houses, visits, territoryAddresses),
                  (phoneTerritories, phoneNumbers, phoneCalls),
                  recalls) = try await (tokenData, territoryData, phoneData, recallsData)
+            let endFetchApi = Date()
+            print("API data fetch completed in \(endFetchApi.timeIntervalSince(startFetchApi)) seconds")
             
             // Fetch local data concurrently
+            let startFetchDb = Date()
             async let tokensDb = handleResult(await grdbManager.fetchAllAsync(Token.self))
             async let userTokensDb = handleResult(await grdbManager.fetchAllAsync(UserToken.self))
             async let territoriesDb = handleResult(await grdbManager.fetchAllAsync(Territory.self))
@@ -182,13 +179,16 @@ class SynchronizationManager: ObservableObject {
             async let phoneNumbersDb = handleResult(await grdbManager.fetchAllAsync(PhoneNumber.self))
             async let recallsDb = handleResult(await grdbManager.fetchAllAsync(Recalls.self))
             
-            // Wait for all database operations to complete
             let dbResults = try await (
                 tokensDb, userTokensDb, territoriesDb, housesDb, visitsDb,
                 territoryAddressesDb, tokenTerritoriesDb, phoneTerritoriesDb,
                 phoneCallsDb, phoneNumbersDb, recallsDb
             )
+            let endFetchDb = Date()
+            print("Database fetch completed in \(endFetchDb.timeIntervalSince(startFetchDb)) seconds")
             
+            // Perform synchronization operations concurrently
+            let startSyncOps = Date()
             // Perform synchronization operations concurrently
             try await withThrowingTaskGroup(of: Void.self) { group in
                 // Tokens synchronization
@@ -309,9 +309,12 @@ class SynchronizationManager: ObservableObject {
                     )
                 }
                 
+                
                 // Wait for all synchronization tasks to complete
                 try await group.waitForAll()
             }
+            let endSyncOps = Date()
+            print("Synchronization operations completed in \(endSyncOps.timeIntervalSince(startSyncOps)) seconds")
             
             // Finalize synchronization
             await startupProcess(synchronizing: false)
@@ -319,7 +322,8 @@ class SynchronizationManager: ObservableObject {
                 self.dataStore.lastTime = Date.now
                 self.dataStore.synchronized = true
             }
-            
+            let endSync = Date()
+            print("Synchronization finalized at \(endSync), total duration: \(endSync.timeIntervalSince(startSync)) seconds")
         } catch SynchronizationError.credentialsChanged {
             print("Credentials changed during sync, restarting synchronization.")
             await synchronize()
@@ -333,60 +337,198 @@ class SynchronizationManager: ObservableObject {
     // Helper Functions for Fetching Data from Server]
     @SyncActor
     private func fetchTokensFromServer() async throws -> ([Token], [UserToken], [TokenTerritory]) {
+        let start = Date()
+
         var tokensApi = [Token]()
         var userTokensApi = [UserToken]()
         var tokenTerritoriesApi = [TokenTerritory]()
-        
+
         let tokenApi = TokenService()
-        let ownedTokens = try await tokenApi.loadOwnedTokens().get()
-        tokensApi.append(contentsOf: ownedTokens)
-        
-        let userTokens = try await tokenApi.loadUserTokens().get()
-        for token in userTokens {
+
+        async let ownedTokensTask = tokenApi.loadOwnedTokens()
+        async let userTokensTask = tokenApi.loadUserTokens()
+
+        let ownedTokensResult = try await ownedTokensTask.get()
+        tokensApi.append(contentsOf: ownedTokensResult)
+
+        let userTokensResult = try await userTokensTask.get()
+        for token in userTokensResult {
             if !tokensApi.contains(token) {
                 tokensApi.append(token)
             }
         }
+
         if await AuthorizationLevelManager().existsAdminCredentials() {
-            for token in tokensApi {
-                let usersResult = await tokenApi.usersOfToken(token: token.id)
-                
-                switch usersResult {
-                case .success(let users):
-                    for user in users {
-                        userTokensApi.append(UserToken( token: token.id, userId: String(user.id), name: user.name, blocked: user.blocked))
+            await withTaskGroup(of: [UserToken].self) { group in
+                for token in tokensApi {
+                    group.addTask {
+                        var userTokens = [UserToken]()
+                        let usersResult = await tokenApi.usersOfToken(token: token.id)
+                        switch usersResult {
+                        case .success(let users):
+                            for user in users {
+                                userTokens.append(
+                                    UserToken(
+                                        token: token.id,
+                                        userId: String(user.id),
+                                        name: user.name,
+                                        blocked: user.blocked
+                                    )
+                                )
+                            }
+                        case .failure(let error):
+                            print("Failed to fetch users for token \(token.id): \(error)")
+                            // Optionally handle the error or log it
+                        }
+                        return userTokens
                     }
-                case .failure(let error):
-                    print("Failed to fetch users for token \(token.id): \(error)")
-                    // Optionally handle the error or log it
+                }
+
+                for await userTokens in group {
+                    userTokensApi.append(contentsOf: userTokens)
                 }
             }
         }
-        for token in tokensApi {
-            let response = try await tokenApi.getTerritoriesOfToken(token: token.id).get()
-            tokenTerritoriesApi.append(contentsOf: response)
+
+        await withTaskGroup(of: [TokenTerritory].self) { group in
+            for token in tokensApi {
+                group.addTask {
+                    do {
+                        return try await tokenApi.getTerritoriesOfToken(token: token.id).get()
+                    } catch {
+                        print("Failed to fetch territories for token \(token.id): \(error)")
+                        return []
+                    }
+                }
+            }
+            for await territories in group {
+                tokenTerritoriesApi.append(contentsOf: territories)
+            }
         }
-        
+
+        let end = Date()
+        print("fetchTokensFromServer completed in \(end.timeIntervalSince(start)) seconds")
+
         return (tokensApi, userTokensApi, tokenTerritoriesApi)
     }
+    
     @SyncActor
     private func fetchTerritoriesFromServer() async throws -> ([Territory], [House], [Visit], [TerritoryAddress]) {
+        let start = Date()
+        
         if await authorizationLevelManager.existsAdminCredentials() {
-            let response = try await AdminService().allData().get()
-            
-            return (response.territories, response.houses, response.visits, response.addresses)
+            let result = try await AdminService().all().get()
+            let territories = result.territories.map {
+                Territory(
+                    id: $0.id,
+                    congregation: result.id,
+                    number: Int32($0.number),
+                    description: $0.description,
+                    image: $0.image
+                )
+            }
+
+            let addresses = result.territories.flatMap { territory in
+                territory.addresses.map {
+                    TerritoryAddress(
+                        id: $0.id,
+                        territory: $0.territory,
+                        address: $0.address,
+                        floors: $0.floors
+                    )
+                }
+            }
+
+            let houses = result.territories.flatMap { territory in
+                territory.addresses.flatMap { address in
+                    address.houses.map {
+                        House(
+                            id: $0.id,
+                            territory_address: $0.territory_address,
+                            number: $0.number,
+                            floor: String($0.floor ?? 0)
+                        )
+                    }
+                }
+            }
+
+            let visits = result.territories.flatMap { territory in
+                territory.addresses.flatMap { address in
+                    address.houses.flatMap { house in
+                        house.visits.map {
+                            Visit(
+                                id: $0.id,
+                                house: $0.house,
+                                date: $0.date,
+                                symbol: $0.symbol,
+                                notes: $0.notes,
+                                user: $0.user
+                            )
+                        }
+                    }
+                }
+            }
+
+            let end = Date()
+            print("fetchTerritoriesFromServer completed in \(end.timeIntervalSince(start)) seconds")
+
+            return (territories, houses, visits, addresses)
         } else {
             let response = try await UserService().loadTerritories().get()
+            let end = Date()
+            print("fetchTerritoriesFromServer completed in \(end.timeIntervalSince(start)) seconds")
+            
             return (response.territories, response.houses, response.visits, response.addresses)
         }
     }
+    
     @SyncActor
-    private func fetchPhoneTerritoryDataFromServer() async throws -> ( [PhoneTerritory], [PhoneNumber], [PhoneCall]) {
+    private func fetchPhoneTerritoryDataFromServer() async throws -> ([PhoneTerritory], [PhoneNumber], [PhoneCall]) {
+        let start = Date()
+        
         if await authorizationLevelManager.existsAdminCredentials() {
-            let result = await AdminService().allPhoneData()
+            let result = await AdminService().allPhone()
             switch result {
             case .success(let response):
-                return (response.territories, response.numbers, response.calls)
+                let phoneTerritories = response.phone_territories.map {
+                    PhoneTerritory(
+                        id: $0.id,
+                        congregation: response.id,
+                        number: Int64($0.number),
+                        description: $0.description,
+                        image: $0.image
+                    )
+                }
+
+                let phoneNumbers = response.phone_territories.flatMap { territory in
+                    territory.numbers.map {
+                        PhoneNumber(
+                            id: $0.id,
+                            congregation: $0.congregation,
+                            number: $0.number, territory: $0.territory,
+                            house: $0.house
+                        )
+                    }
+                }
+
+                let phoneCalls = response.phone_territories.flatMap { territory in
+                    territory.numbers.flatMap { number in
+                        number.calls.map {
+                            PhoneCall(
+                                id: $0.id,
+                                phonenumber: $0.phonenumber,
+                                date: $0.date,
+                                notes: $0.notes,
+                                user: $0.user
+                            )
+                        }
+                    }
+                }
+
+                let end = Date()
+                print("fetchPhoneTerritoryDataFromServer completed in \(end.timeIntervalSince(start)) seconds")
+                
+                return (phoneTerritories, phoneNumbers, phoneCalls)
             case .failure(let error):
                 throw error
             }
@@ -394,19 +536,32 @@ class SynchronizationManager: ObservableObject {
             let result = await UserService().allPhoneData()
             switch result {
             case .success(let response):
-                return (response.territories, response.numbers, response.calls)
+                let end = Date()
+                print("fetchPhoneTerritoryDataFromServer completed in \(end.timeIntervalSince(start)) seconds")
+                
+                return (
+                    response.territories,
+                    response.numbers,
+                    response.calls
+                )
             case .failure(let error):
                 throw error
             }
         } else {
+            let end = Date()
+            print("fetchPhoneTerritoryDataFromServer completed in \(end.timeIntervalSince(start)) seconds")
             return ([], [], [])
         }
     }
     @SyncActor
     private func fetchRecallsFromServer() async throws -> [Recalls] {
-        return try await UserService().getRecalls().get()
+        let start = Date()
+        let recalls = try await UserService().getRecalls().get()
+        let end = Date()
+        print("fetchRecallsFromServer completed in \(end.timeIntervalSince(start)) seconds")
+        return recalls
     }
-
+    
     @SyncActor
     private func comparingAndSynchronize<T: Identifiable & Equatable & Sendable>(
         apiList: [T],
@@ -418,7 +573,7 @@ class SynchronizationManager: ObservableObject {
         // Initialize the OperationQueue for background batching
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = 10  // Adjust based on performance needs
-
+        
         // Prepare lists for batching
         var updates: [T] = []
         var additions: [T] = []
@@ -436,7 +591,7 @@ class SynchronizationManager: ObservableObject {
             }
         }
         let deletions = Array(dbDict.values)
-
+        
         // Helper functions for batch processing in the background
         func handleUpdates(_ updates: [T]) -> Operation {
             let operation = BlockOperation {
@@ -453,7 +608,7 @@ class SynchronizationManager: ObservableObject {
             operationQueue.addOperation(operation)
             return operation
         }
-
+        
         func handleAdditions(_ additions: [T]) -> Operation {
             let operation = BlockOperation {
                 Task {
@@ -469,7 +624,7 @@ class SynchronizationManager: ObservableObject {
             operationQueue.addOperation(operation)
             return operation
         }
-
+        
         func handleDeletions(_ deletions: [T]) -> Operation {
             let operation = BlockOperation {
                 Task {
@@ -485,12 +640,12 @@ class SynchronizationManager: ObservableObject {
             operationQueue.addOperation(operation)
             return operation
         }
-
+        
         // Trigger batch operations
         let updateOp = !updates.isEmpty ? handleUpdates(updates) : nil
         let additionOp = !additions.isEmpty ? handleAdditions(additions) : nil
         let deletionOp = !deletions.isEmpty ? handleDeletions(deletions) : nil
-
+        
         // Add a completion barrier block that runs after all operations are finished
         operationQueue.addBarrierBlock {
             Task { @MainActor in
@@ -498,7 +653,7 @@ class SynchronizationManager: ObservableObject {
                 // Perform any final actions that require main thread access
             }
         }
-
+        
         // Optional: Ensure completion by adding dependencies
         if let updateOp = updateOp, let additionOp = additionOp {
             additionOp.addDependency(updateOp)
@@ -545,14 +700,14 @@ class SynchronizationManager: ObservableObject {
                 additions.append(apiTokenTerritory)
             }
         }
-
+        
         // 2. Find deletions (exists in DB but not in API)
         for dbTokenTerritory in dbList {
             if !apiList.contains(where: { $0.token == dbTokenTerritory.token && $0.territory == dbTokenTerritory.territory }) {
                 deletions.append(dbTokenTerritory)
             }
         }
-
+        
         // 3. Perform Updates
         if !updates.isEmpty {
             print("Updating \(updates.count) token territories")
@@ -565,7 +720,7 @@ class SynchronizationManager: ObservableObject {
                 }
             }
         }
-
+        
         // 4. Perform Additions
         if !additions.isEmpty {
             print("Adding \(additions.count) token territories")
@@ -578,7 +733,7 @@ class SynchronizationManager: ObservableObject {
                 }
             }
         }
-
+        
         // 5. Perform Deletions
         if !deletions.isEmpty {
             print("Deleting \(deletions.count) token territories")
@@ -597,6 +752,7 @@ class SynchronizationManager: ObservableObject {
         case credentialsChanged
     }
     
+    @SyncActor
     func handleResult<T>(_ result: Result<[T], Error>) throws -> [T] {
         switch result {
         case .success(let data):

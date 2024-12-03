@@ -144,6 +144,8 @@
 		82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBEA992A880B9E002048DC /* ResetPassword.swift */; };
 		82DDE2CD2C193BD4003B65A5 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */; };
 		82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EC3E922A9CFF68000E2926 /* HousesView.swift */; };
+		82EF0AE62CFF76120083A89C /* CongregationWithAll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EF0AE52CFF760F0083A89C /* CongregationWithAll.swift */; };
+		82EF0AE82CFF76E40083A89C /* CongregationWithAllPhone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EF0AE72CFF76E20083A89C /* CongregationWithAllPhone.swift */; };
 		82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F288862A86C21100930849 /* VerificationViewModel.swift */; };
 		82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */; };
 		82F75C122BDC01AA002CCAB0 /* RegisterKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */; };
@@ -300,6 +302,8 @@
 		82DBEA992A880B9E002048DC /* ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPassword.swift; sourceTree = "<group>"; };
 		82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		82EC3E922A9CFF68000E2926 /* HousesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesView.swift; sourceTree = "<group>"; };
+		82EF0AE52CFF760F0083A89C /* CongregationWithAll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationWithAll.swift; sourceTree = "<group>"; };
+		82EF0AE72CFF76E20083A89C /* CongregationWithAllPhone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationWithAllPhone.swift; sourceTree = "<group>"; };
 		82F288862A86C21100930849 /* VerificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationViewModel.swift; sourceTree = "<group>"; };
 		82F75C0F2BDB3DE5002CCAB0 /* PrivacyPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicy.swift; sourceTree = "<group>"; };
 		82F75C112BDC01AA002CCAB0 /* RegisterKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterKeyView.swift; sourceTree = "<group>"; };
@@ -450,8 +454,8 @@
 		821C12602A77EEA80050D106 /* API */ = {
 			isa = PBXGroup;
 			children = (
-				82B97F8E2CC845D200A0BC13 /* Routes */,
 				821C12652A77F37F0050D106 /* APIProvider.swift */,
+				82B97F8E2CC845D200A0BC13 /* Routes */,
 				821C126F2A780E9F0050D106 /* Controllers */,
 				821C12612A77F0A00050D106 /* APIStructs */,
 				820933F82A78687B00AF3FF1 /* Other */,
@@ -462,6 +466,8 @@
 		821C12612A77F0A00050D106 /* APIStructs */ = {
 			isa = PBXGroup;
 			children = (
+				82EF0AE72CFF76E20083A89C /* CongregationWithAllPhone.swift */,
+				82EF0AE52CFF760F0083A89C /* CongregationWithAll.swift */,
 				821C12632A77F0BD0050D106 /* LoginForm.swift */,
 				821C12672A77F6180050D106 /* LoginResponse.swift */,
 				821C126B2A78081D0050D106 /* SignUpForm.swift */,
@@ -587,18 +593,18 @@
 		826B766C2A729FDE000A4BAA /* Service Maps 2.0 */ = {
 			isa = PBXGroup;
 			children = (
-				82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */,
-				821DE74E2BD9EB66001D092D /* apple-app-site-association */,
-				826B76712A729FE1000A4BAA /* Assets.xcassets */,
-				82F75C132BDC98B7002CCAB0 /* Localizable.xcstrings */,
-				82CE0D6B2CBDB6D700C080D7 /* s8NEW.pdf */,
 				82BD57842CD145F7005A47B1 /* ACore */,
 				821C12602A77EEA80050D106 /* API */,
+				821DE74E2BD9EB66001D092D /* apple-app-site-association */,
+				826B76712A729FE1000A4BAA /* Assets.xcassets */,
 				821111B42A73159400F94662 /* Data */,
 				820933FC2A795FC900AF3FF1 /* Enums */,
 				820933F92A794BAD00AF3FF1 /* Helpers */,
+				82F75C132BDC98B7002CCAB0 /* Localizable.xcstrings */,
 				824213672A82C4A300626DD5 /* Managers */,
 				826B76732A729FE1000A4BAA /* Preview Content */,
+				82CE0D6B2CBDB6D700C080D7 /* s8NEW.pdf */,
+				82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */,
 				820933E52A78505100AF3FF1 /* Structs */,
 				820934062A7ABB7600AF3FF1 /* Subviews */,
 				824213732A82E7BB00626DD5 /* ViewModels */,
@@ -904,6 +910,7 @@
 				8255F1922C1944D000445A82 /* SearchView.swift in Sources */,
 				82BC0F1D2A9BF53900B255BF /* DataUploaderManager.swift in Sources */,
 				82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */,
+				82EF0AE62CFF76120083A89C /* CongregationWithAll.swift in Sources */,
 				82FB3C232BF257990066B0B9 /* RecentData.swift in Sources */,
 				824213752A82E7D000626DD5 /* LoginViewModel.swift in Sources */,
 				823FD4D52A7D6F2D0036A1DD /* TerritoryView.swift in Sources */,
@@ -1017,6 +1024,7 @@
 				82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */,
 				8228B6182C2B1FC6002B7886 /* ViewModifiers.swift in Sources */,
 				82A5B45B2BD2F64800F52F2F /* AddAddressView.swift in Sources */,
+				82EF0AE82CFF76E40083A89C /* CongregationWithAllPhone.swift in Sources */,
 				82916C192A994298005133DE /* AddVisitView.swift in Sources */,
 				820934032A7ABB3A00AF3FF1 /* WelcomeView.swift in Sources */,
 				820933F72A78631500AF3FF1 /* DeleteTokenForm.swift in Sources */,
@@ -1178,7 +1186,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.7;
+				MARKETING_VERSION = 3.1.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1219,7 +1227,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.7;
+				MARKETING_VERSION = 3.1.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

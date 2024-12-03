@@ -22,6 +22,26 @@ class AdminService {
             return .failure(error)
         }
     }
+    
+    func all() async -> Result<CongregationWithAll, Error> {
+        do {
+           let response = try await api.all()
+            return .success(response)
+        } catch {
+            print("Error: \(error)")
+            return .failure(error)
+        }
+    }
+    
+    func allPhone() async -> Result<CongregationWithAllPhone, Error> {
+        do {
+            let response = try await api.allPhone()
+            return .success(response)
+        } catch {
+            print("Error: \(error)")
+            return .failure(error)
+        }
+    }
 
     // Fetch all phone data
     func allPhoneData() async -> Result<AllPhoneDataResponse, Error> {

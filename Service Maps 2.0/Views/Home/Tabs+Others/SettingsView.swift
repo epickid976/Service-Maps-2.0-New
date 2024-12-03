@@ -103,7 +103,6 @@ struct SettingsView: View {
                         // First complete startup process
                         synchronizationManager.startupProcess(synchronizing: true)
                         viewModel.presentSheet = false
-                        
                     }
                 }
             }

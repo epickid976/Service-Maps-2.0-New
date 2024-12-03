@@ -157,7 +157,7 @@ struct AdminLoginView: View {
                                 switch await AuthenticationManager().signInAdmin(congregationSignInForm: CongregationSignInForm(id: Int64(username) ?? 0, password: password)) {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                         withAnimation {
                                             loading = false
                                         }
@@ -178,7 +178,7 @@ struct AdminLoginView: View {
                                     } else if error.localizedDescription == "Wrong Credentials" {
                                         alertTitle = "Wrong Credentials"
                                         alertMessage = "The credentials you typed don't seem to be correct.\n Please try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation {
                                                 //apiError = "Error Signing up"
                                                 loading = false
@@ -188,7 +188,7 @@ struct AdminLoginView: View {
                                     } else if error.localizedDescription == "No Congregation" {
                                         alertTitle = "Wrong Congregation"
                                         alertMessage = "The congregation you're trying to access does not exist. \n Please try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation {
                                                 //apiError = "Error Signing up"
                                                 loading = false
@@ -198,7 +198,7 @@ struct AdminLoginView: View {
                                     } else {
                                         alertTitle = "Error"
                                         alertMessage = "Error logging in. \nPlease try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation {
                                                 //apiError = "Error Signing up"
                                                 loading = false

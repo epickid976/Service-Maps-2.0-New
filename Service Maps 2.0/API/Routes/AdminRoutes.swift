@@ -14,6 +14,9 @@ public protocol AdminRoutes: Sendable {
     @GET("admin/alldata")
     func allData() async throws -> AllDataResponse
     
+    @GET("admin/all")
+    func all() async throws -> CongregationWithAll
+    
     @POST("admin/territories/add")
     func addTerritory(territory: Body<Territory>) async throws
     
@@ -69,6 +72,9 @@ public protocol AdminRoutes: Sendable {
     
     @POST("admin/visits/delete")
     func deleteVisit(visit: Body<Visit>) async throws
+    
+    @GET("admin/allphone")
+    func allPhone() async throws -> CongregationWithAllPhone
     
     @GET("admin/allphonedata")
     func allPhoneData() async throws -> AllPhoneDataResponse
