@@ -160,15 +160,7 @@ struct TerritoryView: View {
                                                                             .id(territoryData.territory.id)
                                                                             .transition(.customBackInsertion)
                                                                             .modifier(ScrollTransitionModifier())
-                                                                            .animation(
-                                                                                .spring(),
-                                                                                value: territoryData
-                                                                            )
                                                                         }
-                                                                        .animation(
-                                                                            .spring(),
-                                                                            value: viewModel.territoryData
-                                                                        )
                                                                     }
                                                                 }
 
@@ -187,15 +179,7 @@ struct TerritoryView: View {
                                                                             .id(territoryData.territory.id)
                                                                             .transition(.customBackInsertion)
                                                                             .modifier(ScrollTransitionModifier())
-                                                                            .animation(
-                                                                                .spring(),
-                                                                                value: territoryData
-                                                                            )
                                                                         }
-                                                                        .animation(
-                                                                            .spring(),
-                                                                            value: viewModel.territoryData
-                                                                        )
                                                                     }
                                                                 }
                                                             }
@@ -215,15 +199,7 @@ struct TerritoryView: View {
                                                                         .id(territoryData.territory.id)
                                                                         .transition(.customBackInsertion)
                                                                         .modifier(ScrollTransitionModifier())
-                                                                        .animation(
-                                                                            .spring(),
-                                                                            value: territoryData
-                                                                        )
                                                                     }
-                                                                    .animation(
-                                                                        .spring(),
-                                                                        value: viewModel.territoryData
-                                                                    )
                                                                 }
                                                             }
                                                         }
@@ -423,7 +399,7 @@ struct TerritoryView: View {
                                         
                                         Button {
                                             HapticManager.shared.trigger(.lightImpact)
-                                            DispatchQueue.main.async {
+                                            self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
                                                 CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
                                                     let toast = ToastValue(
                                                         icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
@@ -431,7 +407,6 @@ struct TerritoryView: View {
                                                     )
                                                     presentToast(toast)
                                                 }.present()
-                                            }
                                         } label: {
                                             HStack {
                                                 Image(systemName: "trash")
@@ -464,7 +439,6 @@ struct TerritoryView: View {
                         backgroundColor: .red
                     ) {
                         HapticManager.shared.trigger(.lightImpact)
-                        DispatchQueue.main.async {
                             context.state.wrappedValue = .closed
                             self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
                             CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
@@ -474,7 +448,6 @@ struct TerritoryView: View {
                                 )
                                 presentToast(toast)
                             }.present()
-                        }
                     }
                     .font(.title.weight(.semibold))
                     .foregroundColor(.white)
@@ -803,7 +776,7 @@ struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: Vie
             
             // Expandable Content
             if isExpanded {
-                VStack(alignment: .leading, spacing: 12) {
+                LazyVStack(alignment: .leading, spacing: 12) {
                     ForEach(items) { item in
                         content(item)
                             .transition(
@@ -816,6 +789,8 @@ struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: Vie
                                         .animation(.spring(response: 0.5, dampingFraction: 0.6).speed(0.8))
                                 )
                             )
+                            .transition(.customBackInsertion)
+                            .animation(.spring(), value: items)
                             .opacity(expandProgress)
                             .scaleEffect(0.95 + (0.05 * expandProgress), anchor: .top)
                             .offset(y: 10 * (1 - expandProgress))
@@ -824,6 +799,8 @@ struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: Vie
                                 .delay(Double(items.firstIndex(where: { $0.id == item.id }) ?? 0) * 0.08),
                                 value: expandProgress
                             )
+                            .id(item.id)
+                            
                     }
                 }
                 .transition(

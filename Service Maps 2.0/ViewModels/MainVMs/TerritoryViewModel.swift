@@ -24,6 +24,7 @@ class TerritoryViewModel: ObservableObject {
     
     // Published variables to update the UI
     @Published var territoryData: [TerritoryDataWithKeys]? = nil
+    @Published var allTerritories: [Territory] = []
     @Published var recentTerritoryData: [RecentTerritoryData]? = nil
     @Published var currentTerritory: Territory?
     
@@ -92,31 +93,36 @@ extension TerritoryViewModel {
         // Call the updated publisher
         GRDBManager.shared.getTerritoryData()
             .receive(on: DispatchQueue.main) // Ensure updates happen on the main thread
-            .sink(receiveCompletion: { completion in
-                // Handle any errors
-                switch completion {
-                case .failure(let error):
-                    print("Error retrieving territory data: \(error)")
-                    self.ifFailed = true
-                case .finished:
-                    break
-                }
-            }, receiveValue: { [self] territoryData in
-                // Sort the received territory data
-                let sortedTerritoryData = territoryData.sorted {
-                    ($0.keys.first?.name ?? "") < ($1.keys.first?.name ?? "")
-                }
-
-                // Use animations to update the UI
-                self.territoryData = sortedTerritoryData
-
-                // Scroll to a specific territory ID, if provided
-                if let territoryIdToScrollTo = territoryIdToScrollTo {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.territoryIdToScrollTo = territoryIdToScrollTo
+            .sink(
+                receiveCompletion: { completion in
+                    // Handle any errors
+                    switch completion {
+                    case .failure(let error):
+                        print("Error retrieving territory data: \(error)")
+                        self.ifFailed = true
+                    case .finished:
+                        break
                     }
-                }
-            })
+                },
+                receiveValue: { [self] territoryData in
+                    // Sort the received territory data
+                    let sortedTerritoryData = territoryData.sorted {
+                        ($0.keys.first?.name ?? "") < ($1.keys.first?.name ?? "")
+                    }
+                    
+                    let territories = GRDBManager.shared.fetchAll(Territory.self).getOrElse([])
+                    
+                    // Use animations to update the UI
+                    self.allTerritories = territories
+                    self.territoryData = sortedTerritoryData
+                    
+                    // Scroll to a specific territory ID, if provided
+                    if let territoryIdToScrollTo = territoryIdToScrollTo {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            self.territoryIdToScrollTo = territoryIdToScrollTo
+                        }
+                    }
+                })
             .store(in: &cancellables) // Keep the subscription alive
     }
     
