@@ -458,12 +458,64 @@ class SynchronizationManager: ObservableObject {
             return (territoriesResult, housesResult, visitsResult, addressesResult)
         } else {
             let startOfRequest = Date()
-            let response = try await UserService().loadTerritories().get()
+            let response = try await UserService().loadTerritoriesNew().get()
+            
+            let territoriesMap = response.map {
+                Territory(
+                    id: $0.id,
+                    congregation: $0.id,
+                    number: Int32($0.number),
+                    description: $0.description,
+                    image: $0.image
+                )
+            }
+
+            let addressesMap = response.flatMap {
+                $0.addresses.map {
+                    TerritoryAddress(
+                        id: $0.id,
+                        territory: $0.territory,
+                        address: $0.address,
+                        floors: $0.floors
+                    )
+                }
+            }
+
+            let housesMap = response.flatMap {
+                $0.addresses.flatMap { address in
+                    address.houses.map {
+                        House(
+                            id: $0.id,
+                            territory_address: $0.territory_address,
+                            number: $0.number,
+                            floor: String($0.floor ?? 0)
+                        )
+                    }
+                }
+            }
+
+            let visitsMap = response.flatMap {
+                $0.addresses.flatMap { address in
+                    address.houses.flatMap { house in
+                        house.visits.map {
+                            Visit(
+                                id: $0.id,
+                                house: $0.house,
+                                date: $0.date,
+                                symbol: $0.symbol,
+                                notes: $0.notes,
+                                user: $0.user
+                            )
+                        }
+                    }
+                }
+            }
+            
             let endOfRequest = Date()
             print("fetchTerritoriesFromServer request completed in \(endOfRequest.timeIntervalSince(startOfRequest)) seconds")
             let end = Date()
             print("fetchTerritoriesFromServer completed in \(end.timeIntervalSince(start)) seconds")
-            return (response.territories, response.houses, response.visits, response.addresses)
+            return (territoriesMap, housesMap, visitsMap, addressesMap)
         }
     }
     
