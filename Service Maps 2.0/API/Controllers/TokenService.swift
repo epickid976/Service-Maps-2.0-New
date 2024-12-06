@@ -11,6 +11,15 @@ import Papyrus
 class TokenService: @unchecked Sendable {
     private let api: TokenRoutes = TokenRoutesAPI(provider: APIProvider().provider)
     
+    func loadAllTokens() async -> Result<[MyTokenWithAll], Error> {
+        do {
+            let tokens = try await api.loadAllTokens()
+            return .success(tokens)
+        } catch {
+            print("Token Error \(error)")
+            return .failure(error)
+        }
+    }
     // Load owned tokens
     func loadOwnedTokens() async -> Result<[Token], Error> {
         do {

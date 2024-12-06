@@ -272,6 +272,68 @@ struct SettingsView: View {
                 }
                 .frame(minHeight: 50)
             }
+            
+            Button(action: {}) {
+                HStack(alignment: .top, spacing: 16) { // Add spacing between the sections
+                    // Icon and Title
+                    HStack(spacing: 8) {
+                        Image(
+                            systemName: viewModel.selectedAction == .expandAll
+                            ? "arrow.up.left.and.arrow.down.right" : "arrow.down.right.and.arrow.up.left"
+                        )
+                        .imageScale(.large)
+                        .foregroundColor(.blue)
+                        .rotationEffect(.degrees(viewModel.selectedAction == .expandAll ? 0 : 180)) // Add rotation animation
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.selectedAction)
+                        .padding(.horizontal)
+                        
+                        Text("Toggle")
+                            .font(.title3)
+                            .lineLimit(2)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                    }
+                    .hSpacing(.leading)
+                    .vSpacing(.center)
+                    .frame(maxWidth: .infinity, alignment: .leading) // Align to the left
+
+                    // Vertical Picker
+                    VStack(alignment: .leading, spacing: 12) { // Increased spacing for better readability
+                        ForEach(ExpandCollapseAction.allCases) { action in
+                            if action != .none { // Skip the default "none" case in the UI
+                                Text(action.rawValue)
+                                    .font(.callout)
+                                    .fontWeight(viewModel.selectedAction == action ? .heavy : .bold)
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .frame(maxWidth: .infinity, alignment: .center) // Align text to the left
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(viewModel.selectedAction == action ? Color.blue.opacity(0.2) : Color.clear)
+                                            .animation(.easeInOut(duration: 0.3), value: viewModel.selectedAction)
+                                    )
+                                    .foregroundColor(viewModel.selectedAction == action ? .blue : .primary)
+                                    .onTapGesture {
+                                        viewModel.selectedAction = action
+                                        handlePickerAction(action: action)
+                                    }
+                                    .contentShape(Rectangle()) // Make the entire row tappable
+                                    
+                            }
+                        }
+                    }
+                    .frame(maxWidth: 100) // Set a consistent width for the vertical picker
+                    .vSpacing(.center)
+                    .hSpacing(.trailing)
+                }
+            }
+            .frame(minHeight: 100)
+            .padding(.horizontal)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.1))
+                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+            )
         }
         .padding(10)
         .frame(minWidth: mainWindowSize.width * 0.95)
@@ -308,9 +370,52 @@ struct SettingsView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
+    func expandAllDisclosureGroups() {
+        // Fetch tokens (or other items) from your database
+        let tokens = GRDBManager.shared.fetchAll(Token.self).getOrElse([])
+
+        // Save expanded state for each token
+        for token in tokens {
+            let key = "expanded_\(token.name.hashValue)" // Create the key
+            UserDefaults.standard.set(true, forKey: key) // Save expanded state
+        }
+
+        // Save expanded state for "Other Territories"
+        let key = "expanded_OtherTerritories" // Use a static key
+        UserDefaults.standard.set(true, forKey: key)
+
+        // Ensure changes are saved
+        UserDefaults.standard.synchronize()
+    }
     
+    func collapseAllDisclosureGroups() {
+        // Fetch tokens (or other items) from your database
+        let tokens = GRDBManager.shared.fetchAll(Token.self).getOrElse([])
+
+        // Save collapsed state for each token
+        for token in tokens {
+            let key = "expanded_\(token.name.hashValue)" // Create the key
+            UserDefaults.standard.set(false, forKey: key) // Save collapsed state
+        }
+
+        // Save collapsed state for "Other Territories"
+        let key = "expanded_OtherTerritories" // Use a static key
+        UserDefaults.standard.set(false, forKey: key)
+
+        // Ensure changes are saved
+        UserDefaults.standard.synchronize()
+    }
     
-    
+    func handlePickerAction(action: ExpandCollapseAction) {
+        switch action {
+        case .expandAll:
+            expandAllDisclosureGroups()
+        case .collapseAll:
+            collapseAllDisclosureGroups()
+        case .none:
+            break // No action for the "none" case
+        }
+    }
 }
 
 struct CentrePopup_AboutApp: CentrePopup {

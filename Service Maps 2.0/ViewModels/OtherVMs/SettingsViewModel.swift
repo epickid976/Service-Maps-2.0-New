@@ -31,7 +31,8 @@ class SettingsViewModel: ObservableObject {
     @Published var deletionError = ""
     
     @Published var showSharePopup = false
-    
+    @Published var selectedAction: ExpandCollapseAction = .none // Track picker state
+
     func getCongregationName() -> String{
         return dataStore.congregationName ?? ""
     }
@@ -552,7 +553,12 @@ class SettingsViewModel: ObservableObject {
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
+}
+
+enum ExpandCollapseAction: String, CaseIterable, Identifiable {
+    case expandAll = "Expand"
+    case collapseAll = "Collapse"
+    case none = ""
     
-    
-    
+    var id: String { self.rawValue }
 }

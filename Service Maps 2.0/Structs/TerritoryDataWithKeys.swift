@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct TerritoryDataWithKeys: Hashable, Identifiable {
+struct TerritoryDataWithKeys: Hashable, Identifiable, Sendable {
     var id: UUID
     var keys: [Token]
     var territoriesData: [TerritoryData]

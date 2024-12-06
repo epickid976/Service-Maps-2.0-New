@@ -18,6 +18,8 @@ class AuthenticationManager: ObservableObject, Sendable {
     private let dataStore = StorageManager.shared
     private let authorizationLevelManager = AuthorizationLevelManager()
     
+    @MainActor @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
+    
     @BackgroundActor
     func signUp(signUpForm: SignUpForm) async -> Result<Void, Error> {
         let result = await authenticationApi.signUp(signUpForm: signUpForm)

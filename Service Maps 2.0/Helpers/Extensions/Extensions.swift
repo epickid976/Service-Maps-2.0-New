@@ -358,3 +358,10 @@ func resignFirstResponderManually() {
         for: nil
     )
 }
+
+extension SwiftUI.Animation {
+    static var sophisticated: SwiftUI.Animation {
+        return .interpolatingSpring(mass: 1, stiffness: 170, damping: 16, initialVelocity: 0)
+            .speed(1.2)
+    }
+}

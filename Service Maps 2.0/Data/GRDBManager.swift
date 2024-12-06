@@ -22,7 +22,7 @@ extension BackgroundActor {
 }
 
 final class GRDBManager: ObservableObject, Sendable {
-    @MainActor static let shared = GRDBManager()
+    static let shared = GRDBManager()
     let dbPool: DatabasePool  // Use DatabasePool for concurrent reads and writes
     
     
@@ -355,8 +355,8 @@ final class GRDBManager: ObservableObject, Sendable {
     @Sendable func addBulkAsync<T: MutablePersistableRecord & Sendable>(_ objects: [T]) async -> Result<String, Error> {
         do {
             try await dbPool.write { db in
-                for object in objects {
-                    var mutableObject = object // Make a mutable copy inside the write block
+                try objects.forEach { object in
+                    var mutableObject = object
                     try mutableObject.insert(db, onConflict: .replace)
                 }
             }
@@ -365,33 +365,65 @@ final class GRDBManager: ObservableObject, Sendable {
             return .failure(error)
         }
     }
-    
+
     @BackgroundActor
-    @Sendable func deleteBulkAsync<T: MutablePersistableRecord & Sendable>(_ objects: [T]) async -> Result<String, Error> {
+    @Sendable func deleteBulkAsync<T: MutablePersistableRecord & TableRecord & Sendable & Identifiable>(_ objects: [T]) async -> Result<String, Error> where T.ID: DatabaseValueConvertible {
         do {
-            try await dbPool.write { db in
-                for object in objects {
-#if DEBUG
-                    print("Deleting object: \(object)")
-#endif
-                    try object.delete(db) // Log before deletion
-                }
+            guard !objects.isEmpty else {
+                return .success("No objects to delete")
             }
-#if DEBUG
-            print("All objects deleted successfully")
-#endif
+            
+            try await dbPool.write { db in
+                // Extract primary keys from objects
+                let ids = objects.compactMap { $0.id }
+                
+                // Ensure the primary keys are valid before proceeding
+                guard !ids.isEmpty else {
+                    throw DatabaseError(message: "Objects must have valid primary keys for batch deletion.")
+                }
+                
+                // Perform batch deletion
+                try T.deleteAll(db, ids: ids)
+            }
             return .success("Bulk deleted successfully")
         } catch {
-            print("Error during deletion: \(error)")
             return .failure(error)
         }
     }
     
     @BackgroundActor
+    func deleteBulkCompositeKeysAsync<T: MutablePersistableRecord & TableRecord & Sendable>(
+        _ objects: [T],
+        compositeKey: @escaping @Sendable (T) -> [String: any DatabaseValueConvertible]?
+    ) async -> Result<String, Error> {
+        do {
+            guard !objects.isEmpty else {
+                return .success("No objects to delete")
+            }
+
+            try await dbPool.write { db in
+                // Extract composite keys from objects
+                let keys = objects.compactMap(compositeKey)
+                
+                // Ensure composite keys are valid before proceeding
+                guard !keys.isEmpty else {
+                    throw DatabaseError(message: "Objects must have valid composite keys for batch deletion.")
+                }
+                
+                // Perform batch deletion
+                try T.deleteAll(db, keys: keys)
+            }
+            return .success("Bulk deleted successfully")
+        } catch {
+            return .failure(error)
+        }
+    }
+
+    @BackgroundActor
     @Sendable func editBulkAsync<T: MutablePersistableRecord & Sendable>(_ objects: [T]) async -> Result<String, Error> {
         do {
             try await dbPool.write { db in
-                for object in objects {
+                try objects.forEach { object in
                     try object.update(db, onConflict: .replace)
                 }
             }
@@ -400,6 +432,7 @@ final class GRDBManager: ObservableObject, Sendable {
             return .failure(error)
         }
     }
+
     
     @BackgroundActor
     @Sendable func fetchAllAsync<T: FetchableRecord & TableRecord & Sendable>(_ type: T.Type) async -> Result<[T], Error> {
@@ -439,113 +472,59 @@ final class GRDBManager: ObservableObject, Sendable {
     // MARK: - Individual Data Fetching
     @MainActor
     func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Never> {
-        
-        // Observations for territories, addresses, and houses
-        let territoriesObservation = ValueObservation.tracking { db in
-            try Territory.fetchAll(db) // Fetch territories
+        let combinedObservation = ValueObservation.tracking { db in
+            (
+                try Territory.fetchAll(db),
+                try TerritoryAddress.fetchAll(db),
+                try House.fetchAll(db),
+                try Token.fetchAll(db),
+                try TokenTerritory.fetchAll(db)
+            )
         }
-        
-        let addressesObservation = ValueObservation.tracking { db in
-            try TerritoryAddress.fetchAll(db) // Fetch addresses
-        }
-        
-        let housesObservation = ValueObservation.tracking { db in
-            try House.fetchAll(db) // Fetch houses
-        }
-        
-        // Combine the three observations
-        let combinedFlow = Publishers.CombineLatest3(
-            territoriesObservation
-                .publisher(in: dbPool)
-                .catch { _ in Just([]) } // Handle errors by emitting an empty array
-                .setFailureType(to: Never.self),
-            
-            addressesObservation
-                .publisher(in: dbPool)
-                .catch { _ in Just([]) } // Handle errors by emitting an empty array
-                .setFailureType(to: Never.self),
-            
-            housesObservation
-                .publisher(in: dbPool)
-                .catch { _ in Just([]) } // Handle errors by emitting an empty array
-                .setFailureType(to: Never.self)
-        )
-        
-        // Transform the data
-        let transformedFlow = combinedFlow.flatMap { territories, addresses, houses -> AnyPublisher<[TerritoryDataWithKeys], Never> in
-            var dataWithKeys = [TerritoryDataWithKeys]()
-            
-            // Group addresses and houses by their relationships to territories
-            let territoryAddresses = Dictionary(grouping: addresses, by: { $0.territory })
-            let territoryHouses = Dictionary(grouping: houses, by: { $0.territory_address })
-            
-            // Authorization Level Manager (assuming this is already set up)
-            let authManager = AuthorizationLevelManager()
-            
-            // Process each territory
-            for territory in territories {
-                // Get addresses and houses for the current territory
-                let currentAddresses = territoryAddresses[territory.id] ?? []
-                let currentHouses = currentAddresses.flatMap { address in
-                    territoryHouses[address.id] ?? []
-                }
-                
-                // Create a TerritoryData object
-                let territoryData = TerritoryData(
-                    territory: territory,
-                    addresses: currentAddresses,
-                    housesQuantity: currentHouses.count,
-                    accessLevel: authManager.getAccessLevel(model: territory) ?? .User
-                )
-                
-                // Fetch keys for the current territory (simulate fetch from DB)
-                let tokens = try? self.dbPool.read { db in
-                    try Token.fetchAll(db)
-                }
-                let tokenTerritories = try? self.dbPool.read { db in
-                    try TokenTerritory.fetchAll(db).filter { $0.territory == territory.id }
-                }
-                
-                var keys = [Token]()
-                
-                if let tokenTerritories = tokenTerritories {
-                    for tokenTerritory in tokenTerritories {
-                        if let token = tokens?.first(where: { $0.id == tokenTerritory.token }) {
-                            keys.append(token)
-                        }
-                    }
-                }
-                
-                // Check if we already have a TerritoryDataWithKeys with the same keys
-                let foundIndex = dataWithKeys.firstIndex(where: { item in
-                    if keys.isEmpty {
-                        return item.keys.isEmpty
+
+        return combinedObservation
+            .publisher(in: dbPool)
+            .catch { _ in Just(([], [], [], [], [])) }
+            .subscribe(on: DispatchQueue.global()) // Offload heavy processing
+            .map { [weak self] (territories, addresses, houses, tokens, tokenTerritories) -> [TerritoryDataWithKeys] in
+                guard let self else { return [] }
+
+                // Precompute mappings
+                let territoryAddressesMap = Dictionary(grouping: addresses, by: \.territory)
+                let territoryHousesMap = Dictionary(grouping: houses, by: \.territory_address)
+                let tokenTerritoriesMap = Dictionary(grouping: tokenTerritories, by: \.territory)
+                let tokenMap = Dictionary(uniqueKeysWithValues: tokens.map { ($0.id, $0) })
+
+                // Ensure the data is fully grouped and structured
+                let groupedData = territories.reduce(into: [TerritoryDataWithKeys]()) { result, territory in
+                    let currentAddresses = territoryAddressesMap[territory.id] ?? []
+                    let currentHouses = currentAddresses.flatMap { territoryHousesMap[$0.id] ?? [] }
+                    let associatedTokenTerritories = tokenTerritoriesMap[territory.id] ?? []
+                    let keys = associatedTokenTerritories.compactMap { tokenMap[$0.token] }
+
+                    let territoryData = TerritoryData(
+                        territory: territory,
+                        addresses: currentAddresses,
+                        housesQuantity: currentHouses.count,
+                        accessLevel: AuthorizationLevelManager().getAccessLevel(model: territory) ?? .User
+                    )
+
+                    if let index = result.firstIndex(where: { self.containsSame(first: $0.keys, second: keys, getId: { $0.id }) }) {
+                        result[index].territoriesData.append(territoryData)
                     } else {
-                        return self.containsSame(first: item.keys, second: keys, getId: { $0.id })
+                        result.append(TerritoryDataWithKeys(id: UUID(), keys: keys, territoriesData: [territoryData]))
                     }
-                })
-                
-                if let foundIndex = foundIndex {
-                    // Add to the existing TerritoryDataWithKeys group
-                    dataWithKeys[foundIndex].territoriesData.append(territoryData)
-                    dataWithKeys[foundIndex].territoriesData.sort { $0.territory.number < $1.territory.number }
-                } else {
-                    // Create a new TerritoryDataWithKeys group
-                    dataWithKeys.append(TerritoryDataWithKeys(
-                        id: UUID(),
-                        keys: keys,
-                        territoriesData: [territoryData]
-                    ))
+                }
+
+                // Sort sections and their contents
+                return groupedData.map { group in
+                    var group = group
+                    group.territoriesData.sort { $0.territory.number < $1.territory.number }
+                    return group
                 }
             }
-            
-            // Return the sorted data
-            return Just(dataWithKeys)
-                .eraseToAnyPublisher()
-        }
-        
-        // Erase to a publisher with Never failure type
-        return transformedFlow.eraseToAnyPublisher()
+            .receive(on: DispatchQueue.main) // Ensure the final update is on the main thread
+            .eraseToAnyPublisher()
     }
     
     @MainActor
@@ -1341,6 +1320,7 @@ final class GRDBManager: ObservableObject, Sendable {
         return combinedPublisher
     }
     
+    @MainActor
     func containsSame<T: Hashable>(first: [T], second: [T], getId: (T) -> String) -> Bool {
         if first.count != second.count {
             return false
@@ -1396,5 +1376,14 @@ extension GRDBManager {
             print("Error checking existence with composite keys: \(error)")
             return false
         }
+    }
+}
+
+extension GRDBManager {
+    func deleteBulkCompositeKeysWrapper<T: MutablePersistableRecord & TableRecord & Sendable>(
+        _ objects: [T],
+        compositeKey: @Sendable @escaping (T) -> [String: any DatabaseValueConvertible]?
+    ) async -> Result<String, Error> {
+        return await self.deleteBulkCompositeKeysAsync(objects, compositeKey: compositeKey)
     }
 }

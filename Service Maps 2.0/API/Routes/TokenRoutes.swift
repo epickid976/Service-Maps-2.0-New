@@ -9,6 +9,9 @@
 @API
 public protocol TokenRoutes: Sendable  {
     
+    @GET("tokens/load")
+    func loadAllTokens() async throws -> [MyTokenWithAll]
+    
     @GET("tokens/loadown")
     func loadOwnedTokens() async throws -> [Token]
 

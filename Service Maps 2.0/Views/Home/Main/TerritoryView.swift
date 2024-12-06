@@ -42,6 +42,7 @@ struct TerritoryView: View {
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 60
+    @State private var animationTrigger: Bool = false
     
     @State private var highlightedTerritoryId: String?
     
@@ -102,7 +103,6 @@ struct TerritoryView: View {
                                             if viewModel.recentTerritoryData != nil {
                                                 if viewModel.recentTerritoryData!.count > 0 {
                                                     LazyVStack {
-                                                        
                                                         Text("Recent Territories")
                                                             .font(.title2)
                                                             .lineLimit(1)
@@ -118,43 +118,115 @@ struct TerritoryView: View {
                                                                         recentCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
                                                                     }.onTapHaptic(.lightImpact)
                                                                 }
-                                                            }
-                                                        }.padding(.leading).scrollIndicators(.never)
+                                                            }.padding(.leading, 10)
+                                                        }
+                                                        .scrollIndicators(.never)
                                                         
                                                     }.modifier(ScrollTransitionModifier())
-                                                        .animation(.smooth, value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil)
+                                                        .animation(
+                                                            .spring(),
+                                                            value: viewModel.recentTerritoryData == nil || viewModel.recentTerritoryData != nil
+                                                        )
+                                                        .animation(
+                                                            .spring(),
+                                                            value: viewModel.recentTerritoryData
+                                                        )
+                                                        
                                                 }
                                             }
                                             
                                             
                                             SwipeViewGroup {
-                                                ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
-                                                    if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
-                                                        territoryHeader(dataWithKeys: dataWithKeys)
-                                                            .modifier(ScrollTransitionModifier())
-                                                        
-                                                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                            ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                                                                territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                    .id(territoryData.territory.id) // Ensure unique ID here
-                                                                    .transition(.move(edge: .leading)) // Apply a move transition on the cell
-                                                                    .animation(.spring(), value: dataWithKeys.territoriesData) // Only animate this specific cell's change
+                                                // Initialize the `isWideScreen` variable
+                                                        let isWideScreen = UIDevice.current.userInterfaceIdiom == .pad &&
+                                                            proxy.size.width > 400 &&
+                                                            preferencesViewModel.isColumnViewEnabled
+
+                                                        if isWideScreen {
+                                                            // Two independent columns for wide screens
+                                                            HStack(alignment: .top, spacing: 16) {
+                                                                // Left Column
+                                                                LazyVStack(spacing: 16) {
+                                                                    ForEach(viewModel.territoryData?.enumerated().filter { $0.offset % 2 == 0 }.map { $0.element } ?? [], id: \.id) { dataWithKeys in
+                                                                        CustomDisclosureGroup(
+                                                                            title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
+                                                                            items: dataWithKeys.territoriesData
+                                                                        ) { territoryData in
+                                                                            territoryCell(
+                                                                                dataWithKeys: dataWithKeys,
+                                                                                territoryData: territoryData,
+                                                                                mainViewSize: proxy.size
+                                                                            )
+                                                                            .id(territoryData.territory.id)
+                                                                            .transition(.customBackInsertion)
+                                                                            .modifier(ScrollTransitionModifier())
+                                                                            .animation(
+                                                                                .spring(),
+                                                                                value: territoryData
+                                                                            )
+                                                                        }
+                                                                        .animation(
+                                                                            .spring(),
+                                                                            value: viewModel.territoryData
+                                                                        )
+                                                                    }
+                                                                }
+
+                                                                // Right Column
+                                                                LazyVStack(spacing: 16) {
+                                                                    ForEach(viewModel.territoryData?.enumerated().filter { $0.offset % 2 == 1 }.map { $0.element } ?? [], id: \.id) { dataWithKeys in
+                                                                        CustomDisclosureGroup(
+                                                                            title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
+                                                                            items: dataWithKeys.territoriesData
+                                                                        ) { territoryData in
+                                                                            territoryCell(
+                                                                                dataWithKeys: dataWithKeys,
+                                                                                territoryData: territoryData,
+                                                                                mainViewSize: proxy.size
+                                                                            )
+                                                                            .id(territoryData.territory.id)
+                                                                            .transition(.customBackInsertion)
+                                                                            .modifier(ScrollTransitionModifier())
+                                                                            .animation(
+                                                                                .spring(),
+                                                                                value: territoryData
+                                                                            )
+                                                                        }
+                                                                        .animation(
+                                                                            .spring(),
+                                                                            value: viewModel.territoryData
+                                                                        )
+                                                                    }
+                                                                }
+                                                            }
+                                                        } else {
+                                                            // Single column for narrow screens
+                                                            LazyVStack(spacing: 16) {
+                                                                ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
+                                                                    CustomDisclosureGroup(
+                                                                        title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
+                                                                        items: dataWithKeys.territoriesData
+                                                                    ) { territoryData in
+                                                                        territoryCell(
+                                                                            dataWithKeys: dataWithKeys,
+                                                                            territoryData: territoryData,
+                                                                            mainViewSize: proxy.size
+                                                                        )
+                                                                        .id(territoryData.territory.id)
+                                                                        .transition(.customBackInsertion)
+                                                                        .modifier(ScrollTransitionModifier())
+                                                                        .animation(
+                                                                            .spring(),
+                                                                            value: territoryData
+                                                                        )
+                                                                    }
+                                                                    .animation(
+                                                                        .spring(),
+                                                                        value: viewModel.territoryData
+                                                                    )
+                                                                }
                                                             }
                                                         }
-                                                    } else {
-                                                        territoryHeader(dataWithKeys: dataWithKeys)
-                                                            .modifier(ScrollTransitionModifier())
-                                                        
-                                                        LazyVGrid(columns: [GridItem(.flexible())]) {
-                                                            ForEach(dataWithKeys.territoriesData, id: \.territory.id) { territoryData in
-                                                                territoryCell(dataWithKeys: dataWithKeys, territoryData: territoryData, mainViewSize: proxy.size)
-                                                                    .id(territoryData.territory.id) // Ensure unique ID here
-                                                                    .transition(.move(edge: .leading)) // Apply a move transition
-                                                                    .animation(.spring(), value: dataWithKeys.territoriesData) // Only animate this specific cell
-                                                            }
-                                                        }
-                                                    }
-                                                }
                                             }
                                         }
                                     }
@@ -176,7 +248,7 @@ struct TerritoryView: View {
                                     self.previousViewOffset = currentOffset
                                 }
                             }
-                            .animation(.easeInOut(duration: 0.25), value: viewModel.territoryData == nil || viewModel.territoryData != nil)
+                            //.animation(.easeInOut(duration: 0.25), value: viewModel.territoryData == nil || viewModel.territoryData != nil)
                             .navigationDestination(isPresented: $viewModel.presentSheet) {
                                 AddTerritoryView(territory: viewModel.currentTerritory) {
                                     let toast = ToastValue(
@@ -242,7 +314,8 @@ struct TerritoryView: View {
                                                 
                                             }
                                         }
-                                    }.animation(.spring(), value: viewModel.territoryData == nil || viewModel.dataStore.synchronized)
+                                    }
+                                    //.animation(.spring(), value: viewModel.territoryData == nil || viewModel.dataStore.synchronized)
                                 }
                                 
                                 
@@ -280,7 +353,7 @@ struct TerritoryView: View {
                             .onChange(of: viewModel.dataStore.synchronized) { value in
                                 if value {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                         viewModel.getTerritories()
+                                        viewModel.getTerritories()
                                     }
                                 }
                             }
@@ -295,7 +368,6 @@ struct TerritoryView: View {
                         .animation(.spring(), value: hideFloatingButton)
                         .vSpacing(.bottom).hSpacing(.trailing)
                         .padding()
-                        //.keyboardShortcut("+", modifiers: .command)
                     }
                     
                 }
@@ -331,7 +403,7 @@ struct TerritoryView: View {
                                 .fill(highlightedTerritoryId == territoryData.territory.id ? Color.gray.opacity(0.5) : Color.clear)
                                 .animation(.default, value: highlightedTerritoryId == territoryData.territory.id)
                         )
-                        .padding(.bottom, 2)
+                    //.padding(.bottom, 2)
                         .optionalViewModifier { content in
                             if AuthorizationLevelManager().existsAdminCredentials() {
                                 content
@@ -447,8 +519,6 @@ struct MainButton: View {
     
     var body: some View {
         ZStack {
-            //if StorageManager.shared.synchronized {
-            
             ZStack {
                 Color(hex: colorHex)
                     .frame(width: width, height: width)
@@ -470,8 +540,7 @@ struct MainButton: View {
                         action()
                     }
             )
-            //}
-        }//.animation(.spring(), value: StorageManager.shared.synchronized)
+        }
     }
 }
 
@@ -577,7 +646,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                                         
                                         self.viewModel.territoryToDelete = (nil,nil)
                                         self.viewModel.showToast = true
-                                            dismissLastPopup()
+                                        dismissLastPopup()
                                     }
                                 case .failure(_):
                                     HapticManager.shared.trigger(.error)
@@ -607,8 +676,8 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
 
@@ -639,5 +708,137 @@ extension AnyTransition {
             removal: .opacity
         )
         .animation(.spring())
+    }
+}
+
+struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: View {
+    let title: String
+    let items: [Item]
+    let content: (Item) -> Content
+    
+    // Unique storage key based on title
+    private var storageKey: String {
+        if title == "Other Territories" {
+            return "expanded_OtherTerritories" // Static key for consistency
+        }
+        return "expanded_\(title.hashValue)"
+    }
+    
+    @State private var isExpanded: Bool
+    @State private var expandProgress: CGFloat
+    
+    init(
+        title: String,
+        items: [Item],
+        isInitiallyExpanded: Bool? = nil, // Optional initial state
+        @ViewBuilder content: @escaping (Item) -> Content
+    ) {
+        self.title = title
+        self.items = items
+        self.content = content
+
+        // Check if a stored state exists in UserDefaults
+        if title == "Other Territories" {
+            // Special case for "Other Territories" with a static key
+            if let storedState = UserDefaults.standard.object(forKey: "expanded_OtherTerritories") as? Bool {
+                // Use stored state if it exists
+                _isExpanded = State(initialValue: storedState)
+                _expandProgress = State(initialValue: storedState ? 1 : 0)
+            } else {
+                // Otherwise, default to `isInitiallyExpanded` or true
+                let initialState = isInitiallyExpanded ?? true
+                _isExpanded = State(initialValue: initialState)
+                _expandProgress = State(initialValue: initialState ? 1 : 0)
+            }
+        } else {
+            // General case for dynamically generated groups
+            if let storedState = UserDefaults.standard.object(forKey: "expanded_\(title.hashValue)") as? Bool {
+                // Use stored state if it exists
+                _isExpanded = State(initialValue: storedState)
+                _expandProgress = State(initialValue: storedState ? 1 : 0)
+            } else {
+                // Otherwise, default to `isInitiallyExpanded` or true
+                let initialState = isInitiallyExpanded ?? true
+                _isExpanded = State(initialValue: initialState)
+                _expandProgress = State(initialValue: initialState ? 1 : 0)
+            }
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button(action: {
+                withAnimation(.sophisticated) {
+                    isExpanded.toggle()
+                    expandProgress = isExpanded ? 1 : 0
+                    
+                    // Persist state
+                    UserDefaults.standard.set(isExpanded, forKey: storageKey)
+                }
+            }) {
+                HStack {
+                    Text(title)
+                        .font(.title2)
+                        .lineLimit(2)
+                        .foregroundColor(.primary)
+                        .fontWeight(.bold)
+                        .hSpacing(.leading)
+                        //.padding(5)
+                        .padding(.horizontal, 10)
+                    
+                    Spacer()
+                    
+                    // Animated Chevron
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.primary)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                        .scaleEffect(1 + (0.2 * sin(expandProgress * .pi)))
+                        .padding(.trailing, 15)
+                }
+                //.padding(5)
+                .contentShape(Rectangle()) // Makes the entire HStack tappable
+            }
+            .buttonStyle(PlainButtonStyle())
+            .modifier(ScrollTransitionModifier())
+            
+            // Expandable Content
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(items) { item in
+                        content(item)
+                            .transition(
+                                .asymmetric(
+                                    insertion: AnyTransition.scale(scale: 0.9)
+                                        .combined(with: .opacity)
+                                        .animation(.spring(response: 0.5, dampingFraction: 0.6).speed(0.8)),
+                                    removal: AnyTransition.scale(scale: 0.9)
+                                        .combined(with: .opacity)
+                                        .animation(.spring(response: 0.5, dampingFraction: 0.6).speed(0.8))
+                                )
+                            )
+                            .opacity(expandProgress)
+                            .scaleEffect(0.95 + (0.05 * expandProgress), anchor: .top)
+                            .offset(y: 10 * (1 - expandProgress))
+                            .animation(
+                                .spring(response: 0.5, dampingFraction: 0.8)
+                                .delay(Double(items.firstIndex(where: { $0.id == item.id }) ?? 0) * 0.08),
+                                value: expandProgress
+                            )
+                    }
+                }
+                .transition(
+                    .asymmetric(
+                        insertion: AnyTransition.scale(scale: 0.9)
+                            .combined(with: .opacity)
+                            .animation(.spring(response: 0.5, dampingFraction: 0.7)),
+                        removal: AnyTransition.scale(scale: 0.9)
+                            .combined(with: .opacity)
+                            .animation(.spring(response: 0.5, dampingFraction: 1))
+                    )
+                )
+                .padding(.top, 4)
+            }
+        }
+        .clipped()
     }
 }

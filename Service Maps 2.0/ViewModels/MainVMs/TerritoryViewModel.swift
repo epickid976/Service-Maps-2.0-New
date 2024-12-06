@@ -89,10 +89,11 @@ class TerritoryViewModel: ObservableObject {
 extension TerritoryViewModel {
     // Fetching Territory data from GRDB using Combine
     func getTerritories(territoryIdToScrollTo: String? = nil) {
-        
+        // Call the updated publisher
         GRDBManager.shared.getTerritoryData()
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.main) // Ensure updates happen on the main thread
             .sink(receiveCompletion: { completion in
+                // Handle any errors
                 switch completion {
                 case .failure(let error):
                     print("Error retrieving territory data: \(error)")
@@ -100,32 +101,23 @@ extension TerritoryViewModel {
                 case .finished:
                     break
                 }
-            }, receiveValue: { [weak self] territoryData in
+            }, receiveValue: { [self] territoryData in
+                // Sort the received territory data
                 let sortedTerritoryData = territoryData.sorted {
                     ($0.keys.first?.name ?? "") < ($1.keys.first?.name ?? "")
                 }
-                if self?.territoryData == nil {
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            self?.territoryData = sortedTerritoryData
-                        }
-                    }
-                } else {
-                    // If territoryData is already set, simply update it with sorted data
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            self?.territoryData? = sortedTerritoryData
-                        }
-                    }
-                }
-                
+
+                // Use animations to update the UI
+                self.territoryData = sortedTerritoryData
+
+                // Scroll to a specific territory ID, if provided
                 if let territoryIdToScrollTo = territoryIdToScrollTo {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self?.territoryIdToScrollTo = territoryIdToScrollTo
+                        self.territoryIdToScrollTo = territoryIdToScrollTo
                     }
                 }
             })
-            .store(in: &cancellables)
+            .store(in: &cancellables) // Keep the subscription alive
     }
     
     // Fetching Recent Territory data from GRDB using Combine

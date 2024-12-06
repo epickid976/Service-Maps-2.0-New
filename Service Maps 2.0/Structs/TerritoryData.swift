@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct TerritoryData: Hashable, Equatable {
+struct TerritoryData: Hashable, Equatable, Identifiable, Sendable {
+    var id: String { territory.id } // Use territory.id as the unique identifier
     var territory: Territory
     var addresses: [TerritoryAddress]
     var housesQuantity: Int

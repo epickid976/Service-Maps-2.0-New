@@ -209,7 +209,15 @@ class SynchronizationManager: ObservableObject {
                         dbList: dbResults.1,
                         updateMethod: self.grdbManager.editBulkAsync,
                         addMethod: self.grdbManager.addBulkAsync,
-                        deleteMethod: self.grdbManager.deleteBulkAsync
+                        deleteMethod: { deletions in
+                            let compositeKeyForUserTokens: @Sendable (UserToken) -> [String: any DatabaseValueConvertible]? = { userToken in
+                                return [
+                                    "userId": userToken.userId,
+                                    "token": userToken.token
+                                ]
+                            }
+                            return await self.grdbManager.deleteBulkCompositeKeysAsync(deletions, compositeKey: compositeKeyForUserTokens)
+                        }
                     )
                 }
                 
@@ -344,66 +352,34 @@ class SynchronizationManager: ObservableObject {
         var tokenTerritoriesApi = [TokenTerritory]()
 
         let tokenApi = TokenService()
-
-        async let ownedTokensTask = tokenApi.loadOwnedTokens()
-        async let userTokensTask = tokenApi.loadUserTokens()
-
-        let ownedTokensResult = try await ownedTokensTask.get()
-        tokensApi.append(contentsOf: ownedTokensResult)
-
-        let userTokensResult = try await userTokensTask.get()
-        for token in userTokensResult {
-            if !tokensApi.contains(token) {
-                tokensApi.append(token)
-            }
+        
+        let result = try await tokenApi.loadAllTokens().get()
+        
+        tokensApi.append(contentsOf: result.map {
+            Token(
+                id: $0.id,
+                name: $0.name,
+                owner: $0.owner,
+                congregation: $0.congregation,
+                moderator: $0.moderator,
+                expire: $0.expire,
+                user: $0.user
+            )
+        })
+        
+        result.forEach { it in
+            userTokensApi.append(contentsOf: it.token_users.map { user in
+                UserToken(
+                    token: it.id,
+                    userId: user.id,
+                    name: user.user,
+                    blocked: user.blocked
+                )
+            })
         }
-
-        if await AuthorizationLevelManager().existsAdminCredentials() {
-            await withTaskGroup(of: [UserToken].self) { group in
-                for token in tokensApi {
-                    group.addTask {
-                        var userTokens = [UserToken]()
-                        let usersResult = await tokenApi.usersOfToken(token: token.id)
-                        switch usersResult {
-                        case .success(let users):
-                            for user in users {
-                                userTokens.append(
-                                    UserToken(
-                                        token: token.id,
-                                        userId: String(user.id),
-                                        name: user.name,
-                                        blocked: user.blocked
-                                    )
-                                )
-                            }
-                        case .failure(let error):
-                            print("Failed to fetch users for token \(token.id): \(error)")
-                            // Optionally handle the error or log it
-                        }
-                        return userTokens
-                    }
-                }
-
-                for await userTokens in group {
-                    userTokensApi.append(contentsOf: userTokens)
-                }
-            }
-        }
-
-        await withTaskGroup(of: [TokenTerritory].self) { group in
-            for token in tokensApi {
-                group.addTask {
-                    do {
-                        return try await tokenApi.getTerritoriesOfToken(token: token.id).get()
-                    } catch {
-                        print("Failed to fetch territories for token \(token.id): \(error)")
-                        return []
-                    }
-                }
-            }
-            for await territories in group {
-                tokenTerritoriesApi.append(contentsOf: territories)
-            }
+        
+        result.forEach { it in
+            tokenTerritoriesApi.append(contentsOf: it.token_territories)
         }
 
         let end = Date()
@@ -417,8 +393,12 @@ class SynchronizationManager: ObservableObject {
         let start = Date()
         
         if await authorizationLevelManager.existsAdminCredentials() {
+            let startOfRequest = Date()
             let result = try await AdminService().all().get()
-            let territories = result.territories.map {
+            let endOfRequest = Date()
+            print("fetchTerritoriesFromServer request completed in \(endOfRequest.timeIntervalSince(startOfRequest)) seconds")
+            // Start all tasks concurrently using async let
+            async let territories: [Territory] = result.territories.map {
                 Territory(
                     id: $0.id,
                     congregation: result.id,
@@ -428,7 +408,7 @@ class SynchronizationManager: ObservableObject {
                 )
             }
 
-            let addresses = result.territories.flatMap { territory in
+            async let addresses: [TerritoryAddress] = result.territories.flatMap { territory in
                 territory.addresses.map {
                     TerritoryAddress(
                         id: $0.id,
@@ -439,7 +419,7 @@ class SynchronizationManager: ObservableObject {
                 }
             }
 
-            let houses = result.territories.flatMap { territory in
+            async let houses: [House] = result.territories.flatMap { territory in
                 territory.addresses.flatMap { address in
                     address.houses.map {
                         House(
@@ -452,7 +432,7 @@ class SynchronizationManager: ObservableObject {
                 }
             }
 
-            let visits = result.territories.flatMap { territory in
+            async let visits: [Visit] = result.territories.flatMap { territory in
                 territory.addresses.flatMap { address in
                     address.houses.flatMap { house in
                         house.visits.map {
@@ -469,15 +449,20 @@ class SynchronizationManager: ObservableObject {
                 }
             }
 
+            // Await all tasks simultaneously
+            let (territoriesResult, addressesResult, housesResult, visitsResult) = await (territories, addresses, houses, visits)
+
             let end = Date()
             print("fetchTerritoriesFromServer completed in \(end.timeIntervalSince(start)) seconds")
 
-            return (territories, houses, visits, addresses)
+            return (territoriesResult, housesResult, visitsResult, addressesResult)
         } else {
+            let startOfRequest = Date()
             let response = try await UserService().loadTerritories().get()
+            let endOfRequest = Date()
+            print("fetchTerritoriesFromServer request completed in \(endOfRequest.timeIntervalSince(startOfRequest)) seconds")
             let end = Date()
             print("fetchTerritoriesFromServer completed in \(end.timeIntervalSince(start)) seconds")
-            
             return (response.territories, response.houses, response.visits, response.addresses)
         }
     }
@@ -627,7 +612,7 @@ class SynchronizationManager: ObservableObject {
         
         func handleDeletions(_ deletions: [T]) -> Operation {
             let operation = BlockOperation {
-                Task {
+                Task.detached {
                     let result = await deleteMethod(deletions)
                     switch result {
                     case .success(let message):
@@ -683,66 +668,65 @@ class SynchronizationManager: ObservableObject {
     @BackgroundActor
     private func comparingAndSynchronizeTokenTerritories(apiList: [TokenTerritory], dbList: [TokenTerritory]) async {
         
-        // Arrays to hold updates, additions, and deletions
-        var updates: [TokenTerritory] = []
-        var additions: [TokenTerritory] = []
-        var deletions: [TokenTerritory] = []
-        
-        // 1. Find additions and updates
-        for apiTokenTerritory in apiList {
-            if let dbTokenTerritory = dbList.first(where: { $0.token == apiTokenTerritory.token && $0.territory == apiTokenTerritory.territory }) {
-                // Found in DB, check for differences
-                if dbTokenTerritory != apiTokenTerritory {
-                    updates.append(apiTokenTerritory)
-                }
-            } else {
-                // Not in DB, so it must be added
-                additions.append(apiTokenTerritory)
-            }
+        struct TokenTerritoryKey: Hashable {
+            let token: String
+            let territory: String
         }
+
+        let apiDict = Dictionary(apiList.map { (TokenTerritoryKey(token: $0.token, territory: $0.territory), $0) },
+                                 uniquingKeysWith: { $1 })
+        let dbDict = Dictionary(dbList.map { (TokenTerritoryKey(token: $0.token, territory: $0.territory), $0) },
+                                uniquingKeysWith: { $1 })
         
-        // 2. Find deletions (exists in DB but not in API)
-        for dbTokenTerritory in dbList {
-            if !apiList.contains(where: { $0.token == dbTokenTerritory.token && $0.territory == dbTokenTerritory.territory }) {
-                deletions.append(dbTokenTerritory)
-            }
-        }
+        // Initialize sets for comparisons
+        let apiKeys = Set(apiDict.keys)
+        let dbKeys = Set(dbDict.keys)
         
-        // 3. Perform Updates
-        if !updates.isEmpty {
-            print("Updating \(updates.count) token territories")
-            for tokenTerritory in updates {
-                switch await grdbManager.editAsync(tokenTerritory) {
-                case .success(let success):
-                    print("Successfully updated: \(success)")
-                case .failure(let error):
-                    print("Update failed for \(tokenTerritory): \(error)")
-                }
-            }
-        }
+        // Find additions, deletions, and updates
+        let additionsKeys = apiKeys.subtracting(dbKeys)
+        let deletionsKeys = dbKeys.subtracting(apiKeys)
+        let updatesKeys = apiKeys.intersection(dbKeys).filter { apiDict[$0] != dbDict[$0] }
         
-        // 4. Perform Additions
+        // Retrieve the actual entities
+        let additions = additionsKeys.compactMap { apiDict[$0] }
+        let deletions = deletionsKeys.compactMap { dbDict[$0] }
+        let updates = updatesKeys.compactMap { apiDict[$0] }
+        
+        // Process Additions
         if !additions.isEmpty {
             print("Adding \(additions.count) token territories")
-            for tokenTerritory in additions {
-                switch await grdbManager.addAsync(tokenTerritory) {
-                case .success(let success):
-                    print("Successfully added: \(success)")
-                case .failure(let error):
-                    print("Addition failed for \(tokenTerritory): \(error)")
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    _ = await self.grdbManager.addBulkAsync(additions)
                 }
             }
         }
         
-        // 5. Perform Deletions
+        // Process Updates
+        if !updates.isEmpty {
+            print("Updating \(updates.count) token territories")
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    _ = await self.grdbManager.editBulkAsync(updates)
+                }
+            }
+        }
+        
+        // Process Deletions
         if !deletions.isEmpty {
             print("Deleting \(deletions.count) token territories")
-            for tokenTerritory in deletions {
-                switch await grdbManager.deleteAsync(tokenTerritory) {
-                case .success(let success):
-                    print("Successfully deleted: \(success)")
-                case .failure(let error):
-                    print("Deletion failed for \(tokenTerritory): \(error)")
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    _ = await self.grdbManager
+                        .deleteBulkCompositeKeysAsync(deletions) { object in
+                            let tokenTerritoryCompositeKey: (TokenTerritory) -> [String: any DatabaseValueConvertible]? = { tokenTerritory in
+                                return [
+                                    "token": object.token,
+                                    "territory": object.territory
+                                ]
+                            }
+                            return tokenTerritoryCompositeKey(object)
+                        }
                 }
             }
         }

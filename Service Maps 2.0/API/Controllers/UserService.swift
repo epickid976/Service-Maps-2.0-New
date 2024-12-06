@@ -14,6 +14,15 @@ import Papyrus
 class UserService {
     private lazy var api: UserRoutes = UserRoutesAPI(provider: APIProvider().provider)
 
+    func loadTerritoriesNew() async -> Result<[TerritoryWithAll], Error> {
+        do {
+            let territories = try await api.loadTerritoriesNew()
+            return .success(territories)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
     func loadTerritories() async -> Result<AllDataResponse, Error> {
         do {
             let response = try await api.loadTerritories()

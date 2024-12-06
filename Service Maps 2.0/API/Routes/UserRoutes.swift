@@ -12,6 +12,9 @@ public protocol UserRoutes: Sendable  {
     @GET("users/territories")
     func loadTerritories() async throws -> AllDataResponse
     
+    @GET("users/load")
+    func loadTerritoriesNew() async throws -> [TerritoryWithAll]
+    
     @GET("users/allphonedata")
     func allPhoneData() async throws -> AllPhoneDataResponse
     

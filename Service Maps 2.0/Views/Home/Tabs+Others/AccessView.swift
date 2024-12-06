@@ -82,19 +82,27 @@ struct AccessView: View {
                                         if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                                                 ForEach(viewModel.keyData!, id: \.key.id) { keyData in
-                                                    NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
+                                                    if viewModel.isAdmin {
+                                                        NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
+                                                            keyCell(keyData: keyData).id(keyData.id)
+                                                                .transition(.customBackInsertion)
+                                                        }.onTapHaptic(.lightImpact)
+                                                    } else {
                                                         keyCell(keyData: keyData).id(keyData.id)
-                                                            .transition(.customBackInsertion)
                                                     }
                                                 }.modifier(ScrollTransitionModifier())
                                             }
                                         } else {
                                             LazyVGrid(columns: [GridItem(.flexible())]) {
                                                 ForEach(viewModel.keyData!, id: \.key.id) { keyData in
-                                                    NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
-                                                        keyCell(keyData: keyData).id(keyData.key.id)
-                                                            .transition(.customBackInsertion)
-                                                    }.onTapHaptic(.lightImpact)
+                                                    if viewModel.isAdmin {
+                                                        NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
+                                                            keyCell(keyData: keyData).id(keyData.id)
+                                                                .transition(.customBackInsertion)
+                                                        }.onTapHaptic(.lightImpact)
+                                                    } else {
+                                                        keyCell(keyData: keyData).id(keyData.id)
+                                                    }
                                                 }.modifier(ScrollTransitionModifier())
                                             }
                                         }
@@ -113,10 +121,10 @@ struct AccessView: View {
 //                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
 //                            if ( abs(offsetDifference) > minimumOffset) {
 //                                if offsetDifference > 0 {
-//                                    
+//
 //                                    debounceHideFloatingButton(false)
 //                                } else {
-//                                    
+//
 //                                    debounceHideFloatingButton(true)
 //                                }
 //                                self.previousViewOffset = currentOffset
@@ -207,7 +215,7 @@ struct AccessView: View {
 //                //}
 //            }
 //    }
-//    
+//
     @ViewBuilder
     func keyCell(keyData: KeyData) -> some View {
         SwipeView {
