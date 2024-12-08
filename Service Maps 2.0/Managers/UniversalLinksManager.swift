@@ -8,13 +8,16 @@
 import Foundation
 import SwiftUI
 
+//MARK: - Universal Links Manager
+
 @MainActor
 class UniversalLinksManager: ObservableObject {
+    //MARK: - Properties
     static let shared = UniversalLinksManager()
     @Published var linkState: LinkScreens? = nil
     @Published var dataFromUrl: String? = nil
     
-    
+    //MARK: - Handle URL
     func handleIncomingURL(_ url: URL) {
         guard let host = url.host, host == "servicemaps.ejvapps.online" else {
             return // Ignore URLs with a different host
@@ -67,6 +70,7 @@ class UniversalLinksManager: ObservableObject {
       return components.last // Assuming the desired content is the last component
     }
     
+    //MARK: - Determine Destination
     func determineDestination() -> DestinationEnum? {
         switch linkState {
         case .VALIDATE_EMAIL:
@@ -84,6 +88,7 @@ class UniversalLinksManager: ObservableObject {
         }
     }
     
+    //MARK: - Reset
     func resetLink() {
         linkState = nil
         dataFromUrl = nil

@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - House Sort Predicates
 enum HouseSortPredicate: String, CaseIterable {
     case increasing = "Increasing"
     case decreasing = "Decreasing"
@@ -21,6 +22,7 @@ enum HouseSortPredicate: String, CaseIterable {
     }
 }
 
+// MARK: - House Filter Predicates
 enum HouseFilterPredicate: String, CaseIterable {
     case normal = "Normal"
     case oddEven = "Odd & Even"

@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+//MARK: - UIDevice Extension
 public extension UIDevice {
     
     // MARK: - Device Model Name
@@ -25,6 +26,8 @@ public extension UIDevice {
             guard let value = element.value as? Int8, value != 0 else { return identifier }
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
+        
+        //MARK: - MAPS
         /// Maps the device identifier to a human-readable device name.
         /// Includes mapping for various iPhone, iPad, iPod, and Apple TV models.
         func mapToDevice(identifier: String) -> String { // swiftlint:disable:this cyclomatic_complexity

@@ -10,13 +10,26 @@ import SwiftUI
 import NavigationTransitions
 import ActivityIndicatorView
 
+// MARK: - Phone Login Screen
+
 struct PhoneLoginScreen: View {
+    
+    // MARK: - OnDone
+    
     var onDone: () -> Void
+    
+    // MARK: - Environment
     
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.sizeCategory) var sizeCategory
+    
+    // MARK: - Dependencies
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    let congregationService = CongregationService()
+    
+    // MARK: - Properties
     
     @State private var showAlert = false {
         didSet {
@@ -31,12 +44,6 @@ struct PhoneLoginScreen: View {
     
     @State var loading = false
     @State var alwaysLoading = true
-    
-    @Environment(\.sizeCategory) var sizeCategory
-    
-    //MARK: API
-    let congregationService = CongregationService()
-    
     
     @State private var username: String = ""
     @State private var password: String = ""
@@ -53,8 +60,9 @@ struct PhoneLoginScreen: View {
     @State var loginErrorText = ""
     @State var loginError = false
     
+    // MARK: - Body
+    
     var body: some View {
-        
         NavigationStack {
             LazyVStack {
                 
@@ -151,7 +159,7 @@ struct PhoneLoginScreen: View {
                                     if error.localizedDescription == "No Internet" {
                                         alertTitle = "No Internet Connection"
                                         alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                             withAnimation {
                                                 //apiError = "Error Signing up"
                                                 loading = false
@@ -161,7 +169,7 @@ struct PhoneLoginScreen: View {
                                     } else if error.localizedDescription == "Wrong Credentials" {
                                         alertTitle = "Wrong Credentials"
                                         alertMessage = "The credentials you typed don't seem to be correct.\n Please try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation {
                                                 //apiError = "Error Signing up"
                                                 loading = false
@@ -171,7 +179,7 @@ struct PhoneLoginScreen: View {
                                     } else if error.localizedDescription == "No Congregation" {
                                         alertTitle = "Wrong Congregation"
                                         alertMessage = "The congregation you're trying to access does not exist. \n Please try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation {
                                                 //apiError = "Error Signing up"
                                                 loading = false
@@ -181,7 +189,7 @@ struct PhoneLoginScreen: View {
                                     } else {
                                         alertTitle = "Error"
                                         alertMessage = "Error logging in. \nPlease try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation {
                                                 //apiError = "Error Signing up"
                                                 loading = false
@@ -241,6 +249,8 @@ struct PhoneLoginScreen: View {
         .navigationTransition(.zoom.combined(with: .fade(.in)))
     }
     
+    // MARK: - Validate
+    
     func validate() -> Bool {
         
         if self.username.isEmpty || self.password.isEmpty  {
@@ -265,6 +275,8 @@ struct PhoneLoginScreen: View {
         return true
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     AdminLoginView() {

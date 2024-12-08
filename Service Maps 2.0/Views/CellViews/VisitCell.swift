@@ -7,11 +7,14 @@
 
 import SwiftUI
 
+//MARK: - Visit Cell
+
 struct VisitCell: View {
     var visit: VisitData
     var ipad: Bool = false
     var mainWindowSize: CGSize
     
+    //MARK: - Body
     
     var body: some View {
         HStack(spacing: 10) {
@@ -66,7 +69,3 @@ struct VisitCell: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
-
-//#Preview {
-//    VisitCell()
-//}

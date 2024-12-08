@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Reset Password Form
 public struct ResetPasswordForm: Codable , Sendable{
     var password: String
     var password_confirmation: String

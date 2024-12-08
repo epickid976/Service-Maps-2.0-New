@@ -8,9 +8,17 @@
 import SwiftUI
 import Lottie
 
+//MARK: - Reset Password View
+
 struct ResetPassword: View {
+    
+    //MARK: - Properties
+    
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0.0
+    @State var loading = false
+    
+    //MARK: - Dependenceis
     
     @ObservedObject var viewModel: LoginViewModel
     @ObservedObject var universalLinksManager = UniversalLinksManager.shared
@@ -23,11 +31,12 @@ struct ResetPassword: View {
         
     }
     
+    //MARK: - Focus State
     
     @FocusState private var passwordFocus: Bool
     @FocusState private var passwordConfirmationFocus: Bool
     
-    @State var loading = false
+    //MARK: - Body
     
     var body: some View {
         ZStack {

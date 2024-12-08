@@ -8,8 +8,10 @@
 import Foundation
 import SwiftUI
 
+//MARK: - Custom Field
 
 struct CustomField: View {
+    //MARK: - Properties
     @Binding var text: String
     var isFocused: FocusState<Bool>.Binding // Use FocusState for focus state
     var textfield: Bool
@@ -24,12 +26,13 @@ struct CustomField: View {
     var diableCapitalization: Bool?
     var maxValue: Int? = 255
     
-    
     let placeholder: String
     
     @State var isSecure = true
     
+    //MARK: - Body
     var body: some View {
+        //MARK: - TextField
         if textfield {
             TextField(placeholder, text: $text, axis: textfieldAxis ?? .horizontal)
                 .disabled(disabled ?? false)
@@ -104,6 +107,7 @@ struct CustomField: View {
                     }
                 }
         } else {
+            //MARK: - Secure Field
             HStack {
                 SecureTextField(placeholder: placeholder, text: $text, isSecure: $isSecure)
                     .customFieldModifier(
@@ -126,29 +130,13 @@ struct CustomField: View {
                         .foregroundColor(.gray)
                 }
             }
-//            SecureField(placeholder, text: $text)
-//                .padding()
-//                .background(Color.gray.opacity(0.2))
-//                .cornerRadius(16)
-//                .padding(.horizontal)
-//                .font(.system(size: 16, weight: .regular))
-//                .accentColor(.blue)
-//                .focused(isFocused) // Use the isFocused binding property of FocusState
-//                .gesture(TapGesture().onEnded {
-//                    // Handle tap action
-//                    isFocused.wrappedValue = true // Use the isFocused binding property of FocusState
-//                })
-//                .keyboardType(keyboardType ?? .default)
-//                .multilineTextAlignment(textAlignment ?? .leading)
-//                .frame(minHeight: 40)
-//                .textContentType(.oneTimeCode)
-//                .keyboardType(.asciiCapable)
         }
         
     }
     
 }
 
+//MARK: - Secure Text Field
 struct SecureTextField: View {
     let placeholder: String
     @Binding var text: String
@@ -166,6 +154,7 @@ struct SecureTextField: View {
     }
 }
 
+//MARK: - Custom Field Modifier
 extension View {
     func customFieldModifier(
         isFocused: FocusState<Bool>.Binding,

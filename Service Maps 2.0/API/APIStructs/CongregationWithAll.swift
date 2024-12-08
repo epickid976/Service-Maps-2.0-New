@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - New Data Forms
 public struct CongregationWithAll: Codable, Sendable {
     var id: String
     var name: String

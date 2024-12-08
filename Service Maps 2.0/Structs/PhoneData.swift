@@ -7,6 +7,7 @@
 
 import Foundation
 
+//MARK: - Phone Data
 struct PhoneData: Hashable, Identifiable {
     var id: UUID
     var territory: PhoneTerritory

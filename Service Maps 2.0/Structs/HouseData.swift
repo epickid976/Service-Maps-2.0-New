@@ -7,6 +7,8 @@
 
 import Foundation
 
+//MARK: - House Data
+
 struct HouseData: Hashable, Identifiable {
     var id: UUID
     var house: House

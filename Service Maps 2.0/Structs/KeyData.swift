@@ -7,6 +7,7 @@
 
 import Foundation
 
+//MARK: - Key Data
 struct KeyData: Hashable, Identifiable {
     var id: UUID
     var key: Token

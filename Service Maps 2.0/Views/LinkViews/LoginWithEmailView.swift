@@ -10,14 +10,22 @@ import SwiftUI
 import Lottie
 import NavigationTransitions
 
+//MARK: - LoginWithEmailView
+
 struct LoginWithEmailView: View {
     
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: LoginViewModel
+    
+    //MARK: - Init
     
     init() {
         _viewModel = StateObject(wrappedValue: LoginViewModel(username: "", password: ""))
         
     }
+    
+    //MARK: - Body
     
     var body: some View {
         NavigationStack {

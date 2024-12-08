@@ -10,10 +10,14 @@ import Alamofire
 import SwiftUI
 import Papyrus
 
+// MARK: - User Service
+
 @BackgroundActor
 class UserService {
+    // MARK: - API
     private lazy var api: UserRoutes = UserRoutesAPI(provider: APIProvider().provider)
 
+    // MARK: - Load Data
     func loadTerritoriesNew() async -> Result<[TerritoryWithAll], Error> {
         do {
             let territories = try await api.loadTerritoriesNew()
@@ -31,6 +35,16 @@ class UserService {
             return .failure(error)
         }
     }
+    
+    func loadPhonesNew() async -> Result<CongregationWithAllPhone, Error> {
+        do {
+            let phones = try await api.loadPhoneNew()
+            return .success(phones)
+        } catch {
+            print("Error \(error)")
+            return .failure(error)
+        }
+    }
 
     func allPhoneData() async -> Result<AllPhoneDataResponse, Error> {
         do {
@@ -41,7 +55,7 @@ class UserService {
         }
     }
 
-    //MARK: UPDATE
+    //MARK: Territory CRUD
     func updateTerritory(territory: Territory) async -> Result<Void, Error> {
         do {
             try await api.updateTerritory(territory: territory)
@@ -77,7 +91,9 @@ class UserService {
             return .failure(error)
         }
     }
-
+    
+    //MARK: Territory Address CRUD
+    
     func updateTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Void, Error> {
         do {
             try await api.updateTerritoryAddress(territoryAddress: territoryAddress)
@@ -87,6 +103,8 @@ class UserService {
         }
     }
 
+    //MARK: House CRUD
+    
     func updateHouse(house: House) async -> Result<Void, Error> {
         do {
             try await api.updateHouse(house: house)
@@ -96,7 +114,7 @@ class UserService {
         }
     }
 
-    //MARK: VISIT
+    //MARK: Visit CRUD
     func addVisit(visit: Visit) async -> Result<Void, Error> {
         do {
             try await api.addVisit(visit: visit)
@@ -115,6 +133,8 @@ class UserService {
         }
     }
 
+    //MARK: Phone Call CRUD
+    
     func addPhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
         do {
             try await api.addPhoneCall(phoneCall: phoneCall)
@@ -142,6 +162,7 @@ class UserService {
         }
     }
 
+    //MARK: Recalls - Get, Add, Remove
     func getRecalls() async -> Result<[Recalls], Error> {
         do {
             let recalls = try await api.getRecalls()

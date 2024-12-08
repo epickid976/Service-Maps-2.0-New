@@ -10,6 +10,7 @@ import Foundation
 import Combine
 import SwiftUICore
 
+// MARK: - Global Actor
 @globalActor actor BackgroundActor: GlobalActor {
     static var shared = BackgroundActor()
 }
@@ -21,14 +22,15 @@ extension BackgroundActor {
     }
 }
 
+// MARK: - GRDBManager
 final class GRDBManager: ObservableObject, Sendable {
+    // MARK: - Properties
     static let shared = GRDBManager()
     let dbPool: DatabasePool  // Use DatabasePool for concurrent reads and writes
     
-    
-    
     @MainActor var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Initializer
     private init() {
         // Setup code with DatabasePool for concurrent access
         let databasePath = try! FileManager.default
@@ -41,6 +43,7 @@ final class GRDBManager: ObservableObject, Sendable {
         try! setupMigrations()
     }
     
+    // MARK: - Get User Info
     @MainActor
     func getUserName() -> String? {
         return StorageManager.shared.userName
@@ -51,6 +54,7 @@ final class GRDBManager: ObservableObject, Sendable {
         return StorageManager.shared.userEmail
     }
     
+    // MARK: - Database Setup (Migrations)
     // Setup migrations
     private func setupMigrations() throws {
         var migrator = DatabaseMigrator()
@@ -1320,6 +1324,8 @@ final class GRDBManager: ObservableObject, Sendable {
         return combinedPublisher
     }
     
+    // MARK: - Helper Functions
+    
     @MainActor
     func containsSame<T: Hashable>(first: [T], second: [T], getId: (T) -> String) -> Bool {
         if first.count != second.count {
@@ -1358,6 +1364,8 @@ final class GRDBManager: ObservableObject, Sendable {
         }
     }
 }
+
+// MARK: - Extensions
 
 extension GRDBManager {
     func exists<T: FetchableRecord & MutablePersistableRecord & Sendable>(

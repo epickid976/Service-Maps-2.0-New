@@ -24,8 +24,6 @@ struct Service_Maps_2_0App: App {
     
     @StateObject var universalLinksManager = UniversalLinksManager.shared
     
-    @StateObject private var navigationHistoryManager = NavigationHistoryManager()
-    
     @Environment(\.presentationMode) var presentationMode
     
     init() {
@@ -164,21 +162,4 @@ struct Service_Maps_2_0App: App {
     
 }
 
-private struct ColumnViewPreferenceKey: EnvironmentKey {
-    static let defaultValue = true // Default to column view on
-}
 
-extension EnvironmentValues {
-    var columnViewPreference: Bool {
-        get { self[ColumnViewPreferenceKey.self] }
-        set { self[ColumnViewPreferenceKey.self] = newValue }
-    }
-}
-
-class ColumnViewModel: ObservableObject {
-    
-    @AppStorage("columnViewPreference") var isColumnViewEnabled = true
-
-    @AppStorage("hapticFeedback") var hapticFeedback = true
-    
-}

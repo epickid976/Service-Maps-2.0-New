@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - User Simple Response
 public struct UserSimpleResponse: Codable, Sendable {
     var id: Int
     var name: String

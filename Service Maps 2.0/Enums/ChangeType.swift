@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Change Type
 enum ChangeType: Codable {
     case Territory, TerritoryAddress, House, Visit
 }

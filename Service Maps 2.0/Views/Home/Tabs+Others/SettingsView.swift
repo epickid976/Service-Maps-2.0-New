@@ -11,30 +11,42 @@ import AlertKit
 import MijickPopups
 import Lottie
 
+//MARK: - SettingsView
+
 struct SettingsView: View {
+    
+    //MARK: - Environment
+    
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.sizeCategory) var sizeCategory
+    @Environment(\.requestReview) var requestReview
+    @Environment(\.mainWindowSize) var mainWindowSize
+    
+    //MARK: - Dependencies
+    
+    @ObservedObject var viewModel = SettingsViewModel()
+    let authenticationManager = AuthenticationManager()
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @StateObject private var preferencesViewModel = ColumnViewModel()
+    
+    //MARK: - Properties
+    
     @State var loading = false
     @State var alwaysLoading = true
     @State var backingUp = false
-    @StateObject private var preferencesViewModel = ColumnViewModel()
+    var showBackButton = false
     
+    //MARK: - Alert Views
     
+    let alertViewDeleted = AlertAppleMusic17View(title: "Cache Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
+    
+    //MARK: - Initializers
     
     init(showBackButton: Bool = false) {
         self.showBackButton = showBackButton
     }
-    //MARK: API
-    let authenticationManager = AuthenticationManager()
-    @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var viewModel = SettingsViewModel()
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    var showBackButton = false
-    @Environment(\.sizeCategory) var sizeCategory
     
-    let alertViewDeleted = AlertAppleMusic17View(title: "Cache Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    
-    @Environment(\.mainWindowSize) var mainWindowSize
-    
-    @Environment(\.requestReview) var requestReview
+    //MARK: - Body
     
     var body: some View {
         let alertUpdate = AlertAppleMusic17View(title: viewModel.showUpdateToastMessage, subtitle: nil, icon: .custom(UIImage(systemName: "arrow.triangle.2.circlepath.circle")!))
@@ -117,11 +129,6 @@ struct SettingsView: View {
                     }
             }
             .padding()
-//            .onChange(of: viewModel.presentPolicy) { value in
-//                if value {
-//                    BottomPopup_Document(viewModel: viewModel).present()
-//                }
-//            }
             .fullScreenCover(isPresented: $viewModel.phoneBookLogin) {
                 PhoneLoginScreen {
                     if showBackButton {
@@ -192,6 +199,8 @@ struct SettingsView: View {
             }
         }
     }
+    
+    //MARK: - Preferences View
     
     @ViewBuilder
     func preferencesView(mainWindowSize: CGSize) -> some View {
@@ -341,6 +350,8 @@ struct SettingsView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
+    //MARK: - Backup View
+    
     @ViewBuilder
     func backupView(mainWindowSize: CGSize) -> some View {
         VStack(spacing: 16) {
@@ -369,6 +380,8 @@ struct SettingsView: View {
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
+    
+    //MARK: - Helper Methods
     
     func expandAllDisclosureGroups() {
         // Fetch tokens (or other items) from your database
@@ -418,6 +431,8 @@ struct SettingsView: View {
     }
 }
 
+//MARK: - About App Popup
+
 struct CentrePopup_AboutApp: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
     var usingLargeText: Bool
@@ -465,6 +480,8 @@ struct CentrePopup_AboutApp: CentrePopup {
         
     }
 }
+
+//MARK: - Backup Popup
 
 struct CentrePopup_Backup: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
@@ -610,6 +627,8 @@ struct CentrePopup_Backup: CentrePopup {
     }
 }
 
+//MARK: - Share Popup
+
 struct CentrePopup_ShareApp: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
     var usingLargeText: Bool
@@ -713,9 +732,8 @@ struct CentrePopup_ShareApp: CentrePopup {
         
     }
 }
-#Preview {
-    SettingsView()
-}
+
+//MARK: - Deletion Confirmation Popup
 
 struct CentrePopup_DeletionConfirmation: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
@@ -794,6 +812,8 @@ struct CentrePopup_DeletionConfirmation: CentrePopup {
     }
 }
 
+//MARK: - Deletion Popup
+
 struct CentrePopup_Deletion: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
     var usingLargeText: Bool
@@ -848,6 +868,8 @@ struct CentrePopup_Deletion: CentrePopup {
         
     }
 }
+
+//MARK: - Edit Username Popup
 
 struct CentrePopup_EditUsername: CentrePopup {
     @ObservedObject var viewModel: SettingsViewModel
@@ -932,6 +954,8 @@ struct CentrePopup_EditUsername: CentrePopup {
     }
 }
 
+//MARK: - Privacy Policy Sheet
+
 struct BottomPopup_Document: BottomPopup {
     @ObservedObject var viewModel: SettingsViewModel
     
@@ -1000,4 +1024,10 @@ private extension BottomPopup_Document {
             .font(.interRegular(16))
             .foregroundColor(.onBackgroundPrimary)
     }
+}
+
+//MARK: - Preview
+
+#Preview {
+    SettingsView()
 }

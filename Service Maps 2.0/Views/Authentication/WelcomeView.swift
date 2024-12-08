@@ -8,19 +8,34 @@
 import SwiftUI
 import NavigationTransitions
 
+// MARK: - Welcome View
+
 struct WelcomeView: View {
+    // MARK: - OnDone
+    
     var onDone: () -> Void
+    
+    // MARK: - Initializer
     
     init(onDone: @escaping () -> Void) {
         self.onDone = onDone
         
     }
     
+    // MARK: - Environment
+    
     @Environment(\.colorScheme) var colorScheme
+    
+    // MARK: - Dependencies
+    
+    @StateObject var synchronizationManager = SynchronizationManager.shared
+    
+    // MARK: - Properties
     
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
-    @StateObject var synchronizationManager = SynchronizationManager.shared
+    
+    // MARK: - Body
     
     var body: some View {
         NavigationStack {
@@ -89,6 +104,8 @@ struct WelcomeView: View {
         )
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     WelcomeView() {

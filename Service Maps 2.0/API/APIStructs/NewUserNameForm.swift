@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - New User Name Form
 public struct NewUserNameForm: Codable, Sendable {
     var username: String
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Single Token Response
 public struct SingleTokenForm: Codable, Sendable {
     var token: String
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Startup State
 enum StartupState {
     case Unknown, Welcome, Login, AdminLogin, PhoneLogin, Validate, Loading, Empty, Ready
 }

@@ -8,6 +8,10 @@
 import GRDB
 import ModifiedCopy
 
+//MARK: - Phone Structs
+
+
+//MARK: - Territory
 public struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var congregation: String
@@ -42,6 +46,8 @@ public struct PhoneTerritory: Codable, FetchableRecord, MutablePersistableRecord
         }
 }
 
+//MARK: - Number
+
 public struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var congregation: String
@@ -66,6 +72,8 @@ public struct PhoneNumber: Codable, FetchableRecord, MutablePersistableRecord, E
             return "id"
         }
 }
+
+//MARK: - Call
 
 @Copyable
 public struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
@@ -93,6 +101,7 @@ public struct PhoneCall: Codable, FetchableRecord, MutablePersistableRecord, Equ
         }
 }
 
+//MARK: - User Token
 
 public struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     
@@ -122,6 +131,8 @@ public struct UserToken: Codable, FetchableRecord, MutablePersistableRecord, Equ
             return ["token", "userId"]
         }
 }
+
+//MARK: - Recalls
 
 public struct Recalls: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     

@@ -9,16 +9,18 @@ import Foundation
 import SwiftUI
 import Lottie
 
-
+//MARK: - LottieAnimationUIView
 struct LottieAnimationUIView: UIViewRepresentable {
     typealias UIViewType = UIView
+    
+    //MARK: - Properties
     var animationName: String
     var animationView = LottieAnimationView()
     var shouldLoop: Bool = true
     @Binding var shouldRestartAnimation: Bool
     @Binding var animationProgress: CGFloat
     
-    
+    //MARK: - Make UI View
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         let animationView = LottieAnimationView(name: animationName)
@@ -46,6 +48,7 @@ struct LottieAnimationUIView: UIViewRepresentable {
         return view
     }
     
+    //MARK: - Update UI View
     func updateUIView(_ uiView: UIView, context: Context) {
         let tempFileName = context.coordinator.parent.animationName
         DispatchQueue.main.async {
@@ -76,6 +79,7 @@ struct LottieAnimationUIView: UIViewRepresentable {
         
     }
     
+    //MARK: - Restart Animation
     func restartAnimation() {
         if shouldRestartAnimation {
             animationView.stop()
@@ -85,6 +89,7 @@ struct LottieAnimationUIView: UIViewRepresentable {
         }
     }
     
+    //MARK: - Coordinator
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }

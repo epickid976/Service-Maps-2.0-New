@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Delete Token Form
 public struct DeleteTokenForm: Codable, Sendable {
     var token: String
 }

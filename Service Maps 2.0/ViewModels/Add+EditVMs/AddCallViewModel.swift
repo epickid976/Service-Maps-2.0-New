@@ -8,24 +8,30 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Add Call View Model
+
 @MainActor
 class AddCallViewModel: ObservableObject {
     
+    // MARK: - Initializers
     init(phoneNumber: PhoneNumber) {
         error = ""
         self.phoneNumber = phoneNumber
     }
     
-    @Published var notes = ""
-
+    // MARK: - Dependencies
     @Published private var dataUploader = DataUploaderManager()
     
+    // MARK: - Properties
+    @Published var notes = ""
+
     @Published var phoneNumber: PhoneNumber
     
     @Published var error = ""
     
     @Published var loading = false
     
+    // MARK: - Functions
     @BackgroundActor
     func addCall() async -> Result<Void, Error> {
         await MainActor.run {

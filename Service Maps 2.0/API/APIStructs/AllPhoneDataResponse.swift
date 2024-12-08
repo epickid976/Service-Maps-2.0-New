@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - All Phone Data Response
 public struct AllPhoneDataResponse: Codable, Sendable {
     var territories: [PhoneTerritory]
     var numbers: [PhoneNumber]

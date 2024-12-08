@@ -9,8 +9,9 @@ import Foundation
 import SwiftUI
 import Combine
 
+//MARK: - Circle Button Style
 struct CircleButtonStyle: ButtonStyle {
-    
+    //MARK: - Properties
     var imageName: String
     var foreground = Color.primary
     var background = Color.white
@@ -19,6 +20,7 @@ struct CircleButtonStyle: ButtonStyle {
     @Binding var progress: CGFloat
     @Binding var animation: Bool
     
+    //MARK: - Body
     func makeBody(configuration: Configuration) -> some View {
         
         Circle()
@@ -53,9 +55,11 @@ struct CircleButtonStyle: ButtonStyle {
             
     }
 }
+
+//MARK: - Pill Button Style
 @MainActor
 struct PillButtonStyle: ButtonStyle {
-    
+    //MARK: - Properties
     var imageName: String
     var foreground = Color.primary
     var background = Color.white
@@ -68,6 +72,7 @@ struct PillButtonStyle: ButtonStyle {
     
     @State private var timePassed = getFormattedElapsedTime(from: StorageManager.shared.lastTime)
     
+    //MARK: - Body
     func makeBody(configuration: Configuration) -> some View {
         RoundedRectangle(cornerSize: CGSize(width: 100.0, height: 100.0), style: .continuous)
             .optionalViewModifier { content in
@@ -118,6 +123,7 @@ struct PillButtonStyle: ButtonStyle {
             }
     }
     
+    //MARK: - Functions
     func updateElapsedTime(instant: Bool = false) {
         // If it's an instant update (sync just happened), force "Now"
         if instant {
@@ -136,6 +142,7 @@ struct PillButtonStyle: ButtonStyle {
     }
 }
 
+//MARK: - Get time
 // Updated function to calculate elapsed time from a passed Date value
 func getFormattedElapsedTime(from lastTime: Date?) -> String {
     guard let startTime = lastTime else { return NSLocalizedString("Now", comment: "Indicates that no time has been recorded") }

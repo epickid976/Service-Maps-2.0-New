@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Congregation Response
 public struct CongregationResponse: Codable, Sendable {
     var id: String
     var name: String

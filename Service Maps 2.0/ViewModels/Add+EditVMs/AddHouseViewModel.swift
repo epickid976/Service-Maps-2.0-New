@@ -8,15 +8,22 @@
 import Foundation
 import SwiftUI
 
+// MARK: - AddHouseViewModel
+
 @MainActor
 class AddHouseViewModel: ObservableObject {
+    
+    // MARK: - Initializers
+    
     init(address: TerritoryAddress) {
         error = ""
         self.address = address
     }
     
+    // MARK: - Dependencies
     @Published private var dataUploader = DataUploaderManager()
     
+    // MARK: - Properties
     @Published var address: TerritoryAddress
     
     @Published var error = ""
@@ -24,6 +31,7 @@ class AddHouseViewModel: ObservableObject {
     
     @Published var loading = false
     
+    // MARK: - Functions
     @BackgroundActor
     func addHouse() async -> Result<Void, Error> {
         await MainActor.run {
@@ -34,14 +42,6 @@ class AddHouseViewModel: ObservableObject {
         let houseObject = await House(id: "\(address.address)-\(number)", territory_address: address.id, number: number)
         return await dataUploader.addHouse(house: houseObject)
     }
-    
-//    func editHouse(house: House) async -> Result<Void, Error> {
-//        withAnimation {
-//            loading = true
-//        }
-//        let houseObject = House(id: house.id, territory_address: address.id, number: number)
-//        return await dataUploader.updateHouse(house: houseObject)
-//    }
     
     func checkInfo() -> Bool {
         if number == "" {

@@ -8,10 +8,14 @@
 import Foundation
 import Papyrus
 
+//MARK: - Congregation Service
+
 @BackgroundActor
 class CongregationService: @unchecked Sendable {
+    //MARK: - API
     private lazy var api: CongregationRoutes = CongregationRoutesAPI(provider: APIProvider().provider)
 
+    //MARK: - Sign In
     // Congregation Sign-In
     func signIn(congregationSignInForm: CongregationSignInForm) async -> Result<CongregationResponse, Error> {
         do {
@@ -22,6 +26,7 @@ class CongregationService: @unchecked Sendable {
         }
     }
 
+    //MARK: - Phone Sign-In
     // Phone Sign-In
     func phoneSignIn(congregationSignInForm: CongregationSignInForm) async -> Result<CongregationResponse, Error> {
         do {

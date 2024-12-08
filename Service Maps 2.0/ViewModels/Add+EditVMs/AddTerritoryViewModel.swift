@@ -9,12 +9,11 @@ import Foundation
 import SwiftUI
 import Nuke
 
+// MARK: - AddTerritoryViewModel
+
 @MainActor
 class AddTerritoryViewModel: ObservableObject {
-    
-    init() {
-        error = ""
-    }
+    // MARK: - Properties
     
     @Published var number: Int? = nil
     @Published private var dataUploader = DataUploaderManager()
@@ -37,6 +36,8 @@ class AddTerritoryViewModel: ObservableObject {
     @Published var error = ""
     
     @Published var loading = false
+    
+    // MARK: - Territory CRUD
     @BackgroundActor
     func addTerritory() async -> Result<Void, Error>{
         await MainActor.run {
@@ -54,7 +55,9 @@ class AddTerritoryViewModel: ObservableObject {
         return await dataUploader.updateTerritory(territory: territoryObject, image: imageToSend)
     }
     
+    // MARK: - Initializer
     init(territory: Territory? = nil) {
+        error = ""
         Task {
             if let territory = territory {
                 if let imageLink = URL(string: territory.getImageURL()) {
@@ -66,6 +69,7 @@ class AddTerritoryViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Check Info
     func checkInfo() -> Bool {
         if number == nil || description == "" {
             error = NSLocalizedString("Number and Description are required.", comment: "")

@@ -17,27 +17,28 @@ import FloatingButton
 import MijickPopups
 import Toasts
 
+//MARK: - Territory View
+
 struct TerritoryView: View {
+    
+    //MARK: - Environment
+    
     @Environment(\.dismissSearch) private var dismissSearch
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentToast) var presentToast
+    
+    //MARK: - Dependencies
     
     @StateObject var viewModel: TerritoryViewModel
-    
-    //@Environment(\.managedObjectContext) private var viewContext
-    
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    //MARK: - Properties
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
-    @Environment(\.presentationMode) var presentationMode
-    @Environment(\.presentToast) var presentToast
     @State var searchViewDestination = false
-    
-    init(territoryIdToScrollTo: String? = nil) {
-        let viewModel = TerritoryViewModel(territoryIdToScrollTo: territoryIdToScrollTo)
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
-    
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -46,11 +47,21 @@ struct TerritoryView: View {
     
     @State private var highlightedTerritoryId: String?
     
-    @ObservedObject var preferencesViewModel = ColumnViewModel()
-    
     @State var isCircleExpanded = false
-    //@Environment(\.mainWindowSize) var mainWindowSize
+    
+    //MARK: -  Initializers
+    
+    init(territoryIdToScrollTo: String? = nil) {
+        let viewModel = TerritoryViewModel(territoryIdToScrollTo: territoryIdToScrollTo)
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
+    //MARK: - Body
+    
     var body: some View {
+        
+        //MARK: - Transition Logic
+        
         let transition: AnyNavigationTransition
         if viewModel.presentSheet || viewModel.territoryIdToScrollTo != nil {
             transition = AnyNavigationTransition.zoom.combined(with: .fade(.in))
@@ -59,6 +70,7 @@ struct TerritoryView: View {
         } else {
             transition = AnyNavigationTransition.slide.combined(with: .fade(.in))
         }
+        
         return NavigationStack {
             GeometryReader { proxy in
                 ZStack {
@@ -131,78 +143,78 @@ struct TerritoryView: View {
                                                             .spring(),
                                                             value: viewModel.recentTerritoryData
                                                         )
-                                                        
+                                                    
                                                 }
                                             }
                                             
                                             
                                             SwipeViewGroup {
                                                 // Initialize the `isWideScreen` variable
-                                                        let isWideScreen = UIDevice.current.userInterfaceIdiom == .pad &&
-                                                            proxy.size.width > 400 &&
-                                                            preferencesViewModel.isColumnViewEnabled
-
-                                                        if isWideScreen {
-                                                            // Two independent columns for wide screens
-                                                            HStack(alignment: .top, spacing: 16) {
-                                                                // Left Column
-                                                                LazyVStack(spacing: 16) {
-                                                                    ForEach(viewModel.territoryData?.enumerated().filter { $0.offset % 2 == 0 }.map { $0.element } ?? [], id: \.id) { dataWithKeys in
-                                                                        CustomDisclosureGroup(
-                                                                            title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
-                                                                            items: dataWithKeys.territoriesData
-                                                                        ) { territoryData in
-                                                                            territoryCell(
-                                                                                dataWithKeys: dataWithKeys,
-                                                                                territoryData: territoryData,
-                                                                                mainViewSize: proxy.size
-                                                                            )
-                                                                            .id(territoryData.territory.id)
-                                                                            .transition(.customBackInsertion)
-                                                                            .modifier(ScrollTransitionModifier())
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                // Right Column
-                                                                LazyVStack(spacing: 16) {
-                                                                    ForEach(viewModel.territoryData?.enumerated().filter { $0.offset % 2 == 1 }.map { $0.element } ?? [], id: \.id) { dataWithKeys in
-                                                                        CustomDisclosureGroup(
-                                                                            title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
-                                                                            items: dataWithKeys.territoriesData
-                                                                        ) { territoryData in
-                                                                            territoryCell(
-                                                                                dataWithKeys: dataWithKeys,
-                                                                                territoryData: territoryData,
-                                                                                mainViewSize: proxy.size
-                                                                            )
-                                                                            .id(territoryData.territory.id)
-                                                                            .transition(.customBackInsertion)
-                                                                            .modifier(ScrollTransitionModifier())
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        } else {
-                                                            // Single column for narrow screens
-                                                            LazyVStack(spacing: 16) {
-                                                                ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
-                                                                    CustomDisclosureGroup(
-                                                                        title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
-                                                                        items: dataWithKeys.territoriesData
-                                                                    ) { territoryData in
-                                                                        territoryCell(
-                                                                            dataWithKeys: dataWithKeys,
-                                                                            territoryData: territoryData,
-                                                                            mainViewSize: proxy.size
-                                                                        )
-                                                                        .id(territoryData.territory.id)
-                                                                        .transition(.customBackInsertion)
-                                                                        .modifier(ScrollTransitionModifier())
-                                                                    }
+                                                let isWideScreen = UIDevice.current.userInterfaceIdiom == .pad &&
+                                                proxy.size.width > 400 &&
+                                                preferencesViewModel.isColumnViewEnabled
+                                                
+                                                if isWideScreen {
+                                                    // Two independent columns for wide screens
+                                                    HStack(alignment: .top, spacing: 16) {
+                                                        // Left Column
+                                                        LazyVStack(spacing: 16) {
+                                                            ForEach(viewModel.territoryData?.enumerated().filter { $0.offset % 2 == 0 }.map { $0.element } ?? [], id: \.id) { dataWithKeys in
+                                                                CustomDisclosureGroup(
+                                                                    title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
+                                                                    items: dataWithKeys.territoriesData
+                                                                ) { territoryData in
+                                                                    territoryCell(
+                                                                        dataWithKeys: dataWithKeys,
+                                                                        territoryData: territoryData,
+                                                                        mainViewSize: proxy.size
+                                                                    )
+                                                                    .id(territoryData.territory.id)
+                                                                    .transition(.customBackInsertion)
+                                                                    .modifier(ScrollTransitionModifier())
                                                                 }
                                                             }
                                                         }
+                                                        
+                                                        // Right Column
+                                                        LazyVStack(spacing: 16) {
+                                                            ForEach(viewModel.territoryData?.enumerated().filter { $0.offset % 2 == 1 }.map { $0.element } ?? [], id: \.id) { dataWithKeys in
+                                                                CustomDisclosureGroup(
+                                                                    title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
+                                                                    items: dataWithKeys.territoriesData
+                                                                ) { territoryData in
+                                                                    territoryCell(
+                                                                        dataWithKeys: dataWithKeys,
+                                                                        territoryData: territoryData,
+                                                                        mainViewSize: proxy.size
+                                                                    )
+                                                                    .id(territoryData.territory.id)
+                                                                    .transition(.customBackInsertion)
+                                                                    .modifier(ScrollTransitionModifier())
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                } else {
+                                                    // Single column for narrow screens
+                                                    LazyVStack(spacing: 16) {
+                                                        ForEach(viewModel.territoryData ?? [], id: \.id) { dataWithKeys in
+                                                            CustomDisclosureGroup(
+                                                                title: dataWithKeys.keys.isEmpty ? "Other Territories" : dataWithKeys.keys.map(\.name).joined(separator: ", "),
+                                                                items: dataWithKeys.territoriesData
+                                                            ) { territoryData in
+                                                                territoryCell(
+                                                                    dataWithKeys: dataWithKeys,
+                                                                    territoryData: territoryData,
+                                                                    mainViewSize: proxy.size
+                                                                )
+                                                                .id(territoryData.territory.id)
+                                                                .transition(.customBackInsertion)
+                                                                .modifier(ScrollTransitionModifier())
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -278,25 +290,15 @@ struct TerritoryView: View {
                                                                 searchViewDestination = true
                                                             }
                                                         }
-                                                        
                                                     }
-                                                    //}
-                                                    
                                                 }).scaleEffect(viewModel.territoryData == nil || dataStore.synchronized ? 1 : 0)
                                                     .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: !isCircleExpanded ? 40 : proxy.size.width * 4, height: !isCircleExpanded ? 40 : proxy.size.height * 4, progress: $viewModel.progress, animation: $viewModel.backAnimation)).transition(.scale).padding(.top, isCircleExpanded ? 1000 : 0)
                                                     .animation(.spring(), value: isCircleExpanded)
-                                                
-                                                
-                                                
                                             }
                                         }
                                     }
-                                    //.animation(.spring(), value: viewModel.territoryData == nil || viewModel.dataStore.synchronized)
                                 }
-                                
-                                
                             }
-                            
                             .navigationTransition(transition)
                             .navigationViewStyle(StackNavigationViewStyle())
                             
@@ -368,6 +370,8 @@ struct TerritoryView: View {
         }
     }
     
+    //MARK: - Territory Cell
+    
     @ViewBuilder
     func territoryCell(dataWithKeys: TerritoryDataWithKeys, territoryData: TerritoryData, mainViewSize: CGSize) -> some View {
         LazyVStack {
@@ -400,13 +404,13 @@ struct TerritoryView: View {
                                         Button {
                                             HapticManager.shared.trigger(.lightImpact)
                                             self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                                                CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
-                                                    let toast = ToastValue(
-                                                        icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                        message: NSLocalizedString("Territory Deleted", comment: "")
-                                                    )
-                                                    presentToast(toast)
-                                                }.present()
+                                            CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
+                                                let toast = ToastValue(
+                                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                    message: NSLocalizedString("Territory Deleted", comment: "")
+                                                )
+                                                presentToast(toast)
+                                            }.present()
                                         } label: {
                                             HStack {
                                                 Image(systemName: "trash")
@@ -439,15 +443,15 @@ struct TerritoryView: View {
                         backgroundColor: .red
                     ) {
                         HapticManager.shared.trigger(.lightImpact)
-                            context.state.wrappedValue = .closed
-                            self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                            CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
-                                let toast = ToastValue(
-                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                    message: NSLocalizedString("Territory Deleted", comment: "")
-                                )
-                                presentToast(toast)
-                            }.present()
+                        context.state.wrappedValue = .closed
+                        self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
+                        CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
+                            let toast = ToastValue(
+                                icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                message: NSLocalizedString("Territory Deleted", comment: "")
+                            )
+                            presentToast(toast)
+                        }.present()
                     }
                     .font(.title.weight(.semibold))
                     .foregroundColor(.white)
@@ -480,6 +484,7 @@ struct TerritoryView: View {
     
 }
 
+//MARK: - Main Button
 
 struct MainButton: View {
     
@@ -517,40 +522,7 @@ struct MainButton: View {
     }
 }
 
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (1, 1, 1, 0)
-        }
-        
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: Double(a) / 255
-        )
-    }
-}
-
-struct ViewOffsetKey: PreferenceKey, Sendable {
-    typealias Value = CGFloat
-    static let defaultValue = CGFloat.zero
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value += nextValue()
-    }
-}
+//MARK: - Delete Territory Popup
 
 struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
     @ObservedObject var viewModel: TerritoryViewModel
@@ -654,35 +626,7 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
     }
 }
 
-struct ScrollTransitionModifier: ViewModifier {
-    @Environment(\.isScrollEnabled) var isScrollEnabled: Bool // Detect if scroll is active (iOS 16)
-    @State private var opacity: Double = 1.0 // Local state for opacity (iOS 16)
-    @State private var scale: CGFloat = 1.0 // Local state for scale (iOS 16)
-    
-    func body(content: Content) -> some View {
-        if #available(iOS 17.0, *) {
-            content.scrollTransition { content, phase in
-                content
-                    .opacity(phase.isIdentity || phase == .bottomTrailing ? 1 : 0)
-                    .scaleEffect(phase.isIdentity || phase == .bottomTrailing ? 1 : 0.75)
-            }
-        } else {
-            content
-        }
-    }
-}
-
-extension AnyTransition {
-    static var customBackInsertion: AnyTransition {
-        AnyTransition.asymmetric(
-            insertion: AnyTransition.opacity
-                .combined(with: .scale(scale: 0.8, anchor: .center))
-                .combined(with: .move(edge: .bottom)),
-            removal: .opacity
-        )
-        .animation(.spring())
-    }
-}
+//MARK: - Custom Disclosure Group
 
 struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: View {
     let title: String
@@ -709,7 +653,7 @@ struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: Vie
         self.title = title
         self.items = items
         self.content = content
-
+        
         // Check if a stored state exists in UserDefaults
         if title == "Other Territories" {
             // Special case for "Other Territories" with a static key
@@ -756,7 +700,7 @@ struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: Vie
                         .foregroundColor(.primary)
                         .fontWeight(.bold)
                         .hSpacing(.leading)
-                        //.padding(5)
+                    //.padding(5)
                         .padding(.horizontal, 10)
                     
                     Spacer()
@@ -800,7 +744,7 @@ struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: Vie
                                 value: expandProgress
                             )
                             .id(item.id)
-                            
+                        
                     }
                 }
                 .transition(

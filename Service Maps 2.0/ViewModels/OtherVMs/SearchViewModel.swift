@@ -2,10 +2,18 @@ import Foundation
 import SwiftUI
 import Combine
 
+// MARK: - SearchViewModel
+
 @MainActor
 class SearchViewModel: ObservableObject {
+    
+    // MARK: - Dependencies
+    
     @Published var dataStore = StorageManager.shared
     @Published var grdbManager = GRDBManager.shared
+    
+    // MARK: - Properties
+    
     @Published var searchResults: [MySearchResult] = []
     @Published var searchQuery: String = "" {
         didSet {
@@ -21,10 +29,14 @@ class SearchViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Initializer
+    
     init(mode: SearchMode = .Territories) {
         self.searchMode = mode
         setupSearchQueryObserver()
     }
+    
+    // MARK: - Search Observer
     
     private func setupSearchQueryObserver() {
         $searchQuery
@@ -40,10 +52,14 @@ class SearchViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    // MARK: - Methods
+    
     func isLoaded() -> Bool {
         return !searchResults.isEmpty
     }
 }
+
+// MARK: - Search Result Struct
 
 struct MySearchResult: Hashable, Identifiable {
     var id = UUID()
@@ -79,6 +95,8 @@ struct MySearchResult: Hashable, Identifiable {
     }
 }
 
+// MARK: - Enums
+
 enum SearchResultType: String, CaseIterable, Identifiable {
     var id: String { return self.rawValue }
     case Territory, Address, House, Visit, PhoneTerritory, Number, Call
@@ -92,8 +110,11 @@ enum SearchState {
     case Searching, Done, Idle
 }
 
+// MARK: -  Extension + Publisher
 @MainActor
 extension SearchViewModel {
+    
+    // MARK: - Get Search Result
     @MainActor
     func getSearchResults() {
         self.searchState = .Searching

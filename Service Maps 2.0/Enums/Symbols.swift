@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Symbols
 enum Symbols: String, CaseIterable, Identifiable {
     var id: Self { self }
     
@@ -23,6 +24,7 @@ enum Symbols: String, CaseIterable, Identifiable {
     case MV = "MV"
     case HV = "HV"
     
+    // MARK: - Server Mapping
     var forServer : String {
         switch self {
             // Use Internationalization, as appropriate.
@@ -40,6 +42,7 @@ enum Symbols: String, CaseIterable, Identifiable {
         }
     }
     
+    // MARK: - Legend
     var legend: String {
         switch self {
         case .none:
@@ -67,6 +70,7 @@ enum Symbols: String, CaseIterable, Identifiable {
         }
     }
     
+    // MARK: - Localization
     var localizedString: String {
         switch self {
         case .none:
@@ -122,42 +126,4 @@ enum Symbols: String, CaseIterable, Identifiable {
             return .none
         }
     }
-    
-//    var localizedString: String {
-//        switch self {
-//        case .none:
-//            return NSLocalizedString("uk", comment: "")
-//        case .NC:
-//            return NSLocalizedString("NC", comment: "")
-//        case .NT:
-//            return NSLocalizedString("NT", comment: "")
-//        case .O:
-//            return NSLocalizedString("O", comment: "")
-//        case .H:
-//            return NSLocalizedString("H", comment: "")
-//        case .M:
-//            return NSLocalizedString("M", comment: "")
-//        }
-//    }
-    
-    
-    
-//    static func symbol(localizedString: String) -> Symbols {
-//        switch localizedString {
-//        case Symbols.none.localizedString:
-//            return .none
-//        case Symbols.NC.localizedString:
-//            return .NC
-//        case Symbols.NT.localizedString:
-//            return .NT
-//        case Symbols.O.localizedString:
-//            return .O
-//        case Symbols.H.localizedString:
-//            return .H
-//        case Symbols.M.localizedString:
-//            return .M
-//        default:
-//            return .none
-//        }
-//    }
 }

@@ -7,16 +7,20 @@
 
 import Foundation
 
+// MARK: - Add Address ViewModel
 @MainActor
 class AddAddressViewModel: ObservableObject {
     
+    // MARK: - Initializers
     init(territory: Territory) {
         error = ""
         self.territory = territory
     }
     
+    // MARK: - Dependencies
     @Published private var dataUploader = DataUploaderManager()
     
+    // MARK: - Properties
     @Published var territory: Territory
     
     @Published var error = ""
@@ -24,6 +28,7 @@ class AddAddressViewModel: ObservableObject {
     
     @Published var loading = false
     
+    // MARK: - Functions
     @BackgroundActor
     func addAddress() async -> Result<Void, Error> {
         await MainActor.run {

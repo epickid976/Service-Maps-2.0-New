@@ -10,14 +10,20 @@ import SwiftUI
 import PhotosUI
 import NavigationTransitions
 
+//MARK: - AddHouseView
+
 struct AddHouseView: View {
     var house: House?
     
+    //MARK: - Environment
+
     @Environment(\.dismiss) private var dismiss
+    
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: AddHouseViewModel
     
-    @FocusState private var numberFocus: Bool
-    @State var title = ""
+    //MARK: - Initializers
     
     init(house: House?, address: TerritoryAddress, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         _viewModel = StateObject(wrappedValue: AddHouseViewModel(address: address))
@@ -28,6 +34,11 @@ struct AddHouseView: View {
         self.onDone = onDone
         self.onDismiss = onDismiss
     }
+    
+    //MARK: - Properties
+    
+    @FocusState private var numberFocus: Bool
+    @State var title = ""
     
     var onDone: () -> Void
     var onDismiss: () -> Void
@@ -51,7 +62,6 @@ struct AddHouseView: View {
                     if !viewModel.loading {
                         CustomBackButton() { onDismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
                     }
-                    //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
                         HapticManager.shared.trigger(.lightImpact)
@@ -116,7 +126,3 @@ struct AddHouseView: View {
         
     }
 }
-
-//#Preview {
-//    AddHouseView(house: nil)
-//}

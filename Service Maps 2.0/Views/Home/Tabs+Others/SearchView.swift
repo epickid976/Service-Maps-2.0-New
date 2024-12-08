@@ -16,14 +16,29 @@ import Lottie
 import AlertKit
 import MijickPopups
 
+//MARK: - SearchView
 
 struct SearchView: View {
+    
+    //MARK: - OnDone
+    
     var onDone: () -> Void
+    
+    //MARK: - Environment
+    
+    @Environment(\.presentationMode) var presentationMode
+    
+    //MARK: - Dependencies
     
     @StateObject var searchViewModel: SearchViewModel
     
+    //MARK: - Properties
+    
     @State var backAnimation = false
     @State var progress: CGFloat = 0.0
+    @FocusState var isFocused: Bool
+    
+    //MARK: - Initializers
     
     init(searchMode: SearchMode = .Territories, onDone: @escaping() -> Void) {
         let searchViewModel = SearchViewModel(mode: searchMode)
@@ -32,9 +47,8 @@ struct SearchView: View {
        
     }
     
-    @FocusState var isFocused: Bool
+    //MARK: - Body
     
-    @Environment(\.presentationMode) var presentationMode
     var body: some View {
         GeometryReader { proxy in
                 VStack {
@@ -129,19 +143,6 @@ struct SearchView: View {
                                 }
                             }
                         }.animation(.easeInOut(duration: 0.5), value: searchViewModel.searchState).padding()
-                        //                            .optionalViewModifier { content in
-                        //                                if #available(iOS 17.0, *) {
-                        //                                    content
-                        //                                        .searchable(text: $searchViewModel.searchQuery, isPresented: $isFocused, placement: .navigationBarDrawer(displayMode: .always))
-                        //                                } else {
-                        //                                    content
-                        //                                        .searchable(text: $searchViewModel.searchQuery, placement: .navigationBarDrawer(displayMode: .always))
-                        //                                }
-                        //
-                        //                            }
-                        
-                        
-                        
                     }.navigationTransition(.fade(.cross)).scrollIndicators(.never).id(searchViewModel.scrollViewID)
                         .scrollDismissesKeyboard(.never)
                         
@@ -155,7 +156,7 @@ struct SearchView: View {
                                     presentationMode.wrappedValue.dismiss()
                                     onDone()
                                 }
-                            })//.keyboardShortcut(.delete, modifiers: .command)
+                            })
                             .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $progress, animation: $backAnimation))
                             
                             SearchBar(searchText: $searchViewModel.searchQuery, isFocused: $isFocused)
@@ -168,6 +169,8 @@ struct SearchView: View {
         }
     }
 }
+
+//MARK: - MySearchResultItem
 
 struct MySearchResultItem: View {
     var data: MySearchResult

@@ -8,6 +8,8 @@ import SwiftUI
 import CoreData
 import NukeUI
 
+//MARK: - Territory Cell
+
 struct CellView: View {
     var territory: Territory
     var houseQuantity: Int
@@ -21,6 +23,8 @@ struct CellView: View {
     var ipad: Bool {
         return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
+    
+    //MARK: - Body
     
     var body: some View {
             HStack(spacing: 10) {
@@ -86,6 +90,8 @@ struct CellView: View {
     
 }
 
+//MARK: - Phone Territory Cell
+
 struct PhoneTerritoryCellView: View {
     var territory: PhoneTerritory
     var numbers: Int
@@ -98,6 +104,8 @@ struct PhoneTerritoryCellView: View {
     var isIpad: Bool {
         return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
+    
+    //MARK: - Body
     
     var body: some View {
         HStack(spacing: 10) {
@@ -165,10 +173,14 @@ struct PhoneTerritoryCellView: View {
     
 }
 
+//MARK: - Territory Recent Cell
+
 struct recentCell: View {
     var territoryData: RecentTerritoryData
     
     var mainWindowSize: CGSize
+    
+    //MARK: - Body
     
     var body: some View {
         VStack {
@@ -202,10 +214,14 @@ struct recentCell: View {
     }
 }
 
+//MARK: - Phone Territory Recent Cell
+
 struct recentPhoneCell: View {
     var territoryData: RecentPhoneData
     
     var mainWindowSize: CGSize
+    
+    //MARK: - Body
     
     var body: some View {
         VStack {

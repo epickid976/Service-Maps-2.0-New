@@ -11,8 +11,10 @@ import SwiftUI
 import Combine
 import GRDB
 
+//MARK: - DataUploaderManager
 @MainActor
 class DataUploaderManager: ObservableObject {
+    //MARK: - Dependencies
     
     @Published private var authorizationLevelManager = AuthorizationLevelManager()
     @Published private var dataStore = StorageManager.shared
@@ -354,6 +356,7 @@ class DataUploaderManager: ObservableObject {
         }
     }
     
+    //MARK: - Token Registration
     @BackgroundActor
     func unregisterToken(myToken: String) async -> Result<Void, Error> {
         return await TokenService().unregister(token: myToken).map { _ in () }
@@ -394,6 +397,7 @@ class DataUploaderManager: ObservableObject {
         }
     }
     
+    //MARK: - Perform API and Database Updates
     // Helper for handling API call results and performing a database action
     @BackgroundActor
     private func performApiAndDbUpdate(_ apiResult: Result<Void, Error>, dbAction: () async throws -> Void) async -> Result<Void, Error> {

@@ -7,12 +7,25 @@
 
 import SwiftUI
 
+//MARK: - Add Call View
+
 struct AddCallView: View {
+    
+    //MARK: - Environment
+    
     @Environment(\.dismiss) private var dismiss
-    var call: PhoneCall?
+    
+    //MARK: - Dependencies
     
     @StateObject var viewModel: AddCallViewModel
+    
+    //MARK: - Properties
+    
     @State var title = ""
+    var call: PhoneCall?
+    @FocusState var notesFocus: Bool
+    
+    //MARK: - Init
     
     init(call: PhoneCall?, phoneNumber: PhoneNumber, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         let initialViewModel = AddCallViewModel(phoneNumber: phoneNumber)
@@ -25,10 +38,12 @@ struct AddCallView: View {
         self.onDismiss = onDismiss
     }
     
+    //MARK: - Closures
+    
     var onDone: () -> Void
     var onDismiss: () -> Void
     
-    @FocusState var notesFocus: Bool
+    //MARK: - Body
     
     var body: some View {
         ZStack {

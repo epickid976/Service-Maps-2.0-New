@@ -9,19 +9,15 @@ import Foundation
 import SwiftUI
 import Papyrus
 
+// MARK: - Login View Model
 @MainActor
 class LoginViewModel: ObservableObject {
+    
+    // MARK: - Dependencies
+    
     var authenticationManager = AuthenticationManager()
     
-    
-    init(username: String, password: String) {
-        self.username = username
-        self.password = password
-        self.loading = false
-        self.showAlert = false
-        self.alertTitle = ""
-        self.alertMessage = ""
-    }
+    // MARK: - Published Properties
     
     @Published var username: String = ""
     @Published var password: String = ""
@@ -43,7 +39,18 @@ class LoginViewModel: ObservableObject {
     @Published var emailSent = false
     @Published var errorEmailSent = false
     
+    // MARK: - Initializer
     
+    init(username: String, password: String) {
+        self.username = username
+        self.password = password
+        self.loading = false
+        self.showAlert = false
+        self.alertTitle = ""
+        self.alertMessage = ""
+    }
+    
+    // MARK: -  Validate
     
     func validate(forReset: Bool = false) -> Bool {
         self.username = self.username.replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
@@ -79,7 +86,8 @@ class LoginViewModel: ObservableObject {
         
         return true
     }
-
+    
+    // MARK: - Show Error
     private func showError(_ message: String) {
         DispatchQueue.main.async {
             withAnimation {
@@ -89,6 +97,7 @@ class LoginViewModel: ObservableObject {
         }
     }
     
+    // MARK: -  Email Validation
     func validateForEmailLogin() -> Bool {
         guard isValidEmail(self.username) else {
             showError(NSLocalizedString("Not a valid email.", comment: ""))
@@ -102,12 +111,14 @@ class LoginViewModel: ObservableObject {
         
         return true
     }
-
+    
     func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         return NSPredicate(format: "SELF MATCHES %@", emailRegEx).evaluate(with: email)
     }
     
+    
+    // MARK: - Login
     
     func login() async -> Result<Void, Error> {
         // Ensure both username and password are non-empty
@@ -117,18 +128,18 @@ class LoginViewModel: ObservableObject {
             }
             return .failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Fields cannot be empty"]))
         }
-
+        
         // Start loading animation
         DispatchQueue.main.async { withAnimation { self.loading = true } }
-
+        
         // Perform login using Papyrus
         let result = await self.authenticationManager.login(logInForm: LoginForm(email: self.username, password: self.password))
-
+        
         // Stop loading animation
         DispatchQueue.main.async {
             withAnimation { self.loading = false }
         }
-
+        
         // Handle login result
         switch result {
         case .success:
@@ -136,7 +147,7 @@ class LoginViewModel: ObservableObject {
                 self.loginErrorText = ""
             }
             return .success(())
-
+            
         case .failure(let error):
             DispatchQueue.main.async {
                 self.handleLoginError(error)
@@ -144,11 +155,63 @@ class LoginViewModel: ObservableObject {
             return .failure(error)
         }
     }
-
+    
+    // Function to send login email
+    func sendLoginEmail() async {
+        if validateForEmailLogin() {
+            DispatchQueue.main.async { withAnimation { self.loading = true } }
+            
+            let result = await authenticationManager.loginEmail(email: self.username)
+            DispatchQueue.main.async { withAnimation { self.loading = false } }
+            
+            switch result {
+            case .success:
+                HapticManager.shared.trigger(.success)
+                DispatchQueue.main.async {
+                    self.loginErrorText = ""
+                    self.loginError = false
+                    self.emailSent = true
+                    UniversalLinksManager.shared.resetLink()
+                }
+            case .failure(let error):
+                HapticManager.shared.trigger(.error)
+                DispatchQueue.main.async {
+                    self.handleLoginError(error)
+                }
+                self.loginError = true
+                self.errorEmailSent = true
+            }
+        }
+    }
+    
+    // Function to login with email token
+    func loginWithEmail(token: String) async {
+        DispatchQueue.main.async { withAnimation { self.loading = true } }
+        
+        let result = await authenticationManager.loginEmailToken(token: token)
+        DispatchQueue.main.async { withAnimation { self.loading = false } }
+        
+        switch result {
+        case .success:
+            HapticManager.shared.trigger(.success)
+            DispatchQueue.main.async {
+                self.loginErrorText = ""
+                self.loginError = false
+                UniversalLinksManager.shared.resetLink()
+            }
+        case .failure(let error):
+            HapticManager.shared.trigger(.error)
+            DispatchQueue.main.async {
+                self.handleLoginError(error)
+            }
+            self.loginError = true
+        }
+    }
+    
     private func handleLoginError(_ error: Error) {
         let errorMessage: String
         let errorTitle: String
-
+        
         // Handle different types of Papyrus errors
         if let papyrusError = error as? PapyrusError {
             switch papyrusError.response?.statusCode {
@@ -169,73 +232,25 @@ class LoginViewModel: ObservableObject {
             errorTitle = NSLocalizedString("Error", comment: "")
             errorMessage = NSLocalizedString("An unexpected error occurred. Please try again.", comment: "")
         }
-
+        
         // Show the alert
         showAlert(title: errorTitle, message: errorMessage)
     }
-
+    
+    // MARK: - Show Alert
+    
     private func showAlert(title: String, message: String) {
         self.alertTitle = title
         self.alertMessage = message
         self.showAlert = true
     }
     
-    // Function to send login email
-    func sendLoginEmail() async {
-        if validateForEmailLogin() {
-            DispatchQueue.main.async { withAnimation { self.loading = true } }
-
-            let result = await authenticationManager.loginEmail(email: self.username)
-            DispatchQueue.main.async { withAnimation { self.loading = false } }
-
-            switch result {
-            case .success:
-                HapticManager.shared.trigger(.success)
-                DispatchQueue.main.async {
-                    self.loginErrorText = ""
-                    self.loginError = false
-                    self.emailSent = true
-                    UniversalLinksManager.shared.resetLink()
-                }
-            case .failure(let error):
-                HapticManager.shared.trigger(.error)
-                DispatchQueue.main.async {
-                    self.handleLoginError(error)
-                }
-                self.loginError = true
-                self.errorEmailSent = true
-            }
-        }
-    }
-
-    // Function to login with email token
-    func loginWithEmail(token: String) async {
-        DispatchQueue.main.async { withAnimation { self.loading = true } }
-
-        let result = await authenticationManager.loginEmailToken(token: token)
-        DispatchQueue.main.async { withAnimation { self.loading = false } }
-
-        switch result {
-        case .success:
-            HapticManager.shared.trigger(.success)
-            DispatchQueue.main.async {
-                self.loginErrorText = ""
-                self.loginError = false
-                UniversalLinksManager.shared.resetLink()
-            }
-        case .failure(let error):
-            HapticManager.shared.trigger(.error)
-            DispatchQueue.main.async {
-                self.handleLoginError(error)
-            }
-            self.loginError = true
-        }
-    }
-
+    
+    // MARK: - Reset Password
     // Function to reset password
     func resetPassword(password: String, token: String) async {
         let result = await authenticationManager.resetPassword(password: password, token: token)
-
+        
         switch result {
         case .success:
             HapticManager.shared.trigger(.success)

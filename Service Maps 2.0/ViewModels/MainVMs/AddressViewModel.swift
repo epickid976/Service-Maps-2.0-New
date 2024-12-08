@@ -13,14 +13,18 @@ import NukeUI
 import ScalingHeaderScrollView
 import Nuke
 
+// MARK: - AddressViewModel
+
 @MainActor
 class AddressViewModel: ObservableObject {
-    private var cancellables = Set<AnyCancellable>()
+    // MARK: - Dependencies
     
-    // Dependencies
     @ObservedObject var dataStore = StorageManager.shared
-    @ObservedObject var dataUploaderManager = DataUploaderManager()
+       @ObservedObject var dataUploaderManager = DataUploaderManager()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    
+    // MARK: - Properties
+     private var cancellables = Set<AnyCancellable>()
     
     // Published properties for UI
     @Published var addressData: [AddressData]? = nil
@@ -49,18 +53,21 @@ class AddressViewModel: ObservableObject {
     @Published var isShowingSearch = false
     @Published var showImageViewer = false
     
-    // Initializer
+     // MARK: - Initializers
+    
     init(territory: Territory, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
         getAddresses(territoryAddressIdToScrollTo: territoryAddressIdToScrollTo)
     }
     
+    // MARK: - Methods
     // Address deletion logic
     @BackgroundActor
     func deleteAddress(address: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteTerritoryAddress(territoryAddressId: address)
     }
     
+    // MARK: - UI Large Header
     //Headers
     @ViewBuilder
     func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {
@@ -112,6 +119,7 @@ class AddressViewModel: ObservableObject {
         
     }
     
+    // MARK: - UI Small Header
     @ViewBuilder
     var smallHeader: some View {
         HStack(spacing: 16) {
@@ -166,6 +174,7 @@ class AddressViewModel: ObservableObject {
     }
 }
 
+// MARK: - Extension Publishers
 @MainActor
 extension AddressViewModel {
     // Fetch and observe address data from GRDB

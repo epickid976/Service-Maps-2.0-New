@@ -16,18 +16,39 @@ import AlertKit
 import MijickPopups
 import Toasts
 
+//MARK: - CallsView
+
 struct CallsView: View {
+    
+    //MARK: - Environment
+    
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentToast) var presentToast
+    @Environment(\.mainWindowSize) var mainWindowSize
+    
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: CallsViewModel
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    //MARK: - Properties
+    
     var phoneNumber: PhoneNumber
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
-    @Environment(\.presentationMode) var presentationMode
-    @Environment(\.presentToast) var presentToast
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
     @State private var isScrollingDown = false
+    
+    @State private var hideFloatingButton = false
+    @State var previousViewOffset: CGFloat = 0
+    let minimumOffset: CGFloat = 60
+    
+    
+    @State var highlightedCallId: String?
+    
+    //MARK: - Initializers
     
     init(phoneNumber: PhoneNumber, callToScrollTo: String? = nil) {
         self.phoneNumber = phoneNumber
@@ -35,14 +56,7 @@ struct CallsView: View {
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
-    @State private var hideFloatingButton = false
-    @State var previousViewOffset: CGFloat = 0
-    let minimumOffset: CGFloat = 60
-    @Environment(\.mainWindowSize) var mainWindowSize
-    
-    @State var highlightedCallId: String?
-    
-    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    //MARK: - Body
     
     var body: some View {
         GeometryReader { proxy in
@@ -135,11 +149,11 @@ struct CallsView: View {
                             if value {
                                 CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber){
                                     let toast = ToastValue(
-                                     icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
                                         message: "Call Added"
                                     )
                                     presentToast(toast)
-                             }.present()
+                                }.present()
                             }
                         }
                         //.scrollIndicators(.never)
@@ -154,7 +168,7 @@ struct CallsView: View {
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })//.keyboardShortcut(.delete, modifiers: .command)
-                                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                 }
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -175,19 +189,6 @@ struct CallsView: View {
                         .refreshable {
                             viewModel.synchronizationManager.startupProcess(synchronizing: true)
                         }
-//                        .onChange(of: viewModel.dataStore.synchronized) { value in
-//                            if value {
-//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                                    viewModel.getCalls()
-//                                }
-//                            }
-//                        }
-//                        .onChange(of: realtimeManager.lastMessage) { value in
-//                            if value != nil {
-//                                viewModel.getCalls()
-//                            }
-//                            
-//                        }
                         .onChange(of: viewModel.callToScrollTo) { id in
                             if let id = id {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -213,11 +214,11 @@ struct CallsView: View {
                 .animation(.spring(), value: hideFloatingButton)
                 .vSpacing(.bottom).hSpacing(.trailing)
                 .padding()
-                //.keyboardShortcut("+", modifiers: .command)
-                
             }
         }
     }
+    
+    //MARK: - Call Cell
     
     @ViewBuilder
     func callCellView(callData: PhoneCallData) -> some View {
@@ -235,11 +236,11 @@ struct CallsView: View {
                             self.viewModel.callToDelete = callData.phoneCall.id
                             CentrePopup_DeleteCall(viewModel: viewModel){
                                 let toast = ToastValue(
-                                 icon: Image(systemName: "checkmark.circle.fill"),
+                                    icon: Image(systemName: "checkmark.circle.fill"),
                                     message: "Call Deleted"
                                 )
                                 presentToast(toast)
-                         }.present()
+                            }.present()
                         }
                     } label: {
                         HStack {
@@ -272,11 +273,11 @@ struct CallsView: View {
                         self.viewModel.callToDelete = callData.phoneCall.id
                         CentrePopup_DeleteCall(viewModel: viewModel){
                             let toast = ToastValue(
-                             icon: Image(systemName: "checkmark.circle.fill"),
+                                icon: Image(systemName: "checkmark.circle.fill"),
                                 message: "Call Deleted"
                             )
                             presentToast(toast)
-                     }.present()
+                        }.present()
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -310,6 +311,8 @@ struct CallsView: View {
         
     }
 }
+
+//MARK: - Delete Call Popup
 
 struct CentrePopup_DeleteCall: CentrePopup {
     @ObservedObject var viewModel: CallsViewModel
@@ -402,10 +405,13 @@ struct CentrePopup_DeleteCall: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
+
+//MARK: - Add Call Popup
+
 struct CentrePopup_AddCall: CentrePopup {
     @ObservedObject var viewModel: CallsViewModel
     var phoneNumber: PhoneNumber
@@ -423,34 +429,34 @@ struct CentrePopup_AddCall: CentrePopup {
     
     func createContent() -> some View {
         AddCallView(call: viewModel.currentCall, phoneNumber: phoneNumber) {
-                viewModel.presentSheet = false
-                dismissLastPopup()
-               onDone()
+            viewModel.presentSheet = false
+            dismissLastPopup()
+            onDone()
         } onDismiss: {
             viewModel.presentSheet = false
             dismissLastPopup()
         }
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
-            .simultaneousGesture(
-                // Hide the keyboard on scroll
-                DragGesture().onChanged { _ in
-                    UIApplication.shared.sendAction(
-                        #selector(UIResponder.resignFirstResponder),
-                        to: nil,
-                        from: nil,
-                        for: nil
-                    )
-                }
-            )
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .simultaneousGesture(
+            // Hide the keyboard on scroll
+            DragGesture().onChanged { _ in
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.resignFirstResponder),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )
+            }
+        )
     }
     
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }

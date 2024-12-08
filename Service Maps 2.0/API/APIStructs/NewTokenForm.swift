@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - New Token Form
 public struct NewTokenForm: Codable, Sendable {
     var name: String
     var moderator: Bool

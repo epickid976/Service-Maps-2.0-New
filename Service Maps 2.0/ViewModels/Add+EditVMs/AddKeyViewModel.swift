@@ -9,32 +9,40 @@ import Foundation
 import SwiftUI
 import Combine
 
+// MARK: - AddKeyViewModel
+
 @MainActor
 class AddKeyViewModel: ObservableObject {
+    
+    // MARK: - Dependencies
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
-    
+    @Published private var dataUploader = DataUploaderManager()
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
+    
+    // MARK: - Initializers
+    
+    init(keyData: KeyData?) {
+            self.keyData = keyData
+            if let keyData = keyData {
+                getTerritories(withTerritories: keyData.territories)
+                servant = keyData.key.moderator
+                name = keyData.key.name
+            }
+            error = ""
+            getTerritories()
+        }
+    
+    // MARK: - Properties
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(keyData: KeyData?) {
-        self.keyData = keyData
-        if let keyData = keyData {
-            getTerritories(withTerritories: keyData.territories)
-            servant = keyData.key.moderator
-            name = keyData.key.name
-        }
-        error = ""
-        getTerritories()
-    }
+    
     @Published var keyData: KeyData?
     @Published var name = ""
     @Published var servant = false
-    
-    @Published private var dataUploader = DataUploaderManager()
     
     @Published var error = ""
     
@@ -49,6 +57,7 @@ class AddKeyViewModel: ObservableObject {
     @Published var progress: CGFloat = 0.0
     @Published var optionsAnimation = false
     
+    // MARK: - UI Helper Methods
                        
     func isSelected(territoryData: TerritoryData) -> Bool {
         return selectedTerritories.contains(territoryData)
@@ -67,6 +76,8 @@ class AddKeyViewModel: ObservableObject {
         // Force view update by reassigning the array
         self.selectedTerritories = self.selectedTerritories
     }
+    
+    // MARK: - Methods
     @BackgroundActor
     func addToken() async -> Result<Void, Error> {
         await MainActor.run {
@@ -140,8 +151,12 @@ class AddKeyViewModel: ObservableObject {
     
 }
 
+// MARK: - Extension Publishers
 @MainActor
 extension AddKeyViewModel {
+    
+    // MARK: - Fetch Territories
+    
     func getTerritories() {
         GRDBManager.shared.getTerritoryData()
             .receive(on: DispatchQueue.main) // Update on main thread

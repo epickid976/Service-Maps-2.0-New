@@ -266,7 +266,15 @@ func formattedDate(date: Date, withTime: Bool = true) -> String {
     }
 }
 
+func daysSince(date: Date) -> Int {
+    let calendar = Calendar.current
+    let currentDate = Date()
+    
+    let components = calendar.dateComponents([.day], from: date, to: currentDate)
+    return components.day ?? 0 // Default to 0 if the calculation fails
+}
 
+//MARK: - Tokens Are Equal
 func areEqual(tokenModel: Token, tokenObject: Token) -> Bool {
   return tokenModel.id == tokenObject.id &&
          tokenModel.name == tokenObject.name &&
@@ -277,6 +285,7 @@ func areEqual(tokenModel: Token, tokenObject: Token) -> Bool {
          tokenModel.user == tokenObject.user
 }
 
+//MARK: - Rounded Corner Extension
 /// Rounded Corner and Animation Functions
 struct RoundedCorner: Shape {
 
@@ -289,6 +298,7 @@ struct RoundedCorner: Shape {
     }
 }
 
+//MARK: - Animations and Transitions
 extension AnyNavigationTransition {
     static var zoom: Self {
         .init(Zoom())
@@ -307,23 +317,33 @@ struct Zoom: NavigationTransitions.NavigationTransition {
     }
 }
 
-// Additional utility functions
+extension SwiftUI.Animation {
+    static var sophisticated: SwiftUI.Animation {
+        return .interpolatingSpring(mass: 1, stiffness: 170, damping: 16, initialVelocity: 0)
+            .speed(1.2)
+    }
+}
 
+extension AnyTransition {
+    static var customBackInsertion: AnyTransition {
+        AnyTransition.asymmetric(
+            insertion: AnyTransition.opacity
+                .combined(with: .scale(scale: 0.8, anchor: .center))
+                .combined(with: .move(edge: .bottom)),
+            removal: .opacity
+        )
+        .animation(.spring())
+    }
+}
+
+//MARK: - Utility Functions
+// Additional utility functions
 @MainActor
 func openMail(emailTo:String, subject: String, body: String) {
     if let url = URL(string: "mailto:\(emailTo)?subject=\(subject.fixToBrowserString())&body=\(body.fixToBrowserString())"),
        UIApplication.shared.canOpenURL(url)
     {
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
-    }
-}
-
-extension Result where Success == Bool {
-    func onSuccess(_ action: () -> Void) -> Result {
-        if case .success(true) = self {
-            action()
-        }
-        return self
     }
 }
 
@@ -341,14 +361,6 @@ func copyToClipboard(text: String) {
         UIPasteboard.general.string = text
     }
 
-func daysSince(date: Date) -> Int {
-    let calendar = Calendar.current
-    let currentDate = Date()
-    
-    let components = calendar.dateComponents([.day], from: date, to: currentDate)
-    return components.day ?? 0 // Default to 0 if the calculation fails
-}
-
 @MainActor
 func resignFirstResponderManually() {
     UIApplication.shared.sendAction(
@@ -359,9 +371,81 @@ func resignFirstResponderManually() {
     )
 }
 
-extension SwiftUI.Animation {
-    static var sophisticated: SwiftUI.Animation {
-        return .interpolatingSpring(mass: 1, stiffness: 170, damping: 16, initialVelocity: 0)
-            .speed(1.2)
+//MARK: - Column View Properties
+
+private struct ColumnViewPreferenceKey: EnvironmentKey {
+    static let defaultValue = true // Default to column view on
+}
+
+
+class ColumnViewModel: ObservableObject {
+    
+    @AppStorage("columnViewPreference") var isColumnViewEnabled = true
+
+    @AppStorage("hapticFeedback") var hapticFeedback = true
+    
+}
+
+//MARK: - Other Environment Values
+struct ViewOffsetKey: PreferenceKey, Sendable {
+    typealias Value = CGFloat
+    static let defaultValue = CGFloat.zero
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value += nextValue()
+    }
+}
+
+extension EnvironmentValues {
+    var columnViewPreference: Bool {
+        get { self[ColumnViewPreferenceKey.self] }
+        set { self[ColumnViewPreferenceKey.self] = newValue }
+    }
+}
+
+extension Binding where Value == Bool {
+    // nagative bool binding same as `!Value`
+    var not: Binding<Value> {
+        Binding<Value> (
+            get: { !self.wrappedValue },
+            set: { self.wrappedValue = $0}
+        )
+    }
+}
+
+struct NavigationLazyView<Content: View>: View {
+    let build: () -> Content
+    init(_ build: @autoclosure @escaping () -> Content) {
+        self.build = build
+    }
+    var body: some View {
+        build()
+    }
+}
+public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
+    var destination: () -> Destination
+    var label: () -> Label
+    
+    public init(@ViewBuilder destination: @escaping () -> Destination,
+                @ViewBuilder label: @escaping () -> Label) {
+        self.destination = destination
+        self.label = label
+    }
+    
+    public var body: some View {
+        NavigationLink {
+            LazyView {
+                destination()
+            }
+        } label: {
+            label()
+        }
+    }
+    
+    private struct LazyView<Content: View>: View {
+        var content: () -> Content
+        
+        var body: some View {
+            content()
+        }
     }
 }

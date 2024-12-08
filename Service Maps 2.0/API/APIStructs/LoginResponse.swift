@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - Login Response
+
 public struct LoginResponse: Codable, Sendable {
     var access_token: String
     var token_type: String

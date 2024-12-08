@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Change Action
 enum ChangeAction: Codable {
     case Add, Update, Delete
 }

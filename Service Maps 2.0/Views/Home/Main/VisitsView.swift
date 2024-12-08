@@ -15,22 +15,33 @@ import AlertKit
 import MijickPopups
 import Toasts
 
+//MARK: - VisitsView
+
 struct VisitsView: View {
+    
+    //MARK: - Initializers
     
     init(house: House, visitIdToScrollTo: String? = nil) {
         self.house = house
         let initialViewModel = VisitsViewModel(house: house, visitIdToScrollTo: visitIdToScrollTo)
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
+    
     var house: House
+    
+    //MARK: - Dependencies
     
     @StateObject var viewModel: VisitsViewModel
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     
+    //MARK: - Environment
+    
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.mainWindowSize) var mainWindowSize
     @Environment(\.presentToast) var presentToast
+    
+    //MARK: - Properties
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -42,6 +53,8 @@ struct VisitsView: View {
     @State var highlightedVisitId: String?
     
     let minimumOffset: CGFloat = 60
+    
+    //MARK: - Body
     
     var body: some View {
         GeometryReader { proxy in
@@ -158,7 +171,7 @@ struct VisitsView: View {
                                     Button("", action: { viewModel.syncAnimation = true;
                                         synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                                    Button("", action: { 
+                                    Button("", action: {
                                         viewModel.revisitAnimation.toggle()
                                         if viewModel.recallAdded {
                                             CentrePopup_DeleteRecall(viewModel: viewModel, house: house.id) {
@@ -230,6 +243,8 @@ struct VisitsView: View {
             }
         }
     }
+    
+    //MARK: - Visit Cell View
     
     @ViewBuilder
     func visitCellView(visitData: VisitData, mainWindowSize: CGSize, ipad: Bool = false) -> some View {
@@ -312,6 +327,8 @@ struct VisitsView: View {
         
     }
 }
+
+//MARK: - Delete Visit Popup
 
 struct CentrePopup_DeleteVisit: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
@@ -407,6 +424,8 @@ struct CentrePopup_DeleteVisit: CentrePopup {
     }
 }
 
+//MARK: - Add Visit Popup
+
 struct CentrePopup_AddVisit: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
     var onDone: () -> Void
@@ -457,6 +476,8 @@ struct CentrePopup_AddVisit: CentrePopup {
             
     }
 }
+
+//MARK: - Add Recall Popup
 
 struct CentrePopup_AddRecall: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel
@@ -533,6 +554,8 @@ struct CentrePopup_AddRecall: CentrePopup {
             
     }
 }
+
+//MARK: - Delete Recall Popup
 
 struct CentrePopup_DeleteRecall: CentrePopup {
     @ObservedObject var viewModel: VisitsViewModel

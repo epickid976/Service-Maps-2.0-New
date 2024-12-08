@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Access Level
 enum AccessLevel {
     case User, Moderator, Admin
 }

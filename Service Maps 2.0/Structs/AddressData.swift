@@ -7,6 +7,7 @@
 
 import Foundation
 
+//MARK: - Address Data
 struct AddressData: Hashable, Identifiable {
     var id: UUID
     var address: TerritoryAddress

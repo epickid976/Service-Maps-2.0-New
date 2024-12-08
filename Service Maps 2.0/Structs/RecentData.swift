@@ -7,6 +7,7 @@
 
 import Foundation
 
+//MARK: - Recent Data
 struct RecentTerritoryData: Hashable, Identifiable {
     var id: UUID
     var territory: Territory
@@ -23,6 +24,7 @@ struct RecentTerritoryData: Hashable, Identifiable {
     }
 }
 
+//MARK: - Recent Phone Data
 struct RecentPhoneData: Hashable, Identifiable {
     var id: UUID
     var territory: PhoneTerritory

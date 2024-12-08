@@ -111,3 +111,40 @@ extension View {
         }
     }
 }
+
+//MARK: - Scroll
+
+struct ScrollTransitionModifier: ViewModifier {
+    @Environment(\.isScrollEnabled) var isScrollEnabled: Bool // Detect if scroll is active (iOS 16)
+    @State private var opacity: Double = 1.0 // Local state for opacity (iOS 16)
+    @State private var scale: CGFloat = 1.0 // Local state for scale (iOS 16)
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            content.scrollTransition { content, phase in
+                content
+                    .opacity(phase.isIdentity || phase == .bottomTrailing ? 1 : 0)
+                    .scaleEffect(phase.isIdentity || phase == .bottomTrailing ? 1 : 0.75)
+            }
+        } else {
+            content
+        }
+    }
+}
+
+//MARK: - Optional View Modifier
+extension View {
+    @ViewBuilder
+    func optionalViewModifier<Content: View>(@ViewBuilder content: @escaping (Self) -> Content) -> some View {
+        content (self)
+    }
+}
+
+// MARK: - Shadowed Style
+extension View {
+    func shadowedStyle() -> some View {
+        self
+            .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 0)
+            .shadow(color: .black.opacity(0.16), radius: 24, x: 0, y: 0)
+    }
+}

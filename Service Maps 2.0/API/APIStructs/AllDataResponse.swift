@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 
+// MARK: - All Data Response
 public struct AllDataResponse: Codable, Sendable {
     var territories: [Territory]
     var addresses: [TerritoryAddress]

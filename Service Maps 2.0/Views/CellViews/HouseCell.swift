@@ -9,6 +9,8 @@ import SwiftUI
 import NukeUI
 import Combine
 
+//MARK: - House Cell
+
 struct HouseCell: View {
     @State var revisitView: Bool = false
     @StateObject private var visitViewModel: VisitsViewModel
@@ -28,6 +30,8 @@ struct HouseCell: View {
         self.mainWindowSize = mainWindowSize
         _revisitView = State(initialValue: revisitView)
     }
+    
+    //MARK: - Body
     
     var body: some View {
         HStack(spacing: 10) {

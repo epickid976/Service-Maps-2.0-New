@@ -16,8 +16,12 @@ import MijickPopups
 import ImageViewerRemote
 import Toasts
 
+//MARK: - Territory Address View
+
 struct TerritoryAddressView: View {
     var territory: Territory
+    
+    //MARK: - Initializer
     
     init(territory: Territory, territoryAddressIdToScrollTo: String? = nil) {
         self.territory = territory
@@ -27,14 +31,20 @@ struct TerritoryAddressView: View {
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
+    //MARK: - Environment
+    
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
     @Environment(\.mainWindowSize) var mainWindowSize
+    
+    //MARK: - Dependencies
     
     @StateObject var viewModel: AddressViewModel
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
+    
+    //MARK: - Properties
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -46,6 +56,7 @@ struct TerritoryAddressView: View {
     @State var highlightedTerritoryAddressId: String?
     @State var imageURL = String()
     
+    //MARK: - Body
     
     var body: some View {
         GeometryReader { proxy in
@@ -226,24 +237,15 @@ struct TerritoryAddressView: View {
                             Button("", action: { viewModel.syncAnimation = true;
                                 viewModel.synchronizationManager.startupProcess(synchronizing: true)  }) //.ke yboardShortcut("s", modifiers: .command)
                                 .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                            //                    if viewModel.isAdmin {
-                            //                        Button("", action: { viewModel.optionsAnimation.toggle();   ; viewModel.presentSheet.toggle() })
-                            //                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-                            //                    }
                         }
                     }
                 }
             }
             .navigationTransition(viewModel.presentSheet || viewModel.territoryAddressIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-//            .onChange(of: viewModel.dataStore.synchronized) { value in
-//                if value {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                        viewModel.getAddresses()
-//                    }
-//                }
-//            }
         }.overlay(ImageViewerRemote(imageURL: $imageURL, viewerShown: $viewModel.showImageViewer))
     }
+    
+    //MARK: - Address Cell
     
     @ViewBuilder
     func addressCell(addressData: AddressData, mainWindowSize: CGSize) -> some View {
@@ -393,6 +395,8 @@ struct TerritoryAddressView: View {
     }
 }
 
+//MARK: - Delete Address Popup
+
 struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
     @ObservedObject var viewModel: AddressViewModel
     var onDone: () -> Void
@@ -490,6 +494,8 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
             
     }
 }
+
+//MARK: - Add Address Popup
 
 struct CentrePopup_AddAddress: CentrePopup {
     @ObservedObject var viewModel: AddressViewModel

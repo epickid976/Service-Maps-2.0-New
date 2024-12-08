@@ -11,29 +11,39 @@ import Alamofire
 import NavigationTransitions
 import Combine
 
+// MARK: - SignupView
+
 struct SignupView: View {
     
-    //ENVIRONMENT
+    // MARK: - Environment
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
     
+    // MARK: - Dependencies
+    ///View Model
     @ObservedObject private var viewModel: SignupViewModel
     
+    // MARK: - Properties
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
     @State var alwaysLoading = true
     @State var loading = false
-    //Focus
+    
+    // MARK: - Focus State
     @FocusState private var nameFocus: Bool
     @FocusState private var emailFocus: Bool
     @FocusState private var passwordFocus: Bool
     @FocusState private var confirmPasswordFocus: Bool
     
+    // MARK: - Initializer
     
     init() {
         let initialViewModel = SignupViewModel()
         _viewModel = ObservedObject(wrappedValue: initialViewModel)
     }
+    
+    // MARK: - Body
+    
     var body: some View {
         NavigationStack {
                 LazyVStack {
@@ -94,7 +104,9 @@ struct SignupView: View {
                             .foregroundColor(.red)
                             
                     }
+                    
                     Spacer()
+                    
                     HStack {
                         if !loading {
                             CustomBackButton() {
@@ -167,11 +179,13 @@ struct SignupView: View {
     }
 }
 
+// MARK: - Preview
 
 #Preview {
     SignupView()
 }
 
+// MARK: - Hide Keyboard + Keyboard Adaptive
 #if canImport(UIKit)
 extension View {
     func hideKeyboard() {

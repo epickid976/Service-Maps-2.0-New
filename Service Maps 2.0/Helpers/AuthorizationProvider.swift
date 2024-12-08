@@ -8,22 +8,20 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Authorization Provider
+
 @MainActor
 class AuthorizationProvider: ObservableObject {
+    // MARK: - Singleton
+    
     static let shared = AuthorizationProvider()
+    
+    // MARK: - Properties
     
     let defaults = UserDefaults.standard
     
-    private init() {
-        self.authorizationToken = defaults.string(forKey: authorizationTokenKey)
-        self.token = defaults.string(forKey: tokenKey)
-        self.congregationId = Int64(defaults.integer(forKey: congregationIdKey))
-        self.congregationPass = defaults.string(forKey: congregationPassKey)
-        self.phoneCongregationId = defaults.string(forKey: phoneCongregationIdKey)
-        self.phoneCongregationPass = defaults.string(forKey: phoneCongregationPassKey)
-    }
+    //MARK: - Keys
     
-    //MARK: Keys
     private var authorizationTokenKey = "authorizationTokenKey"
     private var tokenKey = "tokenKey"
     private var congregationIdKey = "congregationIdKey"
@@ -32,6 +30,15 @@ class AuthorizationProvider: ObservableObject {
     private var phoneCongregationIdKey = "phoneCongregationIdKey"
     private var phoneCongregationPassKey = "phoneCongregationPassKey"
     
+    //MARK: - Initializer
+    private init() {
+        self.authorizationToken = defaults.string(forKey: authorizationTokenKey)
+        self.token = defaults.string(forKey: tokenKey)
+        self.congregationId = Int64(defaults.integer(forKey: congregationIdKey))
+        self.congregationPass = defaults.string(forKey: congregationPassKey)
+        self.phoneCongregationId = defaults.string(forKey: phoneCongregationIdKey)
+        self.phoneCongregationPass = defaults.string(forKey: phoneCongregationPassKey)
+    }
     //MARK: Published Variables
     @Published var authorizationToken: String? = nil {
         didSet {
@@ -68,6 +75,7 @@ class AuthorizationProvider: ObservableObject {
     
     @Published var isLoggedOut = false
     
+    //MARK: - Clear
     func clear() {
         authorizationToken = nil
         token = nil

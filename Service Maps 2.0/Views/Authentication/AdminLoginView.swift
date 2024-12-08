@@ -10,13 +10,26 @@ import SwiftUI
 import NavigationTransitions
 import ActivityIndicatorView
 
+// MARK: - Admin Login View
+
 struct AdminLoginView: View {
+    
+    // MARK: - OnDone
+    
     var onDone: () -> Void
+    
+    // MARK: - Environment
     
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.sizeCategory) var sizeCategory
+    
+    // MARK: - Dependencies
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    let congregationService = CongregationService()
+    
+    // MARK: - Properties
     
     @State private var showAlert = false {
         didSet {
@@ -31,11 +44,6 @@ struct AdminLoginView: View {
     
     @State var loading = false
     @State var alwaysLoading = true
-    
-    
-    //MARK: API
-    let congregationService = CongregationService()
-    
     
     @State private var username: String = ""
     @State private var password: String = ""
@@ -52,7 +60,7 @@ struct AdminLoginView: View {
     @State var loginErrorText = ""
     @State var loginError = false
     
-    @Environment(\.sizeCategory) var sizeCategory
+    // MARK: - Body
     
     var body: some View {
         
@@ -135,7 +143,6 @@ struct AdminLoginView: View {
                     }
                 }
                 
-                
                 Spacer()
                 
                 HStack {
@@ -157,7 +164,7 @@ struct AdminLoginView: View {
                                 switch await AuthenticationManager().signInAdmin(congregationSignInForm: CongregationSignInForm(id: Int64(username) ?? 0, password: password)) {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                         withAnimation {
                                             loading = false
                                         }
@@ -168,7 +175,7 @@ struct AdminLoginView: View {
                                     if error.localizedDescription == "No Internet" {
                                         alertTitle = "No Internet Connection"
                                         alertMessage = "There was a problem with the internet connection. \nPlease check your internect connection and try again."
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation {
                                                 //apiError = "Error Signing up"
                                                 loading = false
@@ -200,7 +207,6 @@ struct AdminLoginView: View {
                                         alertMessage = "Error logging in. \nPlease try again."
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             withAnimation {
-                                                //apiError = "Error Signing up"
                                                 loading = false
                                                 showAlert = true
                                             }
@@ -229,8 +235,6 @@ struct AdminLoginView: View {
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
                     .controlSize(.large)
-                    //.keyboardShortcut("\r", modifiers: .command)
-                    //.padding([.bottom])
                 }
                 .padding()
                 
@@ -259,6 +263,8 @@ struct AdminLoginView: View {
         
     }
     
+    // MARK: - Validate Action
+    
     func validate() -> Bool {
         
         if self.username.isEmpty || self.password.isEmpty  {
@@ -283,6 +289,8 @@ struct AdminLoginView: View {
         return true
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     AdminLoginView() {

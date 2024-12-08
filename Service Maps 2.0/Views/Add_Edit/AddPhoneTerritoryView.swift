@@ -9,14 +9,21 @@ import Foundation
 import SwiftUI
 import Nuke
 
+//MARK: - AddPhoneTerritoryView
+
 struct AddPhoneTerritoryView: View {
     
     var territory: PhoneTerritory?
     
+    //MARK: - Environment
+    
     @Environment(\.dismiss) private var dismiss
+    
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: AddPhoneTerritoryViewModel
     
-    @State var title = ""
+    //MARK: - Initializers
     
     init(territory: PhoneTerritory?, onDone: @escaping () -> Void) {
         if let territory = territory {
@@ -29,10 +36,15 @@ struct AddPhoneTerritoryView: View {
         self.onDone = onDone
     }
     
+    //MARK: - Properties
+    
+    @State var title = ""
     @FocusState private var numberFocus: Bool
     @FocusState private var descriptionFocus: Bool
     
     var onDone: () -> Void
+    
+    //MARK: - Body
     
     var body: some View {
         ZStack {
@@ -210,12 +222,30 @@ struct AddPhoneTerritoryView: View {
     }
 }
 
+//MARK: - AddPhoneTerritoryViewModel
+
 @MainActor
 class AddPhoneTerritoryViewModel: ObservableObject {
     
+    //MARK: - Init
     init() {
         error = ""
     }
+    
+    //MARK: - Main Init
+        init(territory: PhoneTerritory? = nil) {
+            Task {
+                if let territory = territory {
+                    if let imageLink = URL(string: territory.getImageURL()) {
+                        let image = try await ImagePipeline.shared.image(for: imageLink)
+                        self.previewImage = image
+                    }
+                    
+                }
+            }
+        }
+    
+    //MARK: - Properties
     
     @Published var number: Int? = nil
     @Published private var dataUploader = DataUploaderManager()
@@ -239,6 +269,8 @@ class AddPhoneTerritoryViewModel: ObservableObject {
     
     @Published var loading = false
     
+    //MARK: - Methods
+    
     func addTerritory() async -> Result<Void, Error>{
         loading = true
         let territoryObject = PhoneTerritory(id: "\(AuthorizationProvider.shared.congregationId ?? 0)-\(number ?? 0)", congregation: String(AuthorizationProvider.shared.congregationId ?? 0), number: Int64(number!), description: description, image: nil)
@@ -256,17 +288,7 @@ class AddPhoneTerritoryViewModel: ObservableObject {
         return await dataUploader.updatePhoneTerritory(territory: territoryObject, image: imageToSend)
     }
     
-    init(territory: PhoneTerritory? = nil) {
-        Task {
-            if let territory = territory {
-                if let imageLink = URL(string: territory.getImageURL()) {
-                    let image = try await ImagePipeline.shared.image(for: imageLink)
-                    self.previewImage = image
-                }
-                
-            }
-        }
-    }
+    
     
     func checkInfo() -> Bool {
         if number == nil || description == "" {

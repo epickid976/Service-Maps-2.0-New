@@ -8,10 +8,14 @@
 import Foundation
 import Papyrus
 
+//MARK: - Authentication Service
+
 @BackgroundActor
 class AuthenticationService: @unchecked Sendable {
+    //MARK: - API
     private lazy var api: AuthenticationRoutes = AuthenticationRoutesAPI(provider: APIProvider().provider)
     
+    //MARK: - Sign Up
     // Sign up a new user with their details
     func signUp(signUpForm: SignUpForm) async -> Result<Void, Error> {
         do {
@@ -22,6 +26,7 @@ class AuthenticationService: @unchecked Sendable {
         }
     }
     
+    //MARK: - Login
     // Log in the user and return the login response
     func login(logInForm: LoginForm) async -> Result<LoginResponse, Error> {
         do {
@@ -52,6 +57,7 @@ class AuthenticationService: @unchecked Sendable {
         }
     }
     
+    //MARK: - Validation
     // Resend email validation to a user
     func resendEmailValidation(email: String) async -> Result<Void, Error> {
         do {
@@ -72,6 +78,7 @@ class AuthenticationService: @unchecked Sendable {
         }
     }
     
+    //MARK: - Logout
     // Log out the current user
     func logout() async -> Result<Void, Error> {
         do {
@@ -82,6 +89,7 @@ class AuthenticationService: @unchecked Sendable {
         }
     }
     
+    //MARK: - Get User
     // Fetch details of the currently authenticated user
     func user() async -> Result<UserResponse, Error> {
         do {
@@ -92,6 +100,7 @@ class AuthenticationService: @unchecked Sendable {
         }
     }
     
+    //MARK: - Delete Account
     // Delete the current user’s account
     func deleteAccount() async -> Result<Void, Error> {
         do {
@@ -102,6 +111,7 @@ class AuthenticationService: @unchecked Sendable {
         }
     }
     
+    //MARK: - Edit Name
     // Edit the username of the current user
     func editUserName(userName: String) async -> Result<Void, Error> {
         do {

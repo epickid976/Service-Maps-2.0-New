@@ -11,8 +11,12 @@ import Nuke
 import AlertKit
 import StoreKit
 
+// MARK: - SettingsViewModel
+
 @MainActor
 class SettingsViewModel: ObservableObject {
+    
+    // MARK: - Dependencies
     
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var authenticationManager = AuthenticationManager()
@@ -20,6 +24,8 @@ class SettingsViewModel: ObservableObject {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @ObservedObject private var viewModel = ColumnViewModel()
+    
+    // MARK: - Properties
     
     @Published var backAnimation = false
     @Published var progress: CGFloat = 0.0
@@ -32,18 +38,6 @@ class SettingsViewModel: ObservableObject {
     
     @Published var showSharePopup = false
     @Published var selectedAction: ExpandCollapseAction = .none // Track picker state
-
-    func getCongregationName() -> String{
-        return dataStore.congregationName ?? ""
-    }
-    
-    func exitAdministrator() {
-        authenticationManager.exitAdministrator()
-    }
-    
-    func exitPhoneLogin() {
-        authenticationManager.exitPhoneLogin()
-    }
     
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
@@ -64,6 +58,20 @@ class SettingsViewModel: ObservableObject {
     
     @Published var requestReview = false
     
+    // MARK: - Get Functions
+    func getCongregationName() -> String{
+            return dataStore.congregationName ?? ""
+        }
+        
+        func exitAdministrator() {
+            authenticationManager.exitAdministrator()
+        }
+        
+        func exitPhoneLogin() {
+            authenticationManager.exitPhoneLogin()
+        }
+    
+    // MARK: - Edit User
     func editUserName(name: String) async -> Result<Bool, Error> {
         let result = await authenticationManager.editUserName(userName: name)
         
@@ -76,6 +84,10 @@ class SettingsViewModel: ObservableObject {
         }
     }
 
+    // MARK: - UI ViewBuilder Functions
+    /// Settings View to deload actual view
+    
+    // MARK: - Profile View
     @ViewBuilder
     func profile(showBack: Bool, onDone: @escaping () -> Void?) -> some View {
         VStack {
@@ -98,14 +110,8 @@ class SettingsViewModel: ObservableObject {
                         .foregroundColor(.primary)
                         .fontWeight(.heavy)
                         .hSpacing(.leading)
-                        
                 }
-                
-                    
             }
-            
-            
-            
             
             CustomButton(loading: loading, title: NSLocalizedString("Logout", comment: "")) {
                 HapticManager.shared.trigger(.lightImpact)
@@ -120,7 +126,6 @@ class SettingsViewModel: ObservableObject {
                         }
                         SynchronizationManager.shared.startupProcess(synchronizing: false)
                         
-                        
                     case .failure(let error):
                         HapticManager.shared.trigger(.error)
                         
@@ -128,6 +133,7 @@ class SettingsViewModel: ObservableObject {
                     }
                 }
             }
+            
             if errorText != "" {
                 Text(errorText)
                     .fontWeight(.bold)
@@ -137,6 +143,8 @@ class SettingsViewModel: ObservableObject {
         }.padding(.bottom)
             .frame(maxWidth: .infinity)
     }
+    
+    // MARK: - Phone Login Cell
     
     @ViewBuilder
     func phoneLoginInfoCell(mainWindowSize: CGSize, showBack: Bool, onDone: @escaping () -> Void?) -> some View {
@@ -179,10 +187,7 @@ class SettingsViewModel: ObservableObject {
                                     .frame(maxWidth: 120)
                                     .hSpacing(.trailing)
                                 }
-                                
                             }
-                            
-                            
                         }
                     }
                 } else {
@@ -203,7 +208,6 @@ class SettingsViewModel: ObservableObject {
                             .imageScale(.large)
                             .padding(.horizontal)
                     }
-                    //.padding(.horizontal)
                 }
             }.onTapGesture {
                 HapticManager.shared.trigger(.lightImpact)
@@ -215,6 +219,8 @@ class SettingsViewModel: ObservableObject {
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }.padding(.bottom).frame(maxWidth: .infinity)
     }
+    
+    // MARK: - Administrator Info Cell
     
     @ViewBuilder
     func administratorInfoCell(mainWindowSize: CGSize, showBack: Bool, onDone: @escaping () -> Void?) -> some View {
@@ -294,40 +300,7 @@ class SettingsViewModel: ObservableObject {
         }.padding(.bottom).frame(maxWidth: .infinity)
     }
     
-    @ViewBuilder
-    func languageLinkView(mainWindowSize: CGSize) -> some View {
-        VStack {
-            HStack {
-                Button {
-                    HapticManager.shared.trigger(.lightImpact)
-                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-                } label: {
-                    HStack {
-                        Image(systemName: "globe")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                        Text("Language")
-                            .font(.title3)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                        Spacer()
-                        Image(systemName: "arrowshape.right.circle.fill")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                            .foregroundColor(.primary)
-                    }
-                }
-                .hSpacing(.leading)
-                
-            }
-            .frame(minHeight: 50)
-            .padding(10)
-            .frame(minWidth: mainWindowSize.width * 0.95)
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-        }
-    }
+    // MARK: - Infos View
     
     @ViewBuilder
     func infosView(mainWindowSize: CGSize) -> some View {
@@ -350,7 +323,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }//.keyboardShortcut("j", modifiers: .command)
+            }
             .frame(minHeight: 50)
             
             Button {
@@ -370,7 +343,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }//.keyboardShortcut("p", modifiers: .command)
+            }
             .frame(minHeight: 50)
             
             
@@ -391,7 +364,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }//.keyboardShortcut("a", modifiers: [.command, .shift])
+            }
             .frame(minHeight: 50)
             
             Button {
@@ -412,7 +385,7 @@ class SettingsViewModel: ObservableObject {
                     }
                     .hSpacing(.leading)
                 }
-            }//.keyboardShortcut("a", modifiers: [.command, .shift])
+            }
             .frame(minHeight: 50)
             
             Button {
@@ -482,7 +455,7 @@ class SettingsViewModel: ObservableObject {
                     .hSpacing(.trailing)
                     .frame(maxWidth: 70)
                 }
-            }//.keyboardShortcut("u", modifiers: [.command, .shift])
+            }
             .frame(minHeight: 50)
         }
         .padding(10)
@@ -490,6 +463,8 @@ class SettingsViewModel: ObservableObject {
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
+    
+    // MARK: - Delete Cache Menu
     
     @ViewBuilder
     func deleteCacheMenu(mainWindowSize: CGSize) -> some View {
@@ -524,6 +499,8 @@ class SettingsViewModel: ObservableObject {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
+    // MARK: - Delete Account Menu
+    
     @ViewBuilder
     func deleteAccount(mainWindowSize: CGSize) -> some View {
         VStack {
@@ -555,6 +532,7 @@ class SettingsViewModel: ObservableObject {
     }
 }
 
+// MARK: - Expand Enum
 enum ExpandCollapseAction: String, CaseIterable, Identifiable {
     case expandAll = "Expand"
     case collapseAll = "Collapse"

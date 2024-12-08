@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Link Screens
 enum LinkScreens: String {
     case VALIDATE_EMAIL = "https://servicemaps.ejvapps.online/api/auth/signup/activate/"
     case REGISTER_KEY = "https://servicemaps.ejvapps.online/app/registerkey/"
@@ -16,6 +17,7 @@ enum LinkScreens: String {
     case OTHER = "Other"
 }
 
+// MARK: - Destination Enum
 enum DestinationEnum: String {
     case SplashScreen = "SplashScreenView"
     case HomeScreen = "HomeTabView"

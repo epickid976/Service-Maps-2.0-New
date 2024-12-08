@@ -7,12 +7,15 @@
 
 import Foundation
 
+// MARK: - User Response
+
 public struct UserResponse: Codable, Sendable {
     var id: Int
     var name: String
     var email: String
 }
 
+// MARK: - TokensWithAll
 public struct MyTokenWithAll: Codable, Sendable {
     var id: String
     var name: String
@@ -27,6 +30,8 @@ public struct MyTokenWithAll: Codable, Sendable {
     var token_users: [UserTokenResponse]
     var token_territories: [TokenTerritory]
 }
+
+// MARK: - UserTokenResponse
 
 public struct UserTokenResponse: Codable, Sendable {
     var id: String
@@ -67,6 +72,7 @@ public struct UserTokenResponse: Codable, Sendable {
     }
 }
 
+// MARK: - SimpleUserTokenResponse
 public struct SimpleUserTokenResponse: Codable, Sendable {
     var user: String
     var token: String

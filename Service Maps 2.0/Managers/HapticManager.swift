@@ -8,10 +8,20 @@
 import UIKit // Or SwiftUI, depending on your project
 import SwiftUI
 
+//MARK: - Haptic Manager
+
 @MainActor
 class HapticManager {
-    // Feedback Generators
+    //MARK: - Singleton
+    static let shared = HapticManager()
+    
+    //MARK: - Dependencies
+    
     @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    //MARK: - Feedback Generators
+    
+    // Feedback Generators
     private let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
     private let notificationGenerator = UINotificationFeedbackGenerator()
     private let selectionGenerator = UISelectionFeedbackGenerator()
@@ -21,7 +31,7 @@ class HapticManager {
     private let rigidImpact = UIImpactFeedbackGenerator(style: .rigid)
     private let softNotification = UINotificationFeedbackGenerator()
 
-    static let shared = HapticManager()
+    //MARK: - Initializer
     
     private init() {
             // Prepare the generators when the shared instance is created
@@ -65,6 +75,7 @@ class HapticManager {
     }
 }
 
+//MARK: - Haptic Type
 // Haptic Types Enum
 enum HapticType {
     case impact, success, error, warning, selectionChanged
@@ -74,7 +85,7 @@ enum HapticType {
     case softSuccess, softError, softWarning
 }
 
-
+//MARK: - View Extensions
 @MainActor
 extension NavigationLink {
     func onTapHaptic(_ type: HapticType) -> some View {
@@ -84,52 +95,3 @@ extension NavigationLink {
     }
 }
 
-
-class NavigationHistoryManager: ObservableObject {
-    @Published var history: [ViewName] = []
-
-    func append(view: ViewName) {
-        history.append(view)
-    }
-
-    func removeLast() {
-        history.removeLast()
-    }
-
-    func remove(to view: ViewName) {
-        if let index = history.firstIndex(of: view) {
-            history = Array(history.prefix(upTo: index + 1))
-        }
-    }
-}
-
-enum ViewName: String {
-    case territories = "Territories"
-    case addresses = "Addresses"
-    case houses = "Houses"
-    case visits = "Visits"
-}
-
-struct CustomNavigationBackButton: View {
-    @EnvironmentObject var navigationHistoryManager: NavigationHistoryManager
-    @Environment(\.presentationMode) var presentationMode
-
-    var body: some View {
-        Menu {
-            ForEach(navigationHistoryManager.history, id: \.self) { view in
-                Button(action: {
-                    navigationHistoryManager.remove(to: view)
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text(view.rawValue)
-                }
-            }
-        } label: {
-            HStack {
-                Image(systemName: "chevron.left")
-                Text("Back")
-            }
-        }
-        .padding()
-    }
-}

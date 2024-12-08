@@ -12,20 +12,27 @@ import AlertKit
 import Combine
 import SwipeActions
 
+// MARK: - PhoneScreenViewModel
+
 @MainActor
 class PhoneScreenViewModel: ObservableObject {
+    
+    // MARK: - Dependencies
+    
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+        @ObservedObject var dataStore = StorageManager.shared
+        @ObservedObject var dataUploaderManager = DataUploaderManager()
+    
+    
+    // MARK: - Initializers
     
     init(phoneTerritoryToScrollTo: String? = nil) {
         getTeritories(phoneTerritoryToScrollTo: phoneTerritoryToScrollTo)
         getRecentTerritoryData()
     }
     
-    @Published var phoneTerritoryToScrollTo: String? = nil 
-    
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    @ObservedObject var dataStore = StorageManager.shared
-    @ObservedObject var dataUploaderManager = DataUploaderManager()
-    
+    // MARK: - Properties
+    @Published var phoneTerritoryToScrollTo: String? = nil
     private var cancellables = Set<AnyCancellable>()
     private var recentCancellables = Set<AnyCancellable>()
     
@@ -59,6 +66,12 @@ class PhoneScreenViewModel: ObservableObject {
     @Published var showToast = false
     @Published var showAddedToast = false
     
+    @Published var searchActive = false
+      
+        @Published var backAnimation = false
+    
+    // MARK: - Methods
+    
     func deleteTerritory(territory: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deletePhoneTerritory(territoryId: territory)
     }
@@ -70,13 +83,15 @@ class PhoneScreenViewModel: ObservableObject {
         }
     }
     
-    @Published var searchActive = false
-  
-    @Published var backAnimation = false
+    
 }
 
+// MARK: - Extensions + Publishers
 @MainActor
 extension PhoneScreenViewModel {
+    
+    // MARK: - Get Territories
+    
     func getTeritories(phoneTerritoryToScrollTo: String? = nil) {
         GRDBManager.shared.getPhoneData()
             .subscribe(on: DispatchQueue.main)
@@ -108,6 +123,8 @@ extension PhoneScreenViewModel {
             })
             .store(in: &cancellables)
     }
+    
+    // MARK: - Get Recent Territory Data
     
     func getRecentTerritoryData() {
         GRDBManager.shared.getRecentPhoneTerritoryData()

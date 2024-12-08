@@ -9,22 +9,32 @@ import SwiftUI
 import NavigationTransitions
 import MijickPopups
 
+//MARK: - NoDataView
+
 struct NoDataView: View {
+    
+    //MARK: - Environment
+    
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.sizeCategory) var sizeCategory
+    
+    //MARK: - Dependencies
+    
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    
+    //MARK: - Properties
     
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
     @State var loading = false
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
     @State var goToAdminLogin = false
     @State var goToPhoneLogin = false
-    
-    @Environment(\.sizeCategory) var sizeCategory
-    
     @State var backAnimation = false
     @State var progress: CGFloat = 0.0
+    
+    //MARK: - Body
     
     var body: some View {
             NavigationStack {
@@ -95,6 +105,8 @@ struct NoDataView: View {
         
     }
 }
+
+//MARK: - Preview
 
 #Preview {
     NoDataView()

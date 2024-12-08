@@ -7,14 +7,25 @@
 
 import SwiftUI
 
+//MARK: - AddAddressView
+
 struct AddAddressView: View {
     var onDone: () -> Void
     var onDismiss: () -> Void
     
+    //MARK: - Environment
+    
     @Environment(\.dismiss) private var dismiss
+    
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: AddAddressViewModel
     
+    //MARK: - Focus
+    
     @FocusState private var addressTextFocus: Bool
+    
+    //MARK: - Initializer
     
     init(territory: Territory, address: TerritoryAddress?, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         _viewModel = StateObject(wrappedValue: AddAddressViewModel(territory: territory))
@@ -26,9 +37,13 @@ struct AddAddressView: View {
         self.onDismiss = onDismiss
     }
     
+    //MARK: - Properties
+    
     var address: TerritoryAddress?
     
     @State var title = ""
+    
+    //MARK: - Body
     
     var body: some View {
         ZStack {
@@ -109,7 +124,7 @@ struct AddAddressView: View {
                     //withAnimation {
                     title = NSLocalizedString("Add", comment: "")
                     //}
-                } 
+                }
             }
     }
 }

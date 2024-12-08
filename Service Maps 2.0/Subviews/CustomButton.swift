@@ -9,16 +9,20 @@ import Foundation
 import SwiftUI
 import ActivityIndicatorView
 
+//MARK: - Custom Button
 struct CustomButton: View {
+    //MARK: - Properties
     var loading: Bool
     var alwaysExpanded: Bool = false
     var title: String
     var color: Color?
     var active: Bool = true
+    //MARK: - Action
     var action: () -> Void
     
-    
     @State var alwaysLoading = true
+    
+    //MARK: - Body
     var body: some View {
         Button(action: action) {
             if loading {

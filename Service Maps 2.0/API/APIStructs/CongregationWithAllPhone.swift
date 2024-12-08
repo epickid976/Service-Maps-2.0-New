@@ -7,10 +7,11 @@
 
 import Foundation
 
+// MARK: - New Phone Data Forms
 public struct CongregationWithAllPhone: Codable, Sendable {
     var id: String
     var name: String
-    var password: String
+    var password: String?
     var created_at: String
     var updated_at: String
     var phone: String

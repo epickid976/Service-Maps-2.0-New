@@ -16,10 +16,18 @@ import Nuke
 import MijickPopups
 import Toasts
 
+//MARK: - PhoneTerritoriesScreen
+
 struct PhoneTerritoriesScreen: View {
-    @StateObject var viewModel: PhoneScreenViewModel
     
+    //MARK: - Dependencies
+    
+    @StateObject var viewModel: PhoneScreenViewModel
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    @StateObject var dataStore = StorageManager.shared
+    
+    //MARK: - Properties
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
@@ -32,19 +40,16 @@ struct PhoneTerritoriesScreen: View {
     
     let minimumOffset: CGFloat = 60
     
+    @State var highlightedTerritoryId: String?
+    @State var isCircleExpanded = false
+    
+    //MARK: - Initialiazers
+    
     init(phoneTerritoryToScrollTo: String? = nil) {
        let viewModel = PhoneScreenViewModel(phoneTerritoryToScrollTo: phoneTerritoryToScrollTo)
         _viewModel = StateObject(wrappedValue: viewModel)
         
     }
-    
-    @State var highlightedTerritoryId: String?
-    
-    @ObservedObject var preferencesViewModel = ColumnViewModel()
-    
-    @State var isCircleExpanded = false
-    
-    @StateObject var dataStore = StorageManager.shared
     
     var body: some View {
         let transition: AnyNavigationTransition
@@ -287,6 +292,8 @@ struct PhoneTerritoriesScreen: View {
         }
     }
     
+    //MARK: - Territory Cell
+    
     @ViewBuilder
     func territoryCell(phoneData: PhoneData, mainViewSize: CGSize) -> some View {
         LazyVStack {
@@ -396,6 +403,9 @@ struct PhoneTerritoriesScreen: View {
         }.padding(.horizontal, 15)
     }
 }
+
+//MARK: - Delete Territory Popup
+
 struct CentrePopup_DeletePhoneTerritory: CentrePopup {
     @ObservedObject var viewModel: PhoneScreenViewModel
     var onDone: () -> Void

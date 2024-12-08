@@ -8,6 +8,8 @@
 import SwiftUI
 import NavigationTransitions
 
+//MARK: - SplashScreenView
+
 struct SplashScreenView: View {
     
     var body: some View {
@@ -28,6 +30,8 @@ struct SplashScreenView: View {
         )
     }
 }
+
+//MARK: - Preview
 
 #Preview {
     SplashScreenView()

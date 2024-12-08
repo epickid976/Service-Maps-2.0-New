@@ -9,16 +9,31 @@ import SwiftUI
 import ActivityIndicatorView
 import NavigationTransitions
 
+// MARK: - Verification View
+
 struct VerificationView: View {
+    // MARK: - OnDone
+    
     var onDone: () -> Void
+    
+    // MARK: - Environment
+    
     @Environment(\.dismiss) private var dismiss
+    
+    // MARK: - Dependencies
+    
     @ObservedObject private var viewModel: VerificationViewModel
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var universalLinksManager = UniversalLinksManager.shared
+    
+    // MARK: - Properties
+    
     @State var loading = false
     @State var alwaysLoading = true
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    @ObservedObject var universalLinksManager = UniversalLinksManager.shared
+    
+    // MARK: - Initializer
     
     init(onDone: @escaping() -> Void) {
         let initialViewModel = VerificationViewModel()
@@ -26,6 +41,8 @@ struct VerificationView: View {
         
         self.onDone = onDone
     }
+    
+    // MARK: - Body
     
     var body: some View {
         NavigationStack {
@@ -43,7 +60,6 @@ struct VerificationView: View {
                     .font(.title3)
                     .fontWeight(.bold)
                 
-                
                 Spacer()
                 
                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" || UIDevice.isSimulatorCompactPhone {
@@ -59,30 +75,27 @@ struct VerificationView: View {
                     }
                 }
                 
-                
                 Spacer()
                 
                 VStack {
-                    
-                        Button {
-                            Task {
-                                await viewModel.resendEmail() { result in
-                                    HapticManager.shared.trigger(.lightImpact)
-                                    switch result {
-                                    case .success(_):
-                                        HapticManager.shared.trigger(.success)
-                                        print("success sending verification email (VerificationView)")
-                                    case .failure(_):
-                                        HapticManager.shared.trigger(.error)
-                                        print("Error sending verification email (VerificationView)")
-                                    }
+                    Button {
+                        Task {
+                            await viewModel.resendEmail() { result in
+                                HapticManager.shared.trigger(.lightImpact)
+                                switch result {
+                                case .success(_):
+                                    HapticManager.shared.trigger(.success)
+                                    print("success sending verification email (VerificationView)")
+                                case .failure(_):
+                                    HapticManager.shared.trigger(.error)
+                                    print("Error sending verification email (VerificationView)")
                                 }
                             }
-                        } label: {
-                            Text("Resend Verification")
-                                .bold()
                         }
-                    
+                    } label: {
+                        Text("Resend Verification")
+                            .bold()
+                    }
                 }
                 
                 Spacer()
@@ -93,23 +106,23 @@ struct VerificationView: View {
                             HapticManager.shared.trigger(.lightImpact)
                             synchronizationManager.startupState = .Welcome
                         }
-                    CustomButton(loading: loading, title: "Already Verified") {
-                        HapticManager.shared.trigger(.lightImpact)
-                        withAnimation { loading = true }
-                        Task {
-                            await viewModel.checkVerification { result in
-                                switch result {
-                                case .success(_):
-                                    HapticManager.shared.trigger(.success)
-                                    DispatchQueue.main.async { onDone() }
-                                    withAnimation { loading = false }
-                                case .failure(_):
-                                    HapticManager.shared.trigger(.error)
-                                    withAnimation { loading = false }
+                        CustomButton(loading: loading, title: "Already Verified") {
+                            HapticManager.shared.trigger(.lightImpact)
+                            withAnimation { loading = true }
+                            Task {
+                                await viewModel.checkVerification { result in
+                                    switch result {
+                                    case .success(_):
+                                        HapticManager.shared.trigger(.success)
+                                        DispatchQueue.main.async { onDone() }
+                                        withAnimation { loading = false }
+                                    case .failure(_):
+                                        HapticManager.shared.trigger(.error)
+                                        withAnimation { loading = false }
+                                    }
                                 }
                             }
                         }
-                    }//.keyboardShortcut("\r", modifiers: .command)
                     }.padding()
                 }
             }
@@ -117,7 +130,6 @@ struct VerificationView: View {
                 Alert(title: Text("\(viewModel.alertTitle)"), message: Text("\(viewModel.alertMessage)"), dismissButton: .default(Text("OK")))
             }
             .padding()
-            
         }
         .navigationBarBackButtonHidden(true)
         .navigationViewStyle(StackNavigationViewStyle())

@@ -7,6 +7,7 @@
 
 import Foundation
 
+//MARK: - Phone Call Data
 struct PhoneCallData: Hashable, Identifiable {
     var id: UUID
     var phoneCall: PhoneCall

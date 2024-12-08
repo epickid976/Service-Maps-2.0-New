@@ -8,9 +8,12 @@
 import Foundation
 import Alamofire
 
+//MARK: - Authentication Manager
+
 @MainActor
 class AuthenticationManager: ObservableObject, Sendable {
     
+    //MARK: - Dependencies
     private let authorizationProvider = AuthorizationProvider.shared
     private let authenticationApi = AuthenticationService()
     private let congregationApi = CongregationService()
@@ -18,8 +21,10 @@ class AuthenticationManager: ObservableObject, Sendable {
     private let dataStore = StorageManager.shared
     private let authorizationLevelManager = AuthorizationLevelManager()
     
+    //MARK: - Published Properties
     @MainActor @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     
+    //MARK: - Signup
     @BackgroundActor
     func signUp(signUpForm: SignUpForm) async -> Result<Void, Error> {
         let result = await authenticationApi.signUp(signUpForm: signUpForm)
@@ -34,6 +39,8 @@ class AuthenticationManager: ObservableObject, Sendable {
         return result
         
     }
+    
+    //MARK: - Login
     @BackgroundActor
     func login(logInForm: LoginForm) async -> Result<LoginResponse, Error> {
         let result = await authenticationApi.login(logInForm: logInForm)
@@ -69,6 +76,9 @@ class AuthenticationManager: ObservableObject, Sendable {
         
         return result
     }
+    
+    //MARK: - User
+    
     @BackgroundActor
     func getUser() async -> Result<UserResponse, Error> {
         let result = await authenticationApi.user()
@@ -82,6 +92,8 @@ class AuthenticationManager: ObservableObject, Sendable {
         
         return result
     }
+    
+    //MARK: - Logout
     @BackgroundActor
     func logout() async -> Result<Void, Error> {
         let result = await authenticationApi.logout()
@@ -92,12 +104,20 @@ class AuthenticationManager: ObservableObject, Sendable {
         
         return result
     }
+    
+    //MARK: - Verification
     @BackgroundActor
     func resendVerificationEmail() async -> Result<Void, Error> {
         guard let userEmail = await dataStore.userEmail else { return .failure(CustomErrors.NotFound) }
         return await authenticationApi.resendEmailValidation(email: userEmail)
     }
     
+    @BackgroundActor
+    func activateEmail(token: String) async -> Result<Void, Error> {
+        return await authenticationApi.activateEmail(token: token)
+    }
+    
+    //MARK: - Admin Sign In
     @BackgroundActor
     func signInAdmin(congregationSignInForm: CongregationSignInForm) async -> Result<CongregationResponse, Error> {
         let result = await congregationApi.signIn(congregationSignInForm: congregationSignInForm)
@@ -112,6 +132,9 @@ class AuthenticationManager: ObservableObject, Sendable {
         
         return result
     }
+    
+    //MARK: - Password Reset
+    
     @BackgroundActor
     func requestPasswordReset(email: String) async -> Result<Void, Error> {
         return await passwordResetApi.requestReset(email: email)
@@ -124,10 +147,9 @@ class AuthenticationManager: ObservableObject, Sendable {
         
         return result
     }
-    @BackgroundActor
-    func activateEmail(token: String) async -> Result<Void, Error> {
-        return await authenticationApi.activateEmail(token: token)
-    }
+    
+    //MARK: - Delete Account
+    
     @BackgroundActor
     func deleteAccount() async -> Result<Void, Error> {
         let result = await authenticationApi.deleteAccount()
@@ -142,9 +164,12 @@ class AuthenticationManager: ObservableObject, Sendable {
         return result
     }
     
+    //MARK: - Exit
     @MainActor func exitAdministrator() { AuthorizationLevelManager().exitAdministrator() }
     
     @MainActor func exitPhoneLogin() { AuthorizationLevelManager().exitPhoneLogin() }
+    
+    //MARK: - Phone Sign In
     @BackgroundActor
     func signInPhone(congregationSignInForm: CongregationSignInForm) async -> Result<CongregationResponse, Error> {
         let result = await congregationApi.phoneSignIn(congregationSignInForm: congregationSignInForm)
@@ -159,6 +184,8 @@ class AuthenticationManager: ObservableObject, Sendable {
         return result
         
     }
+    
+    //MARK: - Edit User Name
     @BackgroundActor
     func editUserName(userName: String) async -> Result<Void, Error> {
         let result = await authenticationApi.editUserName(userName: userName)
@@ -171,6 +198,8 @@ class AuthenticationManager: ObservableObject, Sendable {
         
         return result
     }
+    
+    //MARK: -Logout Process
     @MainActor
     fileprivate func logoutProcess() {
         dataStore.userEmail = nil

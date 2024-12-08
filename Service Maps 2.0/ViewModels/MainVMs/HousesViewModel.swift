@@ -13,14 +13,17 @@ import Combine
 import SwipeActions
 import MijickPopups
 
+// MARK: - HousesViewModel
+
 @MainActor
 class HousesViewModel: ObservableObject {
     
-    // Dependencies
+    // MARK: - Dependencies
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
+    // MARK: - Properties
     private var cancellables = Set<AnyCancellable>()
     
     // Published properties for UI updates
@@ -58,13 +61,15 @@ class HousesViewModel: ObservableObject {
     
     @Published var searchActive = false
     @Published var houseIdToScrollTo: String?
-
+    
+    // MARK: - Initializer
     // Initialize with TerritoryAddress and optional scrolling ID
     init(territoryAddress: TerritoryAddress, houseIdToScrollTo: String? = nil) {
         self.territoryAddress = territoryAddress
         getHouses(houseIdToScrollTo: houseIdToScrollTo)
     }
     
+    // MARK: - Methods
     // Delete house logic
     @BackgroundActor
     func deleteHouse(house: String) async -> Result<Void, Error> {
@@ -72,8 +77,12 @@ class HousesViewModel: ObservableObject {
     }
 }
 
+// MARK: - Extensions + Publishers
+
 @MainActor
 extension HousesViewModel {
+    
+    // MARK: - Get Houses Publisher
     // Fetch and observe house data from GRDB
     func getHouses(houseIdToScrollTo: String? = nil) {
         GRDBManager.shared.getHouseData(addressId: territoryAddress.id)
@@ -89,31 +98,23 @@ extension HousesViewModel {
             .store(in: &cancellables)
     }
     
+    // MARK: - Sorting + Filtering
     // Handle and process house data based on search, sort, and filter criteria
     private func handleHouseData(_ houseData: [HouseData], scrollTo houseIdToScrollTo: String?) {
         var filteredData = houseData
-
+        
         if !search.isEmpty {
             filteredData = houseData.filter {
                 $0.house.number.lowercased().contains(search.lowercased()) ||
                 $0.visit?.notes.lowercased().contains(search.lowercased()) ?? false
             }
         }
-
+        
         filteredData = sortHouses(filteredData)
         filteredData = filterHouses(filteredData)
-
+        
         self.houseData = filteredData
         scrollToHouse(houseIdToScrollTo)
-    }
-
-    // Handle scrolling to a specific house after data is received
-    private func scrollToHouse(_ houseIdToScrollTo: String?) {
-        if let houseIdToScrollTo = houseIdToScrollTo {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.houseIdToScrollTo = houseIdToScrollTo
-            }
-        }
     }
     
     // Sorting houses based on predicate
@@ -125,7 +126,7 @@ extension HousesViewModel {
             return houses.sorted { $0.house.number > $1.house.number }
         }
     }
-
+    
     // Filtering houses based on predicate
     private func filterHouses(_ houses: [HouseData]) -> [HouseData] {
         switch filterPredicate {
@@ -135,13 +136,13 @@ extension HousesViewModel {
             return sortHousesByNumber(houses: houses, sort: sortPredicate)
         }
     }
-
+    
     // Sort houses for better readability, considering both numbers and letters
     func sortHousesByNumber(houses: [HouseData], sort: HouseSortPredicate = .increasing) -> [HouseData] {
         var oddHouses: [HouseData] = []
         var evenHouses: [HouseData] = []
         var nonNumericHouses: [HouseData] = []
-
+        
         for house in houses {
             let houseNumber = house.house.number
             // Check if there's a numeric portion in the house number
@@ -157,7 +158,7 @@ extension HousesViewModel {
                 nonNumericHouses.append(house)
             }
         }
-
+        
         // Sort odd and even houses using the natural sort key
         let sortOrder: (HouseData, HouseData) -> Bool = {
             lhs, rhs in
@@ -165,15 +166,15 @@ extension HousesViewModel {
             let rhsKey = self.naturalSortKey(rhs.house.number)
             return sort == .increasing ? (lhsKey.lexicographicallyPrecedes(rhsKey, by: { self.compareLexicographically($0, $1) })) : (rhsKey.lexicographicallyPrecedes(lhsKey, by: { self.compareLexicographically($0, $1) }))
         }
-
+        
         oddHouses.sort(by: sortOrder)
         evenHouses.sort(by: sortOrder)
         nonNumericHouses.sort(by: sortOrder) // Sort non-numeric houses as well
-
+        
         // Return odd, even, and non-numeric houses together
         return oddHouses + evenHouses + nonNumericHouses
     }
-
+    
     // Custom lexicographical comparison to handle mixed types (Int and String)
     func compareLexicographically(_ lhs: Any, _ rhs: Any) -> Bool {
         if let lhsInt = lhs as? Int, let rhsInt = rhs as? Int {
@@ -197,6 +198,16 @@ extension HousesViewModel {
             let match = nsString.substring(with: $0.range)
             // Convert numeric parts to Int, leave non-numeric parts as String
             return Int(match) ?? match
+        }
+    }
+    
+    // MARK: - Scroll Logic
+    // Handle scrolling to a specific house after data is received
+    private func scrollToHouse(_ houseIdToScrollTo: String?) {
+        if let houseIdToScrollTo = houseIdToScrollTo {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.houseIdToScrollTo = houseIdToScrollTo
+            }
         }
     }
 }

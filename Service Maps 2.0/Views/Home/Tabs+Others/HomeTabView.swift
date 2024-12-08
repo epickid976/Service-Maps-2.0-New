@@ -12,12 +12,21 @@ import NavigationTransitions
 import MijickPopups
 import Toasts
 
+// MARK: - Home Tab View
 struct HomeTabView: View {
     
     @State private var selectedTab = 0
+    
+    // MARK: - Environment
+    
     @Environment(\.colorScheme) var colorScheme
+    
+    // MARK: - Dependencies
+    
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var authorizationLevelManager = AuthorizationLevelManager()
+    
+    // MARK: - Body
     
     var body: some View {
         NavigationStack {
@@ -185,6 +194,8 @@ struct HomeTabView: View {
         )
     }
 }
+
+// MARK: - Update Check Popup
 
 struct CentrePopup_Update: CentrePopup {
     @State var loading = false

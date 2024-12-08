@@ -12,24 +12,25 @@ import Combine
 import NavigationTransitions
 import SwipeActions
 
+// MARK: - AccessViewModel
+
 @MainActor
 class AccessViewModel: ObservableObject {
     
+    // MARK: - Initializer
     init() {
         getKeys()
         getKeyUsers()
     }
     
+    // MARK: - Dependencies
     @ObservedObject var universalLinksManager = UniversalLinksManager.shared
-    
     @ObservedObject var authenticationManager = AuthenticationManager()
-    
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
-    
     @ObservedObject var grdbManager = GRDBManager.shared
     
+    // MARK: - Properties
     private var cancellables = Set<AnyCancellable>()
     private var cancellablesTwo = Set<AnyCancellable>()
     
@@ -77,11 +78,15 @@ class AccessViewModel: ObservableObject {
     @Published var loading = false
     @Published var keyToDelete: (String?,String?)
     @Published var userToDelete: (id: String?, name: String?)?
-    @Published var blockUnblockAction: UserAction? 
+    @Published var blockUnblockAction: UserAction?
     
     @Published var showToast = false
     @Published var showAddedToast = false
     @Published var showUserDeleteToast = false
+    
+    @Published var searchActive = false
+    
+    // MARK: - Methods
     
     @MainActor
     func deleteKey(key: String) async -> Result<Void, Error> {
@@ -134,8 +139,6 @@ class AccessViewModel: ObservableObject {
         }
     }
     
-    @Published var searchActive = false
-    
     @MainActor
     func registerKey() async -> Result<Void, Error> {
         return await dataUploaderManager.registerToken(myToken: universalLinksManager.dataFromUrl ?? "")
@@ -155,8 +158,12 @@ class AccessViewModel: ObservableObject {
     
 }
 
+// MARK: - AccessViewModel
 @MainActor
 extension AccessViewModel {
+    
+    // MARK: - Get Keys
+    
     func getKeys() {
         GRDBManager.shared.getKeyData()
             .subscribe(on: DispatchQueue.main)
@@ -186,6 +193,8 @@ extension AccessViewModel {
             })
             .store(in: &cancellables)
     }
+    
+    // MARK: - Get Key Users
     
     func getKeyUsers() {
         if currentKey != nil {

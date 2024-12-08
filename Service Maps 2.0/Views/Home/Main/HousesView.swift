@@ -16,26 +16,29 @@ import AlertKit
 import MijickPopups
 import Toasts
 
+//MARK: - HousesView
+
 struct HousesView: View {
     var address: TerritoryAddress
     
-    @State var animationDone = false
-    @State var animationProgressTime: AnimationProgressTime = 0
+    //MARK: - Environment
+    
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
-    @StateObject var viewModel: HousesViewModel
     
+    //MARK: - Dependencies
+    
+    @StateObject var viewModel: HousesViewModel
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var dataStore = StorageManager.shared
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    //MARK: - Properties
+    @State var animationDone = false
+    @State var animationProgressTime: AnimationProgressTime = 0
     @State var showFab = true
     @State var scrollOffset: CGFloat = 0.00
     
-    init(address: TerritoryAddress, houseIdToScrollTo: String? = nil) {
-        self.address = address
-        let initialViewModel = HousesViewModel(territoryAddress: address, houseIdToScrollTo: houseIdToScrollTo)
-        _viewModel = StateObject(wrappedValue: initialViewModel)
-        
-    }
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    @ObservedObject var dataStore = StorageManager.shared
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -43,7 +46,16 @@ struct HousesView: View {
     
     @State var highlightedHouseId: String?
     
-    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    //MARK: - Initializers
+    
+    init(address: TerritoryAddress, houseIdToScrollTo: String? = nil) {
+        self.address = address
+        let initialViewModel = HousesViewModel(territoryAddress: address, houseIdToScrollTo: houseIdToScrollTo)
+        _viewModel = StateObject(wrappedValue: initialViewModel)
+        
+    }
+    
+    //MARK: - Body
     
     var body: some View {
         GeometryReader { proxy in
@@ -125,7 +137,7 @@ struct HousesView: View {
                             if value {
                                 CentrePopup_AddHouse(viewModel: viewModel, address: address){
                                     let toast = ToastValue(
-                                     icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
                                         message: "House Added"
                                     )
                                     presentToast(toast)
@@ -142,8 +154,8 @@ struct HousesView: View {
                                             dismissAllPopups()
                                             presentationMode.wrappedValue.dismiss()
                                         }
-                                    })//.keyboardShortcut(.delete, modifiers: .command)
-                                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    })
+                                    .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                 }
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -183,13 +195,6 @@ struct HousesView: View {
                                 hideFloatingButton = false
                             }
                         }
-//                        .onChange(of: viewModel.dataStore.synchronized) { value in
-//                            if value {
-//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                                    viewModel.getHouses()
-//                                }
-//                            }
-//                        }
                         .onChange(of: viewModel.houseIdToScrollTo) { id in
                             if let id = id {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -216,12 +221,13 @@ struct HousesView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                    //.keyboardShortcut("+", modifiers: .command)
                 }
                 
             }
         }
     }
+    
+    //MARK: - House Cell View
     
     @ViewBuilder
     func houseCellView(houseData: HouseData, mainWindowSize: CGSize) -> some View {
@@ -245,7 +251,7 @@ struct HousesView: View {
                                             if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
                                                 CentrePopup_DeleteHouse(viewModel: viewModel) {
                                                     let toast = ToastValue(
-                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                        icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
                                                         message: NSLocalizedString("House Deleted", comment: "")
                                                     )
                                                     presentToast(toast)
@@ -280,7 +286,7 @@ struct HousesView: View {
                         if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
                             CentrePopup_DeleteHouse(viewModel: viewModel){
                                 let toast = ToastValue(
-                                 icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
                                     message: NSLocalizedString("House Deleted", comment: "")
                                 )
                                 presentToast(toast)
@@ -290,8 +296,6 @@ struct HousesView: View {
                 }
                 .font(.title.weight(.semibold))
                 .foregroundColor(.white)
-                
-                
             }
         }
         .swipeActionCornerRadius(16)
@@ -304,6 +308,7 @@ struct HousesView: View {
     }
 }
 
+//MARK: - Delete House Popup
 
 struct CentrePopup_DeleteHouse: CentrePopup {
     @ObservedObject var viewModel: HousesViewModel
@@ -332,14 +337,12 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                         .fontWeight(.bold)
                         .foregroundColor(.red)
                 }
-                //.vSpacing(.bottom)
                 
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
                             HapticManager.shared.trigger(.lightImpact)
                             withAnimation {
-                                //self.viewModel.showAlert = false
                                 dismissLastPopup()
                                 self.viewModel.houseToDelete = (nil,nil)
                             }
@@ -358,10 +361,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                        //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                       // self.viewModel.getHouses()
                                         self.viewModel.loading = false
-                                        //self.showAlert = false
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.houseToDelete = (nil,nil)
@@ -380,8 +380,6 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                     }
                 }
                 .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
             }
             .ignoresSafeArea(.keyboard)
             
@@ -394,10 +392,12 @@ struct CentrePopup_DeleteHouse: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
+
+//MARK: - Add House Popup
 
 struct CentrePopup_AddHouse: CentrePopup {
     @ObservedObject var viewModel: HousesViewModel
@@ -442,7 +442,7 @@ struct CentrePopup_AddHouse: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }

@@ -3,6 +3,7 @@ import PDFKit
 import SwiftUI
 import Nuke
 
+//MARK: - Progress Tracker
 actor ProgressTracker {
     private(set) var processedItems: Double = 0.0
     
@@ -15,17 +16,28 @@ actor ProgressTracker {
         return min(1.0, max(0.0, processedItems / totalItems))
     }
 }
+
+//MARK: - Backup Manager
+
 @MainActor
 class BackupManager: ObservableObject {
+    //MARK: - Singleton
+    
+     static var shared = BackupManager()
+    
+    //MARK: - Dependencies
+    
+    @ObservedObject var grdbManager = GRDBManager.shared
+    let fileManager = FileManager.default
+    
+    //MARK: - Properties
+    
     @Published var isBackingUp: Bool = false
     @Published var backup = false
-    @ObservedObject var grdbManager = GRDBManager.shared
-    static var shared = BackupManager()
     var backupTask: Task<Void, Never>?  // Track the backup task
     @Published var progress: Double = 0.0
     
-    let fileManager = FileManager.default
-    
+    //MARK: - Field Names
     // Hardcoded field names for 4 forms (each form contains up to 24 entries)
     private let form1Fields = (1...24).map { "HOUSE1_\($0)" }
     private let form2Fields = (1...24).map { "HOUSE2_\($0)" }
@@ -47,7 +59,7 @@ class BackupManager: ObservableObject {
     private let noteFields3 = (1...24).map { "Nombre colocaciones y observacionesRow3_\($0)" }
     private let noteFields4 = (1...24).map { "Nombre colocaciones y observacionesRow4_\($0)" }
     
-    
+    //MARK: - Functions
     func cancelBackup() {
         backupTask?.cancel()
         isBackingUp = false
@@ -75,6 +87,7 @@ class BackupManager: ObservableObject {
         }
     }
     
+    //MARK: - Main backup function
     // Main backup function
     // Main backup function with cancellation check
     @BackgroundActor
@@ -170,6 +183,7 @@ class BackupManager: ObservableObject {
         return .success(zipFileURL)
     }
 
+    //MARK: - Progress Tracking
     @MainActor
     private func updateProgress(progressTracker: ProgressTracker, totalItems: Double) async {
         let progress = await progressTracker.getProgress(totalItems: totalItems)
@@ -178,6 +192,7 @@ class BackupManager: ObservableObject {
         }
     }
     
+    //MARK: - File Operations
     @MainActor // Marking this function to run on the main actor since `FileManager` isn't sendable
     func performFileOperations(sourceURL: URL, backupFolder: URL, zipFileURL: URL) async -> Result<URL, Error> {
         do {
@@ -214,6 +229,7 @@ class BackupManager: ObservableObject {
         }
     }
     
+    //MARK: - Writing S8
     @BackgroundActor
     func writeS8(
         parentFolder: URL,
@@ -315,6 +331,7 @@ class BackupManager: ObservableObject {
         }
     }
     
+    //MARK: - Get Field Names
     @BackgroundActor
     private func getHouseFields(for formIndex: Int) async -> [String] {
         switch formIndex {
@@ -363,6 +380,8 @@ class BackupManager: ObservableObject {
         dateFormatter.dateFormat = "MM-dd-yyyy"
         return dateFormatter.string(from: Date())
     }
+    
+    //MARK: - Create Backup Folders
     @BackgroundActor
     private func createBackupFolder(date: String) async -> URL? {
         let fileManager = FileManager.default
@@ -422,6 +441,7 @@ class BackupManager: ObservableObject {
         try? text.write(to: textFileURL, atomically: true, encoding: .utf8)
     }
     
+    //MARK: - Zipping
     @BackgroundActor
     func zipBackupFolder(sourceURL: URL, destinationURL: URL) async throws {
         let fileManager = FileManager.default
@@ -455,6 +475,8 @@ class BackupManager: ObservableObject {
             throw error
         }
     }
+    
+    //MARK: - Order Data
     @BackgroundActor
     private func orderAllData(
         territories: [Territory],
@@ -492,6 +514,7 @@ class BackupManager: ObservableObject {
     
 }
 
+//MARK: - Models
 // Structs used in the BackupManager
 struct HouseWithVisit {
     let house: House
@@ -507,6 +530,8 @@ struct TerritoryWithAddresses {
     let territory: Territory
     let addresses: [AddressWithHouses]
 }
+
+//MARK: - Extensions + Zip
 
 extension URL {
     @BackgroundActor

@@ -9,27 +9,28 @@ import Foundation
 import SwiftUI
 import Papyrus
 
+// MARK: - Signup View Model
+
 @MainActor
 class SignupViewModel: ObservableObject {
     
-    //ENVIRONMENT
+    // MARK: - Environment
     @Environment(\.colorScheme) var colorScheme
     
-    // API
+    // MARK: - Dependencies
     var authenticationManager = AuthenticationManager()
     let authorizationProvider = AuthorizationProvider.shared
     let storageManager = StorageManager.shared
     
-    // Input properties
+    // MARK: - Properties
     @Published var name: String = ""
     @Published var username: String = ""
     @Published var password: String = ""
     @Published var passwordConfirmation: String = ""
     
-    
     @State var loading = false
     
-    // Output properties
+    
     @Published var usernameError = ""
     @Published var passwordError = ""
     
@@ -47,6 +48,8 @@ class SignupViewModel: ObservableObject {
     
     @Published var loginErrorText = ""
     @Published var loginError = false
+    
+    // MARK: - Validate
     
     func validate() -> Bool {
         
@@ -111,6 +114,7 @@ class SignupViewModel: ObservableObject {
         return emailPred.evaluate(with: email)
     }
     
+    // MARK: - Signup
     // Signup function
     func signUp(completion: @escaping (Result<Bool, Error>) -> Void) async {
         Task {

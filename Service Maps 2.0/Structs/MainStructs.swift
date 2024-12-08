@@ -8,6 +8,11 @@
 import GRDB
 import Foundation
 
+//MARK: - Main Structs
+
+
+
+//MARK: - Territory
 public struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var congregation: String
@@ -42,6 +47,7 @@ public struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equ
     }
 }
 
+//MARK: - Address
 public struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var territory: String
@@ -65,6 +71,7 @@ public struct TerritoryAddress: Codable, FetchableRecord, MutablePersistableReco
     }
 }
 
+//MARK: - House
 public struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var territory_address: String
@@ -88,6 +95,7 @@ public struct House: Codable, FetchableRecord, MutablePersistableRecord, Equatab
     }
 }
 
+//MARK: - Visit
 public struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     var house: String
@@ -114,6 +122,8 @@ public struct Visit: Codable, FetchableRecord, MutablePersistableRecord, Equatab
         return "id"
     }
 }
+
+//MARK: - Token
 
 public struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
@@ -143,6 +153,7 @@ public struct Token: Codable, FetchableRecord, MutablePersistableRecord, Equatab
     }
 }
 
+//MARK: - Server Token Struct
 // For the specific problematic endpoint
 public struct CreateTokenResponse: Decodable, Sendable {
     let token: Token
@@ -184,6 +195,7 @@ public struct CreateTokenResponse: Decodable, Sendable {
     }
 }
 
+//MARK: - TokenTerritory
 public struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord, Equatable, Hashable, Sendable {
     
     var token: String
@@ -214,4 +226,10 @@ public struct TokenTerritory: Codable, FetchableRecord, MutablePersistableRecord
     public static func == (lhs: TokenTerritory, rhs: TokenTerritory) -> Bool {
         return lhs.token == rhs.token && lhs.territory == rhs.territory
     }
+}
+
+//MARK: - Other Models
+struct UserAction {
+    var userToken: UserToken
+    var isBlocked: Bool
 }

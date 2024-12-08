@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Request Reset Form
 public struct RequestResetForm: Codable, Sendable {
     var email: String
 }

@@ -9,12 +9,20 @@ import SwiftUI
 import Lottie
 import NavigationTransitions
 
+//MARK: - RegisterKeyView
 
 struct RegisterKeyView: View {
+    
+    //MARK: - Dependencies
+    
     @ObservedObject var viewModel = AccessViewModel()
+    
+    //MARK: - Properties
     
     @State var error = ""
     @State var loading = true
+    
+    //MARK: - Body
     
     var body: some View {
         NavigationStack {

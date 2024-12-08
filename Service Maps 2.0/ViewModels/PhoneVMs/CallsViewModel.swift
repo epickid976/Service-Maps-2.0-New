@@ -15,21 +15,25 @@ import SwipeActions
 @MainActor
 class CallsViewModel: ObservableObject {
     
+    // MARK: - Dependencies
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     
+    
+    // MARK: - Initializers
+        init(phoneNumber: PhoneNumber, callToScrollTo: String? = nil) {
+            self.phoneNumber = phoneNumber
+            
+            getCalls(callToScrollTo: callToScrollTo)
+        }
+    
+    // MARK: - Published Properties
     let latestCallUpdatePublisher = PassthroughSubject<PhoneCall?, Never>()
     private var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Properties
     @Published var callsData: Optional<[PhoneCallData]> = nil
-    //@ObservedObject var databaseManager = RealmManager.shared
-    
-    init(phoneNumber: PhoneNumber, callToScrollTo: String? = nil) {
-        self.phoneNumber = phoneNumber
-        
-        getCalls(callToScrollTo: callToScrollTo)
-    }
     
     @Published var callToScrollTo: String? = nil
     
@@ -60,10 +64,6 @@ class CallsViewModel: ObservableObject {
     @Published var syncAnimation = false
     @Published var syncAnimationprogress: CGFloat = 0.0
     
-    func deleteCall(call: String) async -> Result<Void, Error> {
-        return await dataUploaderManager.deletePhoneCall(phoneCallId: call)
-    }
-    
     @Published var search: String = "" {
         didSet {
             getCalls()
@@ -72,10 +72,18 @@ class CallsViewModel: ObservableObject {
     
     @Published var searchActive = false
     
+    // MARK: - Methods
+    
+    func deleteCall(call: String) async -> Result<Void, Error> {
+        return await dataUploaderManager.deletePhoneCall(phoneCallId: call)
+    }
 }
 
+// MARK: - Extensions + Publishers
 @MainActor
 extension CallsViewModel {
+    
+    // MARK: - Get Calls
     // Fetch and observe call data using GRDB
     func getCalls(callToScrollTo: String? = nil) {
         GRDBManager.shared.getPhoneCallData(phoneNumberId: phoneNumber.id)
@@ -114,6 +122,7 @@ extension CallsViewModel {
         }
     }
 
+    // MARK: - Scroll to Call
     // Scroll to the specified call after data is received
     private func scrollToCall(_ callToScrollTo: String?) {
         if let callToScrollTo = callToScrollTo {
@@ -124,6 +133,7 @@ extension CallsViewModel {
     }
 }
 
+// MARK: - CallCell
 
 struct CallCell: View {
     var call: PhoneCallData
@@ -182,5 +192,4 @@ struct CallCell: View {
             }
         }
     }
-    
 }

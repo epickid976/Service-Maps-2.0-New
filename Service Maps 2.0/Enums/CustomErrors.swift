@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Custom Errors
 enum CustomErrors: Error {
     case NotFound
     case NothingToSave

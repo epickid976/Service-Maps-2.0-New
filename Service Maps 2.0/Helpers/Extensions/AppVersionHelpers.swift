@@ -7,6 +7,7 @@
 
 import Foundation
 
+//MARK: - Get App Version
 /// Retrieves the current app version from the `Info.plist`.
 /// - Returns: The app version as a `String`, or "Unknown" if not found.
 func getAppVersion() -> String {

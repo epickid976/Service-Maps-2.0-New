@@ -6,18 +6,26 @@
 //
 
 @preconcurrency import Papyrus
+
+//MARK: - User Routes
+
 @API
 public protocol UserRoutes: Sendable  {
     
+    //MARK: - Load Data
     @GET("users/territories")
     func loadTerritories() async throws -> AllDataResponse
     
     @GET("users/load")
     func loadTerritoriesNew() async throws -> [TerritoryWithAll]
     
+    @GET("users/loadphone")
+    func loadPhoneNew() async throws -> CongregationWithAllPhone
+    
     @GET("users/allphonedata")
     func allPhoneData() async throws -> AllPhoneDataResponse
     
+    //MARK: - Territory CRUD
     @POST("users/territories/update")
     func updateTerritory(territory: Body<Territory>) async throws
     
@@ -31,17 +39,25 @@ public protocol UserRoutes: Sendable  {
         image: String
     ) async throws
     
+    //MARK: - Territory Address CRUD
+    
     @POST("users/territories/address/update")
     func updateTerritoryAddress(territoryAddress: Body<TerritoryAddress>) async throws
     
+    //MARK: - House CRUD
+    
     @POST("users/houses/update")
     func updateHouse(house: Body<House>) async throws
+    
+    //MARK: - Visit CRUD
     
     @POST("users/visits/add")
     func addVisit(visit: Body<Visit>) async throws
     
     @POST("users/visits/update")
     func updateVisit(visit: Body<Visit>) async throws
+    
+    //MARK: - Phone Call CRUD
     
     @POST("users/phone/calls/add")
     func addPhoneCall(phoneCall: Body<PhoneCall>) async throws
@@ -51,6 +67,8 @@ public protocol UserRoutes: Sendable  {
     
     @POST("users/phone/calls/delete")
     func deletePhoneCall(phoneCall: Body<PhoneCall>) async throws
+    
+    //MARK: - Recalls
     
     @GET("users/recalls")
     func getRecalls() async throws -> [Recalls]

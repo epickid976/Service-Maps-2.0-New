@@ -10,24 +10,38 @@ import SwiftUI
 import NavigationTransitions
 import ActivityIndicatorView
 import AlertKit
+import UIKit
+
+// MARK: - LoginDefaultScreen
 
 struct LoginDefaultScreen: View {
+    
+    // MARK: - OnDone
+    
     var onDone: () -> Void
+    
+    // MARK: - Environment
     
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) private var presentationMode
     
-    @StateObject var universalLinksManager = UniversalLinksManager.shared
+    // MARK: - Dependencies
     
+    @StateObject var universalLinksManager = UniversalLinksManager.shared
     @ObservedObject private var viewModel: LoginViewModel
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    let authenticationManager = AuthenticationManager()
+    
+    // MARK: - Properties
+    
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0.0
     @FocusState private var emailFocus: Bool
     @FocusState private var passwordFocus: Bool
     @State var loading = false
     @State var alwaysLoading = true
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    let authenticationManager = AuthenticationManager()
+    
+    // MARK: - Initializer
     
     init(onDone: @escaping() -> Void) {
         let initialViewModel = LoginViewModel(username: "", password: "")
@@ -36,12 +50,15 @@ struct LoginDefaultScreen: View {
         self.onDone = onDone
     }
     
+    // MARK: - Alert Views
     let alertViewAdded = AlertAppleMusic17View(title: "Password Reset Email Sent", subtitle: nil, icon: .done)
     let alertViewError = AlertAppleMusic17View(title: "Please type email above", subtitle: nil, icon: .error)
     let alertEmailSent = AlertAppleMusic17View(title: "Login Email Sent", subtitle: nil, icon: .done)
     let errorEmailSent = AlertAppleMusic17View(title: "Error sending email", subtitle: nil, icon: .error)
+    
+    // MARK: - Body
+    
     var body: some View {
-        //Login With Email
         ZStack {
             NavigationStack {
                 LazyVStack {
@@ -150,7 +167,6 @@ struct LoginDefaultScreen: View {
                 }
             )
             
-            
             .navigationBarBackButtonHidden(true)
         }.ignoresSafeArea().onChange(of: universalLinksManager.determineDestination()) { value in
             if value == .ResetPasswordView || value == .loginWithEmailView {
@@ -160,22 +176,35 @@ struct LoginDefaultScreen: View {
     }
 }
 
+// MARK: - LoginView
+
 struct LoginView: View {
+    
+    // MARK: - OnDone
+    
     var onDone: () -> Void
     
-    @Environment(\.colorScheme) var colorScheme
+    // MARK: - Environment
     
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode
     
+    // MARK: - Dependencies
+    
     @ObservedObject private var viewModel: LoginViewModel
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    let authenticationManager = AuthenticationManager()
+    
+    // MARK: - Properties
+    
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0.0
     @FocusState private var emailFocus: Bool
     @FocusState private var passwordFocus: Bool
     @State var loading = false
     @State var alwaysLoading = true
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    let authenticationManager = AuthenticationManager()
+   
+    // MARK: - Initializer
     
     init(onDone: @escaping() -> Void) {
         let initialViewModel = LoginViewModel(username: "", password: "")
@@ -184,8 +213,12 @@ struct LoginView: View {
         self.onDone = onDone
     }
     
+    // MARK: - Alert Views
+    
     let alertViewAdded = AlertAppleMusic17View(title: "Password Reset Email Sent", subtitle: nil, icon: .done)
     let alertViewError = AlertAppleMusic17View(title: "Please type email above", subtitle: nil, icon: .error)
+    
+    // MARK: - Body
     
     var body: some View {
         ZStack {
@@ -336,16 +369,10 @@ struct LoginView: View {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     LoginView() {
         
-    }
-}
-
-extension View {
-    func shadowedStyle() -> some View {
-        self
-            .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 0)
-            .shadow(color: .black.opacity(0.16), radius: 24, x: 0, y: 0)
     }
 }

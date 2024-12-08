@@ -9,16 +9,23 @@ import SwiftUI
 import ActivityIndicatorView
 import NavigationTransitions
 import Lottie
+
+//MARK: - Loading View
 struct LoadingView: View {
+    //MARK: - Environment
     @Environment(\.dismiss) private var dismiss
     
+    //MARK: - Dependencies
     @ObservedObject var storageManager = StorageManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    
+    //MARK: - Properties
     @State var loading = true
     @State private var restartAnimation = false
     @State private var animationProgress: CGFloat = 0
     @State var text = ""
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    
+   
+    //MARK: - Body
     var body: some View {
         NavigationStack {
             ZStack {
@@ -28,14 +35,10 @@ struct LoadingView: View {
                         .resizable()
                         .frame(width: 350, height: 350)
                     
-                    
                     Text("Loading")
                         .bold()
                         .font(.title3)
                         .padding(.top, -80)
-                        .onTapGesture {
-                            text = "\(storageManager.synchronized) time: \(Date())"
-                        }
                     
                     Text(text)
                         .bold()
@@ -44,13 +47,9 @@ struct LoadingView: View {
                 }
             }
         }
-        .navigationTransition(
-            .fade(.in)
-        )
+        .navigationTransition( .fade(.in))
         .onChange(of: storageManager.synchronized) { newValue in
-            if newValue {
-                SynchronizationManager.shared.startupProcess(synchronizing: false)
-            }
+            if newValue { Task { SynchronizationManager.shared.startupProcess(synchronizing: false) } }
         }
     }
 }

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+//MARK: - SearchBar
 struct SearchBar: View {
     @Binding var searchText: String
     var isFocused: FocusState<Bool>.Binding

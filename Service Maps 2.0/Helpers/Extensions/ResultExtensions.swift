@@ -82,3 +82,12 @@ extension Result {
         }
     }
 }
+
+extension Result where Success == Bool {
+    func onSuccess(_ action: () -> Void) -> Result {
+        if case .success(true) = self {
+            action()
+        }
+        return self
+    }
+}

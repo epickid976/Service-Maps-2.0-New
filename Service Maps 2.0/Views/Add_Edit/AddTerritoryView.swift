@@ -11,13 +11,20 @@ import NavigationTransitions
 import Nuke
 import Combine
 
+//MARK: - AddTerritoryView
+
 struct AddTerritoryView: View {
     var territory: Territory?
     
+    //MARK: - Environment
+    
     @Environment(\.dismiss) private var dismiss
+    
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: AddTerritoryViewModel
     
-    @State var title = ""
+    //MARK: - Initializers
     
     init(territory: Territory?, onDone: @escaping () -> Void) {
         if let territory = territory {
@@ -30,11 +37,15 @@ struct AddTerritoryView: View {
         self.onDone = onDone
     }
     
+    //MARK: - Properties
+    
+    @State var title = ""
     @FocusState private var numberFocus: Bool
     @FocusState private var descriptionFocus: Bool
     
     var onDone: () -> Void
     
+    //MARK: - Body
     
     var body: some View {
             ZStack {

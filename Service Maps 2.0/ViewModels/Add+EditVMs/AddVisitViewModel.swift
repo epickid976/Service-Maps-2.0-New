@@ -8,19 +8,23 @@
 import Foundation
 import SwiftUI
 
+// MARK: - AddVisitViewModel
 @MainActor
 class AddVisitViewModel: ObservableObject {
     
+    // MARK: - Initializers
     init(house: House) {
         error = ""
         self.house = house
     }
     
+    // MARK: - Dependencies
+    @Published private var dataUploader = DataUploaderManager()
+    
+    // MARK: - Published Properties
     @Published var notes = ""
     
     @Published var selectedOption: Symbols = .none
-    
-    @Published private var dataUploader = DataUploaderManager()
     
     @Published var house: House
     
@@ -28,6 +32,7 @@ class AddVisitViewModel: ObservableObject {
     
     @Published var loading = false
     
+    // MARK: - Functions
     @BackgroundActor
     func addVisit() async -> Result<Void, Error> {
         await MainActor.run {

@@ -8,14 +8,20 @@
 import Foundation
 @preconcurrency import Papyrus
 
+//MARK: - Admin Routes
+
 @API
 public protocol AdminRoutes: Sendable {
+    
+    //MARK: - Load Data
     
     @GET("admin/alldata")
     func allData() async throws -> AllDataResponse
     
     @GET("admin/all")
     func all() async throws -> CongregationWithAll
+    
+    //MARK: - Territory CRUD
     
     @POST("admin/territories/add")
     func addTerritory(territory: Body<Territory>) async throws
@@ -46,6 +52,8 @@ public protocol AdminRoutes: Sendable {
     @POST("admin/territories/delete")
     func deleteTerritory(territory: Body<Territory>) async throws
     
+    //MARK: - Territory Address CRUD
+    
     @POST("admin/territories/address/add")
     func addTerritoryAddress(territoryAddress: Body<TerritoryAddress>) async throws
     
@@ -54,6 +62,8 @@ public protocol AdminRoutes: Sendable {
     
     @POST("admin/territories/address/delete")
     func deleteTerritoryAddress(territoryAddress: Body<TerritoryAddress>) async throws
+    
+    //MARK: - House CRUD
     
     @POST("admin/houses/add")
     func addHouse(house: Body<House>) async throws
@@ -64,6 +74,8 @@ public protocol AdminRoutes: Sendable {
     @POST("admin/houses/delete")
     func deleteHouse(house: Body<House>) async throws
     
+    //MARK: - Visit CRUD
+    
     @POST("admin/visits/add")
     func addVisit(visit: Body<Visit>) async throws
     
@@ -72,6 +84,8 @@ public protocol AdminRoutes: Sendable {
     
     @POST("admin/visits/delete")
     func deleteVisit(visit: Body<Visit>) async throws
+    
+    //MARK: - Phone CRUD
     
     @GET("admin/allphone")
     func allPhone() async throws -> CongregationWithAllPhone
@@ -108,6 +122,7 @@ public protocol AdminRoutes: Sendable {
     @POST("admin/phone/territories/delete")
     func deletePhoneTerritory(phoneTerritory: Body<PhoneTerritory>) async throws
     
+    //MARK: - Phone Number CRUD
     @POST("admin/phone/numbers/add")
     func addPhoneNumber(phoneNumber: Body<PhoneNumber>) async throws
     
@@ -117,6 +132,7 @@ public protocol AdminRoutes: Sendable {
     @POST("admin/phone/numbers/delete")
     func deletePhoneNumber(phoneNumber: Body<PhoneNumber>) async throws
     
+    //MARK: - Phone Call CRUD
     @POST("admin/phone/calls/add")
     func addPhoneCall(phoneCall: Body<PhoneCall>) async throws
     

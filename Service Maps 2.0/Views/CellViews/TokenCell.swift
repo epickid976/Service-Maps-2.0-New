@@ -6,16 +6,30 @@
 //
 
 import SwiftUI
+
+//MARK: - Token Cell
+
 @MainActor
 struct TokenCell: View {
+    
+    //MARK: - Dependencies
+
     @ObservedObject var dataStore = StorageManager.shared
-    var keyData: KeyData
+    
+    //MARK: - Environment
+   
     @Environment(\.mainWindowSize) var mainWindowSize
+    
+    //MARK: - Properties
+    
+    var keyData: KeyData
     var ipad: Bool = false
     
     var isIpad: Bool {
         return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
+    
+    //MARK: - Body
     
     var body: some View {
         HStack(spacing: 10) {
@@ -94,11 +108,21 @@ struct TokenCell: View {
     }
 }
 
+//MARK: - User Token Cell
 
 struct UserTokenCell: View {
+    
+    //MARK: - Dependencies
     @ObservedObject var dataStore = StorageManager.shared
+    
+    //MARK: - Properties
+    
     var userKeyData: UserToken
+    
+    //MARK: - Environment
+    
     @Environment(\.mainWindowSize) var mainWindowSize
+    
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {

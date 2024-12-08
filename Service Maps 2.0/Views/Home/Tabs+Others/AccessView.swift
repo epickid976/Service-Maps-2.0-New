@@ -15,21 +15,29 @@ import AlertKit
 import MijickPopups
 import Toasts
 
+// MARK: - AccessView
+
 struct AccessView: View {
-    @StateObject var viewModel: AccessViewModel
+    
+    // MARK: - Environment
     
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
+    @Environment(\.mainWindowSize) var mainWindowSize
+    
+    // MARK: - Dependencies
+    
+    @ObservedObject var viewModel: AccessViewModel
     @ObservedObject var databaseManager = GRDBManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var dataStore = StorageManager.shared
+    @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    // MARK: - Properties
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     
-    let alertViewDeleted = AlertAppleMusic17View(title: "Key Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    let alertViewAdded = AlertAppleMusic17View(title: "Key Added/Edited", subtitle: nil, icon: .done)
-    
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    @Environment(\.mainWindowSize) var mainWindowSize
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 40
@@ -38,13 +46,14 @@ struct AccessView: View {
     
     @State private var scrollDebounceCancellable: AnyCancellable?
     
+    // MARK: - Initializers
+    
     init() {
         let viewModel = AccessViewModel()
-        _viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = ObservedObject(wrappedValue: viewModel)
     }
     
-    @ObservedObject var preferencesViewModel = ColumnViewModel()
-    
+    // MARK: - Body
     
     var body: some View {
         GeometryReader { proxy in
@@ -115,21 +124,21 @@ struct AccessView: View {
                             }
                         }
                     }.hSpacing(.center)
-//                        .background(GeometryReader {
-//                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-//                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-//                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-//                            if ( abs(offsetDifference) > minimumOffset) {
-//                                if offsetDifference > 0 {
-//
-//                                    debounceHideFloatingButton(false)
-//                                } else {
-//
-//                                    debounceHideFloatingButton(true)
-//                                }
-//                                self.previousViewOffset = currentOffset
-//                            }
-//                        }
+                        .background(GeometryReader {
+                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                            if ( abs(offsetDifference) > minimumOffset) {
+                                if offsetDifference > 0 {
+                                    DispatchQueue.main.async {
+                                        hideFloatingButton = false
+                                    }
+                                } else {
+                                    hideFloatingButton = true
+                                }
+                                self.previousViewOffset = currentOffset
+                            }
+                        }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
                         
                         .navigationDestination(isPresented: $viewModel.presentSheet) {
@@ -157,15 +166,13 @@ struct AccessView: View {
                                     }
                                 )
                         }
-                    
-                    //.scrollIndicators(.never)
                         .navigationBarTitle("Keys", displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
                                     Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $dataStore.synchronized, lastTime: $dataStore.lastTime))
                                 }
                             }
                         }
@@ -205,17 +212,8 @@ struct AccessView: View {
         }
     }
     
-//    private func debounceHideFloatingButton(_ hide: Bool) {
-//        scrollDebounceCancellable?.cancel()
-//        scrollDebounceCancellable = Just(hide)
-//            .throttle(for: .milliseconds(0), scheduler: RunLoop.main, latest: true)
-//            .sink { shouldHide in
-//                //withAnimation {
-//                    self.hideFloatingButton = shouldHide
-//                //}
-//            }
-//    }
-//
+    //MARK: - Key Cell
+
     @ViewBuilder
     func keyCell(keyData: KeyData) -> some View {
         SwipeView {
@@ -280,7 +278,6 @@ struct AccessView: View {
                             Text("Share Key")
                         }
                     }
-                    //TODO Trash and Pencil only if admin
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         } trailingActions: { context in
@@ -376,6 +373,8 @@ struct AccessView: View {
     }
 }
 
+//MARK: - CustomActivityItemSource
+
 class CustomActivityItemSource: NSObject, UIActivityItemSource {
     var keyName: String
     var territories: [String]
@@ -407,34 +406,45 @@ class CustomActivityItemSource: NSObject, UIActivityItemSource {
     }
 }
 
+//MARK: - AccessViewUsersView
+
 struct AccessViewUsersView: View {
     
-    @StateObject var viewModel = AccessViewModel()
+    //MARK: - Environment
     
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
+    @Environment(\.mainWindowSize) var mainWindowSize
     
+    //MARK: - Dependencies
+    
+    @StateObject var viewModel = AccessViewModel()
     @ObservedObject var databaseManager = GRDBManager.shared
+    @ObservedObject var synchronizationManager = SynchronizationManager.shared
+    
+    //MARK: - Properties
     
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
-    
-    let alertViewDeleted = AlertAppleMusic17View(title: "User Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
-    
-    @ObservedObject var synchronizationManager = SynchronizationManager.shared
-    @Environment(\.mainWindowSize) var mainWindowSize
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     let minimumOffset: CGFloat = 60
     @State var currentKey: Token
+    
+    //MARK: - Alert Views
+    
+    let alertViewDeleted = AlertAppleMusic17View(title: "User Deleted", subtitle: nil, icon: .custom(UIImage(systemName: "trash")!))
+    let alertViewBlocked = AlertAppleMusic17View(title: "User Blocked", subtitle: nil, icon: .custom(UIImage(systemName: "nosign")!))
+    let alertViewUnblocked = AlertAppleMusic17View(title: "User Unblocked", subtitle: nil, icon: .custom(UIImage(systemName: "checkmark")!))
+    
+    //MARK: - Initializers
     
     init(viewModel: AccessViewModel, currentKey: Token) {
         self.currentKey = currentKey
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
-    let alertViewBlocked = AlertAppleMusic17View(title: "User Blocked", subtitle: nil, icon: .custom(UIImage(systemName: "nosign")!))
-    let alertViewUnblocked = AlertAppleMusic17View(title: "User Unblocked", subtitle: nil, icon: .custom(UIImage(systemName: "checkmark")!))
+    //MARK: - Body
     
     var body: some View {
         GeometryReader { proxy in
@@ -694,6 +704,7 @@ struct AccessViewUsersView: View {
         }
     }
     
+    //MARK: - User Cell
     @ViewBuilder
     func keyCell(keyData: UserToken) -> some View {
         SwipeView {
@@ -753,6 +764,8 @@ struct AccessViewUsersView: View {
         .swipeMinimumDistance(25)
     }
 }
+
+//MARK: - Delete Key Popup
 
 struct CentrePopup_DeleteKey: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
@@ -850,6 +863,8 @@ struct CentrePopup_DeleteKey: CentrePopup {
     }
 }
 
+//MARK: - Delete User Popup
+
 struct CentrePopup_DeleteUser: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel
     var onDone: () -> Void
@@ -942,6 +957,8 @@ struct CentrePopup_DeleteUser: CentrePopup {
             
     }
 }
+
+//MARK: - Block/Unblock User Popup
 
 struct CentrePopup_BlockOrUnblockUser: CentrePopup {
     @ObservedObject var viewModel: AccessViewModel

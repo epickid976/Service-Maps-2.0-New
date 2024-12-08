@@ -6,8 +6,13 @@
 //
 
 @preconcurrency import Papyrus
+
+//MARK: - Token Routes
+
 @API
 public protocol TokenRoutes: Sendable  {
+    
+    //MARK: - Load All
     
     @GET("tokens/load")
     func loadAllTokens() async throws -> [MyTokenWithAll]
@@ -18,8 +23,12 @@ public protocol TokenRoutes: Sendable  {
     @GET("tokens/loaduser")
     func loadUserTokens() async throws -> [Token]
 
+    //MARK: - Load Specific
+    
     @GET("tokens/territories/:token")
     func getTerritoriesOfToken(token: Path<String>) async throws -> [TokenTerritory]
+    
+    //MARK: - Token CRUD
     
     @POST("tokens/new")
     func createToken(newTokenForm: Body<NewTokenForm>) async throws -> CreateTokenResponse
@@ -30,12 +39,16 @@ public protocol TokenRoutes: Sendable  {
     @POST("tokens/delete")
     func deleteToken(deleteTokenForm: Body<DeleteTokenForm>) async throws
 
+    //MARK: - Token Registration
+    
     @POST("tokens/unregister")
     func unregister(deleteTokenForm: Body<DeleteTokenForm>) async throws
 
     @POST("tokens/register")
     func register(deleteTokenForm: Body<DeleteTokenForm>) async throws
 
+    //MARK: - Token Users
+    
     @POST("tokens/tokenusers")
     func usersOfToken(deleteTokenForm: Body<DeleteTokenForm>) async throws -> [UserSimpleResponse]
 

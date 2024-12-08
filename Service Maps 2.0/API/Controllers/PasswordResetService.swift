@@ -9,10 +9,14 @@ import Foundation
 import Alamofire
 import PapyrusCore
 
+//MARK: - Password Reset Service
+
 @BackgroundActor
 class PasswordResetService: @unchecked Sendable {
+    //MARK: - API
     private lazy var api: PasswordResetRoutes = PasswordResetRoutesAPI(provider: APIProvider().provider)
 
+    //MARK: - Request
     // Request password reset
     func requestReset(email: String) async -> Result<Void, Error> {
         do {
@@ -23,6 +27,7 @@ class PasswordResetService: @unchecked Sendable {
         }
     }
 
+    //MARK: - Reset
     // Reset password with token
     func resetPassword(password: String, token: String) async -> Result<UserResponse, Error> {
         do {

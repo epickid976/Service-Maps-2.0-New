@@ -14,9 +14,13 @@ import UIKit
 
 @MainActor
 class TerritoryViewModel: ObservableObject {
+    
+    // MARK: - Dependencies
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
+    
+    // MARK: - Properties
     @Published var forceRefresh = false
     // Cancellables for managing Combine subscriptions
     private var cancellables = Set<AnyCancellable>()
@@ -65,11 +69,13 @@ class TerritoryViewModel: ObservableObject {
     @Published var backAnimation = false
     
     
+    // MARK: - Initializer
     init(territoryIdToScrollTo: String? = nil) {
         getTerritories(territoryIdToScrollTo: territoryIdToScrollTo)
         getRecentTerritories()
     }
     
+    // MARK: - Methods
     @BackgroundActor
     func deleteTerritory(territory: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteTerritory(territoryId: territory)
@@ -86,8 +92,11 @@ class TerritoryViewModel: ObservableObject {
     }
 }
 
+// MARK: - Extension Publishers
 @MainActor
 extension TerritoryViewModel {
+    
+    // MARK: - Get Territory Data
     // Fetching Territory data from GRDB using Combine
     func getTerritories(territoryIdToScrollTo: String? = nil) {
         // Call the updated publisher
@@ -126,6 +135,7 @@ extension TerritoryViewModel {
             .store(in: &cancellables) // Keep the subscription alive
     }
     
+    // MARK: - Get Recent Territory Data
     // Fetching Recent Territory data from GRDB using Combine
     func getRecentTerritories() {
         GRDBManager.shared.getRecentTerritoryData()  // Calls the GRDB function to get recent territories

@@ -12,12 +12,17 @@ import NukeUI
 import Combine
 import SwipeActions
 
+// MARK: - VisitsViewModel
+
 @MainActor
 class VisitsViewModel: ObservableObject {
     
+    // MARK: - Dependencies
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
+    
+    // MARK: - Properties
     let latestVisitUpdatePublisher = CurrentValueSubject<Visit?, Never>(nil)
     private var cancellables = Set<AnyCancellable>()
     
@@ -52,13 +57,14 @@ class VisitsViewModel: ObservableObject {
     @Published var revisitAnimation = false
     @Published var revisitAnimationprogress: CGFloat = 0.0
 
-    // Initializer
+    // MARK: - Initializer
     init(house: House, visitIdToScrollTo: String? = nil, revisitView: Bool = false) {
         self.house = house
         getVisits(visitIdToScrollTo: visitIdToScrollTo, revisitView: revisitView)
         recallAdded = GRDBManager.shared.isHouseRecall(house: house.id)
     }
 
+    // MARK: - Methods
     // Methods for recall and deletion
     func deleteVisit(visit: String) async -> Result<Void, Error> {
         return await dataUploaderManager.deleteVisit(visitId: visit)
@@ -77,8 +83,11 @@ class VisitsViewModel: ObservableObject {
     }
 }
 
+// MARK: - Extension + Publisher
 @MainActor
 extension VisitsViewModel {
+    
+    // MARK: - Get Visits
     // Fetch and observe visit data using GRDB
     func getVisits(visitIdToScrollTo: String? = nil, revisitView: Bool = false) {
         GRDBManager.shared.getVisitData(houseId: house.id)
@@ -119,6 +128,7 @@ extension VisitsViewModel {
         }
     }
 
+    // MARK: - Scroll to Visit
     // Scroll to the specified visit after data is received
     private func scrollToVisit(_ visitIdToScrollTo: String?) {
         if let visitIdToScrollTo = visitIdToScrollTo {

@@ -10,13 +10,23 @@ import SwiftUI
 import Lottie
 import NavigationTransitions
 
+//MARK: - AddKeyView
 struct AddKeyView: View {
     var onDone: () -> Void
     
+    //MARK: - Environment
+    
     @Environment(\.presentationMode) var presentationMode
-    @StateObject var viewModel: AddKeyViewModel
     @Environment(\.mainWindowSize) var mainWindowSize
-    @FocusState private var nameFocus: Bool
+    
+    //MARK: - Dependencies
+    
+    @StateObject var viewModel: AddKeyViewModel
+    @StateObject var synchronizationManager = SynchronizationManager.shared
+    @ObservedObject var dataStore = StorageManager.shared
+    @ObservedObject var dataUploaderManager = DataUploaderManager()
+    
+    //MARK: - Initializers
     
     init(keyData: KeyData?, onDone: @escaping () -> Void) {
         self.keyData = keyData
@@ -24,13 +34,16 @@ struct AddKeyView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onDone = onDone
     }
-    @StateObject var synchronizationManager = SynchronizationManager.shared
-    @ObservedObject var dataStore = StorageManager.shared
-    @ObservedObject var dataUploaderManager = DataUploaderManager()
     
+    //MARK: - Properties
+    
+    @FocusState private var nameFocus: Bool
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @State var keyData: KeyData?
+    
+    //MARK: - Body
+    
     var body: some View {
         GeometryReader { proxy in
             VStack {
@@ -162,13 +175,13 @@ struct AddKeyView: View {
                                 .animation(.bouncy, value: self.viewModel.isSelected(territoryData: territoryData))
                         }
                     }
-
+                
                 CellView(territory: territoryData.territory, houseQuantity: territoryData.housesQuantity, width: 0.8, mainWindowSize: mainWindowSize)
                     .padding(2)
             }
             .padding(.horizontal, 10)
         }.id(territoryData.territory.id)
-        .buttonStyle(PlainButtonStyle()) // Maintains original appearance
+            .buttonStyle(PlainButtonStyle()) // Maintains original appearance
     }
     
     @ViewBuilder
@@ -194,6 +207,8 @@ struct AddKeyView: View {
         }
     }
 }
+
+//MARK: - Checkmark Toggle Style
 
 struct CheckmarkToggleStyle: ToggleStyle {
     var color: Color = .teal

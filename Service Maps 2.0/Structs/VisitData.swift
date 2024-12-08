@@ -7,6 +7,8 @@
 
 import Foundation
 
+//MARK: - Visit Data
+
 struct VisitData: Hashable, Identifiable {
     var id: UUID
     var visit: Visit

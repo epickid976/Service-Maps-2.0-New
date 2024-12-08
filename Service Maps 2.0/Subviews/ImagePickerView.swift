@@ -9,7 +9,10 @@ import SwiftUI
 import PhotosUI
 import Nuke
 
+//MARK: - Image Picker View
+
 struct ImagePickerView: View {
+    //MARK: - Properties
     var title: String
     var subTitle: String
     var systemImage: String
@@ -23,6 +26,7 @@ struct ImagePickerView: View {
     //Loading
     @State var isLoading: Bool = false
     
+    //MARK: - Initializer
     init(title: String, subTitle: String, systemImage: String, tint: Color, previewImage: Binding<UIImage?>, onImageChange: @escaping (UIImage) -> Void) {
         self.title = title
         self.subTitle = subTitle
@@ -32,6 +36,7 @@ struct ImagePickerView: View {
         _previewImage = previewImage
     }
     
+    //MARK: - Body
     var body: some View {
         GeometryReader {
             let size = $0.size
@@ -120,6 +125,7 @@ struct ImagePickerView: View {
         }
     }
     
+    //MARK: - Functions
     //Extracting image from PhotoItem
     func extractImage(_ photoItem: PhotosPickerItem, _ viewSize: CGSize) {
         Task.detached {
@@ -150,21 +156,3 @@ struct ImagePickerView: View {
         }
     }
 }
-
-extension View {
-    @ViewBuilder
-    func optionalViewModifier<Content: View>(@ViewBuilder content: @escaping (Self) -> Content) -> some View {
-        content (self)
-    }
-}
-
-//#Preview {
-//    VStack {
-//        ImagePickerView(title: "Drag & Drop", subTitle: "Tap to add an image", systemImage: "square.and.arrow.up", tint: .blue) { image in
-//            
-//        }
-//    }
-//    .frame(minWidth: 300, minHeight: 250)
-//    .padding(.top, 20)
-//    
-//}

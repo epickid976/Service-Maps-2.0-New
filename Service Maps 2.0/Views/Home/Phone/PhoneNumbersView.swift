@@ -17,9 +17,13 @@ import AlertKit
 import MijickPopups
 import Toasts
 
+//MARK: - PhoneNumbersView
+
 struct PhoneNumbersView: View {
     
     var territory: PhoneTerritory
+    
+    //MARK: - Initializers
     
     init(territory: PhoneTerritory, phoneNumberToScrollTo: String? = nil) {
         self.territory = territory
@@ -28,13 +32,19 @@ struct PhoneNumbersView: View {
         _viewModel = StateObject(wrappedValue: initialViewModel)
     }
     
+    //MARK: - Environment
+    
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
     @Environment(\.mainWindowSize) var mainWindowSize
     
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: NumbersViewModel
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var preferencesViewModel = ColumnViewModel()
+    
+    //MARK: - Properties
     
     @State var highlightedNumberId: String?
     @State var animationDone = false
@@ -44,6 +54,8 @@ struct PhoneNumbersView: View {
     @State var previousViewOffset: CGFloat = 0
     
     let minimumOffset: CGFloat = 60
+    
+    //MARK: - Body
     
     var body: some View {
         GeometryReader { proxy in
@@ -134,11 +146,11 @@ struct PhoneNumbersView: View {
                             if value {
                                 CentrePopup_AddNumber(viewModel: viewModel, territory: territory){
                                     let toast = ToastValue(
-                                     icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
                                         message: "Number Added"
                                     )
                                     presentToast(toast)
-                             }.present()
+                                }.present()
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil || viewModel.phoneNumbersData != nil)
@@ -163,11 +175,11 @@ struct PhoneNumbersView: View {
                     .height(min: 180, max: viewModel.noImage ? 200 : 350.0)
                     .allowsHeaderGrowth()
                     .collapseProgress($viewModel.progress)
-//                    .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
-//                        Task {
-//                           synchronizationManager.startupProcess(synchronizing: true)
-//                        }
-//                    }
+                    //                    .pullToRefresh(isLoading: $viewModel.dataStore.synchronized.not) {
+                    //                        Task {
+                    //                           synchronizationManager.startupProcess(synchronizing: true)
+                    //                        }
+                    //                    }
                     .scrollIndicators(.never)
                     .coordinateSpace(name: "scroll")
                 }
@@ -179,7 +191,7 @@ struct PhoneNumbersView: View {
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
-                   // //.keyboardShortcut("+", modifiers: .command)
+                    // //.keyboardShortcut("+", modifiers: .command)
                 }
             }
             .ignoresSafeArea()
@@ -194,151 +206,148 @@ struct PhoneNumbersView: View {
                                 presentationMode.wrappedValue.dismiss()
                             }
                         })//.keyboardShortcut(.delete, modifiers: .command)
-                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     HStack {
                         Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                        //                    if viewModel.isAdmin {
-                        //                        Button("", action: { viewModel.optionsAnimation.toggle();   ; viewModel.presentSheet.toggle() })
-                        //                            .buttonStyle(CircleButtonStyle(imageName: "plus", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
-                        //                    }
                     }
                 }
             }
             .navigationTransition(viewModel.presentSheet || viewModel.phoneNumberToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-//            .onChange(of: viewModel.dataStore.synchronized) { value in
-//                if value {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                        viewModel.getNumbers()
-//                    }
-//                }
-//            }
         }
     }
     
+    //MARK: - Numbers Cell
+    
     @ViewBuilder
     func numbersCell(numbersData: PhoneNumbersData, mainWindowSize: CGSize) -> some View {
-            SwipeView {
-                NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: numbersData.phoneNumber))) {
-                    PhoneNumberCell(numbersData: numbersData, mainWindowSize: mainWindowSize)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16) // Same shape as the cell
-                                .fill(highlightedNumberId == numbersData.phoneNumber.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedNumberId == numbersData.phoneNumber.id) // Fill with transparent gray if highlighted
-                        )
-                        .optionalViewModifier { content in
-                            if AuthorizationLevelManager().existsAdminCredentials() {
-                                content
-                                    .contextMenu {
-                                        Button {
-                                            DispatchQueue.main.async {
-                                                self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
-                                                
-                                                CentrePopup_DeletePhoneNumber(viewModel: viewModel){
-                                                    let toast = ToastValue(
-                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                        message: NSLocalizedString("Number Deleted", comment: "")
-                                                    )
-                                                    presentToast(toast)
-                                             }.present()
-                                            }
-                                        } label: {
-                                            HStack {
-                                                Image(systemName: "trash")
-                                                Text("Delete Number")
-                                            }
+        SwipeView {
+            NavigationLink(destination: NavigationLazyView(CallsView(phoneNumber: numbersData.phoneNumber))) {
+                PhoneNumberCell(numbersData: numbersData, mainWindowSize: mainWindowSize)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                            .fill(highlightedNumberId == numbersData.phoneNumber.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedNumberId == numbersData.phoneNumber.id) // Fill with transparent gray if highlighted
+                    )
+                    .optionalViewModifier { content in
+                        if AuthorizationLevelManager().existsAdminCredentials() {
+                            content
+                                .contextMenu {
+                                    Button {
+                                        DispatchQueue.main.async {
+                                            self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
+                                            
+                                            CentrePopup_DeletePhoneNumber(viewModel: viewModel){
+                                                let toast = ToastValue(
+                                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                    message: NSLocalizedString("Number Deleted", comment: "")
+                                                )
+                                                presentToast(toast)
+                                            }.present()
                                         }
-                                        
-                                        Button {
-                                            self.viewModel.currentNumber = numbersData.phoneNumber
-                                            self.viewModel.presentSheet = true
-                                        } label: {
-                                            HStack {
-                                                Image(systemName: "pencil")
-                                                Text("Edit Number")
-                                            }
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "trash")
+                                            Text("Delete Number")
                                         }
-                                        //TODO Trash and Pencil only if admin
-                                    }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
-                            } else if AuthorizationLevelManager().existsPhoneCredentials() {
-                                content
-                                    .contextMenu {
-                                        Button {
-                                            self.viewModel.currentNumber = numbersData.phoneNumber
-                                            self.viewModel.presentSheet = true
-                                        } label: {
-                                            HStack {
-                                                Image(systemName: "pencil")
-                                                Text("Edit Number")
-                                            }
+                                    }
+                                    
+                                    Button {
+                                        self.viewModel.currentNumber = numbersData.phoneNumber
+                                        self.viewModel.presentSheet = true
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "pencil")
+                                            Text("Edit Number")
                                         }
-                                        //TODO Trash and Pencil only if admin
-                                    }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
-                            } else {
-                                content
-                            }
-                        }
-                }.onTapHaptic(.lightImpact)
-            } trailingActions: { context in
-                if self.viewModel.isAdmin {
-                    SwipeAction(
-                        systemImage: "trash",
-                        backgroundColor: .red
-                    ) {
-                        HapticManager.shared.trigger(.lightImpact)
-                        context.state.wrappedValue = .closed
-                        DispatchQueue.main.async {
-                            self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
-                            
-                            CentrePopup_DeletePhoneNumber(viewModel: viewModel){
-                                let toast = ToastValue(
-                                 icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                    message: NSLocalizedString("Number Deleted", comment: "")
-                                )
-                                presentToast(toast)
-                         }.present()
+                                    }
+                                    //TODO Trash and Pencil only if admin
+                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
+                        } else if AuthorizationLevelManager().existsPhoneCredentials() {
+                            content
+                                .contextMenu {
+                                    Button {
+                                        self.viewModel.currentNumber = numbersData.phoneNumber
+                                        self.viewModel.presentSheet = true
+                                    } label: {
+                                        HStack {
+                                            Image(systemName: "pencil")
+                                            Text("Edit Number")
+                                        }
+                                    }
+                                    //TODO Trash and Pencil only if admin
+                                }.clipShape(RoundedRectangle(cornerRadius: 16, style: .circular))
+                        } else {
+                            content
                         }
                     }
-                    .font(.title.weight(.semibold))
-                    .foregroundColor(.white)
-                    SwipeAction(
-                        systemImage: "pencil",
-                        backgroundColor: Color.teal
-                    ) {
-                        HapticManager.shared.trigger(.lightImpact)
-                        context.state.wrappedValue = .closed
-                        self.viewModel.currentNumber = numbersData.phoneNumber
-                        self.viewModel.presentSheet = true
+            }.onTapHaptic(.lightImpact)
+        } trailingActions: { context in
+            if self.viewModel.isAdmin {
+                SwipeAction(
+                    systemImage: "trash",
+                    backgroundColor: .red
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    context.state.wrappedValue = .closed
+                    DispatchQueue.main.async {
+                        self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
+                        
+                        CentrePopup_DeletePhoneNumber(viewModel: viewModel){
+                            let toast = ToastValue(
+                                icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                message: NSLocalizedString("Number Deleted", comment: "")
+                            )
+                            presentToast(toast)
+                        }.present()
                     }
-                    .allowSwipeToTrigger()
-                    .font(.title.weight(.semibold))
-                    .foregroundColor(.white)
                 }
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+                SwipeAction(
+                    systemImage: "pencil",
+                    backgroundColor: Color.teal
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    context.state.wrappedValue = .closed
+                    self.viewModel.currentNumber = numbersData.phoneNumber
+                    self.viewModel.presentSheet = true
+                }
+                .allowSwipeToTrigger()
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
             }
-            .swipeActionCornerRadius(16)
-            .swipeSpacing(5)
-            .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
-            .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
-            .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
-            .swipeMinimumDistance(self.viewModel.isAdmin ? 25:1000)
+        }
+        .swipeActionCornerRadius(16)
+        .swipeSpacing(5)
+        .swipeOffsetCloseAnimation(stiffness: 1000, damping: 70)
+        .swipeOffsetExpandAnimation(stiffness: 1000, damping: 70)
+        .swipeOffsetTriggerAnimation(stiffness: 1000, damping: 70)
+        .swipeMinimumDistance(self.viewModel.isAdmin ? 25:1000)
         
     }
 }
 
+//MARK: - PhoneNumber ViewModel
+
 @MainActor
 class NumbersViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
+    
+    //MARK: - Dependencies
     
     @ObservedObject var databaseManager = GRDBManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var dataUploaderManager = DataUploaderManager()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
+    //MARK: - Properties
+    
     @Published var phoneNumbersData: Optional<[PhoneNumbersData]> = nil
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
-
+    
     @Published var currentNumber: PhoneNumber?
     @Published var numberToDelete: (String?,String?)
     
@@ -362,17 +371,7 @@ class NumbersViewModel: ObservableObject {
     @Published var loading = false
     @Published var noImage = false
     
-    func deleteNumber(number: String) async -> Result<Void,Error> {
-        return await dataUploaderManager.deletePhoneNumber(phoneNumberId: number)
-    }
-    
     @Published var territory: PhoneTerritory
-    
-    init(territory: PhoneTerritory, phoneNumberToScrollTo: String? = nil) {
-        self.territory = territory
-        
-        getNumbers(phoneNumberToScrollTo: phoneNumberToScrollTo)
-    }
     
     @Published var phoneNumberToScrollTo: String? = nil
     
@@ -385,6 +384,22 @@ class NumbersViewModel: ObservableObject {
         }
     }
     
+    //MARK: - Methods
+    
+    func deleteNumber(number: String) async -> Result<Void,Error> {
+        return await dataUploaderManager.deletePhoneNumber(phoneNumberId: number)
+    }
+    
+    
+    //MARK: - Initializers
+    init(territory: PhoneTerritory, phoneNumberToScrollTo: String? = nil) {
+        self.territory = territory
+        
+        getNumbers(phoneNumberToScrollTo: phoneNumberToScrollTo)
+    }
+    
+    
+    //MARK: - Large Header
     @ViewBuilder
     func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {
         LazyVStack {
@@ -444,6 +459,8 @@ class NumbersViewModel: ObservableObject {
         .animation(.default, value: progress)
     }
     
+    //MARK: - Small Header
+    
     @ViewBuilder
     var smallHeader: some View {
         HStack(spacing: 16) {
@@ -457,13 +474,13 @@ class NumbersViewModel: ObservableObject {
                     .bold()
             }
             .foregroundColor(.primary)
-
+            
             // Divider
             if !(progress < 0.98) { // Show image only if progress is sufficient
                 Divider()
                     .frame(height: 40)
                     .padding(.horizontal, 4)
-
+                
                 // Image Section
                 LazyImage(url: URL(string: territory.getImageURL())) { state in
                     if let image = state.image {
@@ -479,7 +496,7 @@ class NumbersViewModel: ObservableObject {
                 }
                 .padding(.horizontal, 4)
             }
-
+            
             // Description Section
             Text(territory.description)
                 .font(.body)
@@ -487,8 +504,8 @@ class NumbersViewModel: ObservableObject {
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-
-           // Spacer() // Push content to edges for a cleaner look
+            
+            // Spacer() // Push content to edges for a cleaner look
         }
         .padding(.horizontal)
         .frame(height: 60)
@@ -499,6 +516,7 @@ class NumbersViewModel: ObservableObject {
     
 }
 
+//MARK: - ViewModel Extension Publisher
 @MainActor
 extension NumbersViewModel {
     func getNumbers(phoneNumberToScrollTo: String? = nil) {
@@ -512,64 +530,18 @@ extension NumbersViewModel {
                 }
             }, receiveValue: { phoneNumbersData in
                 self.phoneNumbersData = phoneNumbersData
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            if let phoneNumberToScrollTo = phoneNumberToScrollTo {
-                                self.phoneNumberToScrollTo = phoneNumberToScrollTo
-                            }
-                        }
-                    
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if let phoneNumberToScrollTo = phoneNumberToScrollTo {
+                        self.phoneNumberToScrollTo = phoneNumberToScrollTo
+                    }
+                }
+                
             })
             .store(in: &cancellables)
     }
 }
 
-extension Binding where Value == Bool {
-    // nagative bool binding same as `!Value`
-    var not: Binding<Value> {
-        Binding<Value> (
-            get: { !self.wrappedValue },
-            set: { self.wrappedValue = $0}
-        )
-    }
-}
-
-struct NavigationLazyView<Content: View>: View {
-    let build: () -> Content
-    init(_ build: @autoclosure @escaping () -> Content) {
-        self.build = build
-    }
-    var body: some View {
-        build()
-    }
-}
-public struct MyLazyNavigationLink<Label: View, Destination: View>: View {
-    var destination: () -> Destination
-    var label: () -> Label
-    
-    public init(@ViewBuilder destination: @escaping () -> Destination,
-                @ViewBuilder label: @escaping () -> Label) {
-        self.destination = destination
-        self.label = label
-    }
-    
-    public var body: some View {
-        NavigationLink {
-            LazyView {
-                destination()
-            }
-        } label: {
-            label()
-        }
-    }
-    
-    private struct LazyView<Content: View>: View {
-        var content: () -> Content
-        
-        var body: some View {
-            content()
-        }
-    }
-}
+//MARK: - Delete Number Popup
 
 struct CentrePopup_DeletePhoneNumber: CentrePopup {
     @ObservedObject var viewModel: NumbersViewModel
@@ -664,10 +636,13 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
+
+//MARK: - Add Number Popup
+
 struct CentrePopup_AddNumber: CentrePopup {
     @ObservedObject var viewModel: NumbersViewModel
     @State var territory: PhoneTerritory
@@ -714,10 +689,12 @@ struct CentrePopup_AddNumber: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
+
+//MARK: - Phone Number Cell
 
 struct PhoneNumberCell: View {
     @StateObject var callViewModel: CallsViewModel
@@ -777,7 +754,7 @@ struct PhoneNumberCell: View {
                     }
                     .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 75)
                     .hSpacing(.leading).padding(10).background(Color.gray.opacity(0.2)) // Subtle background color
-                        .cornerRadius(16)
+                    .cornerRadius(16)
                 } else {
                     HStack {
                         Image(systemName: "text.word.spacing")
@@ -790,7 +767,7 @@ struct PhoneNumberCell: View {
                             .lineLimit(2)
                             .foregroundColor(.secondaryLabel)
                             .fontWeight(.bold)
-                            
+                        
                     }.hSpacing(.leading).padding(.leading, 5).padding(10).background(Color.gray.opacity(0.2)) // Subtle background color
                         .cornerRadius(16)
                 }

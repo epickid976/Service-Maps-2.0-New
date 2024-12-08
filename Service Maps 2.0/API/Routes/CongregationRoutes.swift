@@ -7,12 +7,18 @@
 
 import Foundation
 @preconcurrency import Papyrus
-//MARK: Papyrus API Protocol
+
+//MARK: - Congregation Routes
+
 @API
 public protocol CongregationRoutes: Sendable  {
     
+    //MARK: - Congregation Sign In
+    
     @POST("congregation/sign")
     func signIn(congregationSignInForm: Body<CongregationSignInForm>) async throws -> CongregationResponse
+    
+    //MARK: - Congregation Phone Sign In
     
     @POST("congregation/phone/sign")
     func phoneSignIn(congregationSignInForm: Body<CongregationSignInForm>) async throws -> CongregationResponse

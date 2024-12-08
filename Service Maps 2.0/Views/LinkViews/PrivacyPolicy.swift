@@ -8,20 +8,31 @@
 import SwiftUI
 import WebKit
 
+//MARK: -  PrivacyPolicy
 struct PrivacyPolicy: View {
+    
+    //MARK: - Properties
+    
     var sheet: Bool
     
     @State var backAnimation = false
     @State var progress: CGFloat = 0.0
     @State var optionsAnimation = false
     
+    //MARK: - Init
     init(sheet: Bool = false) {
         self.sheet = sheet
     }
     
+    //MARK: - Dependencies
+    
     @ObservedObject var universalLinksManager = UniversalLinksManager.shared
     
+    //MARK: - Environment
+    
     @Environment(\.presentationMode) var presentationMode
+    
+    //MARK: - Body
     
     var body: some View {
         VStack {
@@ -62,7 +73,7 @@ struct PrivacyPolicy: View {
     }
 }
 
-
+//MARK: - WebView
 
 struct WebView: UIViewRepresentable {
     let url: URL

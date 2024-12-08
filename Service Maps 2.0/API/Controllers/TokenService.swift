@@ -7,10 +7,14 @@
 import Foundation
 import Papyrus
 
+//MARK: - Token Service
+
 @BackgroundActor
 class TokenService: @unchecked Sendable {
+    // MARK: - API
     private let api: TokenRoutes = TokenRoutesAPI(provider: APIProvider().provider)
     
+    // MARK: - Load Data
     func loadAllTokens() async -> Result<[MyTokenWithAll], Error> {
         do {
             let tokens = try await api.loadAllTokens()
@@ -40,6 +44,7 @@ class TokenService: @unchecked Sendable {
         }
     }
     
+    // MARK: - Load Specific
     // Get territories of a token
     func getTerritoriesOfToken(token: String) async -> Result<[TokenTerritory], Error> {
         do {
@@ -50,6 +55,7 @@ class TokenService: @unchecked Sendable {
         }
     }
     
+    // MARK: - Token CRUD
     // Create token
     func createToken(name: String, moderator: Bool, territories: String, congregation: Int64, expire: Int64?) async -> Result<Token, Error> {
         do {
@@ -80,6 +86,7 @@ class TokenService: @unchecked Sendable {
         }
     }
     
+    // MARK: - Token Registration
     // Unregister token
     func unregister(token: String) async -> Result<Void, Error> {
         do {
@@ -100,6 +107,7 @@ class TokenService: @unchecked Sendable {
         }
     }
     
+    // MARK: - Token Users
     // Get users of a token
     func usersOfToken(token: String) async -> Result<[UserSimpleResponse], Error> {
         do {

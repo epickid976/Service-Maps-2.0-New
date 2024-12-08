@@ -22,7 +22,6 @@
 		8209340D2A7ADB3700AF3FF1 /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8209340C2A7ADB3700AF3FF1 /* SignupView.swift */; };
 		8209340F2A7ADB4000AF3FF1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8209340E2A7ADB4000AF3FF1 /* LoginView.swift */; };
 		821111B62A7315B600F94662 /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821111B52A7315B600F94662 /* AuthenticationService.swift */; };
-		821C125F2A77EE810050D106 /* API_Requests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C125E2A77EE810050D106 /* API_Requests.swift */; };
 		821C12642A77F0BD0050D106 /* LoginForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12632A77F0BD0050D106 /* LoginForm.swift */; };
 		821C12662A77F37F0050D106 /* APIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12652A77F37F0050D106 /* APIProvider.swift */; };
 		821C12682A77F6180050D106 /* LoginResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12672A77F6180050D106 /* LoginResponse.swift */; };
@@ -105,7 +104,6 @@
 		829A139C2CCF21A700BDE0B9 /* ResultExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 829A139B2CCF21A400BDE0B9 /* ResultExtensions.swift */; };
 		82A07E622BF0663000A2E0F6 /* CustomSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A07E612BF0663000A2E0F6 /* CustomSearchBar.swift */; };
 		82A399C52BBEFAD200ECA5E6 /* AddHouseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */; };
-		82A5B4592BD1A48500F52F2F /* TerritoryDataWithKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4582BD1A48500F52F2F /* TerritoryDataWithKeys.swift */; };
 		82A5B45B2BD2F64800F52F2F /* AddAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B45A2BD2F64800F52F2F /* AddAddressView.swift */; };
 		82A5B45D2BD2F65E00F52F2F /* AddAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B45C2BD2F65E00F52F2F /* AddAddressViewModel.swift */; };
 		82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */ = {isa = PBXBuildFile; productRef = 82A5B45F2BD482EB00F52F2F /* AlertKit */; };
@@ -201,7 +199,6 @@
 		8209340C2A7ADB3700AF3FF1 /* SignupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupView.swift; sourceTree = "<group>"; };
 		8209340E2A7ADB4000AF3FF1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		821111B52A7315B600F94662 /* AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
-		821C125E2A77EE810050D106 /* API_Requests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API_Requests.swift; sourceTree = "<group>"; };
 		821C12632A77F0BD0050D106 /* LoginForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginForm.swift; sourceTree = "<group>"; };
 		821C12652A77F37F0050D106 /* APIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIProvider.swift; sourceTree = "<group>"; };
 		821C12672A77F6180050D106 /* LoginResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponse.swift; sourceTree = "<group>"; };
@@ -266,7 +263,6 @@
 		829A139B2CCF21A400BDE0B9 /* ResultExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultExtensions.swift; sourceTree = "<group>"; };
 		82A07E612BF0663000A2E0F6 /* CustomSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchBar.swift; sourceTree = "<group>"; };
 		82A399C42BBEFAD200ECA5E6 /* AddHouseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHouseViewModel.swift; sourceTree = "<group>"; };
-		82A5B4582BD1A48500F52F2F /* TerritoryDataWithKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerritoryDataWithKeys.swift; sourceTree = "<group>"; };
 		82A5B45A2BD2F64800F52F2F /* AddAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAddressView.swift; sourceTree = "<group>"; };
 		82A5B45C2BD2F65E00F52F2F /* AddAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAddressViewModel.swift; sourceTree = "<group>"; };
 		82A5B4612BD5B31600F52F2F /* HouseData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseData.swift; sourceTree = "<group>"; };
@@ -370,7 +366,6 @@
 				82CAFDDF2CC1FB2900B3796D /* PhoneStructs.swift */,
 				82CAFDDD2CC1F9FF00B3796D /* MainStructs.swift */,
 				827EF1A72AA8C644006C4631 /* TerritoryData.swift */,
-				82A5B4582BD1A48500F52F2F /* TerritoryDataWithKeys.swift */,
 				825645B42BD04E9F00F18AC9 /* AddressData.swift */,
 				82A5B4612BD5B31600F52F2F /* HouseData.swift */,
 				82A5B4632BD5B9D700F52F2F /* VisitData.swift */,
@@ -386,7 +381,6 @@
 		820933F82A78687B00AF3FF1 /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				821C125E2A77EE810050D106 /* API_Requests.swift */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -967,7 +961,6 @@
 				820933DE2A78425F00AF3FF1 /* CongregationService.swift in Sources */,
 				821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */,
 				821C12682A77F6180050D106 /* LoginResponse.swift in Sources */,
-				821C125F2A77EE810050D106 /* API_Requests.swift in Sources */,
 				82A399C52BBEFAD200ECA5E6 /* AddHouseViewModel.swift in Sources */,
 				8242136B2A82C5C800626DD5 /* StorageManager.swift in Sources */,
 				82F75C242BE1552D002CCAB0 /* PhoneLoginScreen.swift in Sources */,
@@ -1019,7 +1012,6 @@
 				820933E02A78427E00AF3FF1 /* CongregationSignInForm.swift in Sources */,
 				82F75C102BDB3DE5002CCAB0 /* PrivacyPolicy.swift in Sources */,
 				825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */,
-				82A5B4592BD1A48500F52F2F /* TerritoryDataWithKeys.swift in Sources */,
 				824DAF932C987AAE00FAED0C /* BackupManager.swift in Sources */,
 				82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */,
 				8228B6182C2B1FC6002B7886 /* ViewModifiers.swift in Sources */,

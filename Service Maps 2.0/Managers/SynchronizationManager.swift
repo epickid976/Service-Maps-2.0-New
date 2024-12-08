@@ -9,15 +9,19 @@ import Foundation
 import Combine
 import GRDB
 
-
+//MARK: - Global Actor
 
 @globalActor actor SyncActor: GlobalActor {
     static var shared = SyncActor()
 }
 
+//MARK: - Synchronization Manager
+
 @MainActor
 class SynchronizationManager: ObservableObject {
+    //MARK: - Shared Instance
     static let shared = SynchronizationManager()
+    
     // MARK: - Published Properties
     @Published private var grdbManager = GRDBManager.shared
     @Published private var dataStore = StorageManager.shared
@@ -123,6 +127,8 @@ class SynchronizationManager: ObservableObject {
         return nil
     }
     
+    //MARK: - Synchronization
+    
     @SyncActor
     func synchronize() async {
         let startSync = Date()
@@ -136,21 +142,14 @@ class SynchronizationManager: ObservableObject {
         print(initialIsAdmin ? "Admin credentials found" : "No admin credentials found")
         print("Initial credential check completed in \(endInitialCreds.timeIntervalSince(startInitialCreds)) seconds")
         
+        
         // Mark synchronization as not completed
         DispatchQueue.main.async {
             self.dataStore.synchronized = false
         }
         
         do {
-            // Periodically check for credential changes
-            let startPeriodicCheck = Date()
-            try await periodicCheckForCredentialChanges(
-                initialIsAdmin: initialIsAdmin,
-                initialHasPhoneCredentials: initialHasPhoneCredentials
-            )
-            let endPeriodicCheck = Date()
-            print("Periodic credential check completed in \(endPeriodicCheck.timeIntervalSince(startPeriodicCheck)) seconds")
-            
+            //MARK: Start API Fetch
             // Fetch all data concurrently
             let startFetchApi = Date()
             async let tokenData = fetchTokensFromServer()
@@ -165,6 +164,7 @@ class SynchronizationManager: ObservableObject {
             let endFetchApi = Date()
             print("API data fetch completed in \(endFetchApi.timeIntervalSince(startFetchApi)) seconds")
             
+            //MARK: Start Database Fetch
             // Fetch local data concurrently
             let startFetchDb = Date()
             async let tokensDb = handleResult(await grdbManager.fetchAllAsync(Token.self))
@@ -189,6 +189,7 @@ class SynchronizationManager: ObservableObject {
             
             // Perform synchronization operations concurrently
             let startSyncOps = Date()
+            //MARK: Start Synchronization Operations
             // Perform synchronization operations concurrently
             try await withThrowingTaskGroup(of: Void.self) { group in
                 // Tokens synchronization
@@ -332,9 +333,6 @@ class SynchronizationManager: ObservableObject {
             }
             let endSync = Date()
             print("Synchronization finalized at \(endSync), total duration: \(endSync.timeIntervalSince(startSync)) seconds")
-        } catch SynchronizationError.credentialsChanged {
-            print("Credentials changed during sync, restarting synchronization.")
-            await synchronize()
         } catch {
             print("Synchronization failed with error: \(error.localizedDescription)")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -342,10 +340,11 @@ class SynchronizationManager: ObservableObject {
             }
         }
     }
+    
+    //MARK: - Fetch Tokens
     // Helper Functions for Fetching Data from Server]
     @SyncActor
     private func fetchTokensFromServer() async throws -> ([Token], [UserToken], [TokenTerritory]) {
-        let start = Date()
 
         var tokensApi = [Token]()
         var userTokensApi = [UserToken]()
@@ -382,21 +381,15 @@ class SynchronizationManager: ObservableObject {
             tokenTerritoriesApi.append(contentsOf: it.token_territories)
         }
 
-        let end = Date()
-        print("fetchTokensFromServer completed in \(end.timeIntervalSince(start)) seconds")
-
         return (tokensApi, userTokensApi, tokenTerritoriesApi)
     }
     
+    //MARK: - Fetch Territories
     @SyncActor
     private func fetchTerritoriesFromServer() async throws -> ([Territory], [House], [Visit], [TerritoryAddress]) {
-        let start = Date()
         
         if await authorizationLevelManager.existsAdminCredentials() {
-            let startOfRequest = Date()
             let result = try await AdminService().all().get()
-            let endOfRequest = Date()
-            print("fetchTerritoriesFromServer request completed in \(endOfRequest.timeIntervalSince(startOfRequest)) seconds")
             // Start all tasks concurrently using async let
             async let territories: [Territory] = result.territories.map {
                 Territory(
@@ -451,13 +444,8 @@ class SynchronizationManager: ObservableObject {
 
             // Await all tasks simultaneously
             let (territoriesResult, addressesResult, housesResult, visitsResult) = await (territories, addresses, houses, visits)
-
-            let end = Date()
-            print("fetchTerritoriesFromServer completed in \(end.timeIntervalSince(start)) seconds")
-
             return (territoriesResult, housesResult, visitsResult, addressesResult)
         } else {
-            let startOfRequest = Date()
             let response = try await UserService().loadTerritoriesNew().get()
             
             let territoriesMap = response.map {
@@ -510,95 +498,90 @@ class SynchronizationManager: ObservableObject {
                     }
                 }
             }
-            
-            let endOfRequest = Date()
-            print("fetchTerritoriesFromServer request completed in \(endOfRequest.timeIntervalSince(startOfRequest)) seconds")
-            let end = Date()
-            print("fetchTerritoriesFromServer completed in \(end.timeIntervalSince(start)) seconds")
+
             return (territoriesMap, housesMap, visitsMap, addressesMap)
         }
     }
     
+    //MARK: - Fetch Phone Territories
     @SyncActor
     private func fetchPhoneTerritoryDataFromServer() async throws -> ([PhoneTerritory], [PhoneNumber], [PhoneCall]) {
-        let start = Date()
         
-        if await authorizationLevelManager.existsAdminCredentials() {
-            let result = await AdminService().allPhone()
-            switch result {
-            case .success(let response):
-                let phoneTerritories = response.phone_territories.map {
-                    PhoneTerritory(
+        let adminCredentials = await authorizationLevelManager.existsAdminCredentials()
+        let phoneCredentials = await authorizationLevelManager.existsPhoneCredentials()
+        
+        // Early return if no valid credentials
+        guard adminCredentials || phoneCredentials else {
+            return ([], [], [])
+        }
+        
+        // Determine service based on credentials
+        let result: Result<CongregationWithAllPhone, any Error> = await {
+            if adminCredentials {
+                return await AdminService().allPhone()
+            } else if phoneCredentials {
+                return await UserService().loadPhonesNew()
+            } else {
+                fatalError("This should never happen due to earlier guard check")
+            }
+        }()
+        
+        // Process the result
+        switch result {
+        case .success(let response):
+            // Map phone territories
+            let phoneTerritories = response.phone_territories.map {
+                PhoneTerritory(
+                    id: $0.id,
+                    congregation: response.id,
+                    number: Int64($0.number),
+                    description: $0.description,
+                    image: $0.image
+                )
+            }
+            
+            // Map phone numbers
+            let phoneNumbers = response.phone_territories.flatMap { territory in
+                territory.numbers.map {
+                    PhoneNumber(
                         id: $0.id,
-                        congregation: response.id,
-                        number: Int64($0.number),
-                        description: $0.description,
-                        image: $0.image
+                        congregation: $0.congregation,
+                        number: $0.number,
+                        territory: $0.territory,
+                        house: $0.house
                     )
                 }
-
-                let phoneNumbers = response.phone_territories.flatMap { territory in
-                    territory.numbers.map {
-                        PhoneNumber(
+            }
+            
+            // Map phone calls
+            let phoneCalls = response.phone_territories.flatMap { territory in
+                territory.numbers.flatMap { number in
+                    number.calls.map {
+                        PhoneCall(
                             id: $0.id,
-                            congregation: $0.congregation,
-                            number: $0.number, territory: $0.territory,
-                            house: $0.house
+                            phonenumber: $0.phonenumber,
+                            date: $0.date,
+                            notes: $0.notes,
+                            user: $0.user
                         )
                     }
                 }
-
-                let phoneCalls = response.phone_territories.flatMap { territory in
-                    territory.numbers.flatMap { number in
-                        number.calls.map {
-                            PhoneCall(
-                                id: $0.id,
-                                phonenumber: $0.phonenumber,
-                                date: $0.date,
-                                notes: $0.notes,
-                                user: $0.user
-                            )
-                        }
-                    }
-                }
-
-                let end = Date()
-                print("fetchPhoneTerritoryDataFromServer completed in \(end.timeIntervalSince(start)) seconds")
-                
-                return (phoneTerritories, phoneNumbers, phoneCalls)
-            case .failure(let error):
-                throw error
             }
-        } else if await authorizationLevelManager.existsPhoneCredentials() {
-            let result = await UserService().allPhoneData()
-            switch result {
-            case .success(let response):
-                let end = Date()
-                print("fetchPhoneTerritoryDataFromServer completed in \(end.timeIntervalSince(start)) seconds")
-                
-                return (
-                    response.territories,
-                    response.numbers,
-                    response.calls
-                )
-            case .failure(let error):
-                throw error
-            }
-        } else {
-            let end = Date()
-            print("fetchPhoneTerritoryDataFromServer completed in \(end.timeIntervalSince(start)) seconds")
-            return ([], [], [])
+            
+            return (phoneTerritories, phoneNumbers, phoneCalls)
+            
+        case .failure(let error):
+            throw error
         }
     }
+    
+    //MARK: - Fetch Recalls
     @SyncActor
     private func fetchRecallsFromServer() async throws -> [Recalls] {
-        let start = Date()
-        let recalls = try await UserService().getRecalls().get()
-        let end = Date()
-        print("fetchRecallsFromServer completed in \(end.timeIntervalSince(start)) seconds")
-        return recalls
+        return try await UserService().getRecalls().get()
     }
     
+    //MARK: - Comparing and Synchronize
     @SyncActor
     private func comparingAndSynchronize<T: Identifiable & Equatable & Sendable>(
         apiList: [T],
@@ -700,23 +683,7 @@ class SynchronizationManager: ObservableObject {
         }
     }
     
-    @SyncActor
-    private func periodicCheckForCredentialChanges(initialIsAdmin: Bool, initialHasPhoneCredentials: Bool) async throws {
-        Task.detached {
-            for _ in 0..<5 { // Periodically check 5 times (adjust as needed)
-                try await Task.sleep(nanoseconds: 1_000_000_000) // Check every 1 second
-                
-                let currentIsAdmin = await AuthorizationLevelManager().existsAdminCredentials()
-                let currentHasPhoneCredentials = await AuthorizationLevelManager().existsPhoneCredentials()
-                
-                // If credentials changed, throw an error to restart sync
-                if currentIsAdmin != initialIsAdmin || currentHasPhoneCredentials != initialHasPhoneCredentials {
-                    throw SynchronizationError.credentialsChanged
-                }
-            }
-        }
-    }
-    
+    //MARK: - Comparing and Synchronize Token Territories
     @BackgroundActor
     private func comparingAndSynchronizeTokenTerritories(apiList: [TokenTerritory], dbList: [TokenTerritory]) async {
         
@@ -783,10 +750,6 @@ class SynchronizationManager: ObservableObject {
             }
         }
     }
-    // Custom error for when the credentials change during sync
-    enum SynchronizationError: Error {
-        case credentialsChanged
-    }
     
     @SyncActor
     func handleResult<T>(_ result: Result<[T], Error>) throws -> [T] {
@@ -799,7 +762,4 @@ class SynchronizationManager: ObservableObject {
     }
 }
 
-struct UserAction {
-    var userToken: UserToken
-    var isBlocked: Bool
-}
+

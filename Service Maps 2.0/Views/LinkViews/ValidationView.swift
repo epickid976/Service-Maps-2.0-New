@@ -10,14 +10,22 @@ import Lottie
 import NavigationTransitions
 import Papyrus
 
+//MARK: - ValidationView
+
 struct ValidationView: View {
     
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: ValidationViewModel
+    
+    //MARK: - Init
     
     init() {
         _viewModel = StateObject(wrappedValue: ValidationViewModel())
         
     }
+    
+    //MARK: - Body
     
     var body: some View {
         NavigationStack {
@@ -84,17 +92,21 @@ struct ValidationView: View {
     
 }
 
+//MARK: - ValidationViewModel
 @MainActor
 class ValidationViewModel: ObservableObject {
     
+    //MARK: - Dependencies
     @ObservedObject var universalLinksManager = UniversalLinksManager.shared
-    
     @ObservedObject var authenticationManager = AuthenticationManager()
-    
     @ObservedObject var dataStore = StorageManager.shared
+    
+    //MARK: - Properties
     
     @Published var loading = true
     @Published var error = ""
+    
+    //MARK: - Activate Email
     
     func activateEmail() async {
         if universalLinksManager.determineDestination() == .ActivateEmail {

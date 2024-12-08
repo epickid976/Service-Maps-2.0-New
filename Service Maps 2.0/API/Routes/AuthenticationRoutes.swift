@@ -10,11 +10,12 @@ import Alamofire
 @preconcurrency import Papyrus
 
 
-//MARK: Papyrus API Protocol
+//MARK: - Authentication Routes
+
 @API
 public protocol AuthenticationRoutes: Sendable  {
     
-    ///# Login
+    //MARK: - Login
     @POST("auth/login")
     func login(logInForm: Body<LoginForm>) async throws -> LoginResponse
     
@@ -24,30 +25,30 @@ public protocol AuthenticationRoutes: Sendable  {
     @POST("auth/loginemailtoken")
     func loginEmailToken(singleTokenForm: Body<SingleTokenForm>) async throws -> LoginResponse
     
-    ///# Sign up
+    //MARK: - Sign up
     @POST("auth/signup")
     func signup(signupForm: Body<SignUpForm>) async throws
     
-    ///# Logout
+    //MARK: - Logout
     @GET("auth/logout")
     func logout() async throws
     
-    ///# User
+    //MARK: - User
     @GET("auth/user")
     func user() async throws -> UserResponse
     
-    ///# Validation
+    //MARK: - Validation
     @GET("auth/signup/activate/resend/:email")
     func resendEmailValidation(email: Path<String>) async throws
     
     @GET("auth/signup/activate/:token")
     func activateEmail(token: Path<String>) async throws
     
-    /// # Delete Account
+    //MARK: - Delete Account
     @GET("auth/delete")
     func deleteAccount() async throws
     
-    /// # Edit Name
+    //MARK: - Edit Name
     @POST("auth/editusername")
     func editUserName(newUserNameForm: Body<NewUserNameForm>) async throws
 }

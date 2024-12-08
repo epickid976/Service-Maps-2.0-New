@@ -7,6 +7,24 @@
 
 import Foundation
 
+//MARK: - Territory Data With Keys
+struct TerritoryDataWithKeys: Hashable, Identifiable, Sendable {
+    var id: UUID
+    var keys: [Token]
+    var territoriesData: [TerritoryData]
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(keys)
+        hasher.combine(territoriesData)
+    }
+    
+    static func ==(lhs: TerritoryDataWithKeys, rhs: TerritoryDataWithKeys) -> Bool {
+        return lhs.keys == rhs.keys &&
+        lhs.territoriesData == rhs.territoriesData
+    }
+}
+
+//MARK: - Territory Data
 struct TerritoryData: Hashable, Equatable, Identifiable, Sendable {
     var id: String { territory.id } // Use territory.id as the unique identifier
     var territory: Territory

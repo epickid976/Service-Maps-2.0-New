@@ -9,10 +9,14 @@ import Foundation
 import SwiftUI
 import Papyrus
 
+//MARK: - Admin Service
+
 @BackgroundActor
 class AdminService {
+    //MARK: - API
     private lazy var api: AdminRoutes = AdminRoutesAPI(provider: APIProvider().provider)
 
+    //MARK: - Load Data
     // Fetch all data
     func allData() async -> Result<AllDataResponse, Error> {
         do {
@@ -33,6 +37,7 @@ class AdminService {
         }
     }
     
+    //MARK: - Load Phone Data
     func allPhone() async -> Result<CongregationWithAllPhone, Error> {
         do {
             let response = try await api.allPhone()
@@ -53,6 +58,7 @@ class AdminService {
         }
     }
 
+    //MARK: - Territory CRUD
     // Add a new territory
     func addTerritory(territory: Territory) async -> Result<Void, Error> {
         do {
@@ -156,6 +162,7 @@ class AdminService {
         }
     }
 
+    //MARK: - Territory Address CRUD
     // Add a territory address
     func addTerritoryAddress(territoryAddress: TerritoryAddress) async -> Result<Void, Error> {
         do {
@@ -186,6 +193,7 @@ class AdminService {
         }
     }
 
+    //MARK: - House CRUD
     // Add, Update, and Delete House functions follow the same pattern:
     func addHouse(house: House) async -> Result<Void, Error> {
         do {
@@ -214,6 +222,7 @@ class AdminService {
         }
     }
 
+    //MARK: - Visit CRUD
     // Similarly, add, update, and delete Visit:
     func addVisit(visit: Visit) async -> Result<Void, Error> {
         do {
@@ -242,34 +251,7 @@ class AdminService {
         }
     }
 
-    // Add, update, and delete Phone Call:
-    func addPhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
-        do {
-            try await api.addPhoneCall(phoneCall: phoneCall)
-            return .success(())
-        } catch {
-            return .failure(error)
-        }
-    }
-
-    func updatePhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
-        do {
-            try await api.updatePhoneCall(phoneCall: phoneCall)
-            return .success(())
-        } catch {
-            return .failure(error)
-        }
-    }
-
-    func deletePhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
-        do {
-            try await api.deletePhoneCall(phoneCall: phoneCall)
-            return .success(())
-        } catch {
-            return .failure(error)
-        }
-    }
-
+    //MARK: - Phone Territory CRUD
     // Add a phone territory
     func addPhoneTerritory(phoneTerritory: PhoneTerritory) async -> Result<Void, Error> {
         do {
@@ -374,6 +356,7 @@ class AdminService {
         }
     }
 
+    //MARK: - Phone Number CRUD
     // Add a phone number
     func addPhoneNumber(phoneNumber: PhoneNumber) async -> Result<Void, Error> {
         do {
@@ -398,6 +381,35 @@ class AdminService {
     func deletePhoneNumber(phoneNumber: PhoneNumber) async -> Result<Void, Error> {
         do {
             try await api.deletePhoneNumber(phoneNumber: phoneNumber)
+            return .success(())
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    //MARK: - Phone Call CRUD
+    // Add, update, and delete Phone Call:
+    func addPhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
+        do {
+            try await api.addPhoneCall(phoneCall: phoneCall)
+            return .success(())
+        } catch {
+            return .failure(error)
+        }
+    }
+
+    func updatePhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
+        do {
+            try await api.updatePhoneCall(phoneCall: phoneCall)
+            return .success(())
+        } catch {
+            return .failure(error)
+        }
+    }
+
+    func deletePhoneCall(phoneCall: PhoneCall) async -> Result<Void, Error> {
+        do {
+            try await api.deletePhoneCall(phoneCall: phoneCall)
             return .success(())
         } catch {
             return .failure(error)

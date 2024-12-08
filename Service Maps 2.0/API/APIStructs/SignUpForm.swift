@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - SignUp Form
+
 public struct SignUpForm: Codable, Sendable {
     var name: String
     var email: String

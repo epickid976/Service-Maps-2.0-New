@@ -18,15 +18,22 @@ import AlertKit
 import MijickPopups
 import Toasts
 
+// MARK: - RecallsView
+
 struct RecallsView: View {
-    @StateObject private var viewModel = RecallViewModel()
+    
+    // MARK: - Environment
     
     @Environment(\.mainWindowSize) var mainWindowSize
     @Environment(\.presentToast) var presentToast
     
+    // MARK: - Dependencies
+    
+    @StateObject private var viewModel = RecallViewModel()
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     
+    // MARK: - Body
     
     var body: some View {
         GeometryReader { proxy in
@@ -107,18 +114,22 @@ struct RecallsView: View {
     }
 }
 
+// MARK: - RecallViewModel
+
 @MainActor
 class RecallViewModel: ObservableObject {
-    @Published var recalls: Optional<[RecallData]> = nil
+    
+    // MARK: - Dependencies
+    
     @ObservedObject var dataStore = StorageManager.shared
-    
-    @Published var syncAnimation = false
-    @Published var syncAnimationprogress: CGFloat = 0.0
-    
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     
-    @Published var recallToRemove: String?
+    // MARK: - Properties
     
+    @Published var recalls: Optional<[RecallData]> = nil
+    @Published var syncAnimation = false
+    @Published var syncAnimationprogress: CGFloat = 0.0
+    @Published var recallToRemove: String?
     @Published var showAlert = false
     
     @Published var ifFailed = false
@@ -127,17 +138,21 @@ class RecallViewModel: ObservableObject {
     
     @Published var showToast = false
     
-    
-    
     private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Initializers
     
     init() {
         getRecalls()
     }
     
+    // MARK: - Methods
+    
     func deleteRecall(id: Int64, user: String, house: String) async -> Result<Void, Error> {
         return await DataUploaderManager().deleteRecall(recall: Recalls(id: id, user: user, house: house))
     }
+    
+    // MARK: - Publisher
     
     @MainActor
     func getRecalls() {
@@ -157,6 +172,8 @@ class RecallViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 }
+
+// MARK: - RecallData
 
 struct RecallData: Hashable, Equatable {
     var recall: Recalls
@@ -200,6 +217,8 @@ struct RecallsWithKey: Hashable, Equatable {
     }
     
 }
+
+// MARK: - RecallRow
 
 struct RecallRow: View {
     @ObservedObject var viewModel: RecallViewModel
@@ -274,6 +293,8 @@ struct RecallRow: View {
         return finalString
     }
 }
+
+// MARK: - Remove Recall Popup
 
 struct CentrePopup_RemoveRecall: CentrePopup {
     @ObservedObject var viewModel: RecallViewModel
@@ -375,7 +396,7 @@ struct CentrePopup_RemoveRecall: CentrePopup {
     }
 }
 
-
+// MARK: - Preview
 
 #Preview {
     RecallsView()

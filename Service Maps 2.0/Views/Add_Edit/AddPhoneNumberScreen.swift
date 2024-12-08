@@ -7,12 +7,21 @@
 
 import SwiftUI
 
+//MARK: - AddPhoneNumberScreen
+
 struct AddPhoneNumberScreen: View {
     var onDone: () -> Void
     var onDismiss: () -> Void
     
+    //MARK: - Environment
+    
     @Environment(\.dismiss) private var dismiss
+    
+    //MARK: - Dependencies
+    
     @StateObject var viewModel: AddPhoneNumberViewModel
+    
+    //MARK: - Properties
     
     @FocusState private var numberTextFocus: Bool
     @FocusState private var houseTextFocus: Bool
@@ -20,6 +29,8 @@ struct AddPhoneNumberScreen: View {
     var number: PhoneNumber?
     
     @State var title = ""
+    
+    //MARK: - Init
     
     init(territory: PhoneTerritory, number: PhoneNumber?, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         _viewModel = StateObject(wrappedValue: AddPhoneNumberViewModel(territory: territory))
@@ -30,6 +41,8 @@ struct AddPhoneNumberScreen: View {
         self.onDone = onDone
         self.onDismiss = onDismiss
     }
+    
+    //MARK: - Body
     
     var body: some View {
         ZStack {
@@ -132,16 +145,23 @@ struct AddPhoneNumberScreen: View {
     }
 }
 
+//MARK: - AddPhoneNumberViewModel
 
 @MainActor
 class AddPhoneNumberViewModel: ObservableObject {
+    
+    //MARK: - Init
     
     init(territory: PhoneTerritory) {
         error = ""
         self.territory = territory
     }
     
+    //MARK: - Dependencies
+    
     @Published private var dataUploader = DataUploaderManager()
+    
+    //MARK: - Properties
     
     @Published var territory: PhoneTerritory
     
@@ -151,6 +171,7 @@ class AddPhoneNumberViewModel: ObservableObject {
     
     @Published var loading = false
     
+    //MARK: - Methods
     
     func addNumber() async -> Result<Void, Error> {
         loading = true

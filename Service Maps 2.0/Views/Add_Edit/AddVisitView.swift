@@ -7,12 +7,34 @@
 
 import SwiftUI
 
+//MARK: - AddVisitView
+
 struct AddVisitView: View {
+    
+    //MARK: - Environment
+    
     @Environment(\.dismiss) private var dismiss
+    
+    //MARK: - Properties
+    
     var visit: Visit?
+    
+    //MARK: - Dependencies
     
     @StateObject var viewModel: AddVisitViewModel
     @State var title = ""
+    
+    //MARK: - Closures
+    
+    var onDone: () -> Void
+    var onDismiss: () -> Void
+    
+    //MARK: - Focus State
+    
+    @FocusState var notesFocus: Bool
+    @State var showOptions = false
+    
+    //MARK: - Initializer
     
     init(visit: Visit?, house: House, onDone: @escaping () -> Void, onDismiss: @escaping () -> Void) {
         let initialViewModel = AddVisitViewModel(house: house)
@@ -25,13 +47,6 @@ struct AddVisitView: View {
         self.onDismiss = onDismiss
     }
     
-    var onDone: () -> Void
-    var onDismiss: () -> Void
-    
-    @FocusState var notesFocus: Bool
-    
-    @State var showOptions = false
-    
     var body: some View {
         ZStack {
             VStack {
@@ -40,8 +55,8 @@ struct AddVisitView: View {
                         .font(.title3)
                         .fontWeight(.heavy)
                         .hSpacing(.center)
-                        
-                   
+                    
+                    
                 }
                 
                 CustomPickerView(viewModel: viewModel, showOptions: $showOptions, text: $viewModel.notes)
@@ -141,12 +156,12 @@ struct CustomPickerView: View {
     @ObservedObject var viewModel: AddVisitViewModel
     @Binding var showOptions: Bool
     @Binding var text: String
-   
+    
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
-
+    
     var body: some View {
         VStack {
             HStack {
@@ -181,7 +196,7 @@ struct CustomPickerView: View {
             }
             .padding(.trailing, 16)
             .frame(maxWidth: .infinity, alignment: .trailing)
-
+            
             if showOptions {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(Symbols.allCases, id: \.self) { option in
@@ -198,20 +213,20 @@ struct CustomPickerView: View {
                                     .lineLimit(2)
                                     .font(.body)
                                     .frame(alignment: .leading)
-                                    //.fontWeight(.bold)
-                                    
+                                //.fontWeight(.bold)
+                                
                             }.hSpacing(.center).animation(.spring(), value: viewModel.selectedOption == option)
-                            .padding()
-                            .frame(maxWidth: .infinity, minHeight: 50) // Ensure same height
-                            .background(
-                                RoundedRectangle(cornerRadius: 40)
-                                    .fill(Color.gray.opacity( viewModel.selectedOption == option ? 0.2 : 0.1))
+                                .padding()
+                                .frame(maxWidth: .infinity, minHeight: 50) // Ensure same height
+                                .background(
+                                    RoundedRectangle(cornerRadius: 40)
+                                        .fill(Color.gray.opacity( viewModel.selectedOption == option ? 0.2 : 0.1))
                                     
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 40)
-                                    .stroke(viewModel.selectedOption == option ? Color.white : Color.clear, lineWidth: 1)
-                            )
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 40)
+                                        .stroke(viewModel.selectedOption == option ? Color.white : Color.clear, lineWidth: 1)
+                                )
                         }
                         .buttonStyle(PlainButtonStyle())
                     }

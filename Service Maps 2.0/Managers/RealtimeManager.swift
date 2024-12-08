@@ -9,15 +9,21 @@ import Foundation
 import SwiftUI
 import Ably
 
+//MARK: - Ably Keys
 let ABLY_KEY_SUBSCRIBE_ONLY = "DsHCCQ.qNceOA:3V_gM3AwmdS0M6zpHSRSxVSGV9HqyK6CpvvC8LB3KeQ"
 
+//MARK: - Realtime Manager
 @MainActor
 class RealtimeManager: ObservableObject {
+    //MARK: - Singleton
     static let shared = RealtimeManager()
     
+    //MARK: - Dependencies
     @ObservedObject private var dataStorageProvider = StorageManager.shared
     @ObservedObject private var authorizationProvider = AuthorizationProvider.shared
     @ObservedObject private var grdbManager = GRDBManager.shared
+    
+    //MARK: - Properties
     private var channel: ARTRealtimeChannel?
     private var ably: ARTRealtime?
     @Published var lastMessage: Date?
@@ -25,6 +31,7 @@ class RealtimeManager: ObservableObject {
     
     init() {}
     
+    //MARK: - Connection Management
     func initAblyConnection() async throws {
         // If we're already connected, unsubscribe first
         if channel != nil {
@@ -97,6 +104,7 @@ class RealtimeManager: ObservableObject {
         isSubscribed && channel != nil
     }
     
+    //MARK: - Message Processing
     @BackgroundActor
     private func processMessage(_ message: ARTMessage) async throws {
         switch message.name {
@@ -153,6 +161,7 @@ class RealtimeManager: ObservableObject {
         await saveCallToDatabase(callToSave)
     }
 
+    //MARK: - Database Operations
     @BackgroundActor
     private func saveVisitToDatabase(_ visit: Visit) async {
         do {
@@ -188,6 +197,7 @@ class RealtimeManager: ObservableObject {
     }
 }
 
+//MARK: - Models
 struct UserWithDataResponse: Codable {
     let email: String
     let data: String
