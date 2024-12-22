@@ -133,15 +133,17 @@ struct CallsView: View {
                         }.background(GeometryReader {
                             Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                         }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                            if ( abs(offsetDifference) > minimumOffset) {
-                                if offsetDifference > 0 {
-                                    hideFloatingButton = false
-                                } else {
-                                    
-                                    hideFloatingButton = true
+                            Task { @MainActor in
+                                let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                                if ( abs(offsetDifference) > minimumOffset) {
+                                    if offsetDifference > 0 {
+                                        hideFloatingButton = false
+                                    } else {
+                                        
+                                        hideFloatingButton = true
+                                    }
+                                    self.previousViewOffset = currentOffset
                                 }
-                                self.previousViewOffset = currentOffset
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.callsData == nil || viewModel.callsData != nil)

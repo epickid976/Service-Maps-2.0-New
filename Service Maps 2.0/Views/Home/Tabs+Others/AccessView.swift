@@ -127,16 +127,18 @@ struct AccessView: View {
                         .background(GeometryReader {
                             Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                         }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                            let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                            if ( abs(offsetDifference) > minimumOffset) {
-                                if offsetDifference > 0 {
-                                    DispatchQueue.main.async {
-                                        hideFloatingButton = false
+                            Task { @MainActor in
+                                let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                                if ( abs(offsetDifference) > minimumOffset) {
+                                    if offsetDifference > 0 {
+                                        DispatchQueue.main.async {
+                                            hideFloatingButton = false
+                                        }
+                                    } else {
+                                        hideFloatingButton = true
                                     }
-                                } else {
-                                    hideFloatingButton = true
+                                    self.previousViewOffset = currentOffset
                                 }
-                                self.previousViewOffset = currentOffset
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)

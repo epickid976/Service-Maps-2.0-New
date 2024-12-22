@@ -40,7 +40,7 @@ struct VisitCell: View {
                 }.vSpacing(.top)
                 Text(visit.visit.notes)
                     .font(.headline)
-                    .lineLimit(4)
+                    .lineLimit(8)
                     .foregroundColor(.primary)
                     .fontWeight(.heavy)
                     .hSpacing(.leading)
