@@ -31,6 +31,7 @@ public struct Territory: Codable, FetchableRecord, MutablePersistableRecord, Equ
     func getImageURL() -> String {
         let baseURL = "https://servicemaps.ejvapps.online/api/"
         if image != nil {
+            print(baseURL + "territories/" + congregation + "/" + image!)
             return baseURL + "territories/" + congregation + "/" + image!
         } else {
             return ""

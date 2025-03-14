@@ -394,7 +394,7 @@ class SynchronizationManager: ObservableObject {
             async let territories: [Territory] = result.territories.map {
                 Territory(
                     id: $0.id,
-                    congregation: result.id,
+                    congregation: String(result.congregation_number),
                     number: Int32($0.number),
                     description: $0.description,
                     image: $0.image
@@ -451,7 +451,7 @@ class SynchronizationManager: ObservableObject {
             let territoriesMap = response.map {
                 Territory(
                     id: $0.id,
-                    congregation: $0.id,
+                    congregation: $0.congregation,
                     number: Int32($0.number),
                     description: $0.description,
                     image: $0.image

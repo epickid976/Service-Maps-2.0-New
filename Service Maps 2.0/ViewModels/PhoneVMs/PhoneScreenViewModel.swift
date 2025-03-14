@@ -138,10 +138,8 @@ extension PhoneScreenViewModel {
             }, receiveValue: { recentPhoneData in
                 
                 if self.search.isEmpty {
-                    DispatchQueue.main.async {
                         self.recentPhoneData = recentPhoneData.sorted(by: { $0.lastCall.date > $1.lastCall.date
                         })
-                    }
                 } else {
                     DispatchQueue.main.async {
                         self.recentPhoneData = recentPhoneData.filter { territoryData in

@@ -1064,6 +1064,7 @@ final class GRDBManager: ObservableObject, Sendable {
                 .catch { _ in Just([]) } // Handle errors by emitting an empty array
                 .setFailureType(to: Never.self)
                 .map { phoneCalls in
+                    
                     // Filter phone calls from the last two weeks and map to RecentPhoneData
                     phoneCalls.compactMap { call -> RecentPhoneData? in
                         guard let number = numberDict[call.phonenumber],

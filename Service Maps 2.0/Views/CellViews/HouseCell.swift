@@ -101,7 +101,7 @@ struct HouseCell: View {
             
             Text("\(visit.notes)")
                 .font(.body)
-                .lineLimit(4)
+                .lineLimit(8)
                 .foregroundColor(.secondaryLabel)
                 .fontWeight(.bold)
                 .padding(.leading, 5)
