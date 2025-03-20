@@ -253,9 +253,9 @@ func formattedDate(date: Date, withTime: Bool = true) -> String {
         }
     } else {
         if  Calendar.current.isDateInToday(date) {
-            return "Today"
+            return NSLocalizedString("Today", comment: "")
         } else if Calendar.current.isDateInYesterday(date){
-            return "Yesterday"
+            return NSLocalizedString("Yesterday", comment: "")
         } else if Calendar.current.isDateInThisWeek(date) {
             formatter1.dateFormat = "EEEE"
             return  formatter1.string(from: date)
