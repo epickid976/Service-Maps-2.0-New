@@ -56,10 +56,35 @@ struct AddCallView: View {
                 }
                 CustomField(text: $viewModel.notes, isFocused: $notesFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Notes", comment: ""))
                     .padding(.bottom)
-                
-                Text(viewModel.error)
-                    .fontWeight(.bold)
-                    .foregroundColor(.red)
+
+                // Oval button to re-add last visit details
+                Button(action: {
+                    HapticManager.shared.trigger(.lightImpact)
+                    Task {
+                        await viewModel.fillWithLastCall()
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "sparkles") // or any AI-themed SF Symbol
+                            .font(.system(size: 16, weight: .medium))
+                        Text(NSLocalizedString("Same as Last Call", comment: ""))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 16)
+                    .background(Capsule().fill(Color.blue.opacity(0.2)))
+                    .foregroundColor(.blue)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.bottom, 16)
+
+                if viewModel.error != "" {
+                    Text(viewModel.error)
+                        .padding(.top, 5)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                }
                 
                 HStack {
                     if !viewModel.loading {

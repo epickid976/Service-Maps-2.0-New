@@ -7,6 +7,7 @@
 import SwiftUI
 import CoreData
 import NukeUI
+import MijickPopups
 
 //MARK: - Territory Cell
 
@@ -27,65 +28,65 @@ struct CellView: View {
     //MARK: - Body
     
     var body: some View {
-            HStack(spacing: 10) {
-                VStack {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [.blue, .teal]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ).opacity(0.6)
-                            )
+        HStack(spacing: 10) {
+            VStack {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [.blue, .teal]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ).opacity(0.6)
+                        )
+                    
+                    VStack {
+                        Text("\(territory.number)")
+                            .font(.system(size:  25, weight: .heavy))
+                            .foregroundColor(.white)
                         
-                        VStack {
-                            Text("\(territory.number)")
-                                .font(.system(size:  25, weight: .heavy))
-                                .foregroundColor(.white)
-                            
-                        }
-                        .frame(minWidth: mainWindowSize.width * 0.20)
                     }
-                    .hSpacing(.leading)
-                    .frame(width: mainWindowSize.width * 0.20, height: cellHeight, alignment: .center)
+                    .frame(minWidth: mainWindowSize.width * 0.20)
                 }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(territory.description )
-                        .font(.headline)
-                        .lineLimit(5)
-                        .foregroundColor(.primary)
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.leading)
-                    Text("Doors: \(houseQuantity)")
-                        .font(.body)
-                        .lineLimit(2)
-                        .foregroundColor(.secondaryLabel)
-                        .fontWeight(.bold)
-                }.padding(10).vSpacing(.top)
+                .hSpacing(.leading)
+                .frame(width: mainWindowSize.width * 0.20, height: cellHeight, alignment: .center)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(territory.description )
+                    .font(.headline)
+                    .lineLimit(5)
+                    .foregroundColor(.primary)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.leading)
+                Text("Doors: \(houseQuantity)")
+                    .font(.body)
+                    .lineLimit(2)
+                    .foregroundColor(.secondaryLabel)
+                    .fontWeight(.bold)
+            }.padding(10).vSpacing(.top)
                 .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
-            }
-            .id(territory.id)
-            
-            .frame(minWidth: isIpad ? (mainWindowSize.width * width ) / 2 : mainWindowSize.width * width)
-            //.frame(minHeight: isIpad ? 100 : 20)
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            
-            .background(GeometryReader { geometry in
-                            Color.clear
-                                .onAppear {
-                                    self.cellHeight = geometry.size.height
-                                }
-                        })
-            .optionalViewModifier { content in
-                if ipad {
-                    content
-                        .frame(maxHeight: .infinity)
-                } else {
-                    content
+        }
+        .id(territory.id)
+        
+        .frame(minWidth: isIpad ? (mainWindowSize.width * width ) / 2 : mainWindowSize.width * width)
+        //.frame(minHeight: isIpad ? 100 : 20)
+        .background(.thinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        
+        .background(GeometryReader { geometry in
+            Color.clear
+                .onAppear {
+                    self.cellHeight = geometry.size.height
                 }
+        })
+        .optionalViewModifier { content in
+            if ipad {
+                content
+                    .frame(maxHeight: .infinity)
+            } else {
+                content
             }
+        }
     }
     
 }
@@ -144,9 +145,9 @@ struct PhoneTerritoryCellView: View {
                     .foregroundColor(.secondaryLabel)
                     .fontWeight(.bold)
             }.padding(10)
-            .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
+                .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
             //Image("testTerritoryImage")
-            .vSpacing(.top)
+                .vSpacing(.top)
             
         }
         //.id(territory.id)
@@ -155,12 +156,12 @@ struct PhoneTerritoryCellView: View {
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .background(GeometryReader { geometry in
-                        Color.clear
-                            .onAppear {
-                                self.cellHeight = geometry.size.height
-                                print("Cell height: \(self.cellHeight)")
-                            }
-                    })
+            Color.clear
+                .onAppear {
+                    self.cellHeight = geometry.size.height
+                    print("Cell height: \(self.cellHeight)")
+                }
+        })
         .optionalViewModifier { content in
             if isIpad {
                 content
@@ -214,6 +215,53 @@ struct recentCell: View {
     }
 }
 
+struct RecentTerritoryCellView: View {
+    let territoryData: RecentTerritoryData
+    let mainWindowSize: CGSize
+    
+    @State private var navigate: Bool = false
+    @State private var longPressDetected: Bool = false
+    
+    var body: some View {
+        ZStack {
+            // Hidden NavigationLink that becomes active on tap
+            NavigationLink(
+                destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory)),
+                isActive: $navigate,
+                label: { EmptyView() }
+            )
+            .onTapHaptic(.lightImpact)
+            .hidden()
+            
+            
+            // Your custom cell view
+            recentCell(territoryData: territoryData, mainWindowSize: mainWindowSize)
+                .contentShape(Rectangle()) // make the whole area tappable
+                .highPriorityGesture(
+                    LongPressGesture(minimumDuration: 0.5)
+                        .onEnded { _ in
+                            // Mark that a long press was detected and present the popup
+                            longPressDetected = true
+                            let floorViewModel = FloorsViewModel(territory: territoryData.territory)
+                            CentrePopup_RecentFloorsKnocked(viewModel: floorViewModel) {
+                                // onDone callback (if needed)
+                                longPressDetected = false
+                            }.present()
+                        }
+                )
+                .onTapGesture {
+                    // If a long press wasn’t detected, navigate on tap
+                    if !longPressDetected {
+                        navigate = true
+                    }
+                    // Reset the flag so future taps work correctly
+                    longPressDetected = false
+                }
+            
+        }
+    }
+}
+
 //MARK: - Phone Territory Recent Cell
 
 struct recentPhoneCell: View {
@@ -256,3 +304,171 @@ struct recentPhoneCell: View {
 }
 
 
+struct CentrePopup_RecentFloorsKnocked: CentrePopup {
+    @ObservedObject var viewModel: FloorsViewModel
+    var onDone: () -> Void
+    
+    init(viewModel: FloorsViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+    }
+    
+    var body: some View {
+        createContent()
+    }
+    
+    func createContent() -> some View {
+        ZStack {
+            VStack(alignment: .leading, spacing: 15) {
+                
+                // Title
+                Text("Knocking Info")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.top, 16)
+                    .padding(.leading, 20)  // small left padding for styling
+                Text("Territory \(viewModel.territory.number)")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .fontWeight(.bold)
+                    .padding(.leading, 20)  // small left padding for styling
+                    .padding(.top, -8)
+                
+                // Floors
+                if viewModel.floorDetails.isEmpty {
+                    Text("No recent floors knocked.")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 20)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 12) {
+                            ForEach(viewModel.floorDetails, id: \.address.id) { detail in
+                                FloorCellView(detail: detail)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                    }
+                }
+                
+                // Done Button
+                HStack {
+                    Spacer()
+                    CustomButton(loading: false, title: "Done") {
+                        HapticManager.shared.trigger(.lightImpact)
+                        withAnimation {
+                            dismissLastPopup()
+                            onDone()
+                        }
+                    }
+                    Spacer()
+                }
+                .padding(.bottom, 16)
+            }
+            .background(Material.thin)
+            .cornerRadius(16)
+            .ignoresSafeArea(.keyboard)
+        }
+        // Note: NO .padding(.horizontal, ...) here
+        .ignoresSafeArea(.keyboard)
+    }
+    
+    /// Here we place the horizontal padding of the entire popup
+    /// so that the content is inset from the screen edges by 24 points on each side.
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config.popupHorizontalPadding(40)
+    }
+}
+
+
+
+@MainActor
+class FloorsViewModel: ObservableObject {
+    @Published var territory: Territory
+    @Published var floorData: FloorData?
+    
+    init(territory: Territory) {
+        self.territory = territory
+        Task { [weak self] in
+            await self?.loadFloorData()
+        }
+    }
+    
+    func loadFloorData() async {
+        floorData = await GRDBManager.shared.getFloorData(for: territory.id)
+    }
+    
+    /// Convenience computed property returning the floor details (addresses) for the territory.
+    var floorDetails: [FloorDetail] {
+        floorData?.floors ?? []
+    }
+}
+
+
+struct FloorCellView: View {
+    let detail: FloorDetail
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Text information
+            VStack(alignment: .leading, spacing: 4) {
+                Text(detail.address.address)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                if let knockedDate = detail.knockedDate {
+                    Text("Knocked: \(formattedDate(knockedDate))")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("Not Knocked")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            // Status icon
+            let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date())!
+            let isKnockedRecently = detail.knockedDate.map { $0 >= twoWeeksAgo } ?? false
+            
+            Image(systemName: isKnockedRecently ? "checkmark.seal.fill" : "xmark.seal.fill")
+                .font(.title2)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(isKnockedRecently ? Color.green : Color.red)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: gradientColors),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: Color.black.opacity(0.12), radius: 4, x: 0, y: 2)
+        )
+        .padding(.horizontal, 12)
+    }
+    
+    /// Formats the date to a medium style string.
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
+    
+    /// Returns a gradient based on whether the floor was knocked recently.
+    private var gradientColors: [Color] {
+        let twoWeeksAgo = Calendar.current.date(byAdding: .day, value: -14, to: Date())!
+        guard let knockedDate = detail.knockedDate, knockedDate >= twoWeeksAgo else {
+            // Red gradient for old or missing knock date
+            return [Color.red.opacity(0.35), Color.red.opacity(0.20)]
+        }
+        // Green gradient for recent knock date
+        return [Color.green.opacity(0.35), Color.green.opacity(0.20)]
+    }
+}

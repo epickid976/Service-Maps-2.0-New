@@ -63,4 +63,26 @@ class AddVisitViewModel: ObservableObject {
             return true
         }
     }
+    
+    // Inside AddVisitViewModel
+    func fillWithLastVisit() async {
+        if let lastVisit = await fetchLastVisit() {
+            await MainActor.run {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                    self.notes = lastVisit.notes
+                    self.selectedOption = Symbols(rawValue: lastVisit.symbol.uppercased()) ?? .none
+                }
+            }
+        } else {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                self.error = NSLocalizedString("No previous visit found.", comment: "")
+            }
+        }
+    }
+
+    // Placeholder for actual implementation
+    private func fetchLastVisit() async -> Visit? {
+        // Fetch your last visit from your data source
+        return GRDBManager.shared.getLastVisitForHouse(house)
+    }
 }

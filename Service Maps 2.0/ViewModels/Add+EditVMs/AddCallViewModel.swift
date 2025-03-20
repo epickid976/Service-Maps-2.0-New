@@ -63,4 +63,23 @@ class AddCallViewModel: ObservableObject {
             return true
         }
     }
+    
+    func fillWithLastCall() async {
+        if let lastCall = await fetchLastCall() {
+           await MainActor.run {
+               withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                   self.notes = lastCall.notes
+               }
+           }
+       } else {
+           withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+               self.error = NSLocalizedString("No previous call found.", comment: "")
+           }
+       }
+    }
+    
+    private func fetchLastCall() async -> PhoneCall? {
+        // Fetch your last visit from your data source
+        return GRDBManager.shared.getLastCallForNumber(phoneNumber)
+    }
 }

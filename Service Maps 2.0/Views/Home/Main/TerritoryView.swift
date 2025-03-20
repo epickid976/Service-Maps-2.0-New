@@ -126,11 +126,10 @@ struct TerritoryView: View {
                                                         ScrollView(.horizontal, showsIndicators: false) {
                                                             LazyHStack {
                                                                 ForEach(viewModel.recentTerritoryData!, id: \.id) { territoryData in
-                                                                    NavigationLink(destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory))) {
-                                                                        recentCell(territoryData: territoryData, mainWindowSize: proxy.size).transition(.customBackInsertion)
-                                                                    }.onTapHaptic(.lightImpact)
+                                                                    RecentTerritoryCellView(territoryData: territoryData, mainWindowSize: proxy.size)
                                                                 }
-                                                            }.padding(.leading, 10)
+                                                            }
+                                                            .padding(.leading, 10)
                                                         }
                                                         .scrollIndicators(.never)
                                                         

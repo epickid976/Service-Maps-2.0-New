@@ -274,6 +274,27 @@ struct HousesView: View {
                     }
                 
             }.onTapHaptic(.lightImpact)
+        } leadingActions: { context in
+            SwipeAction(
+                systemImage: "pencil.tip.crop.circle.badge.plus.fill",
+                backgroundColor: .green
+            ) {
+                HapticManager.shared.trigger(.lightImpact)
+                DispatchQueue.main.async {
+                    context.state.wrappedValue = .closed
+                    CentrePopup_AddVisit(viewModel: VisitsViewModel(house: houseData.house), house: houseData.house
+                    ) {
+                           let toast = ToastValue(
+                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                               message: "Visit Added"
+                           )
+                        presentToast(toast)
+                    }.present()
+                }
+            }
+            .allowSwipeToTrigger()
+            .font(.title.weight(.semibold))
+            .foregroundColor(.white)
         } trailingActions: { context in
             if houseData.accessLevel == .Admin {
                 SwipeAction(

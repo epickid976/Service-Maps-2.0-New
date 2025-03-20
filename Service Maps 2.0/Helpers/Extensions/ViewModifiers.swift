@@ -148,3 +148,14 @@ extension View {
             .shadow(color: .black.opacity(0.16), radius: 24, x: 0, y: 0)
     }
 }
+
+extension View {
+    @ViewBuilder
+    func ifAvailableNumericTextTransition() -> some View {
+        if #available(iOS 17.0, *) {
+            self.contentTransition(.opacity)
+        } else {
+            self
+        }
+    }
+}

@@ -238,7 +238,7 @@ struct CallsView: View {
                             self.viewModel.callToDelete = callData.phoneCall.id
                             CentrePopup_DeleteCall(viewModel: viewModel){
                                 let toast = ToastValue(
-                                    icon: Image(systemName: "checkmark.circle.fill"),
+                                    icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.red),
                                     message: "Call Deleted"
                                 )
                                 presentToast(toast)
@@ -247,7 +247,7 @@ struct CallsView: View {
                     } label: {
                         HStack {
                             Image(systemName: "trash")
-                            Text("Delete Visit")
+                            Text("Delete Call")
                         }
                     }
                     
@@ -258,7 +258,7 @@ struct CallsView: View {
                     } label: {
                         HStack {
                             Image(systemName: "pencil")
-                            Text("Edit Visit")
+                            Text("Edit Call")
                         }
                     }
                     //TODO Trash and Pencil only if admin

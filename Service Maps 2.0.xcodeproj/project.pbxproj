@@ -86,6 +86,7 @@
 		8255F1962C1A79AF00445A82 /* EditTokenForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255F1952C1A79AF00445A82 /* EditTokenForm.swift */; };
 		825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B42BD04E9F00F18AC9 /* AddressData.swift */; };
 		825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */; };
+		8258EBD02D8C946A008AB155 /* Floors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258EBCF2D8C9467008AB155 /* Floors.swift */; };
 		82608AB22CE9992F00BCC7D7 /* Toasts in Frameworks */ = {isa = PBXBuildFile; productRef = 82608AB12CE9992F00BCC7D7 /* Toasts */; };
 		826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */; };
 		826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766F2A729FDE000A4BAA /* HomeTabView.swift */; };
@@ -247,6 +248,7 @@
 		8255F1952C1A79AF00445A82 /* EditTokenForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTokenForm.swift; sourceTree = "<group>"; };
 		825645B42BD04E9F00F18AC9 /* AddressData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressData.swift; sourceTree = "<group>"; };
 		825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressViewModel.swift; sourceTree = "<group>"; };
+		8258EBCF2D8C9467008AB155 /* Floors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Floors.swift; sourceTree = "<group>"; };
 		826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Service Maps 2.0.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service_Maps_2_0App.swift; sourceTree = "<group>"; };
 		826B766F2A729FDE000A4BAA /* HomeTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabView.swift; sourceTree = "<group>"; };
@@ -363,6 +365,7 @@
 		820933E52A78505100AF3FF1 /* Structs */ = {
 			isa = PBXGroup;
 			children = (
+				8258EBCF2D8C9467008AB155 /* Floors.swift */,
 				82CAFDDF2CC1FB2900B3796D /* PhoneStructs.swift */,
 				82CAFDDD2CC1F9FF00B3796D /* MainStructs.swift */,
 				827EF1A72AA8C644006C4631 /* TerritoryData.swift */,
@@ -1015,6 +1018,7 @@
 				824DAF932C987AAE00FAED0C /* BackupManager.swift in Sources */,
 				82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */,
 				8228B6182C2B1FC6002B7886 /* ViewModifiers.swift in Sources */,
+				8258EBD02D8C946A008AB155 /* Floors.swift in Sources */,
 				82A5B45B2BD2F64800F52F2F /* AddAddressView.swift in Sources */,
 				82EF0AE82CFF76E40083A89C /* CongregationWithAllPhone.swift in Sources */,
 				82916C192A994298005133DE /* AddVisitView.swift in Sources */,
@@ -1178,7 +1182,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.12;
+				MARKETING_VERSION = 3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1219,7 +1223,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.12;
+				MARKETING_VERSION = 3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

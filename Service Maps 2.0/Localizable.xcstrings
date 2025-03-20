@@ -1507,6 +1507,22 @@
         }
       }
     },
+    "Edit Call" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar Llamada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier l’Appel"
+          }
+        }
+      }
+    },
     "Edit Key" : {
       "localizations" : {
         "es" : {
@@ -2595,6 +2611,38 @@
         }
       }
     },
+    "Knocked: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitada: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visité: %@"
+          }
+        }
+      }
+    },
+    "Knocking Info" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Información de Visita"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info de Dernière Visite"
+          }
+        }
+      }
+    },
     "Language" : {
       "localizations" : {
         "es" : {
@@ -3143,6 +3191,54 @@
         }
       }
     },
+    "No previous call found." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna llamada encontrada."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas d’appel trouvé."
+          }
+        }
+      }
+    },
+    "No previous visit found." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna visita encontrada."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de visite trouvé."
+          }
+        }
+      }
+    },
+    "No recent floors knocked." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna dirección."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas d’addresses"
+          }
+        }
+      }
+    },
     "No results found" : {
       "localizations" : {
         "es" : {
@@ -3196,6 +3292,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pas un email valide"
+          }
+        }
+      }
+    },
+    "Not Knocked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Visitada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas visité"
           }
         }
       }
@@ -4006,6 +4118,38 @@
         }
       }
     },
+    "Same as Last Call" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar Ultima Llamada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier Dernier Appel"
+          }
+        }
+      }
+    },
+    "Same as Last Visit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar Ultima Visita"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier Dernière Visite"
+          }
+        }
+      }
+    },
     "Save" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4395,6 +4539,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Territoires: %@"
+          }
+        }
+      }
+    },
+    "Territory %d" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territorio: %d"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Territoire: %d"
           }
         }
       }

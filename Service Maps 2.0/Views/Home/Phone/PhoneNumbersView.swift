@@ -286,6 +286,27 @@ struct PhoneNumbersView: View {
                         }
                     }
             }.onTapHaptic(.lightImpact)
+        } leadingActions: { context in
+            SwipeAction(
+                systemImage: "pencil.tip.crop.circle.badge.plus.fill",
+                backgroundColor: .green
+            ) {
+                HapticManager.shared.trigger(.lightImpact)
+                DispatchQueue.main.async {
+                    context.state.wrappedValue = .closed
+                    CentrePopup_AddCall(
+                        viewModel: CallsViewModel(phoneNumber: numbersData.phoneNumber), phoneNumber: numbersData.phoneNumber){
+                            let toast = ToastValue(
+                                icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                message: "Call Added"
+                            )
+                            presentToast(toast)
+                        }.present()
+                }
+            }
+            .allowSwipeToTrigger()
+            .font(.title.weight(.semibold))
+            .foregroundColor(.white)
         } trailingActions: { context in
             if self.viewModel.isAdmin {
                 SwipeAction(
