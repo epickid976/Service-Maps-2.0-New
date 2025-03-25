@@ -326,7 +326,7 @@ struct HousesView: View {
         .swipeOffsetCloseAnimation(stiffness: 500, damping: 100)
         .swipeOffsetExpandAnimation(stiffness: 500, damping: 100)
         .swipeOffsetTriggerAnimation(stiffness: 500, damping: 100)
-        .swipeMinimumDistance(houseData.accessLevel != .User ? 25:1000)
+        .swipeMinimumDistance(25)
         
     }
 }
