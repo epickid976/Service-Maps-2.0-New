@@ -179,6 +179,7 @@ struct HousesView: View {
                                             }
                                         }
                                         .pickerStyle(.menu)
+                                        
                                     } label: {
                                         Button("", action: { viewModel.optionsAnimation.toggle(); HapticManager.shared.trigger(.lightImpact); viewModel.presentSheet.toggle() })//.keyboardShortcut(";", modifiers: .command)
                                             .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))

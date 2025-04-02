@@ -109,10 +109,8 @@ extension VisitsViewModel {
             // Sort visits by date
             let sortedData = visitData.sorted { $0.visit.date > $1.visit.date }
 
-            // Determine the latest visit based on revisitView
-            let latestVisit: Visit? = revisitView
-                ? sortedData.first?.visit
-                : sortedData.first { $0.visit.symbol != "nc" }?.visit ?? sortedData.first?.visit
+            // Always use the latest visit regardless of the symbol
+            let latestVisit: Visit? = sortedData.first?.visit
 
             // Update the UI on the main thread
             DispatchQueue.main.async {
