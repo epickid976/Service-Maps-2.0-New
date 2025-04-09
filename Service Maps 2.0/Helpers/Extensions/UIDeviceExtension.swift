@@ -141,3 +141,10 @@ public extension UIDevice {
         return isSimulator && modelName.contains("iPhone SE")
     }()
 }
+
+extension UIDevice {
+    static var isSmallPhone: Bool {
+        let model = UIDevice.modelName
+        return model.contains("iPhone SE") || model.contains("iPhone 8")
+    }
+}

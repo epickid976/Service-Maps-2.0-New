@@ -55,6 +55,9 @@ class HousesViewModel: ObservableObject {
         didSet { getHouses() }
     }
     
+    @Published var selectedSymbols: Set<Symbols> = []
+    
+    
     @Published var search: String = "" {
         didSet { getHouses() }
     }
@@ -107,6 +110,18 @@ extension HousesViewModel {
             filteredData = houseData.filter {
                 $0.house.number.lowercased().contains(search.lowercased()) ||
                 $0.visit?.notes.lowercased().contains(search.lowercased()) ?? false
+            }
+        }
+        
+        if !selectedSymbols.isEmpty {
+            filteredData = filteredData.filter { houseData in
+                guard let visitSymbol = houseData.visit?.symbol else {
+                    // Include if `.none` is selected and there’s no visit
+                    return selectedSymbols.contains(.none)
+                }
+                
+                let symbolEnum = Symbols.fromServer(raw: visitSymbol)
+                return selectedSymbols.contains(symbolEnum)
             }
         }
         

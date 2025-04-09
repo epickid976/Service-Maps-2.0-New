@@ -42,6 +42,23 @@ enum Symbols: String, CaseIterable, Identifiable {
         }
     }
     
+    static func fromServer(raw: String) -> Symbols {
+        switch raw {
+        case "nc": return .NC
+        case "nt": return .NT
+        case "o": return .O
+        case "h": return .H
+        case "m": return .M
+        case "n": return .N
+        case "v": return .V
+        case "ov": return .OV
+        case "mv": return .MV
+        case "hv": return .HV
+        case "uk", "": return .none
+        default: return .none
+        }
+    }
+    
     // MARK: - Legend
     var legend: String {
         switch self {

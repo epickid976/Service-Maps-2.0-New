@@ -64,58 +64,71 @@ struct HousesView: View {
                     ScrollView {
                         LazyVStack {
                             if viewModel.houseData == nil && !dataStore.synchronized {
-                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                    LottieView(animation: .named("loadsimple"))
-                                        .playing(loopMode: .loop)
-                                        .resizable()
-                                        .frame(width: 250, height: 250)
-                                } else {
-                                    LottieView(animation: .named("loadsimple"))
-                                        .playing(loopMode: .loop)
-                                        .resizable()
-                                        .frame(width: 350, height: 350)
+                                Group {
+                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                        LottieView(animation: .named("loadsimple"))
+                                            .playing(loopMode: .loop)
+                                            .resizable()
+                                            .frame(width: 250, height: 250)
+                                    } else {
+                                        LottieView(animation: .named("loadsimple"))
+                                            .playing(loopMode: .loop)
+                                            .resizable()
+                                            .frame(width: 350, height: 350)
+                                    }
                                 }
+                                .transition(.opacity)
+                                .id("loadingView")
                             } else {
                                 if let data = viewModel.houseData {
                                     if data.isEmpty {
-                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 250, height: 250)
-                                        } else {
-                                            LottieView(animation: .named("nodatapreview"))
-                                                .playing()
-                                                .resizable()
-                                                .frame(width: 350, height: 350)
+                                        Group {
+                                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 250, height: 250)
+                                            } else {
+                                                LottieView(animation: .named("nodatapreview"))
+                                                    .playing()
+                                                    .resizable()
+                                                    .frame(width: 350, height: 350)
+                                            }
                                         }
-                                        
+                                        .transition(.opacity)
+                                        .id("emptyView")
                                     } else {
                                         SwipeViewGroup {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                                                     let proxy = CGSize(width: proxy.size.width / 2 - 16, height: proxy.size.height)
                                                     ForEach(viewModel.houseData!, id: \.house.id) { houseData in
-                                                        houseCellView(houseData: houseData, mainWindowSize: proxy).id(houseData.house.id).modifier(ScrollTransitionModifier())
+                                                        houseCellView(houseData: houseData, mainWindowSize: proxy)
+                                                            .id(houseData.house.id)
+                                                            .modifier(ScrollTransitionModifier())
                                                             .transition(.customBackInsertion)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             } else {
                                                 LazyVGrid(columns: [GridItem(.flexible())]) {
                                                     ForEach(viewModel.houseData!, id: \.house.id) { houseData in
-                                                        houseCellView(houseData: houseData, mainWindowSize: proxy.size).id(houseData.house.id).modifier(ScrollTransitionModifier())
+                                                        houseCellView(houseData: houseData, mainWindowSize: proxy.size)
+                                                            .id(houseData.house.id)
+                                                            .modifier(ScrollTransitionModifier())
                                                             .transition(.customBackInsertion)
                                                     }.modifier(ScrollTransitionModifier())
                                                 }
                                             }
-                                        }.animation(.spring(), value: viewModel.houseData!)
-                                            .padding()
-                                        
-                                        
+                                        }
+                                        .animation(.spring(), value: viewModel.houseData!)
+                                        .padding()
+                                        .transition(.opacity)
+                                        .id("listView")
                                     }
                                 }
                             }
                         }
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.houseData)
                         .background(GeometryReader {
                             Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                         })
@@ -166,23 +179,68 @@ struct HousesView: View {
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $dataStore.synchronized, lastTime: $dataStore.lastTime))
                                     
                                     Menu {
-                                        Picker("Sort", selection: $viewModel.sortPredicate) {
+                                        Picker("Sort by Order", selection: $viewModel.sortPredicate) {
                                             ForEach(HouseSortPredicate.allCases, id: \.self) { option in
                                                 Text(option.localized)
                                             }
                                         }
                                         .pickerStyle(.menu)
-                                        
-                                        Picker("Filter", selection: $viewModel.filterPredicate) {
+
+                                        Picker("Sort by Grouping", selection: $viewModel.filterPredicate) {
                                             ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
                                                 Text(option.localized)
                                             }
                                         }
                                         .pickerStyle(.menu)
                                         
+                                        Divider()
+                                        
+                                        Text("Filter by Symbol").font(.headline)
+                                        
+                                        let orderedSymbols: [Symbols] = [
+                                            .NC, .NT, .V,
+                                            .H, .M, .N,
+                                            .OV, .MV, .HV,
+                                            .none
+                                        ]
+
+                                        let symbolGroups = orderedSymbols.chunked(into: 3)
+
+                                        ForEach(symbolGroups, id: \.self) { group in
+                                            ControlGroup {
+                                                ForEach(group) { symbol in
+                                                    Button {
+                                                        if viewModel.selectedSymbols.contains(symbol) {
+                                                            viewModel.selectedSymbols.remove(symbol)
+                                                        } else {
+                                                            viewModel.selectedSymbols.insert(symbol)
+                                                        }
+                                                        viewModel.getHouses()
+                                                    } label: {
+                                                        Label(symbol.localizedString, systemImage: viewModel.selectedSymbols.contains(symbol) ? "checkmark.circle.fill" : "circle")
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        Button("Clear Symbols") {
+                                            viewModel.selectedSymbols.removeAll()
+                                            viewModel.getHouses()
+                                        }
                                     } label: {
-                                        Button("", action: { viewModel.optionsAnimation.toggle(); HapticManager.shared.trigger(.lightImpact); viewModel.presentSheet.toggle() })//.keyboardShortcut(";", modifiers: .command)
-                                            .buttonStyle(CircleButtonStyle(imageName: "ellipsis", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                                        Button("", action: {
+                                            viewModel.optionsAnimation.toggle()
+                                            HapticManager.shared.trigger(.lightImpact)
+                                            viewModel.presentSheet.toggle()
+                                        })
+                                        .buttonStyle(CircleButtonStyle(
+                                            imageName: "ellipsis",
+                                            background: .white.opacity(0),
+                                            width: 40,
+                                            height: 40,
+                                            progress: $viewModel.progress,
+                                            animation: $viewModel.optionsAnimation
+                                        ))
                                     }
                                     
                                 }

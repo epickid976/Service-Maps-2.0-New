@@ -976,6 +976,9 @@
         }
       }
     },
+    "Clear Symbols" : {
+
+    },
     "Confirm Password" : {
       "localizations" : {
         "es" : {
@@ -2247,6 +2250,7 @@
       }
     },
     "Filter" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2261,6 +2265,9 @@
           }
         }
       }
+    },
+    "Filter by Symbol" : {
+
     },
     "first name" : {
       "extractionState" : "stale",
@@ -4387,6 +4394,7 @@
       }
     },
     "Sort" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4401,6 +4409,12 @@
           }
         }
       }
+    },
+    "Sort by Grouping" : {
+
+    },
+    "Sort by Order" : {
+
     },
     "Symbol: " : {
       "localizations" : {
