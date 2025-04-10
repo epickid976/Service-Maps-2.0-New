@@ -61,6 +61,9 @@
         }
       }
     },
+    "**Symbol Meanings**" : {
+
+    },
     "%@" : {
       "localizations" : {
         "fr" : {
@@ -291,6 +294,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld/255"
+          }
+        }
+      }
+    },
+    "• **Sort by Grouping** – Displays houses in normal order or groups them (e.g., odd numbers first, even numbers second)." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• **Ordenar por Agrupación – Muestra las casas en orden normal o agrupadas (por ejemplo, primero los números impares, luego los pares)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• **Trier par Regroupement – Affiche les maisons dans l’ordre normal ou regroupées (par exemple, les numéros impairs d’abord, puis les pairs)."
+          }
+        }
+      }
+    },
+    "• **Sort by Order** – Sorts houses in increasing or decreasing order based on address number." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• **Ordenar por Número – Ordena las casas en orden ascendente o descendente según el número de dirección."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• **Trier par Numéro – Trie les maisons par ordre croissant ou décroissant selon le numéro d’adresse."
           }
         }
       }
@@ -977,7 +1012,36 @@
       }
     },
     "Clear Symbols" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar Simbolos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer les symboles"
+          }
+        }
+      }
+    },
+    "Close" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer"
+          }
+        }
+      }
     },
     "Confirm Password" : {
       "localizations" : {
@@ -2267,7 +2331,36 @@
       }
     },
     "Filter by Symbol" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrar por Símbolo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrer par Symbole"
+          }
+        }
+      }
+    },
+    "Filter Options Info" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Información sobre las opciones de filtro"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informations sur les options de filtre\n"
+          }
+        }
+      }
     },
     "first name" : {
       "extractionState" : "stale",
@@ -2518,6 +2611,9 @@
           }
         }
       }
+    },
+    "Info" : {
+
     },
     "Invalid Credentials" : {
       "localizations" : {
@@ -4411,10 +4507,36 @@
       }
     },
     "Sort by Grouping" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar por Agrupación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trier par Regroupement"
+          }
+        }
+      }
     },
     "Sort by Order" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordernar por Número"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trier par Numéro"
+          }
+        }
+      }
     },
     "Symbol: " : {
       "localizations" : {

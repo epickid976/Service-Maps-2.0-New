@@ -179,16 +179,39 @@ struct HousesView: View {
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $dataStore.synchronized, lastTime: $dataStore.lastTime))
                                     
                                     Menu {
-                                        Picker("Sort by Order", selection: $viewModel.sortPredicate) {
+                                        Button {
+                                            HapticManager.shared.trigger(.lightImpact)
+                                            CentrePopup_FilterInfo().present()
+                                        } label: {
+                                            Label {
+                                                Text("Info")
+                                            } icon: {
+                                                Image(systemName: "questionmark.circle")
+                                            }
+                                        }
+                                        
+                                        Picker(selection: $viewModel.sortPredicate) {
                                             ForEach(HouseSortPredicate.allCases, id: \.self) { option in
                                                 Text(option.localized)
+                                            }
+                                        } label: {
+                                            Label {
+                                                Text("Sort by Order")
+                                            } icon: {
+                                                Image(systemName: "arrow.up.arrow.down.circle")
                                             }
                                         }
                                         .pickerStyle(.menu)
 
-                                        Picker("Sort by Grouping", selection: $viewModel.filterPredicate) {
+                                        Picker(selection: $viewModel.filterPredicate) {
                                             ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
                                                 Text(option.localized)
+                                            }
+                                        } label: {
+                                            Label {
+                                                Text("Sort by Grouping")
+                                            } icon: {
+                                                Image(systemName: "rectangle.3.group.bubble.left")
                                             }
                                         }
                                         .pickerStyle(.menu)
@@ -234,7 +257,7 @@ struct HousesView: View {
                                             viewModel.presentSheet.toggle()
                                         })
                                         .buttonStyle(CircleButtonStyle(
-                                            imageName: "ellipsis",
+                                            imageName: "line.3.horizontal.decrease",
                                             background: .white.opacity(0),
                                             width: 40,
                                             height: 40,
@@ -526,5 +549,76 @@ struct CentrePopup_AddHouse: CentrePopup {
             .popupHorizontalPadding(24)
         
         
+    }
+}
+
+// MARK: - Filter Info Popup
+
+struct CentrePopup_FilterInfo: CentrePopup {
+    @State var loading = false
+    
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config.popupHorizontalPadding(24)
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Filter Options Info")
+                .font(.title2.bold())
+            
+            Group {
+                Text("• **Sort by Order** – Sorts houses in increasing or decreasing order based on address number.")
+                Text("• **Sort by Grouping** – Displays houses in normal order or groups them (e.g., odd numbers first, even numbers second).")
+            }
+            .font(.body)
+            .fixedSize(horizontal: false, vertical: true)
+            
+            Divider().padding(.vertical, 8)
+            
+            Text("**Symbol Meanings**").font(.headline)
+            
+            LazyVGrid(columns: [GridItem(.fixed(50)), GridItem(.flexible()), GridItem(.fixed(50)), GridItem(.flexible())], spacing: 10) {
+                let symbols = Symbols.allCases.filter { $0 != .none }
+                
+                ForEach(0..<symbols.count/2, id: \.self) { index in
+                    let left = symbols[index]
+                    let right = symbols[index + symbols.count/2]
+                    
+                    Group {
+                        Text(left.localizedString)
+                            .bold()
+                            .frame(width: 50, alignment: .leading)
+                        Text(left.legend)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        
+                        Text(right.localizedString)
+                            .bold()
+                            .frame(width: 50, alignment: .leading)
+                        Text(right.legend)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+
+            HStack {
+                Spacer()
+                CustomButton(
+                    loading: loading,
+                    title: NSLocalizedString("Close", comment: ""),
+                    color: .blue
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation {
+                        dismissLastPopup()
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(15)
+        .ignoresSafeArea(.keyboard)
     }
 }
