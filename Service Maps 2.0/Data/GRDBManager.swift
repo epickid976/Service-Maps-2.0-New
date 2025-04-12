@@ -516,7 +516,7 @@ final class GRDBManager: ObservableObject, Sendable {
                     if let index = result.firstIndex(where: { self.containsSame(first: $0.keys, second: keys, getId: { $0.id }) }) {
                         result[index].territoriesData.append(territoryData)
                     } else {
-                        result.append(TerritoryDataWithKeys(id: UUID(), keys: keys, territoriesData: [territoryData]))
+                        result.append(TerritoryDataWithKeys(keys: keys, territoriesData: [territoryData]))
                     }
                 }
                 

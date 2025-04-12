@@ -65,7 +65,10 @@ struct TerritoryAddressView: View {
                     ScalingHeaderScrollView {
                         ZStack {
                             Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
-                            viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size) .onTapGesture { if !imageURL.isEmpty { viewModel.showImageViewer = true }}
+                            viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size) .onTapGesture { if !imageURL.isEmpty {
+                                HapticManager.shared.trigger(.lightImpact)
+                                viewModel.showImageViewer = true }
+                            }
                                 
                         }
                         

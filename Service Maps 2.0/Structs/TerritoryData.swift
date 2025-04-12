@@ -8,8 +8,11 @@
 import Foundation
 
 //MARK: - Territory Data With Keys
-struct TerritoryDataWithKeys: Hashable, Identifiable, Sendable {
-    var id: UUID
+struct TerritoryDataWithKeys: Hashable, Identifiable, Equatable, Sendable {
+    var id: String {
+        let keyIds = keys.map(\.id).joined(separator: "-")
+        return keyIds // Don't include territory IDs — keep group ID stable
+    }
     var keys: [Token]
     var territoriesData: [TerritoryData]
     

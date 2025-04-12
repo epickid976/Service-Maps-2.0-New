@@ -35,6 +35,8 @@ struct SettingsView: View {
     @State var alwaysLoading = true
     @State var backingUp = false
     var showBackButton = false
+    @State private var isExpanding = false
+    @State private var isCollapsing = false
     
     //MARK: - Alert Views
     
@@ -205,151 +207,195 @@ struct SettingsView: View {
     @ViewBuilder
     func preferencesView(mainWindowSize: CGSize) -> some View {
         VStack(spacing: 16) {
+            // MARK: Language
             Button {
                 HapticManager.shared.trigger(.lightImpact)
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             } label: {
                 HStack {
-                    Image(systemName: "globe")
-                        .imageScale(.large)
-                        .padding(.horizontal)
-                    Text("Language")
-                        .font(.title3)
-                        .lineLimit(2)
-                        .foregroundColor(.primary)
-                        .fontWeight(.heavy)
-                    Spacer()
-                    Image(systemName: "arrowshape.right.circle.fill")
-                        .imageScale(.large)
-                        .padding(.horizontal)
-                        .foregroundColor(.primary)
-                }
-            }
-            .hSpacing(.leading)
-            .frame(minHeight: 50)
-            
-            if UIDevice().userInterfaceIdiom == .pad {
-                Button(action: {}) {
-                    HStack {
-                        HStack {
-                            Image(systemName: "text.word.spacing")
-                                .imageScale(.large)
-                                .padding(.horizontal)
-                                .foregroundColor(.blue)
-                            Text("iPad Column View")
-                                .font(.title3)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.heavy)
-                        }
-                        .hSpacing(.leading)
-                        
-                        HStack {
-                            Toggle(isOn: $preferencesViewModel.isColumnViewEnabled) {}
-                                .toggleStyle(CheckmarkToggleStyle(color: .blue))
-                        }
-                        .hSpacing(.trailing)
-                        .frame(maxWidth: 100)
+                    // Icon container with consistent width
+                    HStack(spacing: 0) {
+                        Image(systemName: "globe")
+                            .imageScale(.large)
+                            .foregroundColor(.blue)
+                            .frame(width: 30)
                     }
-                }
-                .frame(minHeight: 50)
-            }
-            
-            if !(UIDevice().userInterfaceIdiom == .pad) {
-                Button(action: {}) {
-                    HStack {
-                        HStack {
-                            Image(systemName: "iphone.homebutton.radiowaves.left.and.right")
-                                .imageScale(.large)
-                                .padding(.horizontal)
-                                .foregroundColor(.blue)
-                            Text("Haptics")
-                                .font(.title3)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.heavy)
-                        }
-                        .hSpacing(.leading)
-                        
-                        HStack {
-                            Toggle(isOn: $preferencesViewModel.hapticFeedback) {}
-                                .toggleStyle(CheckmarkToggleStyle(color: .blue))
-                        }
-                        .hSpacing(.trailing)
-                        .frame(maxWidth: 100)
-                    }
-                }
-                .frame(minHeight: 50)
-            }
-            
-            Button(action: {}) {
-                HStack(alignment: .top, spacing: 16) { // Add spacing between the sections
-                    // Icon and Title
-                    HStack(spacing: 8) {
-                        Image(
-                            systemName: viewModel.selectedAction == .expandAll
-                            ? "arrow.up.left.and.arrow.down.right" : "arrow.down.right.and.arrow.up.left"
-                        )
-                        .imageScale(.large)
-                        .foregroundColor(.blue)
-                        .rotationEffect(.degrees(viewModel.selectedAction == .expandAll ? 0 : 180)) // Add rotation animation
-                        .animation(.easeInOut(duration: 0.3), value: viewModel.selectedAction)
-                        .padding(.horizontal)
-                        
-                        Text("Toggle")
+                    
+                    // Title container
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Language")
                             .font(.title3)
-                            .lineLimit(2)
                             .foregroundColor(.primary)
                             .fontWeight(.heavy)
                     }
-                    .hSpacing(.leading)
-                    .vSpacing(.center)
-                    .frame(maxWidth: .infinity, alignment: .leading) // Align to the left
 
-                    // Vertical Picker
-                    VStack(alignment: .leading, spacing: 12) { // Increased spacing for better readability
-                        ForEach(ExpandCollapseAction.allCases) { action in
-                            if action != .none { // Skip the default "none" case in the UI
-                                Text(action.rawValue)
-                                    .font(.callout)
-                                    .fontWeight(viewModel.selectedAction == action ? .heavy : .bold)
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 12)
-                                    .frame(maxWidth: .infinity, alignment: .center) // Align text to the left
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(viewModel.selectedAction == action ? Color.blue.opacity(0.2) : Color.clear)
-                                            .animation(.easeInOut(duration: 0.3), value: viewModel.selectedAction)
-                                    )
-                                    .foregroundColor(viewModel.selectedAction == action ? .blue : .primary)
-                                    .onTapGesture {
-                                        viewModel.selectedAction = action
-                                        handlePickerAction(action: action)
-                                    }
-                                    .contentShape(Rectangle()) // Make the entire row tappable
-                                    
+                    Spacer()
+
+                    // Action indicator (consistent width)
+                    Image(systemName: "arrowshape.right.circle.fill")
+                        .imageScale(.large)
+                        .foregroundColor(.primary)
+                        .frame(width: 44)
+                }
+                .padding(.horizontal)
+            }
+            .frame(minHeight: 50)
+
+            // MARK: iPad Column View (Only for iPad)
+            if UIDevice().userInterfaceIdiom == .pad {
+                Button(action: {}) {
+                    HStack {
+                        // Icon container with consistent width
+                        HStack(spacing: 0) {
+                            Image(systemName: "text.word.spacing")
+                                .imageScale(.large)
+                                .foregroundColor(.blue)
+                                .frame(width: 30)
+                        }
+                        
+                        // Title container
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("iPad Column View")
+                                .font(.title3)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
+                        }
+
+                        Spacer()
+
+                        // Toggle with fixed width
+                        Toggle("", isOn: $preferencesViewModel.isColumnViewEnabled)
+                            .labelsHidden()
+                            .toggleStyle(CheckmarkToggleStyle(color: .blue))
+                            .frame(width: 44)
+                    }
+                    .padding(.horizontal)
+                }
+                .frame(minHeight: 50)
+            }
+
+            // MARK: Haptics (Only for iPhone)
+            if UIDevice().userInterfaceIdiom != .pad {
+                Button(action: {}) {
+                    HStack {
+                        // Icon container with consistent width
+                        HStack(spacing: 0) {
+                            Image(systemName: "iphone.radiowaves.left.and.right")
+                                .imageScale(.large)
+                                .foregroundColor(.blue)
+                                .frame(width: 30)
+                        }
+                        
+                        // Title container
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Haptics")
+                                .font(.title3)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.primary)
+                        }
+
+                        Spacer()
+
+                        // Toggle with fixed width
+                        Toggle("", isOn: $preferencesViewModel.hapticFeedback)
+                            .labelsHidden()
+                            .toggleStyle(CheckmarkToggleStyle(color: .blue))
+                            .frame(width: 44)
+                    }
+                    .padding(.horizontal)
+                }
+                .frame(minHeight: 50)
+            }
+
+            // MARK: Disclosure Groups
+            VStack(spacing: 12) {
+                HStack(spacing: 10) {
+                    // Icon container with consistent width
+                    HStack(spacing: 0) {
+                        Image(systemName: "rectangle.stack.fill.badge.plus")
+                            .imageScale(.large)
+                            .foregroundColor(.blue)
+                            .frame(width: 30)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Disclosure Groups")
+                            .font(.title3)
+                            .fontWeight(.heavy)
+                            .foregroundColor(.primary)
+
+                        Text("Expand or collapse all territory sections")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Spacer()
+                }
+                .padding(.horizontal)
+
+                HStack(spacing: 12) {
+                    // Expand Button
+                    Button {
+                        HapticManager.shared.trigger(.lightImpact)
+                        viewModel.selectedAction = .expandAll
+                        expandAllDisclosureGroups()
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            isExpanding = true
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                isExpanding = false
                             }
                         }
+                    } label: {
+                        Text("Expand")
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                            .padding(.vertical, 10)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .stroke(Color.blue, lineWidth: 2)
+                            )
+                            .opacity(isExpanding ? 0.5 : 1)
+                            .scaleEffect(isExpanding ? 0.97 : 1)
                     }
-                    .frame(maxWidth: 100) // Set a consistent width for the vertical picker
-                    .vSpacing(.center)
-                    .hSpacing(.trailing)
+
+                    // Collapse Button
+                    Button {
+                        HapticManager.shared.trigger(.lightImpact)
+                        viewModel.selectedAction = .collapseAll
+                        collapseAllDisclosureGroups()
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            isCollapsing = true
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                isCollapsing = false
+                            }
+                        }
+                    } label: {
+                        Text("Collapse")
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                            .padding(.vertical, 10)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .stroke(Color.blue, lineWidth: 2)
+                            )
+                            .opacity(isCollapsing ? 0.5 : 1)
+                            .scaleEffect(isCollapsing ? 0.97 : 1)
+                    }
                 }
+                .padding(.horizontal)
             }
-            .frame(minHeight: 100)
-            .padding(.horizontal)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.gray.opacity(0.1))
-                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-            )
         }
         .padding(10)
         .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
-    
     //MARK: - Backup View
     
     @ViewBuilder
@@ -381,6 +427,7 @@ struct SettingsView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
+    
     //MARK: - Helper Methods
     
     func expandAllDisclosureGroups() {
@@ -389,33 +436,26 @@ struct SettingsView: View {
 
         // Save expanded state for each token
         for token in tokens {
-            let key = "expanded_\(token.name.hashValue)" // Create the key
-            UserDefaults.standard.set(true, forKey: key) // Save expanded state
+            let safeKey = token.name.replacingOccurrences(of: " ", with: "_")
+            let storageKey = "expanded_\(safeKey)"
+            UserDefaults.standard.set(true, forKey: storageKey)
         }
 
         // Save expanded state for "Other Territories"
-        let key = "expanded_OtherTerritories" // Use a static key
-        UserDefaults.standard.set(true, forKey: key)
-
-        // Ensure changes are saved
+        UserDefaults.standard.set(true, forKey: "expanded_OtherTerritories")
         UserDefaults.standard.synchronize()
     }
-    
+
     func collapseAllDisclosureGroups() {
-        // Fetch tokens (or other items) from your database
         let tokens = GRDBManager.shared.fetchAll(Token.self).getOrElse([])
 
-        // Save collapsed state for each token
         for token in tokens {
-            let key = "expanded_\(token.name.hashValue)" // Create the key
-            UserDefaults.standard.set(false, forKey: key) // Save collapsed state
+            let safeKey = token.name.replacingOccurrences(of: " ", with: "_")
+            let storageKey = "expanded_\(safeKey)"
+            UserDefaults.standard.set(false, forKey: storageKey)
         }
 
-        // Save collapsed state for "Other Territories"
-        let key = "expanded_OtherTerritories" // Use a static key
-        UserDefaults.standard.set(false, forKey: key)
-
-        // Ensure changes are saved
+        UserDefaults.standard.set(false, forKey: "expanded_OtherTerritories")
         UserDefaults.standard.synchronize()
     }
     

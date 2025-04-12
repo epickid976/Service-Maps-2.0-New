@@ -16,6 +16,7 @@ import Nuke
 import FloatingButton
 import MijickPopups
 import Toasts
+import CryptoKit
 
 //MARK: - Territory View
 
@@ -39,6 +40,7 @@ struct TerritoryView: View {
     @State var animationDone = false
     @State var animationProgressTime: AnimationProgressTime = 0
     @State var searchViewDestination = false
+    @State private var hasAnimatedRecent = false
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -124,13 +126,20 @@ struct TerritoryView: View {
                                                             .padding(5)
                                                             .padding(.horizontal, 10)
                                                         ScrollView(.horizontal, showsIndicators: false) {
-                                                            LazyHStack {
-                                                                ForEach(viewModel.recentTerritoryData!, id: \.id) { territoryData in
-                                                                    RecentTerritoryCellView(territoryData: territoryData, mainWindowSize: proxy.size)
+                                                            HStack(spacing: 12) {
+                                                                ForEach(viewModel.recentTerritoryData!.enumerated().map({ $0 }), id: \.element.id) { index, territoryData in
+                                                                    RecentTerritoryCellView(
+                                                                        territoryData: territoryData,
+                                                                        mainWindowSize: proxy.size,
+                                                                        index: index,
+                                                                        viewModel: viewModel // 👈 pass it in directly
+                                                                    )
                                                                 }
                                                             }
                                                             .padding(.leading, 10)
+                                                            .frame(height: 90)
                                                         }
+                                                        .frame(height: 90)
                                                         .scrollIndicators(.never)
                                                         
                                                     }.modifier(ScrollTransitionModifier())
@@ -587,8 +596,10 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
                                         //viewModel.getTerritories()
                                     }
                                     withAnimation {
-                                        
-                                        self.viewModel.territoryToDelete = (nil,nil)
+                                        if let id = self.viewModel.territoryToDelete.0 {
+                                            self.viewModel.removeTerritoryLocally(withId: id)
+                                        }
+                                        self.viewModel.territoryToDelete = (nil, nil)
                                         self.viewModel.showToast = true
                                         dismissLastPopup()
                                     }
@@ -626,72 +637,39 @@ struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
 }
 
 //MARK: - Custom Disclosure Group
-
 struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: View {
     let title: String
     let items: [Item]
     let content: (Item) -> Content
-    
-    // Unique storage key based on title
-    private var storageKey: String {
-        if title == "Other Territories" {
-            return "expanded_OtherTerritories" // Static key for consistency
-        }
-        return "expanded_\(title.hashValue)"
-    }
-    
+
+    private let storageKey: String
     @State private var isExpanded: Bool
     @State private var expandProgress: CGFloat
-    
+
     init(
         title: String,
         items: [Item],
-        isInitiallyExpanded: Bool? = nil, // Optional initial state
         @ViewBuilder content: @escaping (Item) -> Content
     ) {
         self.title = title
         self.items = items
         self.content = content
-        
-        // Check if a stored state exists in UserDefaults
-        if title == "Other Territories" {
-            // Special case for "Other Territories" with a static key
-            if let storedState = UserDefaults.standard.object(forKey: "expanded_OtherTerritories") as? Bool {
-                // Use stored state if it exists
-                _isExpanded = State(initialValue: storedState)
-                _expandProgress = State(initialValue: storedState ? 1 : 0)
-            } else {
-                // Otherwise, default to `isInitiallyExpanded` or true
-                let initialState = isInitiallyExpanded ?? true
-                _isExpanded = State(initialValue: initialState)
-                _expandProgress = State(initialValue: initialState ? 1 : 0)
-            }
-        } else {
-            // General case for dynamically generated groups
-            if let storedState = UserDefaults.standard.object(forKey: "expanded_\(title.hashValue)") as? Bool {
-                // Use stored state if it exists
-                _isExpanded = State(initialValue: storedState)
-                _expandProgress = State(initialValue: storedState ? 1 : 0)
-            } else {
-                // Otherwise, default to `isInitiallyExpanded` or true
-                let initialState = isInitiallyExpanded ?? true
-                _isExpanded = State(initialValue: initialState)
-                _expandProgress = State(initialValue: initialState ? 1 : 0)
-            }
-        }
+
+        // Create a stable hash (you could also just sanitize the title string directly)
+        let hashedKey = title == "Other Territories"
+            ? "expanded_OtherTerritories"
+            : "expanded_" + title.replacingOccurrences(of: " ", with: "_")
+
+        self.storageKey = hashedKey
+
+        let saved = UserDefaults.standard.object(forKey: self.storageKey) as? Bool ?? true
+        _isExpanded = State(initialValue: saved)
+        _expandProgress = State(initialValue: saved ? 1 : 0)
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Button(action: {
-                withAnimation(.sophisticated) {
-                    isExpanded.toggle()
-                    expandProgress = isExpanded ? 1 : 0
-                    
-                    // Persist state
-                    UserDefaults.standard.set(isExpanded, forKey: storageKey)
-                }
-            }) {
+            Button(action: toggleExpansion) {
                 HStack {
                     Text(title)
                         .font(.title2)
@@ -699,66 +677,47 @@ struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: Vie
                         .foregroundColor(.primary)
                         .fontWeight(.bold)
                         .hSpacing(.leading)
-                    //.padding(5)
                         .padding(.horizontal, 10)
-                    
+
                     Spacer()
-                    
-                    // Animated Chevron
+
                     Image(systemName: "chevron.right")
                         .foregroundColor(.primary)
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                        .scaleEffect(1 + (0.2 * sin(expandProgress * .pi)))
+                        .scaleEffect(isExpanded ? 1.1 : 1.0)
                         .padding(.trailing, 15)
+                        .animation(.interpolatingSpring(stiffness: 250, damping: 30), value: isExpanded)
                 }
-                //.padding(5)
-                .contentShape(Rectangle()) // Makes the entire HStack tappable
+                .contentShape(Rectangle())
             }
             .buttonStyle(PlainButtonStyle())
             .modifier(ScrollTransitionModifier())
-            
-            // Expandable Content
+
             if isExpanded {
                 LazyVStack(alignment: .leading, spacing: 12) {
                     ForEach(items) { item in
                         content(item)
-                            .transition(
-                                .asymmetric(
-                                    insertion: AnyTransition.scale(scale: 0.9)
-                                        .combined(with: .opacity)
-                                        .animation(.spring(response: 0.5, dampingFraction: 0.6).speed(0.8)),
-                                    removal: AnyTransition.scale(scale: 0.9)
-                                        .combined(with: .opacity)
-                                        .animation(.spring(response: 0.5, dampingFraction: 0.6).speed(0.8))
-                                )
-                            )
-                            .transition(.customBackInsertion)
-                            .animation(.spring(), value: items)
-                            .opacity(expandProgress)
-                            .scaleEffect(0.95 + (0.05 * expandProgress), anchor: .top)
-                            .offset(y: 10 * (1 - expandProgress))
+                            .transition(.scale.combined(with: .opacity))
                             .animation(
-                                .spring(response: 0.5, dampingFraction: 0.8)
-                                .delay(Double(items.firstIndex(where: { $0.id == item.id }) ?? 0) * 0.08),
-                                value: expandProgress
+                                .interpolatingSpring(stiffness: 280, damping: 32)
+                                    .delay(Double(items.firstIndex(where: { $0.id == item.id }) ?? 0) * 0.03),
+                                value: items
                             )
                             .id(item.id)
-                        
                     }
                 }
-                .transition(
-                    .asymmetric(
-                        insertion: AnyTransition.scale(scale: 0.9)
-                            .combined(with: .opacity)
-                            .animation(.spring(response: 0.5, dampingFraction: 0.7)),
-                        removal: AnyTransition.scale(scale: 0.9)
-                            .combined(with: .opacity)
-                            .animation(.spring(response: 0.5, dampingFraction: 1))
-                    )
-                )
                 .padding(.top, 4)
+                .transition(.opacity.combined(with: .scale))
             }
         }
         .clipped()
+    }
+
+    private func toggleExpansion() {
+        withAnimation(.interpolatingSpring(stiffness: 250, damping: 30)) {
+            isExpanded.toggle()
+            expandProgress = isExpanded ? 1 : 0
+            UserDefaults.standard.set(isExpanded, forKey: storageKey)
+        }
     }
 }

@@ -388,13 +388,14 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                                     switch result {
                                     case .success(_):
                                         
-                                        
+                                        HapticManager.shared.trigger(.success)
                                         self.viewModel.ifFailed = false
                                         self.viewModel.visitToDelete = nil
                                        
                                         onDone()
                                         dismissLastPopup()
                                     case .failure(_):
+                                        HapticManager.shared.trigger(.error)
                                         withAnimation {
                                             self.viewModel.loading = false
                                             self.viewModel.ifFailed = true
@@ -531,6 +532,7 @@ struct CentrePopup_AddRecall: CentrePopup {
                 //.padding([.top])
                 
                 CustomButton(loading: viewModel.loading, title: NSLocalizedString("Add", comment: "")) {
+                    HapticManager.shared.trigger(.lightImpact)
                     withAnimation {
                         self.viewModel.loading = true
                         
@@ -540,9 +542,11 @@ struct CentrePopup_AddRecall: CentrePopup {
                         switch await viewModel.addRecall(user: user ?? "", house: house) {
                         case .success(_):
                             //viewModel.loading = false
+                            HapticManager.shared.trigger(.success)
                             dismissLastPopup()
                             onDone()
                         case .failure(_):
+                            HapticManager.shared.trigger(.error)
                             viewModel.ifFailed = true
                         }
                         viewModel.refreshRecallState()
@@ -609,6 +613,7 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                 }
                 
                 CustomButton(loading: viewModel.loading, title: NSLocalizedString("Remove", comment: ""), color: .red) {
+                    HapticManager.shared.trigger(.lightImpact)
                     withAnimation {
                         self.viewModel.loading = true
                         
@@ -618,9 +623,11 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                         switch await viewModel.deleteRecall(id: viewModel.getRecallId(house: house) ?? Date().millisecondsSince1970 ,user: user ?? "", house: house) {
                         case .success(_):
                             //viewModel.loading = false
+                            HapticManager.shared.trigger(.success)
                             dismissLastPopup()
                             onDone()
                         case .failure(_):
+                            HapticManager.shared.trigger(.error)
                             viewModel.ifFailed = true
                         }
                         viewModel.refreshRecallState()

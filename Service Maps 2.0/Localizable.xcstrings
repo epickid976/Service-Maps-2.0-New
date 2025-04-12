@@ -1043,6 +1043,9 @@
         }
       }
     },
+    "Collapse" : {
+
+    },
     "Confirm Password" : {
       "localizations" : {
         "es" : {
@@ -1476,6 +1479,9 @@
           }
         }
       }
+    },
+    "Disclosure Groups" : {
+
     },
     "Dismiss" : {
       "localizations" : {
@@ -2296,6 +2302,12 @@
           }
         }
       }
+    },
+    "Expand" : {
+
+    },
+    "Expand or collapse all territory sections" : {
+
     },
     "Fields cannot be empty" : {
       "localizations" : {
@@ -4854,9 +4866,6 @@
           }
         }
       }
-    },
-    "Toggle" : {
-
     },
     "uk" : {
       "localizations" : {

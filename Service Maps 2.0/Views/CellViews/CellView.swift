@@ -218,50 +218,87 @@ struct recentCell: View {
 struct RecentTerritoryCellView: View {
     let territoryData: RecentTerritoryData
     let mainWindowSize: CGSize
-    
+    let index: Int
+    let viewModel: TerritoryViewModel
+
     @State private var navigate: Bool = false
     @State private var longPressDetected: Bool = false
-    
+    @State private var appeared: Bool = false
+    @State private var isPressed: Bool = false
+
     var body: some View {
         ZStack {
-            // Hidden NavigationLink that becomes active on tap
             NavigationLink(
                 destination: NavigationLazyView(TerritoryAddressView(territory: territoryData.territory)),
                 isActive: $navigate,
                 label: { EmptyView() }
-            )
-            .onTapHaptic(.lightImpact)
-            .hidden()
-            
-            
-            // Your custom cell view
+            ).hidden()
+
             recentCell(territoryData: territoryData, mainWindowSize: mainWindowSize)
-                .contentShape(Rectangle()) // make the whole area tappable
-                .highPriorityGesture(
+                .scaleEffect(isPressed ? 0.96 : (appeared ? 1.0 : 1.15)) // 👈 includes tap/longpress feedback
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 30)
+                .shadow(color: appeared ? .clear : Color.blue.opacity(0.2), radius: 10, y: 10)
+                .gesture(
                     LongPressGesture(minimumDuration: 0.5)
+                        .onChanged { _ in
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                isPressed = true
+                            }
+                        }
                         .onEnded { _ in
-                            // Mark that a long press was detected and present the popup
+                            withAnimation(.spring()) {
+                                isPressed = false
+                            }
+                            HapticManager.shared.trigger(.impact)
                             longPressDetected = true
-                            let floorViewModel = FloorsViewModel(territory: territoryData.territory)
-                            CentrePopup_RecentFloorsKnocked(viewModel: floorViewModel) {
-                                // onDone callback (if needed)
+                            CentrePopup_RecentFloorsKnocked(
+                                viewModel: FloorsViewModel(territory: territoryData.territory)
+                            ) {
                                 longPressDetected = false
                             }.present()
                         }
                 )
-                .onTapGesture {
-                    // If a long press wasn’t detected, navigate on tap
-                    if !longPressDetected {
-                        navigate = true
+                .simultaneousGesture(
+                    TapGesture()
+                        .onEnded {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                HapticManager.shared.trigger(.impact)
+                                isPressed = true
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation(.spring()) {
+                                    isPressed = false
+                                    if !longPressDetected {
+                                        navigate = true
+                                    }
+                                    longPressDetected = false
+                                }
+                            }
+                        }
+                )
+                .onAppear {
+                    guard !appeared else { return }
+
+                    if !viewModel.hasAnimatedRecentTerritories {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.08) {
+                            withAnimation(.interpolatingSpring(stiffness: 200, damping: 18)) {
+                                appeared = true
+                            }
+
+                            if index == viewModel.recentTerritoryData!.count - 1 {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    viewModel.hasAnimatedRecentTerritories = true
+                                }
+                            }
+                        }
+                    } else {
+                        appeared = true
                     }
-                    // Reset the flag so future taps work correctly
-                    longPressDetected = false
                 }
-            
         }
     }
 }
-
 //MARK: - Phone Territory Recent Cell
 
 struct recentPhoneCell: View {

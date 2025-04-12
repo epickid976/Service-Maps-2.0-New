@@ -34,6 +34,7 @@ class TerritoryViewModel: ObservableObject {
     
     @Published var isAdmin = AuthorizationLevelManager().existsAdminCredentials()
     
+    
     // State variables for UI
     @Published var presentSheet = false {
         didSet {
@@ -49,6 +50,7 @@ class TerritoryViewModel: ObservableObject {
     @Published var syncAnimationprogress: CGFloat = 0.0
     @Published var restartAnimation = false
     @Published var animationProgress: Bool = false
+    @Published var hasAnimatedRecentTerritories: Bool = false
     
     @Published var search: String = "" {
         didSet {
@@ -89,6 +91,16 @@ class TerritoryViewModel: ObservableObject {
     
     func getLastTime() -> Date? {
         return dataStore.lastTime
+    }
+    
+    func removeTerritoryLocally(withId id: String) {
+        withAnimation {
+            self.territoryData = self.territoryData?.compactMap { group in
+                var modifiedGroup = group
+                modifiedGroup.territoriesData.removeAll { $0.id == id }
+                return modifiedGroup.territoriesData.isEmpty ? nil : modifiedGroup
+            }
+        }
     }
 }
 
