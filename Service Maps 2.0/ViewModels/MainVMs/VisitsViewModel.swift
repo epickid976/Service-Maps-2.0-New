@@ -66,7 +66,11 @@ class VisitsViewModel: ObservableObject {
 
     // MARK: - Methods
     // Methods for recall and deletion
+    @BackgroundActor
     func deleteVisit(visit: String) async -> Result<Void, Error> {
+        await MainActor.run {
+            withAnimation { loading = true }
+        }
         return await dataUploaderManager.deleteVisit(visitId: visit)
     }
 
@@ -80,6 +84,10 @@ class VisitsViewModel: ObservableObject {
     
     func getRecallId(house: String) async -> Int64? {
         return GRDBManager.shared.findRecallId(house: house)
+    }
+    
+    func refreshRecallState() {
+        recallAdded = GRDBManager.shared.isHouseRecall(house: house.id)
     }
 }
 

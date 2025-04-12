@@ -87,11 +87,14 @@ struct AddHouseView: View {
                                     withAnimation {
                                         viewModel.loading = true
                                     }
+                                    try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                                     let result = await viewModel.addHouse()
                                     switch result {
                                     case .success:
                                         HapticManager.shared.trigger(.success)
-                                        onDone()
+                                        DispatchQueue.main.async {
+                                            onDone()
+                                        }
                                     case .failure(_):
                                         HapticManager.shared.trigger(.error)
                                         viewModel.error = NSLocalizedString("Error adding house.", comment: "")
@@ -100,10 +103,10 @@ struct AddHouseView: View {
                                 }
                             }
                         }
-                    }//.keyboardShortcut("\r", modifiers: .command)
+                    }
                 }
                 .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
+               
                 
             }
             .ignoresSafeArea(.keyboard)

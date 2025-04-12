@@ -405,6 +405,7 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
     
     init(viewModel: AddressViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
+        viewModel.loading = false
         self.onDone = onDone
     }
     
@@ -452,15 +453,12 @@ struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
                             self.viewModel.loading = true
                         }
                         Task {
+                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                             if self.viewModel.addressToDelete.0 != nil && self.viewModel.addressToDelete.1 != nil {
                                 switch await self.viewModel.deleteAddress(address: self.viewModel.addressToDelete.0 ?? "") {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                       // self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        //self.viewModel.getAddresses()
-                                        self.viewModel.loading = false
-                                        //self.viewModel.showAlert = false
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.addressToDelete = (nil,nil)

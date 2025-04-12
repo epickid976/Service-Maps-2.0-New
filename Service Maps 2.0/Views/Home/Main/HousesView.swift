@@ -421,6 +421,7 @@ struct CentrePopup_DeleteHouse: CentrePopup {
     
     init(viewModel: HousesViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
+        viewModel.loading = false
         self.onDone = onDone
     }
     
@@ -461,12 +462,12 @@ struct CentrePopup_DeleteHouse: CentrePopup {
                             self.viewModel.loading = true
                         }
                         Task {
+                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                             if self.viewModel.houseToDelete.0 != nil && self.viewModel.houseToDelete.1 != nil {
                                 switch await self.viewModel.deleteHouse(house: self.viewModel.houseToDelete.0 ?? "") {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                        self.viewModel.loading = false
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.houseToDelete = (nil,nil)
@@ -517,12 +518,10 @@ struct CentrePopup_AddHouse: CentrePopup {
     
     var body: some View {
         AddHouseView(house: viewModel.currentHouse, address: address, onDone: {
-            DispatchQueue.main.async {
                 viewModel.presentSheet = false
-                dismissLastPopup()
                 onDone()
-                
-            }
+            
+            dismissLastPopup()
         }, onDismiss: {
             viewModel.presentSheet = false
             dismissLastPopup()

@@ -11,43 +11,57 @@ import ActivityIndicatorView
 
 //MARK: - Custom Button
 struct CustomButton: View {
-    //MARK: - Properties
     var loading: Bool
     var alwaysExpanded: Bool = false
     var title: String
     var color: Color?
     var active: Bool = true
-    //MARK: - Action
     var action: () -> Void
-    
-    @State var alwaysLoading = true
-    
-    //MARK: - Body
+
     var body: some View {
         Button(action: action) {
-            if loading {
-                if alwaysExpanded {
-                    HStack {
-                        Spacer()
-                        ActivityIndicatorView(isVisible: $alwaysLoading, type: .growingArc(.primary, lineWidth: 1.0))
-                            .frame(width: 25, height: 25)
-                        Spacer()
-                    }.frame(maxWidth: .infinity)
-                } else {
-                    ActivityIndicatorView(isVisible: $alwaysLoading, type: .growingArc(.primary, lineWidth: 1.0))
-                        .frame(width: 25, height: 25)
-                }
-                
-            } else {
+            ZStack {
+                // Text layer
                 Text(title)
-                    .frame(maxWidth: .infinity)
                     .fontWeight(.heavy)
+                    .opacity(loading ? 0 : 1)
+                    .frame(maxWidth: .infinity)
+
+                // Spinner layer
+                if loading {
+                    if alwaysExpanded {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: spinnerColor))
+                                .scaleEffect(0.8)
+                                .frame(width: 10, height: 10)
+                            Spacer()
+                        }
+                        .transition(.opacity)
+                    } else {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: spinnerColor))
+                            .scaleEffect(0.8)
+                            .frame(width: 10, height: 10)
+                            .transition(.opacity)
+                    }
+                }
             }
+            // 👇 Add animation here — not when setting `loading`
+            .animation(.spring(), value: loading)
         }
         .buttonStyle(.borderedProminent)
         .buttonBorderShape(.capsule)
         .tint(color ?? .accentColor)
         .controlSize(.large)
         .disabled(!active)
+    }
+
+    private var spinnerColor: Color {
+        if let color = color {
+            return color == .red || color == .blue || color == .accentColor ? .white : .gray
+        }
+        return .white
     }
 }

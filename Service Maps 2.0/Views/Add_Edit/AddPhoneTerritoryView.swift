@@ -156,13 +156,11 @@ struct AddPhoneTerritoryView: View {
                                 withAnimation { viewModel.loading = true }
                                 if territory != nil {
                                     Task {
+                                        try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                                         let result = await viewModel.editTerritory(territory: territory!)
                                         switch result {
                                         case .success(_):
                                             HapticManager.shared.trigger(.success)
-                                            withAnimation {
-                                                viewModel.loading = false
-                                            }
                                             dismiss()
                                             onDone()
                                         case .failure(_):
@@ -173,13 +171,11 @@ struct AddPhoneTerritoryView: View {
                                     }
                                 } else {
                                     Task {
+                                        try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                                         let result = await viewModel.addTerritory()
                                         switch result {
                                         case .success(_):
                                             HapticManager.shared.trigger(.success)
-                                            withAnimation {
-                                                viewModel.loading = false
-                                            }
                                             dismiss()
                                             onDone()
                                         case .failure(_):

@@ -147,10 +147,9 @@ struct AddVisitView: View {
                                 }
                             }
                         }
-                    }//.keyboardShortcut("\r", modifiers: .command)
+                    }
                 }
                 .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
                 
             }
             .ignoresSafeArea(.keyboard)

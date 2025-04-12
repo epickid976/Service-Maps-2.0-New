@@ -62,7 +62,7 @@ struct VisitsView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
                         LazyVStack {
-                        
+                            
                             if viewModel.visitData == nil && viewModel.dataStore.synchronized == false {
                                 if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
                                     LottieView(animation: .named("loadsimple"))
@@ -144,11 +144,11 @@ struct VisitsView: View {
                             if value {
                                 CentrePopup_AddVisit(viewModel: viewModel, house: house
                                 ) {
-                                       let toast = ToastValue(
+                                    let toast = ToastValue(
                                         icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
-                                           message: "Visit Added"
-                                       )
-                                       presentToast(toast)
+                                        message: "Visit Added"
+                                    )
+                                    presentToast(toast)
                                 }.present()
                                 
                             }
@@ -165,14 +165,14 @@ struct VisitsView: View {
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })//.keyboardShortcut(.delete, modifiers: .command)
-                                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                 }
                             }
                             ToolbarItemGroup(placement: .topBarTrailing) {
                                 HStack {
                                     Button("", action: { viewModel.syncAnimation = true;
                                         synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                    .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                                     Button("", action: {
                                         viewModel.revisitAnimation.toggle()
                                         if viewModel.recallAdded {
@@ -186,7 +186,7 @@ struct VisitsView: View {
                                         } else {
                                             CentrePopup_AddRecall(viewModel: viewModel, house: house.id) {
                                                 let toast = ToastValue(
-                                                 icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                                    icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
                                                     message: "Recall Added"
                                                 )
                                                 presentToast(toast)
@@ -202,20 +202,20 @@ struct VisitsView: View {
                     }.coordinateSpace(name: "scroll")
                         .scrollIndicators(.never)
                         .refreshable {
-                           viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                            viewModel.synchronizationManager.startupProcess(synchronizing: true)
                         }
-//                        .onChange(of: viewModel.dataStore.synchronized) { value in
-//                            if value {
-//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                                    viewModel.getVisits()
-//                                }
-//                            }
-//                        }
-//                        .onChange(of: RealtimeManager.shared.lastMessage) { value in
-//                            if value != nil {
-//                                viewModel.getVisits()
-//                            }
-//                        }
+                    //                        .onChange(of: viewModel.dataStore.synchronized) { value in
+                    //                            if value {
+                    //                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    //                                    viewModel.getVisits()
+                    //                                }
+                    //                            }
+                    //                        }
+                    //                        .onChange(of: RealtimeManager.shared.lastMessage) { value in
+                    //                            if value != nil {
+                    //                                viewModel.getVisits()
+                    //                            }
+                    //                        }
                     
                         .onChange(of: viewModel.visitIdToScrollTo) { id in
                             if let id = id {
@@ -259,7 +259,7 @@ struct VisitsView: View {
                 )
                 .optionalViewModifier { content in
                     if AuthorizationLevelManager().existsAdminCredentials() {
-                       content
+                        content
                             .contextMenu {
                                 Button {
                                     HapticManager.shared.trigger(.lightImpact)
@@ -277,7 +277,7 @@ struct VisitsView: View {
                         content
                     }
                 }
-                
+            
         } trailingActions: { context in
             if visitData.accessLevel == .Admin {
                 SwipeAction(
@@ -286,17 +286,17 @@ struct VisitsView: View {
                 ) {
                     HapticManager.shared.trigger(.lightImpact)
                     context.state.wrappedValue = .closed
-                    DispatchQueue.main.async {
-                        self.viewModel.visitToDelete = visitData.visit.id
-                        //self.viewModel.showAlert = true
-                        CentrePopup_DeleteVisit(viewModel: viewModel) {
-                            let toast = ToastValue(
-                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                message: NSLocalizedString("Visit Deleted", comment: "")
-                            )
-                            presentToast(toast)
-                        }.present()
-                    }
+                    //DispatchQueue.main.async {
+                    self.viewModel.visitToDelete = visitData.visit.id
+                    //self.viewModel.showAlert = true
+                    CentrePopup_DeleteVisit(viewModel: viewModel) {
+                        let toast = ToastValue(
+                            icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                            message: NSLocalizedString("Visit Deleted", comment: "")
+                        )
+                        presentToast(toast)
+                    }.present()
+                    //}
                 }
                 .font(.title.weight(.semibold))
                 .foregroundColor(.white)
@@ -338,6 +338,7 @@ struct CentrePopup_DeleteVisit: CentrePopup {
     
     init(viewModel: VisitsViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
+        viewModel.loading = false
         self.onDone = onDone
     }
     var body: some View {
@@ -367,39 +368,38 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                 HStack {
                     if !viewModel.loading {
                         CustomBackButton() {
-                            withAnimation {
-                                //self.viewModel.showAlert = false
-                                dismissLastPopup()
-                                self.viewModel.visitToDelete = nil
-                            }
+                            dismissLastPopup()
+                            self.viewModel.visitToDelete = nil
                         }
                     }
                     //.padding([.top])
                     
                     CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
+                        HapticManager.shared.trigger(.lightImpact)
+                        
                         withAnimation {
-                            self.viewModel.loading = true
+                            viewModel.loading = true
                         }
+                        
                         Task {
+                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                             if self.viewModel.visitToDelete != nil{
-                                switch await self.viewModel.deleteVisit(visit: self.viewModel.visitToDelete ?? "") {
-                                case .success(_):
-                                    withAnimation {
-                                        //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        //self.viewModel.getVisits()
-                                        self.viewModel.loading = false
-                                    }
-                                        //self.showAlert = false
-                                        dismissLastPopup()
+                                let result = await self.viewModel.deleteVisit(visit: self.viewModel.visitToDelete ?? "")
+                                    switch result {
+                                    case .success(_):
+                                        
+                                        
                                         self.viewModel.ifFailed = false
                                         self.viewModel.visitToDelete = nil
+                                       
                                         onDone()
-                                case .failure(_):
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                        self.viewModel.ifFailed = true
+                                        dismissLastPopup()
+                                    case .failure(_):
+                                        withAnimation {
+                                            self.viewModel.loading = false
+                                            self.viewModel.ifFailed = true
+                                        }
                                     }
-                                }
                             }
                         }
                         
@@ -421,8 +421,8 @@ struct CentrePopup_DeleteVisit: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
 
@@ -446,36 +446,37 @@ struct CentrePopup_AddVisit: CentrePopup {
     func createContent() -> some View {
         AddVisitView(visit: viewModel.currentVisit, house: house) {
             
-                viewModel.presentSheet = false
-                dismissLastPopup()
+            viewModel.presentSheet = false
+            onDone()
             
-                onDone()
+            
+            dismissLastPopup()
         } onDismiss: {
             viewModel.presentSheet = false
             dismissLastPopup()
         }
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
-            .simultaneousGesture(
-                // Hide the keyboard on scroll
-                DragGesture().onChanged { _ in
-                    UIApplication.shared.sendAction(
-                        #selector(UIResponder.resignFirstResponder),
-                        to: nil,
-                        from: nil,
-                        for: nil
-                    )
-                }
-            )
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .padding(.horizontal, 10)
+        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .simultaneousGesture(
+            // Hide the keyboard on scroll
+            DragGesture().onChanged { _ in
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.resignFirstResponder),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )
+            }
+        )
     }
     
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
 
@@ -489,6 +490,7 @@ struct CentrePopup_AddRecall: CentrePopup {
     
     init(viewModel: VisitsViewModel, house: String, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
+        viewModel.loading = false
         self.house = house
         self.onDone = onDone
     }
@@ -534,14 +536,16 @@ struct CentrePopup_AddRecall: CentrePopup {
                         
                     }
                     Task {
+                        try? await Task.sleep(nanoseconds: 200_000_000) // 150ms delay — tweak as needed
                         switch await viewModel.addRecall(user: user ?? "", house: house) {
                         case .success(_):
-                            viewModel.loading = false
+                            //viewModel.loading = false
                             dismissLastPopup()
                             onDone()
                         case .failure(_):
                             viewModel.ifFailed = true
                         }
+                        viewModel.refreshRecallState()
                     }
                     
                 }
@@ -553,7 +557,7 @@ struct CentrePopup_AddRecall: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
+        
     }
 }
 
@@ -567,6 +571,7 @@ struct CentrePopup_DeleteRecall: CentrePopup {
     
     init(viewModel: VisitsViewModel, house: String, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
+        viewModel.loading = false
         self.house = house
         self.onDone = onDone
     }
@@ -609,14 +614,16 @@ struct CentrePopup_DeleteRecall: CentrePopup {
                         
                     }
                     Task {
+                        try? await Task.sleep(nanoseconds: 200_000_000) // 150ms delay — tweak as needed
                         switch await viewModel.deleteRecall(id: viewModel.getRecallId(house: house) ?? Date().millisecondsSince1970 ,user: user ?? "", house: house) {
                         case .success(_):
-                            viewModel.loading = false
+                            //viewModel.loading = false
                             dismissLastPopup()
                             onDone()
                         case .failure(_):
                             viewModel.ifFailed = true
                         }
+                        viewModel.refreshRecallState()
                     }
                     
                 }
@@ -629,8 +636,8 @@ struct CentrePopup_DeleteRecall: CentrePopup {
     func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
         config
             .popupHorizontalPadding(24)
-            
-            
+        
+        
     }
 }
 

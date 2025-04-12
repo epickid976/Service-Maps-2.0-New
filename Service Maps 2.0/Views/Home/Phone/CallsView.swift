@@ -322,6 +322,7 @@ struct CentrePopup_DeleteCall: CentrePopup {
     
     init(viewModel: CallsViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
+        viewModel.loading = false
         self.onDone = onDone
     }
     
@@ -367,13 +368,12 @@ struct CentrePopup_DeleteCall: CentrePopup {
                             self.viewModel.loading = true
                         }
                         Task {
+                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                             if self.viewModel.callToDelete != nil{
                                 switch await self.viewModel.deleteCall(call: self.viewModel.callToDelete!) {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                        //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        self.viewModel.loading = false
                                         dismissLastPopup()
                                         self.viewModel.ifFailed = false
                                         self.viewModel.callToDelete = nil

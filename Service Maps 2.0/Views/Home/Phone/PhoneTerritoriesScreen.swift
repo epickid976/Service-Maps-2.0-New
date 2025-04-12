@@ -414,6 +414,7 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
     
     init(viewModel: PhoneScreenViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
+        viewModel.loading = false
         self.onDone = onDone
     }
     
@@ -460,14 +461,12 @@ struct CentrePopup_DeletePhoneTerritory: CentrePopup {
                             self.viewModel.loading = true
                         }
                         Task {
+                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                             if self.viewModel.territoryToDelete.0 != nil && self.viewModel.territoryToDelete.1 != nil {
                                 switch await self.viewModel.deleteTerritory(territory: self.viewModel.territoryToDelete.0 ?? "") {
                                 case .success(_):
                                     HapticManager.shared.trigger(.success)
                                     withAnimation {
-                                        withAnimation {
-                                            self.viewModel.loading = false
-                                        }
                                         dismissLastPopup()
                                         self.viewModel.territoryToDelete = (nil,nil)
                                         onDone()
