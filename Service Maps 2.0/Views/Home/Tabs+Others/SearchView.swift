@@ -146,7 +146,8 @@ struct SearchView: View {
                     }.navigationTransition(.fade(.cross)).scrollIndicators(.never).id(searchViewModel.scrollViewID)
                         .scrollDismissesKeyboard(.never)
                         
-                }.animation(.easeInOut(duration: 0.5), value: searchViewModel.scrollViewID)
+                }
+                .animation(.easeInOut(duration: 0.5), value: searchViewModel.scrollViewID)
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarLeading) {
                         HStack {

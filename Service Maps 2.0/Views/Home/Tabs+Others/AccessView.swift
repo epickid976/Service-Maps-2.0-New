@@ -123,7 +123,8 @@ struct AccessView: View {
                                 }
                             }
                         }
-                    }.hSpacing(.center)
+                    }
+                    .hSpacing(.center)
                         .background(GeometryReader {
                             Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                         }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in

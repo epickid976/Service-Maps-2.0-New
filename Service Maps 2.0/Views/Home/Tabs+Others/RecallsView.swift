@@ -17,6 +17,7 @@ import Lottie
 import AlertKit
 import MijickPopups
 import Toasts
+import UserNotifications
 
 // MARK: - RecallsView
 
@@ -33,6 +34,9 @@ struct RecallsView: View {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     
+    
+    @State var showNotificationCenter = false
+
     // MARK: - Body
     
     var body: some View {
@@ -92,12 +96,21 @@ struct RecallsView: View {
                                     }
                                 }
                             }
-                        }.animation(.easeInOut(duration: 0.25), value: viewModel.recalls == nil || viewModel.recalls != nil)
+                        }
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.recalls == nil || viewModel.recalls != nil)
                             .navigationBarTitle("Recalls", displayMode: .automatic)
                             .toolbar {
                                 ToolbarItemGroup(placement: .topBarTrailing) {
                                     Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
                                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                    
+                                    Button("", action: {
+                                        HapticManager.shared.trigger(.lightImpact)
+                                        DispatchQueue.main.async {
+                                                CentrePopup_NotificationList(isPresented: $showNotificationCenter).present()
+                                        }
+                                    })
+                                    .buttonStyle(CircleButtonStyle(imageName: "bell.badge", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
                                 }
                             }
                             .navigationTransition(.slide.combined(with: .fade(.in)))
@@ -135,6 +148,9 @@ class RecallViewModel: ObservableObject {
     @Published var ifFailed = false
     
     @Published var loading = false
+    @Published var progress: CGFloat = 0.0
+    @Published var optionsAnimation = false
+    
     
     @Published var showToast = false
     
@@ -150,6 +166,29 @@ class RecallViewModel: ObservableObject {
     
     func deleteRecall(id: Int64, user: String, house: String) async -> Result<Void, Error> {
         return await DataUploaderManager().deleteRecall(recall: Recalls(id: id, user: user, house: house))
+    }
+    
+    func scheduleRecallReminder(for recall: RecallData) {
+        // Cancel existing notification first
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [recall.recall.getId()])
+
+        // Check last visit
+        guard let lastVisitDate = recall.visit?.date else { return }
+
+        let inactivityLimit: TimeInterval = 3 * 24 * 60 * 60 // 3 days
+        let fireDate = Date(timeIntervalSince1970: TimeInterval(lastVisitDate / 1000) + inactivityLimit)
+        
+        if fireDate <= Date() { return } // Already expired
+
+        let content = UNMutableNotificationContent()
+        content.title = "Don't forget your recall"
+        content.body = "You haven't added a visit for \(recall.house.number) recently."
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: fireDate.timeIntervalSinceNow, repeats: false)
+        let request = UNNotificationRequest(identifier: recall.recall.getId(), content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request)
     }
     
     // MARK: - Publisher
@@ -234,6 +273,21 @@ struct RecallRow: View {
                 NavigationLink(destination: NavigationLazyView(VisitsView(house: recall.house))) {
                     HouseCell(revisitView: revisitView, house: HouseData(id: UUID(), house: recall.house, accessLevel: AuthorizationLevelManager().getAccessLevel(model:  recall.house) ?? .User), mainWindowSize: mainWindowSize).modifier(ScrollTransitionModifier()).transition(.customBackInsertion)
                 }.onTapHaptic(.lightImpact)
+            } leadingActions: { context in
+                SwipeAction(
+                    systemImage: "bell.badge",
+                    backgroundColor: .blue
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    context.state.wrappedValue = .closed
+                    DispatchQueue.main.async {
+                        ScheduleRecallPopup(recall: recall).present()
+                    }
+                }
+                .allowSwipeToTrigger()
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+                
             } trailingActions: { context in
                 SwipeAction(
                     systemImage: "person.fill.xmark",
@@ -394,6 +448,289 @@ struct CentrePopup_RemoveRecall: CentrePopup {
             .popupHorizontalPadding(24)
             
     }
+}
+
+struct ScheduleRecallPopup: CentrePopup {
+    var recall: RecallData? = nil
+    var id: String? = nil
+    var existingDate: Date? = nil
+    var onDone: (() -> Void)? = nil // 👈 New closure
+
+    @State private var selectedDate: Date
+    init(recall: RecallData? = nil, id: String? = nil, existingDate: Date? = nil, onDone: (() -> Void)? = nil) {
+        self.recall = recall
+        self.id = id
+        self.existingDate = existingDate
+        _selectedDate = State(initialValue: existingDate ?? Date().addingTimeInterval(60))
+        self.onDone = onDone
+    }
+    @State private var isLoading = false
+    @State private var showError = false
+
+    var body: some View {
+        createContent()
+    }
+    
+    func createContent() -> some View {
+        VStack(spacing: 16) {
+            Text("Schedule Reminder")
+                .font(.title3.bold())
+                .hSpacing(.leading)
+
+            DatePicker("Date", selection: $selectedDate, in: Date()..., displayedComponents: [.date])
+                .datePickerStyle(.graphical)
+            DatePicker("Time", selection: $selectedDate, displayedComponents: [.hourAndMinute])
+                .datePickerStyle(.compact).padding(.horizontal)
+            
+            
+            Text(
+                "You will be reminded to revisit \(recall?.house.number ?? "-") at \(selectedDate.formatted(date: .long, time: .shortened))"
+            )
+                .font(.headline)
+                .foregroundColor(.secondary)
+            
+            if showError {
+                Text("Please choose a future time.")
+                    .foregroundColor(.red)
+                    .fontWeight(.bold)
+            }
+
+            HStack {
+                if !isLoading {
+                    CustomBackButton {
+                        dismissLastPopup()
+                    }
+                }
+
+                CustomButton(loading: isLoading, title: "Schedule", color: .blue) {
+                    if selectedDate < Date() {
+                        showError = true
+                        HapticManager.shared.trigger(.error)
+                        return
+                    }
+                    withAnimation {
+                        isLoading = true
+                    }
+                    
+                    Task {
+                        try? await Task
+                            .sleep(nanoseconds: 400_000_000) // Simulate delay
+                        let notificationId = id ?? "user-\(recall?.recall.getId() ?? "")"
+                        NotificationManager.shared.cancelNotification(id: notificationId)
+                        await NotificationManager.shared.scheduleNotification(
+                            id: notificationId,
+                            title: recall?.house.number != nil ? NSLocalizedString("Recall Reminder", comment: "") : NSLocalizedString("Reminder", comment: ""),
+                            body: recall?.house.number != nil ? String(localized:"Time to revisit \(recall!.house.number)! Territory \(String(recall?.territory.number ?? 0000)), address: \(recall?.territoryAddress.address ?? ""). 🏠 ") : NSLocalizedString(
+                                "Time for your scheduled reminder.",
+                                comment: ""
+                            ),
+                            date: selectedDate,
+                            deepLink: "servicemaps://openRecalls"
+                        )
+
+                        // UI work back on main thread
+                        await MainActor.run {
+                            isLoading = false
+                            dismissLastPopup()
+                            HapticManager.shared.trigger(.success)
+                            onDone?() // 👈 Call completion if provided
+                        }
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Material.ultraThick)
+        .cornerRadius(20)
+    }
+
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config.popupHorizontalPadding(24)
+            .tapOutsideToDismissPopup(true)
+    }
+}
+
+struct CentrePopup_NotificationList: CentrePopup {
+    @Binding var isPresented: Bool
+    @State private var notifications: [NotificationData] = []
+
+    var body: some View {
+        createContent()
+    }
+
+    func createContent() -> some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("Reminders")
+                    .font(.title3.bold())
+                    .foregroundColor(.primary)
+                
+                Spacer()
+
+                Button(action: {
+                    HapticManager.shared.trigger(.lightImpact)
+                    dismissLastPopup()
+                    isPresented = false
+                }) {
+                    Label("Close", systemImage: "xmark")
+                        .font(.subheadline.bold())
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 12)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding()
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+
+            Divider().padding()
+
+            ScrollView {
+                VStack(spacing: 12) {
+                    if notifications.isEmpty {
+                        VStack(spacing: 6) {
+                            Image(systemName: "bell.slash")
+                                .font(.largeTitle)
+                                .foregroundColor(.secondary)
+                            Text("You have no scheduled reminders.")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .vSpacing(.center)
+                    } else {
+                        ForEach(notifications) { notification in
+                            NotificationCell(
+                                notification: notification,
+                                onDelete: {
+                                    UNUserNotificationCenter.current()
+                                        .removePendingNotificationRequests(withIdentifiers: [notification.id])
+                                    fetchNotifications()
+                                },
+                                onEdit: {
+                                    fetchNotifications() // 👈 Called after editing
+                                }
+                            ).transition(.customBackInsertion)
+                        }
+                    }
+                }
+                .animation(.spring(), value: notifications)
+                .padding()
+            }
+            .frame(maxHeight: 500)
+            .task {
+                fetchNotifications()
+            }
+        }
+        .padding()
+        .background(Material.ultraThick, in: RoundedRectangle(cornerRadius: 25, style: .continuous))
+    }
+
+    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+        config.popupHorizontalPadding(24)
+            .tapOutsideToDismissPopup(true)
+    }
+
+    private func fetchNotifications() {
+        Task.detached {
+            let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+            let mapped: [NotificationData] = requests.map { req in
+                NotificationData(
+                    id: req.identifier,
+                    title: req.content.title,
+                    body: req.content.body,
+                    triggerDate: req.triggerDate
+                )
+            }
+
+            await MainActor.run {
+                self.notifications = mapped.sorted { $0.triggerDate < $1.triggerDate }
+            }
+        }
+    }
+}
+
+struct NotificationCell: View {
+    let notification: NotificationData
+    var onDelete: () -> Void
+    var onEdit: () -> Void // 👈 Add this
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "bell.fill")
+                .font(.title2)
+                .foregroundColor(.blue)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(notification.title)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+
+                Text(notification.body)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+
+                Text("Scheduled: \(notification.triggerDate.formatted(date: .abbreviated, time: .shortened))")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+
+            Spacer()
+
+            VStack(spacing: 8) {
+                Button(action: {
+                    HapticManager.shared.trigger(.lightImpact)
+                    onDelete()
+                }) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                        .padding(6)
+                        .background(.thinMaterial, in: Circle())
+                }
+
+                Button(action: {
+                    HapticManager.shared.trigger(.lightImpact)
+                    ScheduleRecallPopup(
+                        id: notification.id,
+                        existingDate: notification.triggerDate,
+                        onDone: {
+                            onEdit() // 👈 Call the edit completion
+                        }
+                    ).present()
+                }) {
+                    Image(systemName: "pencil")
+                        .foregroundColor(.blue)
+                        .padding(6)
+                        .background(.thinMaterial, in: Circle())
+                }
+            }
+            .frame(width: 40)
+        }
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+}
+
+extension UNNotificationRequest {
+    var triggerDate: Date {
+        if let trigger = trigger as? UNCalendarNotificationTrigger {
+            return Calendar.current.date(from: trigger.dateComponents) ?? Date.distantFuture
+        } else if let trigger = trigger as? UNTimeIntervalNotificationTrigger {
+            return trigger.nextTriggerDate() ?? Date.distantFuture
+        } else {
+            return Date.distantFuture
+        }
+    }
+}
+
+struct NotificationData: Identifiable, Sendable, Equatable {
+    let id: String
+    let title: String
+    let body: String
+    let triggerDate: Date
 }
 
 // MARK: - Preview

@@ -41,6 +41,8 @@ struct TerritoryView: View {
     @State var animationProgressTime: AnimationProgressTime = 0
     @State var searchViewDestination = false
     @State private var hasAnimatedRecent = false
+    @State private var dominoStartDelay: Double? = 0.25
+    @State private var viewAppeared = false
     
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
@@ -132,14 +134,15 @@ struct TerritoryView: View {
                                                                         territoryData: territoryData,
                                                                         mainWindowSize: proxy.size,
                                                                         index: index,
-                                                                        viewModel: viewModel // 👈 pass it in directly
+                                                                        viewModel: viewModel,
+                                                                        dominoStartDelay: dominoStartDelay
                                                                     )
                                                                 }
                                                             }
                                                             .padding(.leading, 10)
-                                                            .frame(height: 90)
+                                                            .frame(height: 70)
                                                         }
-                                                        .frame(height: 90)
+                                                        .frame(height: 70)
                                                         .scrollIndicators(.never)
                                                         
                                                     }.modifier(ScrollTransitionModifier())
@@ -721,3 +724,4 @@ struct CustomDisclosureGroup<Item: Identifiable & Equatable, Content: View>: Vie
         }
     }
 }
+

@@ -169,7 +169,19 @@ struct HomeTabView: View {
                 }
                 .padding(.vertical, 8)
                 .background(colorScheme == .dark ? .black : .white)
-            }.ignoresSafeArea(.keyboard)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openRecallsTab)) { _ in
+                withAnimation {
+                    // If admin/phone tab is present, Recalls is index 2
+                    // Otherwise, it's index 1
+                    if authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials() {
+                        selectedTab = 2
+                    } else {
+                        selectedTab = 1
+                    }
+                }
+            }
+            .ignoresSafeArea(.keyboard)
                 .onAppear {
                     do {
                          try isUpdateAvailable(completion: { (update, error) in

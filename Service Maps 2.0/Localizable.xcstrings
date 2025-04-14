@@ -62,7 +62,20 @@
       }
     },
     "**Symbol Meanings**" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Simbolos**"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Symboles**"
+          }
+        }
+      }
     },
     "%@" : {
       "localizations" : {
@@ -1044,7 +1057,20 @@
       }
     },
     "Collapse" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colapsar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réduire"
+          }
+        }
+      }
     },
     "Confirm Password" : {
       "localizations" : {
@@ -1138,6 +1164,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "En train de créer la copie…"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fecha"
           }
         }
       }
@@ -1481,7 +1517,20 @@
       }
     },
     "Disclosure Groups" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sections"
+          }
+        }
+      }
     },
     "Dismiss" : {
       "localizations" : {
@@ -2304,10 +2353,36 @@
       }
     },
     "Expand" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expandir"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Développer"
+          }
+        }
+      }
     },
     "Expand or collapse all territory sections" : {
-
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expanda o colapse las secciones de territorios."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Développer ou réduire les sections de territoires."
+          }
+        }
+      }
     },
     "Fields cannot be empty" : {
       "localizations" : {
@@ -4009,6 +4084,22 @@
         }
       }
     },
+    "Please choose a future time." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por favor escoja un tiempo futuro."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez un temps dans l’avenir."
+          }
+        }
+      }
+    },
     "Please fill out all the required fields." : {
       "localizations" : {
         "es" : {
@@ -4069,6 +4160,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Retour Supprimé"
+          }
+        }
+      }
+    },
+    "Recall Reminder" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recordatorio de Revisita"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rappel de Rendez-vous"
           }
         }
       }
@@ -4149,6 +4256,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registration de la Clé..."
+          }
+        }
+      }
+    },
+    "Reminder" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recordatorio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rappel"
+          }
+        }
+      }
+    },
+    "Reminders" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recordatorios"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rappels"
           }
         }
       }
@@ -4278,6 +4417,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enregistrer"
+          }
+        }
+      }
+    },
+    "Schedule Reminder" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programe un Recordatorio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programmez un Rappel"
+          }
+        }
+      }
+    },
+    "Scheduled: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programados: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programmés: %@"
           }
         }
       }
@@ -4835,6 +5006,77 @@
         }
       }
     },
+    "Time" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heure"
+          }
+        }
+      }
+    },
+    "Time for your scheduled reminder." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo para su recordatorio."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temps pour ton rappel."
+          }
+        }
+      }
+    },
+    "Time to revisit %@! 🏠" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo de revisitar %@! 🏠"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temps pour un rendez-vous à %@! 🏠"
+          }
+        }
+      }
+    },
+    "Time to revisit %@! Territory %@, address: %@. 🏠 " : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Time to revisit %1$@! Territory %2$@, address: %3$@. 🏠 "
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora de volver a visitar %1$@. Territorio %2$@, dirección: %3$@. 🏠"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il est temps de revisiter %1$@ ! Territoire %2$@, adresse : %3$@. 🏠"
+          }
+        }
+      }
+    },
     "Today" : {
       "localizations" : {
         "es" : {
@@ -5152,6 +5394,22 @@
         }
       }
     },
+    "You have no scheduled reminders." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No tiene ningún recordatorio programado,"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous n’avez pas de rappels programmés."
+          }
+        }
+      }
+    },
     "You successfully logged in, but it seems like you do not have access to any territories. Contact your group leader for access and then click refresh. If you are an administrator, click the button below." : {
       "localizations" : {
         "es" : {
@@ -5164,6 +5422,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vous avez réussi à se connecter, mais vous n'avez pas accès à aucun Territoire. Contactez votre chef de groupe pour demander de l'accès. Si vous êtes administrateur, cliquez le bouton dessous."
+          }
+        }
+      }
+    },
+    "You will be reminded to revisit %@ at %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "You will be reminded to revisit %1$@ at %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se le recordara de visitar la %1$@ el %2$@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous serez rappelé de visiter %1$@ le %2$@."
           }
         }
       }

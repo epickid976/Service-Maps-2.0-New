@@ -26,6 +26,8 @@ struct Service_Maps_2_0App: App {
     
     @Environment(\.presentationMode) var presentationMode
     
+    @State private var deepLink: URL?
+    
     init() {
         SynchronizationManager.shared.startupProcess(synchronizing: true)
     }
@@ -75,15 +77,32 @@ struct Service_Maps_2_0App: App {
                     LoginWithEmailView()
                 }
             }.environment(\.font, Font.system(.body, design: .rounded))
-            .onOpenURL(perform: { url in
-                universalLinksManager.handleIncomingURL(url)
-            })
+                .onOpenURL { url in
+                    // First: check for your custom URL scheme
+                    if url.scheme == "servicemaps", url.host == "openRecalls" {
+                        // Switch to Recalls tab
+                        NotificationCenter.default.post(name: .openRecallsTab, object: nil)
+                        return
+                    }
+
+                    // Else: fallback to universal links
+                    universalLinksManager.handleIncomingURL(url)
+                }
             .animation(.easeIn(duration: 0.25), value: destination)
             .animation(.easeIn(duration: 0.25), value: synchronizationManager.startupState)
             .navigationTransition(
                 .fade(.in)
             )
             .installToast(position: .bottom)
+            .onAppear {
+                Task {
+                    do {
+                        try await NotificationManager.shared.requestPermission()
+                    } catch {
+                        print("Error receiving Notification Permission")
+                    }
+                }
+            }
             
         }
         .onChange(of: scenePhase) { newPhase in
@@ -163,3 +182,6 @@ struct Service_Maps_2_0App: App {
 }
 
 
+extension Notification.Name {
+    static let openRecallsTab = Notification.Name("openRecallsTab")
+}

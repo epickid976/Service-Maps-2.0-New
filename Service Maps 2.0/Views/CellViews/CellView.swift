@@ -220,11 +220,12 @@ struct RecentTerritoryCellView: View {
     let mainWindowSize: CGSize
     let index: Int
     let viewModel: TerritoryViewModel
+    var dominoStartDelay: Double? = nil // 👈 NEW
 
-    @State private var navigate: Bool = false
-    @State private var longPressDetected: Bool = false
-    @State private var appeared: Bool = false
-    @State private var isPressed: Bool = false
+    @State private var navigate = false
+    @State private var appeared = false
+    @State private var scale: CGFloat = 1.15
+    @State private var shrinkTimer: Timer? = nil
 
     var body: some View {
         ZStack {
@@ -235,68 +236,85 @@ struct RecentTerritoryCellView: View {
             ).hidden()
 
             recentCell(territoryData: territoryData, mainWindowSize: mainWindowSize)
-                .scaleEffect(isPressed ? 0.96 : (appeared ? 1.0 : 1.15)) // 👈 includes tap/longpress feedback
+                .scaleEffect(scale)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 30)
                 .shadow(color: appeared ? .clear : Color.blue.opacity(0.2), radius: 10, y: 10)
+                .contentShape(Rectangle()) // Make entire area tappable
                 .gesture(
-                    LongPressGesture(minimumDuration: 0.5)
-                        .onChanged { _ in
-                            withAnimation(.easeInOut(duration: 0.15)) {
-                                isPressed = true
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.spring()) {
-                                isPressed = false
-                            }
-                            HapticManager.shared.trigger(.impact)
-                            longPressDetected = true
-                            CentrePopup_RecentFloorsKnocked(
-                                viewModel: FloorsViewModel(territory: territoryData.territory)
-                            ) {
-                                longPressDetected = false
-                            }.present()
-                        }
-                )
-                .simultaneousGesture(
-                    TapGesture()
-                        .onEnded {
-                            withAnimation(.easeInOut(duration: 0.15)) {
+                    ExclusiveGesture(
+                        // Tap Gesture
+                        TapGesture()
+                            .onEnded {
                                 HapticManager.shared.trigger(.impact)
-                                isPressed = true
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                withAnimation(.spring()) {
-                                    isPressed = false
-                                    if !longPressDetected {
-                                        navigate = true
-                                    }
-                                    longPressDetected = false
+                                animateScale(to: 0.95)
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    animateScale(to: 1.0)
+                                    navigate = true
                                 }
+                            },
+                        // Long Press Gesture
+                        LongPressGesture(minimumDuration: 0.5)
+                            .onChanged { _ in
+                                startShrinking()
                             }
-                        }
+                            .onEnded { _ in
+                                stopShrinking()
+                                HapticManager.shared.trigger(.impact)
+                                CentrePopup_RecentFloorsKnocked(
+                                    viewModel: FloorsViewModel(territory: territoryData.territory)
+                                ) {}.present()
+                            }
+                    )
                 )
+                .onDisappear {
+                    stopShrinking()
+                }
                 .onAppear {
                     guard !appeared else { return }
 
-                    if !viewModel.hasAnimatedRecentTerritories {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.08) {
-                            withAnimation(.interpolatingSpring(stiffness: 200, damping: 18)) {
-                                appeared = true
-                            }
+                    let baseDelay = dominoStartDelay ?? 0 // if nil, start immediately
+                    let totalDelay = baseDelay + Double(index) * 0.08
 
-                            if index == viewModel.recentTerritoryData!.count - 1 {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                    viewModel.hasAnimatedRecentTerritories = true
-                                }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + totalDelay) {
+                        withAnimation(.interpolatingSpring(stiffness: 200, damping: 18)) {
+                            appeared = true
+                            scale = 1.0
+                        }
+
+                        if index == viewModel.recentTerritoryData!.count - 1 {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                viewModel.hasAnimatedRecentTerritories = true
                             }
                         }
-                    } else {
-                        appeared = true
                     }
                 }
         }
+    }
+
+    // MARK: - Scale Handling
+
+    func animateScale(to value: CGFloat) {
+        withAnimation(.easeInOut(duration: 0.15)) {
+            scale = value
+        }
+    }
+
+    func startShrinking() {
+        stopShrinking()
+        shrinkTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { _ in
+            DispatchQueue.main.async {
+                if scale > 0.88 {
+                    scale -= 0.01
+                }
+            }
+        }
+    }
+
+    func stopShrinking() {
+        shrinkTimer?.invalidate()
+        shrinkTimer = nil
+        animateScale(to: 1.0)
     }
 }
 //MARK: - Phone Territory Recent Cell

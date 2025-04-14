@@ -87,6 +87,7 @@
 		825645B52BD04E9F00F18AC9 /* AddressData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B42BD04E9F00F18AC9 /* AddressData.swift */; };
 		825645B72BD04FCD00F18AC9 /* AddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */; };
 		8258EBD02D8C946A008AB155 /* Floors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258EBCF2D8C9467008AB155 /* Floors.swift */; };
+		825BBE7F2DAD50E5000E0F1E /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825BBE7E2DAD50E1000E0F1E /* NotificationManager.swift */; };
 		82608AB22CE9992F00BCC7D7 /* Toasts in Frameworks */ = {isa = PBXBuildFile; productRef = 82608AB12CE9992F00BCC7D7 /* Toasts */; };
 		826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */; };
 		826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826B766F2A729FDE000A4BAA /* HomeTabView.swift */; };
@@ -250,6 +251,7 @@
 		825645B42BD04E9F00F18AC9 /* AddressData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressData.swift; sourceTree = "<group>"; };
 		825645B62BD04FCD00F18AC9 /* AddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressViewModel.swift; sourceTree = "<group>"; };
 		8258EBCF2D8C9467008AB155 /* Floors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Floors.swift; sourceTree = "<group>"; };
+		825BBE7E2DAD50E1000E0F1E /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Service Maps 2.0.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		826B766D2A729FDE000A4BAA /* Service_Maps_2_0App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service_Maps_2_0App.swift; sourceTree = "<group>"; };
 		826B766F2A729FDE000A4BAA /* HomeTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabView.swift; sourceTree = "<group>"; };
@@ -538,6 +540,7 @@
 		824213672A82C4A300626DD5 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				825BBE7E2DAD50E1000E0F1E /* NotificationManager.swift */,
 				820933FA2A794D0C00AF3FF1 /* SynchronizationManager.swift */,
 				824213682A82C4CB00626DD5 /* AuthenticationManager.swift */,
 				8242136A2A82C5C800626DD5 /* StorageManager.swift */,
@@ -933,6 +936,7 @@
 				8250B1A92A8A826800A7B70E /* TerritoryViewModel.swift in Sources */,
 				82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */,
 				82B97F9C2CC8686800A0BC13 /* TokenService.swift in Sources */,
+				825BBE7F2DAD50E5000E0F1E /* NotificationManager.swift in Sources */,
 				82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */,
 				82A5B4662BD6C41D00F52F2F /* KeyData.swift in Sources */,
 				82C11AAD2AA35FC8007CDFFA /* TerritoryAddressView.swift in Sources */,
@@ -1186,7 +1190,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.3;
+				MARKETING_VERSION = 3.2.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1227,7 +1231,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.3;
+				MARKETING_VERSION = 3.2.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

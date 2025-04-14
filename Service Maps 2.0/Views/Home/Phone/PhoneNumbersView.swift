@@ -119,6 +119,7 @@ struct PhoneNumbersView: View {
                                                 }
                                             }
                                         }
+                                        
                                         .padding(.horizontal)
                                         .padding(.top)
                                         .padding(.bottom)
@@ -127,7 +128,8 @@ struct PhoneNumbersView: View {
                                     }
                                 }
                             }
-                        }.background(GeometryReader {
+                        }
+                        .background(GeometryReader {
                             Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                         }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
                             Task { @MainActor in

@@ -8,6 +8,19 @@
 	<array>
 		<string>com.serviceMaps.uploadPendingTasks</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.jb.servicemaps.recallscheme</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>servicemaps</string>
+			</array>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
