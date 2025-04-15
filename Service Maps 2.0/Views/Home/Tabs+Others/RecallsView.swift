@@ -520,10 +520,7 @@ struct ScheduleRecallPopup: CentrePopup {
                         await NotificationManager.shared.scheduleNotification(
                             id: notificationId,
                             title: recall?.house.number != nil ? NSLocalizedString("Recall Reminder", comment: "") : NSLocalizedString("Reminder", comment: ""),
-                            body: recall?.house.number != nil ? String(localized:"Time to revisit \(recall!.house.number)! Territory \(String(recall?.territory.number ?? 0000)), address: \(recall?.territoryAddress.address ?? ""). 🏠 ") : NSLocalizedString(
-                                "Time for your scheduled reminder.",
-                                comment: ""
-                            ),
+                            body: recall?.house.number != nil ? String(localized:"Time to revisit \(recall!.house.number)! Territory \(String(recall?.territory.number ?? 0000)), address: \(recall?.territoryAddress.address ?? ""). 🏠 ") : String(localized:"Time to revisit \(recall!.house.number)! Territory \(String(recall?.territory.number ?? 0000)), address: \(recall?.territoryAddress.address ?? ""). 🏠 "),
                             date: selectedDate,
                             deepLink: "servicemaps://openRecalls"
                         )

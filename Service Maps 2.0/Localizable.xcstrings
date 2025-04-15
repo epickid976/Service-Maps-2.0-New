@@ -5023,6 +5023,7 @@
       }
     },
     "Time for your scheduled reminder." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
