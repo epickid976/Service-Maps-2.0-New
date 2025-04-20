@@ -34,6 +34,7 @@
 		821C12782A7811CD0050D106 /* AdminService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12772A7811CD0050D106 /* AdminService.swift */; };
 		821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74C2BD9EA46001D092D /* AppDelegate.swift */; };
 		821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74E2BD9EB66001D092D /* apple-app-site-association */; };
+		8225A6722DB58FF0003F3920 /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 8225A6712DB58FF0003F3920 /* Shimmer */; };
 		8226D9642CE7FC140090CD64 /* Papyrus in Frameworks */ = {isa = PBXBuildFile; productRef = 8226D9632CE7FC140090CD64 /* Papyrus */; };
 		8226D9662CE7FC140090CD64 /* PapyrusAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 8226D9652CE7FC140090CD64 /* PapyrusAlamofire */; };
 		8226D9682CE7FC140090CD64 /* PapyrusCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8226D9672CE7FC140090CD64 /* PapyrusCore */; };
@@ -143,6 +144,8 @@
 		82DBE4DF2C24FE7800C16B35 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */; };
 		82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DBEA992A880B9E002048DC /* ResetPassword.swift */; };
 		82DDE2CD2C193BD4003B65A5 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */; };
+		82E9DAA92DAEA30E0096C024 /* SwiftTextRank in Frameworks */ = {isa = PBXBuildFile; productRef = 82E9DAA82DAEA30E0096C024 /* SwiftTextRank */; };
+		82E9DAAB2DAECC3D0096C024 /* VisitSummarizationEngineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E9DAAA2DAECC340096C024 /* VisitSummarizationEngineManager.swift */; };
 		82EC3E932A9CFF68000E2926 /* HousesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EC3E922A9CFF68000E2926 /* HousesView.swift */; };
 		82EF0AE62CFF76120083A89C /* CongregationWithAll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EF0AE52CFF760F0083A89C /* CongregationWithAll.swift */; };
 		82EF0AE82CFF76E40083A89C /* CongregationWithAllPhone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EF0AE72CFF76E20083A89C /* CongregationWithAllPhone.swift */; };
@@ -302,6 +305,7 @@
 		82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		82DBEA992A880B9E002048DC /* ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPassword.swift; sourceTree = "<group>"; };
 		82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		82E9DAAA2DAECC340096C024 /* VisitSummarizationEngineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitSummarizationEngineManager.swift; sourceTree = "<group>"; };
 		82EC3E922A9CFF68000E2926 /* HousesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesView.swift; sourceTree = "<group>"; };
 		82EF0AE52CFF760F0083A89C /* CongregationWithAll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationWithAll.swift; sourceTree = "<group>"; };
 		82EF0AE72CFF76E20083A89C /* CongregationWithAllPhone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationWithAllPhone.swift; sourceTree = "<group>"; };
@@ -340,6 +344,7 @@
 				822FA0972AA6B6650008FA61 /* SwipeActions in Frameworks */,
 				822FA0742AA6B61C0008FA61 /* Lottie in Frameworks */,
 				82A5B4602BD482EB00F52F2F /* AlertKit in Frameworks */,
+				82E9DAA92DAEA30E0096C024 /* SwiftTextRank in Frameworks */,
 				828C4CD62C3A31CC00E147C3 /* ImageViewer in Frameworks */,
 				8226D9682CE7FC140090CD64 /* PapyrusCore in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
@@ -352,6 +357,7 @@
 				8226D9642CE7FC140090CD64 /* Papyrus in Frameworks */,
 				8228B6082C29BB68002B7886 /* Ably in Frameworks */,
 				8226D9662CE7FC140090CD64 /* PapyrusAlamofire in Frameworks */,
+				8225A6722DB58FF0003F3920 /* Shimmer in Frameworks */,
 				82CAFE162CC34E2200B3796D /* GRDB in Frameworks */,
 				82608AB22CE9992F00BCC7D7 /* Toasts in Frameworks */,
 				8228B6142C29C148002B7886 /* ModifiedCopyClient in Frameworks */,
@@ -540,6 +546,7 @@
 		824213672A82C4A300626DD5 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				82E9DAAA2DAECC340096C024 /* VisitSummarizationEngineManager.swift */,
 				825BBE7E2DAD50E1000E0F1E /* NotificationManager.swift */,
 				820933FA2A794D0C00AF3FF1 /* SynchronizationManager.swift */,
 				824213682A82C4CB00626DD5 /* AuthenticationManager.swift */,
@@ -820,6 +827,8 @@
 				8226D9652CE7FC140090CD64 /* PapyrusAlamofire */,
 				8226D9672CE7FC140090CD64 /* PapyrusCore */,
 				82608AB12CE9992F00BCC7D7 /* Toasts */,
+				82E9DAA82DAEA30E0096C024 /* SwiftTextRank */,
+				8225A6712DB58FF0003F3920 /* Shimmer */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -868,6 +877,8 @@
 				82CAFE142CC34E2200B3796D /* XCRemoteSwiftPackageReference "GRDB" */,
 				8226D9622CE7FC140090CD64 /* XCRemoteSwiftPackageReference "papyrus" */,
 				82608AB02CE9992F00BCC7D7 /* XCRemoteSwiftPackageReference "swiftui-toasts" */,
+				82E9DAA72DAEA30E0096C024 /* XCRemoteSwiftPackageReference "SwiftTextRank" */,
+				8225A6702DB58FF0003F3920 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -924,6 +935,7 @@
 				82370C102C3D92C7009A8D56 /* LoginWithEmailView.swift in Sources */,
 				82B97F942CC8577D00A0BC13 /* PasswordResetRoutes.swift in Sources */,
 				82DBEA9A2A880B9E002048DC /* ResetPassword.swift in Sources */,
+				82E9DAAB2DAECC3D0096C024 /* VisitSummarizationEngineManager.swift in Sources */,
 				82F75C342BE29886002CCAB0 /* PhoneNumbersView.swift in Sources */,
 				82F75C3C2BE2D6D7002CCAB0 /* AddCallView.swift in Sources */,
 				82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */,
@@ -1269,6 +1281,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8225A6702DB58FF0003F3920 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
 		8226D9622CE7FC140090CD64 /* XCRemoteSwiftPackageReference "papyrus" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/joshuawright11/papyrus";
@@ -1389,6 +1409,14 @@
 				kind = branch;
 			};
 		};
+		82E9DAA72DAEA30E0096C024 /* XCRemoteSwiftPackageReference "SwiftTextRank" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/goncharik/SwiftTextRank";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/exyte/FloatingButton";
@@ -1400,6 +1428,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8225A6712DB58FF0003F3920 /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8225A6702DB58FF0003F3920 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
+		};
 		8226D9632CE7FC140090CD64 /* Papyrus */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8226D9622CE7FC140090CD64 /* XCRemoteSwiftPackageReference "papyrus" */;
@@ -1509,6 +1542,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82CAFE142CC34E2200B3796D /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
+		};
+		82E9DAA82DAEA30E0096C024 /* SwiftTextRank */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82E9DAA72DAEA30E0096C024 /* XCRemoteSwiftPackageReference "SwiftTextRank" */;
+			productName = SwiftTextRank;
 		};
 		82F768FF2BE92FA2001FA3CF /* FloatingButton */ = {
 			isa = XCSwiftPackageProductDependency;

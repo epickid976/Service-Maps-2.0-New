@@ -14,6 +14,8 @@ import Lottie
 import AlertKit
 import MijickPopups
 import Toasts
+import SwiftTextRank
+import Shimmer
 
 //MARK: - VisitsView
 
@@ -51,9 +53,11 @@ struct VisitsView: View {
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     @State var highlightedVisitId: String?
+    @State private var isLoading = true
+    @State private var hasRunAnimation = false
     
     let minimumOffset: CGFloat = 60
-    
+    @State private var visitSummary: String = ""
     //MARK: - Body
     
     var body: some View {
@@ -77,6 +81,8 @@ struct VisitsView: View {
                                 }
                             } else {
                                 if let data = viewModel.visitData {
+                                    
+                                    
                                     if data.isEmpty {
                                         VStack {
                                             if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
@@ -93,7 +99,24 @@ struct VisitsView: View {
                                         }
                                         
                                     } else {
-                                        //LazyVStack {
+                                        visitSummaryCard(visitSummary, isLoading: isLoading).padding(.top, 10)
+                                            .onAppear {
+                                                // Only run once per appearance
+                                                if !hasRunAnimation {
+                                                    hasRunAnimation = true
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+                                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                                            isLoading = false
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        
+                                        Divider()
+                                            .padding(.horizontal)
+                                            .padding(.top, 10)
+                                            .padding(.bottom, -10)
+                                        
                                         SwipeViewGroup {
                                             if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
                                                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
@@ -235,6 +258,22 @@ struct VisitsView: View {
                                 
                             }
                         }
+                        .onAppear {
+                            if visitSummary.isEmpty, let data = viewModel.visitData {
+                                let notes = data.map { $0.visit.notes }
+                                let dates = data.map { Date(timeIntervalSince1970: TimeInterval($0.visit.date) / 1000) }
+                                let engine = VisitSummarizationEngineManager(notes: notes, visitDates: dates)
+                                visitSummary = engine.generateActionOrientedNarrative()
+                            }
+                        }
+                        .onChange(of: viewModel.visitData) { newData in
+                            if let data = newData {
+                                let notes = data.map { $0.visit.notes }
+                                let dates = data.map { Date(timeIntervalSince1970: TimeInterval($0.visit.date) / 1000) }
+                                let engine = VisitSummarizationEngineManager(notes: notes, visitDates: dates)
+                                visitSummary = engine.generateActionOrientedNarrative()
+                            }
+                        }
                 }
                 MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                     self.viewModel.presentSheet = true
@@ -329,6 +368,53 @@ struct VisitsView: View {
         .swipeMinimumDistance(visitData.accessLevel != .User ? 25:1000)
         
     }
+    
+    @ViewBuilder
+    func visitSummaryCard(_ summary: String, isLoading: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center) {
+                Image(systemName: "brain.head.profile")
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+                Text("Resumen inteligente")
+                    .font(.title3.bold())
+                    .foregroundStyle(.primary)
+                Spacer()
+            }
+            
+            Text(summary)
+                .font(.callout)
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.leading)
+                .lineLimit(nil)
+            
+            Divider()
+                .padding(.top, 4)
+            
+            HStack(spacing: 12) {
+                Label("Análisis de visitas", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                Image(systemName: "sparkles")
+                    .foregroundStyle(.yellow)
+                Text("IA personalizada")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+        )
+        .padding(.horizontal)
+        .modifier(ShimmerIfNeeded(active: isLoading))
+    }
+    
 }
 
 //MARK: - Delete Visit Popup
@@ -386,22 +472,22 @@ struct CentrePopup_DeleteVisit: CentrePopup {
                             try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                             if self.viewModel.visitToDelete != nil{
                                 let result = await self.viewModel.deleteVisit(visit: self.viewModel.visitToDelete ?? "")
-                                    switch result {
-                                    case .success(_):
-                                        
-                                        HapticManager.shared.trigger(.success)
-                                        self.viewModel.ifFailed = false
-                                        self.viewModel.visitToDelete = nil
-                                       
-                                        onDone()
-                                        dismissLastPopup()
-                                    case .failure(_):
-                                        HapticManager.shared.trigger(.error)
-                                        withAnimation {
-                                            self.viewModel.loading = false
-                                            self.viewModel.ifFailed = true
-                                        }
+                                switch result {
+                                case .success(_):
+                                    
+                                    HapticManager.shared.trigger(.success)
+                                    self.viewModel.ifFailed = false
+                                    self.viewModel.visitToDelete = nil
+                                    
+                                    onDone()
+                                    dismissLastPopup()
+                                case .failure(_):
+                                    HapticManager.shared.trigger(.error)
+                                    withAnimation {
+                                        self.viewModel.loading = false
+                                        self.viewModel.ifFailed = true
                                     }
+                                }
                             }
                         }
                         
@@ -649,3 +735,17 @@ struct CentrePopup_DeleteRecall: CentrePopup {
     }
 }
 
+
+struct ShimmerIfNeeded: ViewModifier {
+    let active: Bool
+    
+    func body(content: Content) -> some View {
+        if active {
+            content
+                .redacted(reason: .placeholder)
+                .shimmering()
+        } else {
+            content
+        }
+    }
+}

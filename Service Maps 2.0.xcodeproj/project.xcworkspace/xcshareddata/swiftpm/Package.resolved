@@ -1,5 +1,5 @@
 {
-  "originHash" : "ccb27dda05d220c72ee4e9f2c1d19d057b4e757cbbb30f0b227ab36e6129e10f",
+  "originHash" : "47cd0a8e5391d667d006520d1aae8537bb277eb568e39c849210a9b0a92b06c8",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -137,6 +137,15 @@
       }
     },
     {
+      "identity" : "swifttextrank",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/goncharik/SwiftTextRank",
+      "state" : {
+        "revision" : "50188a67c872e2a120cd287cfd9de34ed136b74a",
+        "version" : "1.0.0"
+      }
+    },
+    {
       "identity" : "swiftui-image-viewer",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Jake-Short/swiftui-image-viewer",
@@ -161,6 +170,15 @@
       "state" : {
         "revision" : "ad6ecab3f275fd0ff30959150dec0f14a5b7a245",
         "version" : "0.13.4"
+      }
+    },
+    {
+      "identity" : "swiftui-shimmer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/markiv/SwiftUI-Shimmer",
+      "state" : {
+        "revision" : "0226e21f9bf355d40e07e5f5e1c33679d50e167f",
+        "version" : "1.5.1"
       }
     },
     {

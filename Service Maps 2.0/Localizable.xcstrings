@@ -617,6 +617,9 @@
         }
       }
     },
+    "Análisis de visitas" : {
+
+    },
     "Android" : {
 
     },
@@ -2651,6 +2654,9 @@
         }
       }
     },
+    "IA personalizada" : {
+
+    },
     "ID" : {
       "localizations" : {
         "es" : {
@@ -4355,6 +4361,9 @@
           }
         }
       }
+    },
+    "Resumen inteligente" : {
+
     },
     "Review App" : {
       "localizations" : {
