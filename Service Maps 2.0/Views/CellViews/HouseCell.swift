@@ -98,6 +98,8 @@ struct HouseCell: View {
                 .fontWeight(.bold)
                 .hSpacing(.leading)
                 .padding(.leading, 5)
+                .transition(.opacity)
+                .animation(.spring(), value: visit)
             
             Text("\(visit.notes)")
                 .font(.body)
@@ -107,6 +109,8 @@ struct HouseCell: View {
                 .padding(.leading, 5)
                 .multilineTextAlignment(.leading)
                 .hSpacing(.leading)
+                .transition(.opacity)
+                .animation(.spring(), value: visit.notes)
         }
         .hSpacing(.leading)
         .padding(10)

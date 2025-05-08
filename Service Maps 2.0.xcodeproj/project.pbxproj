@@ -176,19 +176,6 @@
 		82FB3C232BF257990066B0B9 /* RecentData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FB3C222BF257990066B0B9 /* RecentData.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		821456132C28E43000CC4D8F /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		820933DD2A78425F00AF3FF1 /* CongregationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationService.swift; sourceTree = "<group>"; };
 		820933DF2A78427E00AF3FF1 /* CongregationSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationSignInForm.swift; sourceTree = "<group>"; };
@@ -302,6 +289,7 @@
 		82CEA0322C11568700F52DE9 /* NewUserNameForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewUserNameForm.swift; sourceTree = "<group>"; };
 		82D526042A9290EE00B42916 /* AddTerritoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryView.swift; sourceTree = "<group>"; };
 		82D526062A9292B100B42916 /* AddTerritoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTerritoryViewModel.swift; sourceTree = "<group>"; };
+		82D870622DBC59680001A280 /* Testing.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Testing.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/Testing.framework; sourceTree = DEVELOPER_DIR; };
 		82DBE4DE2C24FE7800C16B35 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		82DBEA992A880B9E002048DC /* ResetPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPassword.swift; sourceTree = "<group>"; };
 		82DDE2CC2C193BD4003B65A5 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
@@ -669,6 +657,7 @@
 		82BED49D2CC567F400183E19 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				82D870622DBC59680001A280 /* Testing.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -796,7 +785,6 @@
 				826B76662A729FDE000A4BAA /* Sources */,
 				826B76672A729FDE000A4BAA /* Frameworks */,
 				826B76682A729FDE000A4BAA /* Resources */,
-				821456132C28E43000CC4D8F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1202,7 +1190,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.5;
+				MARKETING_VERSION = 3.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1243,7 +1231,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.2.5;
+				MARKETING_VERSION = 3.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Jose.Blanco.Territorios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

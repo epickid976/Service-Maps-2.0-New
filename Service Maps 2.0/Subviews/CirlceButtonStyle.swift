@@ -169,7 +169,7 @@ func isMoreThanAMinuteOld(date: Date?) -> Bool {
     return date < oneMinuteAgo
 }
 
-func isMoreThanFiveMinutesOld(date: Date?) -> Bool {
+func isMoreThanFiveMinutesOld(date: Date?) async -> Bool {
     guard let date = date else { return true }
     let calendar = Calendar.current
     let fiveMinutesAgo = calendar.date(byAdding: .minute, value: -5, to: Date())!

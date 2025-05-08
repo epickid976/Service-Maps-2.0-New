@@ -99,18 +99,18 @@ struct VisitsView: View {
                                         }
                                         
                                     } else {
-                                        visitSummaryCard(visitSummary, isLoading: isLoading).padding(.top, 10)
-                                            .onAppear {
-                                                // Only run once per appearance
-                                                if !hasRunAnimation {
-                                                    hasRunAnimation = true
-                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
-                                                        withAnimation(.easeInOut(duration: 0.3)) {
-                                                            isLoading = false
-                                                        }
-                                                    }
-                                                }
-                                            }
+//                                        visitSummaryCard(visitSummary, isLoading: isLoading).padding(.top, 10)
+//                                            .onAppear {
+//                                                // Only run once per appearance
+//                                                if !hasRunAnimation {
+//                                                    hasRunAnimation = true
+//                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+//                                                        withAnimation(.easeInOut(duration: 0.3)) {
+//                                                            isLoading = false
+//                                                        }
+//                                                    }
+//                                                }
+//                                            }
                                         
                                         Divider()
                                             .padding(.horizontal)
@@ -163,20 +163,6 @@ struct VisitsView: View {
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.visitData == nil || viewModel.visitData != nil)
-                        
-                        .onChange(of: viewModel.presentSheet) { value in
-                            if value {
-                                CentrePopup_AddVisit(viewModel: viewModel, house: house
-                                ) {
-                                    let toast = ToastValue(
-                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
-                                        message: "Visit Added"
-                                    )
-                                    presentToast(toast)
-                                }.present()
-                                
-                            }
-                        }
                         //.scrollIndicators(.never)
                         .navigationBarTitle("House: \(viewModel.house.number)", displayMode: .automatic)
                         .navigationBarBackButtonHidden(true)
@@ -221,26 +207,13 @@ struct VisitsView: View {
                                 }
                             }
                         }
-                        .navigationTransition(viewModel.presentSheet || viewModel.visitIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                        .navigationTransition( viewModel.visitIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
                         .navigationViewStyle(StackNavigationViewStyle())
                     }.coordinateSpace(name: "scroll")
                         .scrollIndicators(.never)
                         .refreshable {
                             viewModel.synchronizationManager.startupProcess(synchronizing: true)
                         }
-                    //                        .onChange(of: viewModel.dataStore.synchronized) { value in
-                    //                            if value {
-                    //                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    //                                    viewModel.getVisits()
-                    //                                }
-                    //                            }
-                    //                        }
-                    //                        .onChange(of: RealtimeManager.shared.lastMessage) { value in
-                    //                            if value != nil {
-                    //                                viewModel.getVisits()
-                    //                            }
-                    //                        }
-                    
                         .onChange(of: viewModel.visitIdToScrollTo) { id in
                             if let id = id {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -277,6 +250,14 @@ struct VisitsView: View {
                 }
                 MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                     self.viewModel.presentSheet = true
+                    CentrePopup_AddVisit(viewModel: viewModel, house: house
+                    ) {
+                        let toast = ToastValue(
+                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                            message: "Visit Added"
+                        )
+                        presentToast(toast)
+                    }.present()
                 }
                 .offset(y: hideFloatingButton ? 200 : 0)
                 .animation(.spring(), value: hideFloatingButton)
@@ -305,6 +286,14 @@ struct VisitsView: View {
                                     HapticManager.shared.trigger(.lightImpact)
                                     self.viewModel.currentVisit = visitData.visit
                                     self.viewModel.presentSheet = true
+                                    CentrePopup_AddVisit(viewModel: viewModel, house: house
+                                    ) {
+                                        let toast = ToastValue(
+                                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                            message: "Visit Added"
+                                        )
+                                        presentToast(toast)
+                                    }.present()
                                 } label: {
                                     HStack {
                                         Image(systemName: "pencil")
@@ -354,6 +343,14 @@ struct VisitsView: View {
                     context.state.wrappedValue = .closed
                     
                     self.viewModel.presentSheet = true
+                    CentrePopup_AddVisit(viewModel: viewModel, house: house
+                    ) {
+                        let toast = ToastValue(
+                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                            message: "Visit Added"
+                        )
+                        presentToast(toast)
+                    }.present()
                 }
                 .allowSwipeToTrigger()
                 .font(.title.weight(.semibold))

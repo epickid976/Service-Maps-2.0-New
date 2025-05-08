@@ -476,30 +476,47 @@ final class GRDBManager: ObservableObject, Sendable {
     // MARK: - Individual Data Fetching
     @MainActor
     func getTerritoryData() -> AnyPublisher<[TerritoryDataWithKeys], Never> {
-        let combinedObservation = ValueObservation.tracking { db in
-            (
-                try Territory.fetchAll(db),
-                try TerritoryAddress.fetchAll(db),
-                try House.fetchAll(db),
-                try Token.fetchAll(db),
-                try TokenTerritory.fetchAll(db)
-            )
+        let combinedObservation = ValueObservation.tracking { db -> (
+            territories: [Territory],
+            addresses: [TerritoryAddress],
+            houses: [House],
+            tokens: [Token],
+            tokenTerritories: [TokenTerritory]
+        ) in
+            let territories = try Territory.fetchAll(db)
+            
+            // Only fetch addresses linked to existing territories
+            let territoryIDs = Set(territories.map(\.id))
+            let addresses = try TerritoryAddress
+                .filter(territoryIDs.contains(Column("territory")))
+                .fetchAll(db)
+            
+            // Only fetch houses linked to those addresses
+            let addressIDs = Set(addresses.map(\.id))
+            let houses = try House
+                .filter(addressIDs.contains(Column("territory_address")))
+                .fetchAll(db)
+            
+            let tokens = try Token.fetchAll(db)
+            let tokenTerritories = try TokenTerritory
+                .filter(territoryIDs.contains(Column("territory")))
+                .fetchAll(db)
+            
+            return (territories, addresses, houses, tokens, tokenTerritories)
         }
         
         return combinedObservation
             .publisher(in: dbPool)
             .catch { _ in Just(([], [], [], [], [])) }
-            .subscribe(on: DispatchQueue.global()) // Offload heavy processing
+            .subscribe(on: DispatchQueue.global(qos: .userInitiated))
             .map { [weak self] (territories, addresses, houses, tokens, tokenTerritories) -> [TerritoryDataWithKeys] in
                 guard let self else { return [] }
                 
-                // Precompute mappings
                 let territoryAddressesMap = Dictionary(grouping: addresses, by: \.territory)
                 let territoryHousesMap = Dictionary(grouping: houses, by: \.territory_address)
                 let tokenTerritoriesMap = Dictionary(grouping: tokenTerritories, by: \.territory)
                 let tokenMap = Dictionary(uniqueKeysWithValues: tokens.map { ($0.id, $0) })
                 
-                // Ensure the data is fully grouped and structured
                 let groupedData = territories.reduce(into: [TerritoryDataWithKeys]()) { result, territory in
                     let currentAddresses = territoryAddressesMap[territory.id] ?? []
                     let currentHouses = currentAddresses.flatMap { territoryHousesMap[$0.id] ?? [] }
@@ -520,183 +537,138 @@ final class GRDBManager: ObservableObject, Sendable {
                     }
                 }
                 
-                // Sort sections and their contents
                 return groupedData.map { group in
                     var group = group
                     group.territoriesData.sort { $0.territory.number < $1.territory.number }
                     return group
                 }
             }
-            .receive(on: DispatchQueue.main) // Ensure the final update is on the main thread
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
     
     @MainActor
     func getAddressData(territoryId: String) -> AnyPublisher<[AddressData], Never> {
-        
-        // Observations for addresses and houses
-        let addressesObservation = ValueObservation.tracking { db in
-            try TerritoryAddress.fetchAll(db) // Replace Address with your actual model
-        }
-        
-        let housesObservation = ValueObservation.tracking { db in
-            try House.fetchAll(db) // Replace House with your actual model
-        }
-        
-        // Combine both observations
-        let flow = Publishers.CombineLatest(
-            addressesObservation
-                .publisher(in: dbPool)
-                .catch { _ in Just([]) } // Handle errors by emitting an empty array
-                .setFailureType(to: Never.self), // Set failure type to Never
+        let observation = ValueObservation.tracking { db -> (addresses: [TerritoryAddress], houses: [House]) in
+            let addresses = try TerritoryAddress
+                .filter(Column("territory") == territoryId)
+                .fetchAll(db)
             
-            housesObservation
-                .publisher(in: dbPool)
-                .catch { _ in Just([]) } // Handle errors by emitting an empty array
-                .setFailureType(to: Never.self) // Set failure type to Never
-        )
-            .flatMap { addressData -> AnyPublisher<[AddressData], Never> in
-                var data = [AddressData]()
+            let addressIDs = addresses.map(\.id)
+            
+            let houses = try House
+                .filter(addressIDs.contains(Column("territory_address")))
+                .fetchAll(db)
+            
+            return (addresses, houses)
+        }
+        
+        return observation
+            .publisher(in: dbPool)
+            .catch { _ in Just(([], [])) }
+            .subscribe(on: DispatchQueue.global(qos: .userInitiated))
+            .map { addresses, houses in
+                let houseMap = Dictionary(grouping: houses, by: \.territory_address)
                 
-                // Filter addresses by territoryId
-                let addressesFiltered = addressData.0.filter { $0.territory == territoryId }
-                
-                // Loop through filtered addresses and count associated houses
-                for address in addressesFiltered {
-                    let housesQuantity = addressData.1.filter { $0.territory_address == address.id }.count
-                    
-                    data.append(AddressData(
+                return addresses.map { address in
+                    AddressData(
                         id: UUID(),
                         address: address,
-                        houseQuantity: housesQuantity,
-                        accessLevel: AuthorizationLevelManager().getAccessLevel(model: address) ?? .User)
+                        houseQuantity: houseMap[address.id]?.count ?? 0,
+                        accessLevel: AuthorizationLevelManager().getAccessLevel(model: address) ?? .User
                     )
                 }
-                
-                // Return the transformed data
-                return Just(data)
-                    .eraseToAnyPublisher()
             }
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-        
-        return flow
     }
     
     @MainActor
     func getHouseData(addressId: String) -> AnyPublisher<[HouseData], Never> {
-        
-        // Observations for houses and visits
-        let housesObservation = ValueObservation.tracking { db in
-            try House.fetchAll(db) // Replace House with your actual model
-        }
-        
-        let visitsObservation = ValueObservation.tracking { db in
-            try Visit.fetchAll(db) // Replace Visit with your actual model
-        }
-        
-        // Combine both observations
-        let flow = Publishers.CombineLatest(
-            housesObservation
-                .publisher(in: dbPool)
-                .catch { _ in Just([]) } // Handle errors by emitting an empty array
-                .setFailureType(to: Never.self), // Set failure type to Never
+        let observation = ValueObservation.tracking { db -> (houses: [House], visits: [Visit]) in
+            // Fetch all houses for the specific address
+            let houses = try House
+                .filter(Column("territory_address") == addressId)
+                .fetchAll(db)
             
-            visitsObservation
-                .publisher(in: dbPool)
-                .catch { _ in Just([]) } // Handle errors by emitting an empty array
-                .setFailureType(to: Never.self) // Set failure type to Never
-        )
-            .flatMap { houseData -> AnyPublisher<[HouseData], Never> in
-                var data = [HouseData]()
-                
-                // Filter houses by addressId
-                let housesFiltered = houseData.0.filter { $0.territory_address == addressId }
-                
-                // Loop through filtered houses and find the most recent visit
-                for house in housesFiltered {
-                    if let mostRecentVisit = houseData.1
-                        .filter({ $0.house == house.id })
-                        .max(by: { $0.date < $1.date }) {
-                        
-                        data.append(
-                            HouseData(
-                                id: UUID(),
-                                house: house,
-                                visit:  mostRecentVisit,
-                                accessLevel: AuthorizationLevelManager().getAccessLevel(model: house) ?? .User
-                            )
-                        )
-                    } else {
-                        // Handle the case where there is no most recent visit
-                        data.append(
-                            HouseData(
-                                id: UUID(),
-                                house:  house,
-                                visit: nil,
-                                accessLevel: AuthorizationLevelManager().getAccessLevel(model: house) ?? .User
-                            )
-                        )
-                    }
-                }
-                
-                // Return the transformed data
-                return Just(data)
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+            let houseIds = houses.map(\.id)
+            
+            // Fetch only visits for those houses
+            let visits = try Visit
+                .filter(houseIds.contains(Column("house")))
+                .fetchAll(db)
+            
+            return (houses, visits)
+        }
         
-        return flow
+        return observation
+            .publisher(in: dbPool)
+            .catch { _ in Just(([], [])) }
+            .subscribe(on: DispatchQueue.global(qos: .userInitiated))
+            .map { houses, visits in
+                let visitsByHouse = Dictionary(grouping: visits, by: \.house)
+                
+                return houses.map { house in
+                    let mostRecentVisit = visitsByHouse[house.id]?.max(by: { $0.date < $1.date })
+                    
+                    return HouseData(
+                        id: UUID(),
+                        house: house,
+                        visit: mostRecentVisit,
+                        accessLevel: AuthorizationLevelManager().getAccessLevel(model: house) ?? .User
+                    )
+                }
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
     
     @MainActor
     func getVisitData(houseId: String) -> AnyPublisher<[VisitData], Never> {
+        let userEmail = getUserEmail()
+        let userName = getUserName()
+        let isAdmin = AuthorizationLevelManager().existsAdminCredentials()
         
-        // Observation for visits related to the houseId
-        let visitsObservation = ValueObservation.tracking { db in
-            try Visit.fetchAll(db) // Replace Visit with your actual model
+        let observation = ValueObservation.tracking { db in
+            try Visit
+                .filter(Column("house") == houseId)
+                .order(Column("date").desc)
+                .fetchAll(db)
         }
         
-        // Set up a publisher to observe visits
-        let flow = visitsObservation
+        return observation
             .publisher(in: dbPool)
-            .catch { _ in Just([]) } // Handle errors by emitting an empty array
-            .setFailureType(to: Never.self) // Set failure type to Never
-        
-            .flatMap { visits -> AnyPublisher<[VisitData], Never> in
-                let email = self.getUserEmail()
-                let name = self.getUserName()
-                
-                var data = [VisitData]()
-                
-                // Filter visits by houseId
-                visits.filter { $0.house == houseId }.forEach { visit in
-                    let visitModel = Visit(
-                        id: visit.id,
-                        house: visit.house,
-                        date: visit.date,
-                        symbol: visit.symbol,
-                        notes: visit.notes,
-                        user: name ?? ""
-                    )
-                    
-                    // Append VisitData with access level
-                    data.append(
-                        VisitData(
-                            id: UUID(),
-                            visit: visit.user == email ? visitModel :  visit,
-                            accessLevel: AuthorizationLevelManager().existsAdminCredentials()
-                            ? .Admin
-                            : (visit.user == email ? .Moderator : AuthorizationLevelManager().getAccessLevel(model: visit) )
+            .catch { _ in Just([]) }
+            .subscribe(on: DispatchQueue.global(qos: .userInitiated))
+            .map { visits in
+                visits.map { visit in
+                    let isCurrentUser = visit.user == userEmail
+                    let resolvedUser = isCurrentUser ? (userName ?? "") : visit.user
+                    let accessLevel: AccessLevel = (
+                        isAdmin
+                        ? .Admin
+                        : (
+                            isCurrentUser ? .Moderator : AuthorizationLevelManager()
+                                .getAccessLevel(model: visit)
                         )
+                    ) ?? .User
+                    
+                    return VisitData(
+                        id: UUID(),
+                        visit: Visit(
+                            id: visit.id,
+                            house: visit.house,
+                            date: visit.date,
+                            symbol: visit.symbol,
+                            notes: visit.notes,
+                            user: resolvedUser
+                        ),
+                        accessLevel: accessLevel
                     )
                 }
-                
-                // Return the transformed visit data as a publisher
-                return Just(data).eraseToAnyPublisher()
             }
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-        
-        return flow
     }
     
     @MainActor
@@ -936,64 +908,88 @@ final class GRDBManager: ObservableObject, Sendable {
     
     
     func getRecentTerritoryData() -> AnyPublisher<[RecentTerritoryData], Never> {
-        
         let twoWeeksAgoDate = Calendar.current.date(byAdding: .day, value: -14, to: Date())!
-        let twoWeeksAgoTimestamp = Int64(twoWeeksAgoDate.timeIntervalSince1970)
-        
-        // Single combined publisher
-        return Publishers.CombineLatest4(
-            ValueObservation.tracking { db in try Territory.fetchAll(db) }
-                .publisher(in: dbPool).replaceError(with: []),
-            
-            ValueObservation.tracking { db in try TerritoryAddress.fetchAll(db) }
-                .publisher(in: dbPool).replaceError(with: []),
-            
-            ValueObservation.tracking { db in try House.fetchAll(db) }
-                .publisher(in: dbPool).replaceError(with: []),
-            
-            ValueObservation.tracking { db in
-                try Visit
-                    .filter(sql: "date >= ?", arguments: [twoWeeksAgoTimestamp])
-                    .fetchAll(db)
-            }
-                .publisher(in: dbPool).replaceError(with: [])
-        )
-        .map {
-            territories,
-            addresses,
-            houses,
-            recentVisits in
-            
-            let addressDict = Dictionary(uniqueKeysWithValues: addresses.map { ($0.id, $0) })
-            let houseDict = Dictionary(uniqueKeysWithValues: houses.map { ($0.id, $0) })
-            
-            print("Territories: \(territories.count), Addresses: \(addresses.count), Houses: \(houses.count), Visits: \(recentVisits.count)")
-            
-            let mappedData = recentVisits.compactMap { visit -> RecentTerritoryData? in
-                guard let house = houseDict[visit.house] else {
-                    print("Missing house for visit \(visit.id)")
-                    return nil
-                }
-                guard let address = addressDict[house.territory_address] else {
-                    print("Missing address for house \(house.id)")
-                    return nil
-                }
-                guard let territory = territories.first(where: { $0.id == address.territory }) else {
-                    print("Missing territory for address \(address.id)")
-                    return nil
-                }
-                return RecentTerritoryData(
-                    id: UUID(),
-                    territory: territory,
-                    lastVisit: visit
-                )
-            }
-            let sortedMappedData = mappedData.sorted {
-                $0.lastVisit.date > $1.lastVisit.date
-            }
-            return sortedMappedData.unique { $0.territory.id }
+        let timestamp = Int64(twoWeeksAgoDate.timeIntervalSince1970)
+
+        let recentVisitsObs = ValueObservation.tracking { db in
+            try Visit
+                .filter(Column("date") >= timestamp)
+                .order(Column("date").desc)
+                .fetchAll(db)
         }
-        .eraseToAnyPublisher()
+
+        return recentVisitsObs
+            .publisher(in: dbPool)
+            .catch { _ in Just([]) }
+            .subscribe(on: DispatchQueue.global(qos: .userInitiated))
+            .flatMap { [weak self] visits -> AnyPublisher<[RecentTerritoryData], Never> in
+                guard let self else { return Just([]).eraseToAnyPublisher() }
+
+                let houseIds = Set(visits.map { $0.house })
+                let houseObs = ValueObservation.tracking { db in
+                    try House.filter(houseIds.contains(Column("id"))).fetchAll(db)
+                }
+
+                let housePublisher: AnyPublisher<[House], Never> = houseObs
+                    .publisher(in: self.dbPool)
+                    .catch { _ in Just([]) }
+                    .eraseToAnyPublisher()
+
+                return housePublisher.flatMap { houses -> AnyPublisher<[RecentTerritoryData], Never> in
+                    let addressIds = Set(houses.map { $0.territory_address })
+                    let addressObs = ValueObservation.tracking { db in
+                        try TerritoryAddress.filter(addressIds.contains(Column("id"))).fetchAll(db)
+                    }
+
+                    let addressPublisher: AnyPublisher<[TerritoryAddress], Never> = addressObs
+                        .publisher(in: self.dbPool)
+                        .catch { _ in Just([]) }
+                        .eraseToAnyPublisher()
+
+                    return addressPublisher.flatMap { addresses -> AnyPublisher<[RecentTerritoryData], Never> in
+                        let territoryIds = Set(addresses.map { $0.territory })
+                        let territoryObs = ValueObservation.tracking { db in
+                            try Territory.filter(territoryIds.contains(Column("id"))).fetchAll(db)
+                        }
+
+                        let territoryPublisher: AnyPublisher<[Territory], Never> = territoryObs
+                            .publisher(in: self.dbPool)
+                            .catch { _ in Just([]) }
+                            .eraseToAnyPublisher()
+
+                        return territoryPublisher.map { territories -> [RecentTerritoryData] in
+                            let houseMap = Dictionary(uniqueKeysWithValues: houses.map { ($0.id, $0) })
+                            let addressMap = Dictionary(uniqueKeysWithValues: addresses.map { ($0.id, $0) })
+                            let territoryMap = Dictionary(uniqueKeysWithValues: territories.map { ($0.id, $0) })
+
+                            let results: [RecentTerritoryData] = visits.compactMap { visit in
+                                guard
+                                    let house = houseMap[visit.house],
+                                    let address = addressMap[house.territory_address],
+                                    let territory = territoryMap[address.territory]
+                                else {
+                                    return nil
+                                }
+
+                                return RecentTerritoryData(
+                                    id: UUID(),
+                                    territory: territory,
+                                    lastVisit: visit
+                                )
+                            }
+
+                            return results
+                                .sorted(by: { $0.lastVisit.date > $1.lastVisit.date })
+                                .unique { $0.territory.id }
+                        }
+                        .eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
     
     func getRecentPhoneTerritoryData() -> AnyPublisher<[RecentPhoneData], Never> {
@@ -1015,14 +1011,11 @@ final class GRDBManager: ObservableObject, Sendable {
                     .filter(sql: "date >= ?", arguments: [twoWeeksAgoTimestamp])
                     .fetchAll(db)
             }
-            .publisher(in: dbPool).replaceError(with: [])
+                .publisher(in: dbPool).replaceError(with: [])
         )
         .map { territories, numbers, recentCalls in
             
             let numberDict = Dictionary(uniqueKeysWithValues: numbers.map { ($0.id, $0) })
-
-            // Debugging information to validate data fetched
-            print("Phone Territories: \(territories.count), Numbers: \(numbers.count), Recent Calls: \(recentCalls.count)")
             
             // Map recent calls to RecentPhoneData
             let mappedData = recentCalls.compactMap { call -> RecentPhoneData? in

@@ -23,9 +23,9 @@ class SynchronizationManager: ObservableObject {
     static let shared = SynchronizationManager()
     
     // MARK: - Published Properties
-    @Published private var grdbManager = GRDBManager.shared
-    @Published private var dataStore = StorageManager.shared
-    @Published private var authorizationLevelManager = AuthorizationLevelManager()
+    private let grdbManager = GRDBManager.shared
+    private let dataStore = StorageManager.shared
+    private let authorizationLevelManager = AuthorizationLevelManager()
     @Published var startupState: StartupState = .Unknown
     @Published var back_from_verification = false
     private var syncTask: Task<Void, Never>? = nil // Track the current startup task
@@ -71,6 +71,7 @@ class SynchronizationManager: ObservableObject {
             }
         }
     }
+    
     @MainActor
     private func loadStartupState() -> StartupState {
         // Fetching data from GRDB synchronously using Result type handling

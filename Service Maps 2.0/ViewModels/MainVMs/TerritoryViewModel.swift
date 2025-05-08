@@ -162,7 +162,7 @@ extension TerritoryViewModel {
             }, receiveValue: { [weak self] recentTerritories in
                 if self?.search.isEmpty == true {
                     self?.recentTerritoryData = recentTerritories.sorted { $0.lastVisit.date > $1.lastVisit.date }
-                    print("Recent Territories: \(recentTerritories)")
+                    
                 } else {
                     self?.recentTerritoryData = recentTerritories.filter { territoryData in
                         String(territoryData.territory.number).lowercased().contains(self?.search.lowercased() ?? "") ||

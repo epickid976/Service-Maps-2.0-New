@@ -115,7 +115,7 @@ extension VisitsViewModel {
     private func handleVisitData(_ visitData: [VisitData], visitIdToScrollTo: String?, revisitView: Bool) {
         DispatchQueue.global(qos: .userInitiated).async {
             // Sort visits by date
-            let sortedData = visitData.sorted { $0.visit.date > $1.visit.date }
+            let sortedData = visitData
 
             // Always use the latest visit regardless of the symbol
             let latestVisit: Visit? = sortedData.first?.visit
