@@ -236,7 +236,7 @@ Would you like to update now?
 """)
                 .font(.subheadline)
                 .foregroundColor(.primary)
-                .multilineTextAlignment(.leading)
+                .multilineTextAlignment(.center)
                 .lineSpacing(5)
 
             // MARK: - Buttons

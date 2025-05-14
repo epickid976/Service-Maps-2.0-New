@@ -519,7 +519,7 @@ This tool is not part of JW.ORG nor is it an official app of the organization. I
             .font(usingLargeText ? .caption2 : .body)
             .foregroundColor(.primary)
             .lineSpacing(5)
-            .multilineTextAlignment(.leading)
+            .multilineTextAlignment(.center)
             .padding(.horizontal, 6)
             .frame(maxWidth: 500)
 
@@ -630,7 +630,7 @@ struct CenterPopup_Backup: CenterPopup {
                     .font(.body)
                     .foregroundColor(.primary)
                     .lineSpacing(5)
-                    .multilineTextAlignment(.leading)
+                    .multilineTextAlignment(.center)
                     .padding(.horizontal, 6)
                     .frame(maxWidth: 500)
             }
@@ -955,7 +955,7 @@ Are you sure about deleting your account? This action cannot be undone. If you d
                 .font(usingLargeText ? .caption2 : .body)
                 .foregroundColor(.primary)
                 .lineSpacing(5)
-                .multilineTextAlignment(.leading)
+                .multilineTextAlignment(.center)
                 .padding(.horizontal, 6)
                 .frame(maxWidth: 500)
 
