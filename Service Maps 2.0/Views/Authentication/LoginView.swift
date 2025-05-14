@@ -128,6 +128,7 @@ struct LoginDefaultScreen: View {
                         CustomButton(loading: viewModel.loading, title: "Login") {
                             HapticManager.shared.trigger(.lightImpact)
                                 Task {
+                                    hideKeyboard()
                                     await viewModel.sendLoginEmail()
                                 }
                         }//.keyboardShortcut("\r", modifiers: .command)

@@ -65,7 +65,6 @@ struct RegisterKeyView: View {
                     CustomButton(loading: loading, alwaysExpanded: true, title: "Retry", action: {
                         HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
-                            hideKeyboard()
                             withAnimation { self.loading = true }
                         }
                         Task {
