@@ -312,6 +312,7 @@
       }
     },
     "• **Sort by Grouping** – Displays houses in normal order or groups them (e.g., odd numbers first, even numbers second)." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -328,6 +329,7 @@
       }
     },
     "• **Sort by Order** – Sorts houses in increasing or decreasing order based on address number." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -339,6 +341,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "• **Trier par Numéro – Trie les maisons par ordre croissant ou décroissant selon le numéro d’adresse."
+          }
+        }
+      }
+    },
+    "• Sort by Grouping – Displays houses in normal order or groups them (e.g., odd numbers first, even numbers second)." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• Ordenar por Agrupación – Muestra las casas en orden normal o agrupadas (por ejemplo, primero los números impares, luego los pares)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• Trier par Regroupement – Affiche les maisons dans l’ordre normal ou regroupées (par exemple, les numéros impairs d’abord, puis les pairs)."
+          }
+        }
+      }
+    },
+    "• Sort by Order – Sorts houses in increasing or decreasing order based on address number." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• Ordenar por Número – Ordena las casas en orden ascendente o descendente según el número de dirección."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• Trier par Numéro – Trie les maisons par ordre croissant ou décroissant selon le numéro d’adresse."
           }
         }
       }
@@ -360,6 +394,7 @@
       }
     },
     "A new update for the app is available!" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -371,6 +406,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une nouvelle mise à jour est disponible!"
+          }
+        }
+      }
+    },
+    "A new update for the app is available! Please update the app as soon as possible to access the latest features and improvements.\n\nWould you like to update now?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Hay una nueva actualización disponible para la aplicación! Por favor, actualiza la app lo antes posible para acceder a las últimas funciones y mejoras.\n                                     ¿Te gustaría actualizar ahora?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une nouvelle mise à jour de l’application est disponible ! Veuillez mettre à jour l’application dès que possible pour accéder aux dernières fonctionnalités et améliorations.        \n\nSouhaitez-vous la mettre à jour maintenant ?"
           }
         }
       }
@@ -656,6 +707,7 @@
       }
     },
     "Are you sure about deleting your account? This action can not be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -667,6 +719,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vous êtes sur de vouloir supprimer votre compte? Cette action ne peut pas être reversé. Si vous décidez supprimer votre compte, la compte et tout accès sera supprimé, mais l'information que vous avez pourvu restera sur le serveur. Le courriel lié a la compte ne pourra pas être encore utilisé. "
+          }
+        }
+      }
+    },
+    "Are you sure about deleting your account? This action cannot be undone. If you decide to delete your account, your account and all access granted to you will be deleted, but the information you have previously provided will remain on the server. The email used in this account cannot be reused again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer. Si decides eliminar tu cuenta, tanto esta como todos los accesos que se te hayan otorgado serán eliminados. Sin embargo, la información que proporcionaste anteriormente permanecerá en el servidor. El correo electrónico asociado a esta cuenta no podrá reutilizarse."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible. Si vous décidez de supprimer votre compte, celui-ci ainsi que tous les accès qui vous ont été accordés seront supprimés. Toutefois, les informations que vous avez fournies auparavant resteront sur le serveur. L’adresse e-mail associée à ce compte ne pourra pas être réutilisée.\n"
           }
         }
       }
@@ -1023,6 +1091,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "En supprimant cette maison comme retour, elle sera supprimée de la page de retours.  "
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
           }
         }
       }
@@ -1809,6 +1893,7 @@
       }
     },
     "Error %@ user, please try again later" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1820,6 +1905,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erreur en %@  l'utilisateur. Essayez plus tard."
+          }
+        }
+      }
+    },
+    "Error %@ user, please try again later." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error %@ usuario, por favor intenta de nuevo más tarde.\n"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur %@ utilisateur, veuillez réessayer plus tard.\n"
           }
         }
       }
@@ -1985,6 +2086,22 @@
         }
       }
     },
+    "Error deleting account" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur lors de la suppression du compte"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al eliminar la cuenta"
+          }
+        }
+      }
+    },
     "Error deleting address, please try again later" : {
       "localizations" : {
         "es" : {
@@ -2034,6 +2151,7 @@
       }
     },
     "Error deleting key, please try again later" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2045,6 +2163,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une erreur est survenu en supprimant la clé, essayez plus tard."
+          }
+        }
+      }
+    },
+    "Error deleting key, please try again later." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al eliminar la clave, por favor intenta de nuevo más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur lors de la suppression de la clé, veuillez réessayer plus tard."
           }
         }
       }
@@ -2082,6 +2216,7 @@
       }
     },
     "Error deleting user, please try again later" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2093,6 +2228,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une erreur est survenu en supprimant l'utilisateur, essayez plus tard."
+          }
+        }
+      }
+    },
+    "Error deleting user, please try again later." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al eliminar al usuario, por favor intenta de nuevo más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur lors de la suppression de l’utilisateur, veuillez réessayer plus tard."
           }
         }
       }
@@ -2174,6 +2325,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Une erreur est survenu en supprimant le retour, essayez plus tard."
+          }
+        }
+      }
+    },
+    "Error removing recall. Please try again later." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al eliminar el revisita. Por favor, intenta de nuevo más tarde."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur lors de la suppression du rendez-vous. Veuillez réessayer plus tard."
           }
         }
       }
@@ -2399,6 +2566,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les champs ne peuvent pas être vide"
+          }
+        }
+      }
+    },
+    "File Created" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo Creado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier Créé"
           }
         }
       }
@@ -3207,6 +3390,9 @@
           }
         }
       }
+    },
+    "New Username" : {
+
     },
     "Niño" : {
       "localizations" : {
@@ -4123,6 +4309,7 @@
       }
     },
     "Please update the app as soon as possible to access the latest features and improvements. \nWould you like to update now?" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4569,7 +4756,24 @@
         }
       }
     },
+    "Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.\n\nThis tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Service Maps ha sido creado con el propósito de agilizar y facilitar el control y registro de la predicación pública de los testigos de Jehová.\n\nEsta herramienta no forma parte de JW.ORG ni es una aplicación oficial de la organización. Es simplemente el resultado del esfuerzo y amor de algunos hermanos. Esperamos que sea útil. Gracias por usar Service Maps."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Service Maps a été créé dans le but de simplifier et de faciliter le suivi et l’enregistrement de la prédication publique des Témoins de Jéhovah.\n\nCet outil ne fait pas partie de JW.ORG et n’est pas une application officielle de l’organisation. Il s’agit simplement du fruit des efforts et de l’amour de quelques frères. Nous espérons qu’il vous sera utile. Merci d’utiliser Service Maps."
+          }
+        }
+      }
+    },
     "Service Maps has been created with the purpose of streamlining and facilitating the control and registration of the public preaching of Jehovah's Witnesses.\nThis tool is not part of JW.ORG nor is it an official app of the organization. It is simply the result of the effort and love of some brothers. We hope it is useful. Thank you for using Service Maps." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4645,6 +4849,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Partager la Clé"
+          }
+        }
+      }
+    },
+    "Share Service Maps" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir Service Maps"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager Service Maps"
           }
         }
       }
@@ -4999,7 +5219,24 @@
         }
       }
     },
+    "This is irreversible." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto es irreversible"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ceci est irréversible"
+          }
+        }
+      }
+    },
     "This is nonreversible" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -5211,6 +5448,32 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "en débloquant"
+          }
+        }
+      }
+    },
+    "Uneditable in Edit Mode" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede editar en el modo de edición"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non modifiable en mode édition"
+          }
+        }
+      }
+    },
+    "Update Available" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mise à jour disponible"
           }
         }
       }

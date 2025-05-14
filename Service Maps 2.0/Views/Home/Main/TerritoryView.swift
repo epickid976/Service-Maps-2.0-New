@@ -276,7 +276,9 @@ struct TerritoryView: View {
                                         if viewModel.territoryIdToScrollTo != nil {
                                             Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                    dismissAllPopups()
+                                                    Task {
+                                                        await dismissAllPopups()
+                                                    }
                                                     presentationMode.wrappedValue.dismiss()
                                                 }
                                             })//.keyboardShortcut(.delete, modifiers: .command)
@@ -417,13 +419,15 @@ struct TerritoryView: View {
                                         Button {
                                             HapticManager.shared.trigger(.lightImpact)
                                             self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                                            CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
-                                                let toast = ToastValue(
-                                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                    message: NSLocalizedString("Territory Deleted", comment: "")
-                                                )
-                                                presentToast(toast)
-                                            }.present()
+                                            Task {
+                                                await CenterPopup_DeleteTerritoryAlert(viewModel: viewModel){
+                                                    let toast = ToastValue(
+                                                        icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                        message: NSLocalizedString("Territory Deleted", comment: "")
+                                                    )
+                                                    presentToast(toast)
+                                                }.present()
+                                            }
                                         } label: {
                                             HStack {
                                                 Image(systemName: "trash")
@@ -458,13 +462,15 @@ struct TerritoryView: View {
                         HapticManager.shared.trigger(.lightImpact)
                         context.state.wrappedValue = .closed
                         self.viewModel.territoryToDelete = (territoryData.territory.id, String(territoryData.territory.number))
-                        CentrePopup_DeleteTerritoryAlert(viewModel: viewModel){
-                            let toast = ToastValue(
-                                icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                message: NSLocalizedString("Territory Deleted", comment: "")
-                            )
-                            presentToast(toast)
-                        }.present()
+                        Task {
+                            await CenterPopup_DeleteTerritoryAlert(viewModel: viewModel){
+                                let toast = ToastValue(
+                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    message: NSLocalizedString("Territory Deleted", comment: "")
+                                )
+                                presentToast(toast)
+                            }.present()
+                        }
                     }
                     .font(.title.weight(.semibold))
                     .foregroundColor(.white)
@@ -537,105 +543,100 @@ struct MainButton: View {
 
 //MARK: - Delete Territory Popup
 
-struct CentrePopup_DeleteTerritoryAlert: CentrePopup {
+struct CenterPopup_DeleteTerritoryAlert: CenterPopup {
     @ObservedObject var viewModel: TerritoryViewModel
     var onDone: () -> Void
-    
+
     init(viewModel: TerritoryViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         viewModel.loading = false
         self.onDone = onDone
     }
-    
+
     var body: some View {
         createContent()
     }
-    
+
     func createContent() -> some View {
-        ZStack {
-            VStack {
-                Text("Delete Territory \(viewModel.territoryToDelete.1 ?? "0")")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                Text("Are you sure you want to delete the selected territory?")
-                    .font(.headline)
+        VStack(spacing: 16) {
+            Image(systemName: "map.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            Text("Delete Territory \(viewModel.territoryToDelete.1 ?? "0")")
+                .font(.title3)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.primary)
+
+            Text("Are you sure you want to delete the selected territory?")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            if viewModel.ifFailed {
+                Text("Error deleting territory, please try again later")
+                    .font(.footnote)
                     .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                if viewModel.ifFailed {
-                    Text("Error deleting territory, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                //.vSpacing(.bottom)
-                
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            HapticManager.shared.trigger(.lightImpact)
-                            withAnimation {
-                                //self.viewModel.showAlert = false
-                                dismissLastPopup()
-                                self.viewModel.territoryToDelete = (nil,nil)
-                            }
-                        }
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+            }
+
+            HStack(spacing: 12) {
+                CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation {
+                        self.viewModel.territoryToDelete = (nil, nil)
                     }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
-                        HapticManager.shared.trigger(.lightImpact)
-                        withAnimation {
-                            self.viewModel.loading = true
-                        }
-                        Task {
-                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
-                            if self.viewModel.territoryToDelete.0 != nil && self.viewModel.territoryToDelete.1 != nil {
-                                switch await self.viewModel.deleteTerritory(territory: self.viewModel.territoryToDelete.0 ?? "") {
-                                case .success(_):
-                                    HapticManager.shared.trigger(.success)
-                                    DispatchQueue.main.async {
-                                        //viewModel.getTerritories()
-                                    }
-                                    withAnimation {
-                                        if let id = self.viewModel.territoryToDelete.0 {
-                                            self.viewModel.removeTerritoryLocally(withId: id)
-                                        }
-                                        self.viewModel.territoryToDelete = (nil, nil)
-                                        self.viewModel.showToast = true
-                                        dismissLastPopup()
-                                    }
-                                case .failure(_):
-                                    HapticManager.shared.trigger(.error)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                    }
-                                    self.viewModel.ifFailed = true
+                    Task {
+                        await dismissLastPopup()
+                    }
+                }
+                .frame(maxWidth: .infinity)
+
+                CustomButton(
+                    loading: viewModel.loading,
+                    title: NSLocalizedString("Delete", comment: ""),
+                    color: .red
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { self.viewModel.loading = true }
+
+                    Task {
+                        if let id = viewModel.territoryToDelete.0 {
+                            switch await viewModel.deleteTerritory(territory: id) {
+                            case .success:
+                                HapticManager.shared.trigger(.success)
+                                withAnimation {
+                                    viewModel.removeTerritoryLocally(withId: id)
+                                    viewModel.territoryToDelete = (nil, nil)
+                                    viewModel.showToast = true
+                                }
+                                await dismissLastPopup()
+                                onDone()
+                            case .failure:
+                                HapticManager.shared.trigger(.error)
+                                withAnimation {
+                                    viewModel.loading = false
+                                    viewModel.ifFailed = true
                                 }
                             }
                         }
-                        
                     }
                 }
-                .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
+                .frame(maxWidth: .infinity)
             }
-            .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-        
-        
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 

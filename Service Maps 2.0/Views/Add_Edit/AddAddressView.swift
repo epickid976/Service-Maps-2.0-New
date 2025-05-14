@@ -71,10 +71,12 @@ struct AddAddressView: View {
                         if viewModel.checkInfo() {
                             if address != nil {
                                 Task {
-                                    withAnimation {
-                                        viewModel.loading = true
+                                    await MainActor.run {
+                                        withAnimation {
+                                            viewModel.loading = true
+                                        }
                                     }
-                                    try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
+                                    //try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                                     let result = await viewModel.editAddress(address: address!)
                                     switch result {
                                     case .success(_):
@@ -88,10 +90,12 @@ struct AddAddressView: View {
                                 }
                             } else {
                                 Task {
-                                    withAnimation {
-                                        viewModel.loading = true
+                                    await MainActor.run {
+                                        withAnimation {
+                                            viewModel.loading = true
+                                        }
                                     }
-                                    try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
+                                    //try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                                     let result = await viewModel.addAddress()
                                     switch result {
                                     case .success(_):

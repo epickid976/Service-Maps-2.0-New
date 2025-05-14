@@ -150,13 +150,15 @@ struct CallsView: View {
                         .animation(.easeInOut(duration: 0.25), value: viewModel.callsData == nil || viewModel.callsData != nil)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber){
-                                    let toast = ToastValue(
-                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
-                                        message: "Call Added"
-                                    )
-                                    presentToast(toast)
-                                }.present()
+                                Task {
+                                    await CenterPopup_AddCall(viewModel: viewModel, phoneNumber: phoneNumber){
+                                        let toast = ToastValue(
+                                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                            message: "Call Added"
+                                        )
+                                        presentToast(toast)
+                                    }.present()
+                                }
                             }
                         }
                         //.scrollIndicators(.never)
@@ -167,7 +169,9 @@ struct CallsView: View {
                                 HStack {
                                     Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            dismissAllPopups()
+                                            Task {
+                                                await dismissAllPopups()
+                                            }
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })//.keyboardShortcut(.delete, modifiers: .command)
@@ -237,13 +241,15 @@ struct CallsView: View {
                         HapticManager.shared.trigger(.lightImpact)
                         DispatchQueue.main.async {
                             self.viewModel.callToDelete = callData.phoneCall.id
-                            CentrePopup_DeleteCall(viewModel: viewModel){
-                                let toast = ToastValue(
-                                    icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.red),
-                                    message: "Call Deleted"
-                                )
-                                presentToast(toast)
-                            }.present()
+                            Task {
+                                await  CenterPopup_DeleteCall(viewModel: viewModel){
+                                    let toast = ToastValue(
+                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.red),
+                                        message: "Call Deleted"
+                                    )
+                                    presentToast(toast)
+                                }.present()
+                            }
                         }
                     } label: {
                         HStack {
@@ -274,13 +280,15 @@ struct CallsView: View {
                     context.state.wrappedValue = .closed
                     DispatchQueue.main.async {
                         self.viewModel.callToDelete = callData.phoneCall.id
-                        CentrePopup_DeleteCall(viewModel: viewModel){
-                            let toast = ToastValue(
-                                icon: Image(systemName: "checkmark.circle.fill"),
-                                message: "Call Deleted"
-                            )
-                            presentToast(toast)
-                        }.present()
+                        Task {
+                            await CenterPopup_DeleteCall(viewModel: viewModel){
+                                let toast = ToastValue(
+                                    icon: Image(systemName: "checkmark.circle.fill"),
+                                    message: "Call Deleted"
+                                )
+                                presentToast(toast)
+                            }.present()
+                        }
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -315,151 +323,152 @@ struct CallsView: View {
     }
 }
 
-//MARK: - Delete Call Popup
-
-struct CentrePopup_DeleteCall: CentrePopup {
-    @ObservedObject var viewModel: CallsViewModel
-    var onDone: () -> Void
-    
-    init(viewModel: CallsViewModel, onDone: @escaping () -> Void) {
-        self.viewModel = viewModel
-        viewModel.loading = false
-        self.onDone = onDone
-    }
-    
-    var body: some View {
-        createContent()
-    }
-    
-    func createContent() -> some View {
-        ZStack {
-            VStack {
-                Text("Delete Call")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                Text("Are you sure you want to delete the selected call?")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                if viewModel.ifFailed {
-                    Text("Error deleting call, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                //.vSpacing(.bottom)
-                
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            HapticManager.shared.trigger(.lightImpact)
-                            withAnimation {
-                                dismissLastPopup()
-                                self.viewModel.callToDelete = nil
-                            }
-                        }
-                    }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
-                        HapticManager.shared.trigger(.lightImpact)
-                        withAnimation {
-                            self.viewModel.loading = true
-                        }
-                        Task {
-                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
-                            if self.viewModel.callToDelete != nil{
-                                switch await self.viewModel.deleteCall(call: self.viewModel.callToDelete!) {
-                                case .success(_):
-                                    HapticManager.shared.trigger(.success)
-                                    withAnimation {
-                                        dismissLastPopup()
-                                        self.viewModel.ifFailed = false
-                                        self.viewModel.callToDelete = nil
-                                        onDone()
-                                    }
-                                case .failure(_):
-                                    HapticManager.shared.trigger(.error)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                        self.viewModel.ifFailed = true
-                                    }
-                                }
-                            }
-                        }
-                        
-                    }
-                }
-                .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
-            }
-            .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
-    }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-        
-        
-    }
-}
-
 //MARK: - Add Call Popup
 
-struct CentrePopup_AddCall: CentrePopup {
+struct CenterPopup_AddCall: CenterPopup {
     @ObservedObject var viewModel: CallsViewModel
     var phoneNumber: PhoneNumber
     var onDone: () -> Void
-    
+
     init(viewModel: CallsViewModel, phoneNumber: PhoneNumber, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         self.phoneNumber = phoneNumber
         self.onDone = onDone
     }
-    
+
     var body: some View {
         createContent()
     }
-    
+
     func createContent() -> some View {
         AddCallView(call: viewModel.currentCall, phoneNumber: phoneNumber) {
             viewModel.presentSheet = false
-            dismissLastPopup()
+            Task { await dismissLastPopup() }
             onDone()
         } onDismiss: {
             viewModel.presentSheet = false
-            dismissLastPopup()
+            Task { await dismissLastPopup() }
         }
-        .padding(.top, 10)
-        .padding(.bottom, 10)
+        .padding(.vertical, 10)
         .padding(.horizontal, 10)
-        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .background(Material.thin)
+        .cornerRadius(15)
         .simultaneousGesture(
-            // Hide the keyboard on scroll
             DragGesture().onChanged { _ in
                 UIApplication.shared.sendAction(
                     #selector(UIResponder.resignFirstResponder),
-                    to: nil,
-                    from: nil,
-                    for: nil
+                    to: nil, from: nil, for: nil
                 )
             }
         )
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-        
-        
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
+    }
+}
+
+//MARK: - Delete Call Popup
+
+struct CenterPopup_DeleteCall: CenterPopup {
+    @ObservedObject var viewModel: CallsViewModel
+    var onDone: () -> Void
+
+    init(viewModel: CallsViewModel, onDone: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onDone = onDone
+        self.viewModel.loading = false
+    }
+
+    var body: some View {
+        createContent()
+    }
+
+    func createContent() -> some View {
+        VStack(spacing: 16) {
+            // Icon
+            Image(systemName: "phone.down.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            // Title
+            Text("Delete Call")
+                .font(.title3)
+                .fontWeight(.heavy)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.primary)
+
+            // Message
+            Text("Are you sure you want to delete the selected call?")
+                .font(.headline)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.primary)
+
+            // Error
+            if viewModel.ifFailed {
+                Text("Error deleting call, please try again later")
+                    .font(.footnote)
+                    .foregroundColor(.red)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.center)
+            }
+
+            // Buttons
+            HStack(spacing: 12) {
+                if !viewModel.loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
+                        HapticManager.shared.trigger(.lightImpact)
+                        withAnimation {
+                            self.viewModel.callToDelete = nil
+                        }
+                        Task {
+                            await dismissLastPopup()
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+
+                CustomButton(
+                    loading: viewModel.loading,
+                    title: NSLocalizedString("Delete", comment: ""),
+                    color: .red
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { viewModel.loading = true }
+
+                    Task {
+                        if let callId = viewModel.callToDelete {
+                            switch await viewModel.deleteCall(call: callId) {
+                            case .success:
+                                HapticManager.shared.trigger(.success)
+                                withAnimation {
+                                    viewModel.callToDelete = nil
+                                    viewModel.ifFailed = false
+                                }
+                                onDone()
+                                await dismissLastPopup()
+                            case .failure:
+                                HapticManager.shared.trigger(.error)
+                                withAnimation {
+                                    viewModel.loading = false
+                                    viewModel.ifFailed = true
+                                }
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
+    }
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }

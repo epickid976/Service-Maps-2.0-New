@@ -67,7 +67,7 @@ class CustomPopupSceneDelegate: PopupSceneDelegate {
                .enableDragGesture(false)
                
            }
-           .centre { $0
+           .center { $0
                .tapOutsideToDismissPopup(false)
                .backgroundColor(Color(UIColor.systemGray6).opacity(85))
                .cornerRadius(20)
@@ -76,8 +76,8 @@ class CustomPopupSceneDelegate: PopupSceneDelegate {
    }
 }
 
-extension PopupManagerID {
-    static func unique() -> PopupManagerID {
-        return PopupManagerID(rawValue: UUID().uuidString) // Generate a unique ID
+extension PopupStackID {
+    static func unique() -> PopupStackID {
+        return PopupStackID(rawValue: UUID().uuidString) // Generate a unique ID
     }
 }

@@ -226,13 +226,15 @@ struct AccessView: View {
                     Button {
                         HapticManager.shared.trigger(.lightImpact)
                         self.viewModel.keyToDelete = (keyData.key.id, keyData.key.name)
-                        CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: viewModel.keyToDelete){
-                            let toast = ToastValue(
-                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                message: NSLocalizedString("Key Deleted", comment: "")
-                            )
-                            presentToast(toast)
-                        }.present()
+                        Task {
+                            await CenterPopup_DeleteKey(viewModel: viewModel, keyToDelete: viewModel.keyToDelete){
+                                let toast = ToastValue(
+                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    message: NSLocalizedString("Key Deleted", comment: "")
+                                )
+                                presentToast(toast)
+                            }.present()
+                        }
                     } label: {
                         HStack {
                             Image(systemName: "trash")
@@ -290,13 +292,15 @@ struct AccessView: View {
             ) {
                 HapticManager.shared.trigger(.lightImpact)
                 context.state.wrappedValue = .closed
-                CentrePopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)){
-                    let toast = ToastValue(
-                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                        message: NSLocalizedString("Key Deleted", comment: "")
-                    )
-                    presentToast(toast)
-                }.present()
+                Task {
+                    await CenterPopup_DeleteKey(viewModel: viewModel, keyToDelete: (keyData.key.id, keyData.key.name)){
+                        let toast = ToastValue(
+                            icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                            message: NSLocalizedString("Key Deleted", comment: "")
+                        )
+                        presentToast(toast)
+                    }.present()
+                }
             }
             .font(.title.weight(.semibold))
             .foregroundColor(.white)
@@ -503,13 +507,15 @@ struct AccessViewUsersView: View {
                                                                         
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                         //self.showAlert = true
-                                                                        CentrePopup_DeleteUser(viewModel: viewModel){
-                                                                            let toast = ToastValue(
-                                                                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                                                message: NSLocalizedString("User Deleted", comment: "")
-                                                                            )
-                                                                            presentToast(toast)
-                                                                        }.present()
+                                                                        Task {
+                                                                            await CenterPopup_DeleteUser(viewModel: viewModel){
+                                                                                let toast = ToastValue(
+                                                                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                                                    message: NSLocalizedString("User Deleted", comment: "")
+                                                                                )
+                                                                                presentToast(toast)
+                                                                            }.present()
+                                                                        }
                                                                     }
                                                                 } label: {
                                                                     HStack {
@@ -530,7 +536,9 @@ struct AccessViewUsersView: View {
                                                                 context.state.wrappedValue = .closed
                                                                 // Set the block/unblock action here with a UserAction object
                                                                 self.viewModel.blockUnblockAction = UserAction(userToken: keyData, isBlocked: keyData.blocked)
-                                                                CentrePopup_BlockOrUnblockUser(viewModel: viewModel).present()
+                                                                Task {
+                                                                    await CenterPopup_BlockOrUnblockUser(viewModel: viewModel).present()
+                                                                }
                                                             }
                                                         }
                                                         .font(.title.weight(.semibold))
@@ -545,13 +553,15 @@ struct AccessViewUsersView: View {
                                                             DispatchQueue.main.async {
                                                                 context.state.wrappedValue = .closed
                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)  // Set userToDelete for deletion
-                                                                CentrePopup_DeleteUser(viewModel: viewModel){
-                                                                    let toast = ToastValue(
-                                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                                        message: NSLocalizedString("User Deleted", comment: "")
-                                                                    )
-                                                                    presentToast(toast)
-                                                                }.present()
+                                                                Task {
+                                                                    await CenterPopup_DeleteUser(viewModel: viewModel){
+                                                                        let toast = ToastValue(
+                                                                            icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                                            message: NSLocalizedString("User Deleted", comment: "")
+                                                                        )
+                                                                        presentToast(toast)
+                                                                    }.present()
+                                                                }
                                                             }
                                                         }
                                                         .font(.title.weight(.semibold))
@@ -584,13 +594,15 @@ struct AccessViewUsersView: View {
                                                                             DispatchQueue.main.async {
                                                                                 self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                                 //self.showAlert = true
-                                                                                CentrePopup_DeleteUser(viewModel: viewModel){
-                                                                                    let toast = ToastValue(
-                                                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                                                        message: NSLocalizedString("User Deleted", comment: "")
-                                                                                    )
-                                                                                    presentToast(toast)
-                                                                                }.present()
+                                                                                Task {
+                                                                                    await CenterPopup_DeleteUser(viewModel: viewModel){
+                                                                                        let toast = ToastValue(
+                                                                                            icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                                                            message: NSLocalizedString("User Deleted", comment: "")
+                                                                                        )
+                                                                                        presentToast(toast)
+                                                                                    }.present()
+                                                                                }
                                                                             }
                                                                         } label: {
                                                                             HStack {
@@ -611,7 +623,9 @@ struct AccessViewUsersView: View {
                                                                         context.state.wrappedValue = .closed
                                                                         // Set the block/unblock action here with a UserAction object
                                                                         self.viewModel.blockUnblockAction = UserAction(userToken: keyData, isBlocked: keyData.blocked)
-                                                                        CentrePopup_BlockOrUnblockUser(viewModel: viewModel).present()
+                                                                        Task {
+                                                                            await CenterPopup_BlockOrUnblockUser(viewModel: viewModel).present()
+                                                                        }
                                                                     }
                                                                 }
                                                                 .font(.title.weight(.semibold))
@@ -626,13 +640,15 @@ struct AccessViewUsersView: View {
                                                                         context.state.wrappedValue = .closed
                                                                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                                                                         //self.showAlert = true
-                                                                        CentrePopup_DeleteUser(viewModel: viewModel){
-                                                                            let toast = ToastValue(
-                                                                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                                                message: NSLocalizedString("User Deleted", comment: "")
-                                                                            )
-                                                                            presentToast(toast)
-                                                                        }.present()
+                                                                        Task {
+                                                                            await CenterPopup_DeleteUser(viewModel: viewModel){
+                                                                                let toast = ToastValue(
+                                                                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                                                    message: NSLocalizedString("User Deleted", comment: "")
+                                                                                )
+                                                                                presentToast(toast)
+                                                                            }.present()
+                                                                        }
                                                                     }
                                                                 }
                                                                 .font(.title.weight(.semibold))
@@ -666,7 +682,9 @@ struct AccessViewUsersView: View {
                                 HStack {
                                     Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            dismissAllPopups()
+                                            Task {
+                                                await dismissAllPopups()
+                                            }
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })//.keyboardShortcut(.delete, modifiers: .command)
@@ -719,13 +737,15 @@ struct AccessViewUsersView: View {
                         DispatchQueue.main.async {
                             self.viewModel.userToDelete = (keyData.id, keyData.name)
                             //self.showAlert = true
-                            CentrePopup_DeleteUser(viewModel: viewModel){
-                                let toast = ToastValue(
-                                 icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                    message: NSLocalizedString("User Deleted", comment: "")
-                                )
-                                presentToast(toast)
-                            }.present()
+                            Task {
+                                await CenterPopup_DeleteUser(viewModel: viewModel){
+                                    let toast = ToastValue(
+                                        icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                        message: NSLocalizedString("User Deleted", comment: "")
+                                    )
+                                    presentToast(toast)
+                                }.present()
+                            }
                         }
                     } label: {
                         HStack {
@@ -746,13 +766,15 @@ struct AccessViewUsersView: View {
                         context.state.wrappedValue = .closed
                         self.viewModel.userToDelete = (keyData.id, keyData.name)
                         //self.showAlert = true
-                        CentrePopup_DeleteUser(viewModel: viewModel){
-                            let toast = ToastValue(
-                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                message: NSLocalizedString("User Deleted", comment: "")
-                            )
-                            presentToast(toast)
-                        }.present()
+                        Task {
+                            await CenterPopup_DeleteUser(viewModel: viewModel){
+                                let toast = ToastValue(
+                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    message: NSLocalizedString("User Deleted", comment: "")
+                                )
+                                presentToast(toast)
+                            }.present()
+                        }
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -770,289 +792,256 @@ struct AccessViewUsersView: View {
 
 //MARK: - Delete Key Popup
 
-struct CentrePopup_DeleteKey: CentrePopup {
+struct CenterPopup_DeleteKey: CenterPopup {
     @ObservedObject var viewModel: AccessViewModel
-    var keyToDelete: (String?,String?)
+    var keyToDelete: (String?, String?)
     var onDone: () -> Void
-    
+
     init(viewModel: AccessViewModel, keyToDelete: (String?, String?), onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         self.keyToDelete = keyToDelete
         self.onDone = onDone
     }
-    
+
     var body: some View {
-        ZStack {
-            VStack {
-                Text("Delete Key: \(keyToDelete.1 ?? "0")")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                Text("Are you sure you want to delete the selected key?")
-                    .font(.headline)
+        VStack(spacing: 16) {
+            Image(systemName: "key.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            Text("Delete Key: \(keyToDelete.1 ?? "0")")
+                .font(.title2)
+                .fontWeight(.heavy)
+                .multilineTextAlignment(.center)
+
+            Text("Are you sure you want to delete the selected key?")
+                .font(.body)
+                .multilineTextAlignment(.center)
+
+            if viewModel.ifFailed {
+                Text("Error deleting key, please try again later.")
+                    .font(.footnote)
                     .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                if viewModel.ifFailed {
-                    Text("Error deleting key, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                //.vSpacing(.bottom)
-                
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            HapticManager.shared.trigger(.lightImpact)
-                            withAnimation {
-                                self.viewModel.keyToDelete = (nil,nil)
-                                dismissLastPopup()
-                            }
-                        }
-                    }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
+                    .foregroundColor(.red)
+            }
+
+            HStack(spacing: 12) {
+                if !viewModel.loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
-                            self.viewModel.loading = true
+                            viewModel.keyToDelete = (nil, nil)
                         }
-                       
-                        
-                        Task {
-                            try await Task.sleep(nanoseconds: 1_500_000_000)
-                            if self.keyToDelete.0 != nil && self.keyToDelete.1 != nil {
-                                switch await self.viewModel.deleteKey(key: self.keyToDelete.0 ?? "") {
-                                case .success():
+                        Task { await dismissLastPopup() }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+
+                CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { viewModel.loading = true }
+
+                    Task {
+                        if let keyId = keyToDelete.0 {
+                            let result = await viewModel.deleteKey(key: keyId)
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success:
                                     HapticManager.shared.trigger(.success)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                    }
-                                    dismissLastPopup()
-                                    self.viewModel.keyToDelete = (nil,nil)
+                                    viewModel.loading = false
+                                    viewModel.keyToDelete = (nil, nil)
                                     onDone()
-                                    
-                                case .failure(_):
+                                    Task { await dismissLastPopup() }
+                                case .failure:
                                     HapticManager.shared.trigger(.error)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                    }
-                                    self.viewModel.ifFailed = true
+                                    viewModel.loading = false
+                                    viewModel.ifFailed = true
                                 }
                             }
                         }
-                        
                     }
                 }
-                .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
+                .frame(maxWidth: .infinity)
             }
-            .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-            
-            
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 
 //MARK: - Delete User Popup
 
-struct CentrePopup_DeleteUser: CentrePopup {
+struct CenterPopup_DeleteUser: CenterPopup {
     @ObservedObject var viewModel: AccessViewModel
     var onDone: () -> Void
-    
+
     init(viewModel: AccessViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         self.onDone = onDone
     }
-    
+
     var body: some View {
-        createContent()
-    }
-    
-    func createContent() -> some View {
-        ZStack {
-            VStack {
-                Text("Delete User: \(viewModel.userToDelete?.name ?? "0")")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                
-                Text("Are you sure you want to delete the selected user?")
-                    .font(.headline)
+        VStack(spacing: 16) {
+            Image(systemName: "person.crop.circle.badge.xmark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            Text("Delete User: \(viewModel.userToDelete?.name ?? "0")")
+                .font(.title2)
+                .fontWeight(.heavy)
+                .multilineTextAlignment(.center)
+
+            Text("Are you sure you want to delete the selected user?")
+                .font(.body)
+                .multilineTextAlignment(.center)
+
+            if viewModel.ifFailed {
+                Text("Error deleting user, please try again later.")
+                    .font(.footnote)
                     .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                
-                if viewModel.ifFailed {
-                    Text("Error deleting user, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            HapticManager.shared.trigger(.lightImpact)
-                            withAnimation {
-                                dismissLastPopup()
-                                self.viewModel.userToDelete = (nil, nil)
-                            }
-                        }
-                    }
-                    
-                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
+                    .foregroundColor(.red)
+            }
+
+            HStack(spacing: 12) {
+                if !viewModel.loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
                         HapticManager.shared.trigger(.lightImpact)
-                        withAnimation {
-                            self.viewModel.loading = true
-                        }
-                        
-                        Task {
-                            if let userId = self.viewModel.userToDelete?.id {
-                                switch await self.viewModel.deleteUser(user: userId) {
-                                case .success():
+                        withAnimation { viewModel.userToDelete = (nil, nil) }
+                        Task { await dismissLastPopup() }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+
+                CustomButton(loading: viewModel.loading, title: "Delete", color: .red) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { viewModel.loading = true }
+
+                    Task {
+                        if let userId = viewModel.userToDelete?.id {
+                            let result = await viewModel.deleteUser(user: userId)
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success:
                                     HapticManager.shared.trigger(.success)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                        self.viewModel.getKeyUsers()
-                                    }
-                                    dismissLastPopup()
-                                    self.viewModel.userToDelete = (nil, nil)
+                                    viewModel.loading = false
+                                    viewModel.userToDelete = (nil, nil)
+                                    viewModel.getKeyUsers()
                                     onDone()
-                                case .failure(_):
+                                    Task { await dismissLastPopup() }
+                                case .failure:
                                     HapticManager.shared.trigger(.error)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                    }
-                                    self.viewModel.ifFailed = true
+                                    viewModel.loading = false
+                                    viewModel.ifFailed = true
                                 }
                             }
                         }
                     }
                 }
-                .padding([.horizontal, .bottom])
+                .frame(maxWidth: .infinity)
             }
-            .ignoresSafeArea(.keyboard)
         }
-        .ignoresSafeArea(.keyboard)
-        .padding(.top, 10)
-        .padding(.bottom, 10)
-        .padding(.horizontal, 10)
-        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-            
-            
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 
 //MARK: - Block/Unblock User Popup
 
-struct CentrePopup_BlockOrUnblockUser: CentrePopup {
+struct CenterPopup_BlockOrUnblockUser: CenterPopup {
     @ObservedObject var viewModel: AccessViewModel
-    
+
     var body: some View {
-        createContent()
-    }
+        VStack(spacing: 16) {
+            Image(systemName: viewModel.blockUnblockAction?.isBlocked == true ? "person.badge.shield.checkmark" : "person.badge.shield.exclamationmark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(viewModel.blockUnblockAction?.isBlocked == true ? .green : .red)
 
-    func createContent() -> some View {
-        ZStack {
-            VStack {
-                Text("\(viewModel.blockUnblockAction?.isBlocked == true ? "Unblock" : "Block") User")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
+            Text("\(viewModel.blockUnblockAction?.isBlocked == true ? "Unblock" : "Block") User")
+                .font(.title2)
+                .fontWeight(.heavy)
+                .multilineTextAlignment(.center)
 
-                Text("Are you sure you want to \(viewModel.blockUnblockAction?.isBlocked == true ? "unblock" : "block") the selected user?")
-                    .font(.headline)
+            Text("Are you sure you want to \(viewModel.blockUnblockAction?.isBlocked == true ? "unblock" : "block") the selected user?")
+                .font(.body)
+                .multilineTextAlignment(.center)
+
+            if viewModel.ifFailed {
+                Text("Error \(viewModel.blockUnblockAction?.isBlocked == true ? "unblocking" : "blocking") user, please try again later.")
+                    .font(.footnote)
                     .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
+                    .foregroundColor(.red)
+            }
 
-                if viewModel.ifFailed {
-                    Text("Error \(viewModel.blockUnblockAction?.isBlocked == true ? "unblocking" : "blocking") user, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            HapticManager.shared.trigger(.lightImpact)
-                            withAnimation {
-                                dismissLastPopup()
-                                self.viewModel.blockUnblockAction = nil
-                                self.viewModel.ifFailed = false
-                            }
-                        }
-                    }
-
-                    CustomButton(loading: viewModel.loading, title: "\(viewModel.blockUnblockAction?.isBlocked == true ? "Unblock" : "Block")", color: viewModel.blockUnblockAction?.isBlocked == true ? .green : .red) {
+            HStack(spacing: 12) {
+                if !viewModel.loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
-                            self.viewModel.loading = true
+                            viewModel.blockUnblockAction = nil
+                            viewModel.ifFailed = false
                         }
+                        Task { await dismissLastPopup() }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
 
-                        Task {
-                            if let userAction = self.viewModel.blockUnblockAction {
-                                switch await self.viewModel.blockUnblockUserFromToken(user: userAction) {
-                                case .success():
+                CustomButton(
+                    loading: viewModel.loading,
+                    title: viewModel.blockUnblockAction?.isBlocked == true ? "Unblock" : "Block",
+                    color: viewModel.blockUnblockAction?.isBlocked == true ? .green : .red
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { viewModel.loading = true }
+
+                    Task {
+                        if let userAction = viewModel.blockUnblockAction {
+                            let result = await viewModel.blockUnblockUserFromToken(user: userAction)
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success:
                                     HapticManager.shared.trigger(.success)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                        //self.viewModel.getKeyUsers()  // Update the list of users after block/unblock
-                                    }
-                                    dismissLastPopup()
+                                    viewModel.loading = false
+                                    viewModel.blockUnblockAction = nil
                                     if userAction.isBlocked {
-                                        self.viewModel.showUserUnblockAlert = true
+                                        viewModel.showUserUnblockAlert = true
                                     } else {
-                                        self.viewModel.showUserBlockAlert = true
+                                        viewModel.showUserBlockAlert = true
                                     }
-                                    self.viewModel.blockUnblockAction = nil
-                                case .failure(_):
+                                    Task { await dismissLastPopup() }
+                                case .failure:
                                     HapticManager.shared.trigger(.error)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                    }
-                                    self.viewModel.ifFailed = true
+                                    viewModel.loading = false
+                                    viewModel.ifFailed = true
                                 }
-                            } else {
-                                print("NO UNBLOCK")
                             }
                         }
                     }
                 }
-                .padding([.horizontal, .bottom])
+                .frame(maxWidth: .infinity)
             }
-            .ignoresSafeArea(.keyboard)
         }
-        .ignoresSafeArea(.keyboard)
-        .padding(.top, 10)
-        .padding(.bottom, 10)
-        .padding(.horizontal, 10)
-        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
     }
 
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-            
-            
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }

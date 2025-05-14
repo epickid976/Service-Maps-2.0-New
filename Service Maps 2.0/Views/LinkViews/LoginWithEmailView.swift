@@ -59,7 +59,7 @@ struct LoginWithEmailView: View {
                 
                 HStack {
                     
-                    CustomBackButton(showImage: true, text: "Cancel") {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
                             UniversalLinksManager.shared.resetLink()

@@ -153,10 +153,14 @@ struct AddPhoneTerritoryView: View {
                         CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
                             HapticManager.shared.trigger(.lightImpact)
                             if viewModel.checkInfo() {
-                                withAnimation { viewModel.loading = true }
+                                Task {
+                                    await MainActor.run {
+                                        withAnimation { viewModel.loading = true }
+                                    }
+                                }
                                 if territory != nil {
                                     Task {
-                                        try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
+                                        //try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                                         let result = await viewModel.editTerritory(territory: territory!)
                                         switch result {
                                         case .success(_):
@@ -171,7 +175,7 @@ struct AddPhoneTerritoryView: View {
                                     }
                                 } else {
                                     Task {
-                                        try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
+                                        //try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                                         let result = await viewModel.addTerritory()
                                         switch result {
                                         case .success(_):

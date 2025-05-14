@@ -106,8 +106,8 @@ struct RecallsView: View {
                                     
                                     Button("", action: {
                                         HapticManager.shared.trigger(.lightImpact)
-                                        DispatchQueue.main.async {
-                                                CentrePopup_NotificationList(isPresented: $showNotificationCenter).present()
+                                        Task {
+                                            await CenterPopup_NotificationList(isPresented: $showNotificationCenter).present()
                                         }
                                     })
                                     .buttonStyle(CircleButtonStyle(imageName: "bell.badge", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
@@ -280,8 +280,8 @@ struct RecallRow: View {
                 ) {
                     HapticManager.shared.trigger(.lightImpact)
                     context.state.wrappedValue = .closed
-                    DispatchQueue.main.async {
-                        ScheduleRecallPopup(recall: recall).present()
+                    Task {
+                        await ScheduleRecallPopup(recall: recall).present()
                     }
                 }
                 .allowSwipeToTrigger()
@@ -295,12 +295,12 @@ struct RecallRow: View {
                 ) {
                     HapticManager.shared.trigger(.lightImpact)
                     context.state.wrappedValue = .closed
-                    DispatchQueue.main.async {
+                    Task {
                         // self.viewModel.visitToDelete = visitData.visit.id
                         //self.viewModel.showAlert = true
-                        //CentrePopup_DeleteVisit(viewModel: viewModel).present()
+                        //CenterPopup_DeleteVisit(viewModel: viewModel).present()
                         self.viewModel.recallToRemove = recall.recall.house
-                        CentrePopup_RemoveRecall(viewModel: viewModel, recall: recall){
+                        await CenterPopup_RemoveRecall(viewModel: viewModel, recall: recall){
                             let toast = ToastValue(
                                 icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
                                 message: NSLocalizedString("Recall Removed", comment: "")
@@ -350,107 +350,118 @@ struct RecallRow: View {
 
 // MARK: - Remove Recall Popup
 
-struct CentrePopup_RemoveRecall: CentrePopup {
+struct CenterPopup_RemoveRecall: CenterPopup {
     @ObservedObject var viewModel: RecallViewModel
     @State var recall: RecallData
     var onDone: () -> Void
-    
+
     init(viewModel: RecallViewModel, recall: RecallData, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         self.recall = recall
         self.onDone = onDone
     }
-    
+
     var body: some View {
         createContent()
     }
-    
+
     func createContent() -> some View {
-        ZStack {
-            VStack {
-                Text("Remove Recall")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                Text("Are you sure you want to remove the selected recall?")
-                    .font(.headline)
+        VStack(spacing: 16) {
+            // MARK: - Icon
+            Image(systemName: "trash.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            // MARK: - Title
+            Text("Remove Recall")
+                .font(.title2)
+                .fontWeight(.heavy)
+                .foregroundColor(.primary)
+
+            // MARK: - Subtitle
+            Text("Are you sure you want to remove the selected recall?")
+                .font(.body)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(4)
+
+            // MARK: - Error Message
+            if viewModel.ifFailed {
+                Text("Error removing recall. Please try again later.")
+                    .font(.footnote)
+                    .foregroundColor(.red)
                     .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                if viewModel.ifFailed {
-                    Text("Error removing recall, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                //.vSpacing(.bottom)
-                
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            withAnimation {
-                                //self.viewModel.showAlert = false
-                                HapticManager.shared.trigger(.lightImpact)
-                                dismissLastPopup()
-                                self.viewModel.recallToRemove = nil
+                    .multilineTextAlignment(.center)
+            }
+
+            // MARK: - Buttons
+            HStack(spacing: 12) {
+                if !viewModel.loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
+                        withAnimation {
+                            HapticManager.shared.trigger(.lightImpact)
+                            Task {
+                                await dismissLastPopup()
                             }
+                            self.viewModel.recallToRemove = nil
                         }
                     }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Remove", comment: ""), color: .red) {
-                        withAnimation {
-                            self.viewModel.loading = true
-                            HapticManager.shared.trigger(.lightImpact)
-                        }
-                        Task {
-                            if self.viewModel.recallToRemove != nil{
-                                switch await self.viewModel.deleteRecall(id: self.recall.recall.id,user: self.recall.recall.user, house: self.recall.recall.house) {
+                    .frame(maxWidth: .infinity)
+                }
+
+                CustomButton(
+                    loading: viewModel.loading,
+                    title: NSLocalizedString("Remove", comment: ""),
+                    color: .red
+                ) {
+                    withAnimation {
+                        self.viewModel.loading = true
+                        HapticManager.shared.trigger(.lightImpact)
+                    }
+
+                    Task {
+                        if let _ = self.viewModel.recallToRemove {
+                            let result = await self.viewModel.deleteRecall(
+                                id: self.recall.recall.id,
+                                user: self.recall.recall.user,
+                                house: self.recall.recall.house
+                            )
+
+                            DispatchQueue.main.async {
+                                switch result {
                                 case .success(_):
-                                    withAnimation {
-                                        //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        //self.viewModel.getRecalls()
-                                        self.viewModel.loading = false
-                                        //self.showAlert = false
-                                        dismissLastPopup()
-                                        self.viewModel.ifFailed = false
-                                        self.viewModel.recallToRemove = nil
-                                        onDone()
-                                    }
+                                    self.viewModel.loading = false
+                                    self.viewModel.ifFailed = false
+                                    self.viewModel.recallToRemove = nil
+                                    onDone()
                                     HapticManager.shared.trigger(.success)
+                                    Task { await dismissLastPopup() }
                                 case .failure(_):
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                        self.viewModel.ifFailed = true
-                                        HapticManager.shared.trigger(.error)
-                                    }
+                                    self.viewModel.loading = false
+                                    self.viewModel.ifFailed = true
+                                    HapticManager.shared.trigger(.error)
                                 }
                             }
                         }
-                        
                     }
                 }
-                .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
+                .frame(maxWidth: .infinity)
             }
-            .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
+        .ignoresSafeArea(.keyboard)
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-            
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 
-struct ScheduleRecallPopup: CentrePopup {
+struct ScheduleRecallPopup: CenterPopup {
     var recall: RecallData? = nil
     var id: String? = nil
     var existingDate: Date? = nil
@@ -498,7 +509,9 @@ struct ScheduleRecallPopup: CentrePopup {
             HStack {
                 if !isLoading {
                     CustomBackButton {
-                        dismissLastPopup()
+                        Task {
+                            await dismissLastPopup()
+                        }
                     }
                 }
 
@@ -528,9 +541,11 @@ struct ScheduleRecallPopup: CentrePopup {
                         // UI work back on main thread
                         await MainActor.run {
                             isLoading = false
-                            dismissLastPopup()
                             HapticManager.shared.trigger(.success)
                             onDone?() // 👈 Call completion if provided
+                        }
+                        Task {
+                            await dismissLastPopup()
                         }
                     }
                 }
@@ -541,13 +556,13 @@ struct ScheduleRecallPopup: CentrePopup {
         .cornerRadius(20)
     }
 
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
         config.popupHorizontalPadding(24)
             .tapOutsideToDismissPopup(true)
     }
 }
 
-struct CentrePopup_NotificationList: CentrePopup {
+struct CenterPopup_NotificationList: CenterPopup {
     @Binding var isPresented: Bool
     @State private var notifications: [NotificationData] = []
 
@@ -566,7 +581,9 @@ struct CentrePopup_NotificationList: CentrePopup {
 
                 Button(action: {
                     HapticManager.shared.trigger(.lightImpact)
-                    dismissLastPopup()
+                    Task {
+                        await dismissLastPopup()
+                    }
                     isPresented = false
                 }) {
                     Label("Close", systemImage: "xmark")
@@ -626,7 +643,7 @@ struct CentrePopup_NotificationList: CentrePopup {
         .background(Material.ultraThick, in: RoundedRectangle(cornerRadius: 25, style: .continuous))
     }
 
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
         config.popupHorizontalPadding(24)
             .tapOutsideToDismissPopup(true)
     }
@@ -690,13 +707,15 @@ struct NotificationCell: View {
 
                 Button(action: {
                     HapticManager.shared.trigger(.lightImpact)
-                    ScheduleRecallPopup(
-                        id: notification.id,
-                        existingDate: notification.triggerDate,
-                        onDone: {
-                            onEdit() // 👈 Call the edit completion
-                        }
-                    ).present()
+                    Task {
+                        await ScheduleRecallPopup(
+                            id: notification.id,
+                            existingDate: notification.triggerDate,
+                            onDone: {
+                                onEdit() // 👈 Call the edit completion
+                            }
+                        ).present()
+                    }
                 }) {
                     Image(systemName: "pencil")
                         .foregroundColor(.blue)

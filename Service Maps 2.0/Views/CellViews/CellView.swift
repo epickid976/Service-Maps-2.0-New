@@ -261,9 +261,11 @@ struct RecentTerritoryCellView: View {
                             .onEnded { _ in
                                 stopShrinking()
                                 HapticManager.shared.trigger(.impact)
-                                CentrePopup_RecentFloorsKnocked(
-                                    viewModel: FloorsViewModel(territory: territoryData.territory)
-                                ) {}.present()
+                                Task {
+                                    await CenterPopup_RecentFloorsKnocked(
+                                        viewModel: FloorsViewModel(territory: territoryData.territory)
+                                    ) {}.present()
+                                }
                             }
                     )
                 )
@@ -359,7 +361,7 @@ struct recentPhoneCell: View {
 }
 
 
-struct CentrePopup_RecentFloorsKnocked: CentrePopup {
+struct CenterPopup_RecentFloorsKnocked: CenterPopup {
     @ObservedObject var viewModel: FloorsViewModel
     var onDone: () -> Void
     
@@ -412,8 +414,10 @@ struct CentrePopup_RecentFloorsKnocked: CentrePopup {
                     CustomButton(loading: false, title: "Done") {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
-                            dismissLastPopup()
                             onDone()
+                        }
+                        Task {
+                            await dismissLastPopup()
                         }
                     }
                     Spacer()
@@ -430,7 +434,7 @@ struct CentrePopup_RecentFloorsKnocked: CentrePopup {
     
     /// Here we place the horizontal padding of the entire popup
     /// so that the content is inset from the screen edges by 24 points on each side.
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
         config.popupHorizontalPadding(40)
     }
 }

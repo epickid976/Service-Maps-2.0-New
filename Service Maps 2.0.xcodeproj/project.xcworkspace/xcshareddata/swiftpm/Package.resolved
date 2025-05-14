@@ -1,5 +1,5 @@
 {
-  "originHash" : "47cd0a8e5391d667d006520d1aae8537bb277eb568e39c849210a9b0a92b06c8",
+  "originHash" : "f8763eaabdfa39bf1ca71e027cf1f4e02d3a827ab4ccb1b830bfc97ddedc87f9",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Mijick/PopupView.git",
       "state" : {
-        "revision" : "ea35a601a5c2b539ccae20ffbdecf4f9b90c5162",
-        "version" : "3.0.0"
+        "revision" : "62457a91042e8ef68615fd8d2d27eb8240d2cd5b",
+        "version" : "4.0.1"
       }
     },
     {
@@ -186,8 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sunghyun-k/swiftui-toasts",
       "state" : {
-        "revision" : "a9e96531424d3d0f6891076efefe86bb911448dc",
-        "version" : "0.2.0"
+        "revision" : "2ec47878af20f906c065176e8e080ba33f49eabf",
+        "version" : "1.0.1"
       }
     },
     {
@@ -195,8 +195,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sunghyun-k/swiftui-window-overlay.git",
       "state" : {
-        "revision" : "fb292c878923bd4d2811ab9605992aa10b45b07a",
-        "version" : "1.0.0"
+        "revision" : "46739300713772a62a3bf31d77f8f23ba9cf61f7",
+        "version" : "1.0.2"
       }
     },
     {

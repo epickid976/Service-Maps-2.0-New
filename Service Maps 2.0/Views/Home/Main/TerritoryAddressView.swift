@@ -164,13 +164,15 @@ struct TerritoryAddressView: View {
                         .animation(.easeInOut(duration: 0.25), value: viewModel.addressData == nil || viewModel.addressData != nil)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddAddress(viewModel: viewModel, territory: territory){
-                                    let toast = ToastValue(
-                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
-                                        message: "Address Added"
-                                    )
-                                    presentToast(toast)
-                                }.present()
+                                Task {
+                                    await CenterPopup_AddAddress(viewModel: viewModel, territory: territory){
+                                        let toast = ToastValue(
+                                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                            message: "Address Added"
+                                        )
+                                        presentToast(toast)
+                                    }.present()
+                                }
                             }
                         }
                     }
@@ -230,7 +232,9 @@ struct TerritoryAddressView: View {
                             Button("", action: {withAnimation { viewModel.backAnimation.toggle();
                                 HapticManager.shared.trigger(.lightImpact) };
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    dismissAllPopups()
+                                    Task {
+                                        await dismissAllPopups()
+                                    }
                                     presentationMode.wrappedValue.dismiss()
                                 }
                             })//.keyboardShortcut(.delete, modifiers: .command)
@@ -311,13 +315,15 @@ struct TerritoryAddressView: View {
                                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
                                             //self.showAlert = true
                                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-                                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel){
-                                                    let toast = ToastValue(
-                                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                        message: NSLocalizedString("Address Added", comment: "")
-                                                    )
-                                                    presentToast(toast)
-                                                }.present()
+                                                Task {
+                                                    await CenterPopup_DeleteTerritoryAddress(viewModel: viewModel){
+                                                        let toast = ToastValue(
+                                                            icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                            message: NSLocalizedString("Address Added", comment: "")
+                                                        )
+                                                        presentToast(toast)
+                                                    }.present()
+                                                }
                                             }
                                         }
                                     } label: {
@@ -361,13 +367,16 @@ struct TerritoryAddressView: View {
                             self.viewModel.addressToDelete = (addressData.address.id, addressData.address.address)
                             //self.showAlert = true
                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
-                                CentrePopup_DeleteTerritoryAddress(viewModel: viewModel){
-                                    let toast = ToastValue(
-                                     icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                        message: NSLocalizedString("Address Deleted", comment: "")
-                                    )
-                                    presentToast(toast)
-                                }.present()
+                                Task {
+                                    await CenterPopup_DeleteTerritoryAddress(viewModel: viewModel){
+                                       
+                                        let toast = ToastValue(
+                                            icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                            message: NSLocalizedString("Address Deleted", comment: "")
+                                        )
+                                        presentToast(toast)
+                                    }.present()
+                                }
                             }
                         }
                     }
@@ -402,152 +411,137 @@ struct TerritoryAddressView: View {
 
 //MARK: - Delete Address Popup
 
-struct CentrePopup_DeleteTerritoryAddress: CentrePopup {
+struct CenterPopup_DeleteTerritoryAddress: CenterPopup {
     @ObservedObject var viewModel: AddressViewModel
     var onDone: () -> Void
-    
+
     init(viewModel: AddressViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         viewModel.loading = false
         self.onDone = onDone
     }
-    
+
     var body: some View {
         createContent()
     }
-    
+
     func createContent() -> some View {
-        ZStack {
-            VStack {
-                Text("Delete Address: \(viewModel.addressToDelete.1 ?? "0")")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                Text("Are you sure you want to delete the selected address?")
-                    .font(.headline)
+        VStack(spacing: 16) {
+            Image(systemName: "mappin.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            Text("Delete Address: \(viewModel.addressToDelete.1 ?? "0")")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.center)
+
+            Text("Are you sure you want to delete the selected address?")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            if viewModel.ifFailed {
+                Text("Error deleting address, please try again later")
+                    .font(.footnote)
                     .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                if viewModel.ifFailed {
-                    Text("Error deleting address, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                //.vSpacing(.bottom)
-                
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            HapticManager.shared.trigger(.lightImpact)
-                            withAnimation {
-                                //self.showAlert = false
-                                dismissLastPopup()
-                                self.viewModel.ifFailed = false
-                                self.viewModel.addressToDelete = (nil,nil)
-                            }
-                        }
-                    }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
+                    .foregroundColor(.red)
+            }
+
+            HStack(spacing: 12) {
+                if !viewModel.loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
-                            self.viewModel.loading = true
+                            viewModel.ifFailed = false
+                            viewModel.addressToDelete = (nil, nil)
                         }
-                        Task {
-                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
-                            if self.viewModel.addressToDelete.0 != nil && self.viewModel.addressToDelete.1 != nil {
-                                switch await self.viewModel.deleteAddress(address: self.viewModel.addressToDelete.0 ?? "") {
-                                case .success(_):
-                                    HapticManager.shared.trigger(.success)
-                                    withAnimation {
-                                        dismissLastPopup()
-                                        self.viewModel.ifFailed = false
-                                        self.viewModel.addressToDelete = (nil,nil)
-                                        onDone()
-                                    }
-                                case .failure(_):
-                                    HapticManager.shared.trigger(.error)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                    }
-                                    self.viewModel.ifFailed = true
-                                }
-                            }
-                        }
-                        
+                        Task { await dismissLastPopup() }
                     }
                 }
-                .padding([.horizontal, .bottom])
+
+                CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { viewModel.loading = true }
+
+                    Task {
+                        if let id = viewModel.addressToDelete.0 {
+                            switch await viewModel.deleteAddress(address: id) {
+                            case .success:
+                                HapticManager.shared.trigger(.success)
+                                viewModel.ifFailed = false
+                                viewModel.addressToDelete = (nil, nil)
+                                await dismissLastPopup()
+                                onDone()
+                            case .failure:
+                                HapticManager.shared.trigger(.error)
+                                withAnimation { viewModel.loading = false }
+                                viewModel.ifFailed = true
+                            }
+                        }
+                    }
+                }
             }
-            .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-            
-            
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 
 //MARK: - Add Address Popup
 
-struct CentrePopup_AddAddress: CentrePopup {
+struct CenterPopup_AddAddress: CenterPopup {
     @ObservedObject var viewModel: AddressViewModel
     @State var territory: Territory
     var onDone: () -> Void
-    
+
     init(viewModel: AddressViewModel, territory: Territory, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         self.territory = territory
         self.onDone = onDone
     }
-    
+
     var body: some View {
         createContent()
     }
-    
+
     func createContent() -> some View {
-        AddAddressView(territory: territory, address: viewModel.currentAddress, onDone: {
-            DispatchQueue.main.async {
+        AddAddressView(
+            territory: territory,
+            address: viewModel.currentAddress,
+            onDone: {
+                DispatchQueue.main.async {
+                    viewModel.presentSheet = false
+                    Task { await dismissLastPopup() }
+                    onDone()
+                }
+            },
+            onDismiss: {
                 viewModel.presentSheet = false
-                dismissLastPopup()
-                onDone()
+                Task { await dismissLastPopup() }
             }
-        }, onDismiss: {
-            viewModel.presentSheet = false
-            dismissLastPopup()
-        })
-        .padding(.top, 15)
-        .padding(.bottom, 15)
-        .padding(.horizontal, 15)
+        )
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
         .ignoresSafeArea(.keyboard)
-        .background(Material.thin).cornerRadius(15, corners: .allCorners)
         .simultaneousGesture(
-            // Hide the keyboard on scroll
             DragGesture().onChanged { _ in
-                UIApplication.shared.sendAction(
-                    #selector(UIResponder.resignFirstResponder),
-                    to: nil,
-                    from: nil,
-                    for: nil
-                )
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         )
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-            
-            
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }

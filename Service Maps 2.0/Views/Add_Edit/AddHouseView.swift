@@ -83,11 +83,11 @@ struct AddHouseView: View {
 //                                    }
 //                                }
                             } else {
+                                withAnimation {
+                                    viewModel.loading = true
+                                }
                                 Task {
-                                    withAnimation {
-                                        viewModel.loading = true
-                                    }
-                                    try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
+                                    //try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
                                     let result = await viewModel.addHouse()
                                     switch result {
                                     case .success:

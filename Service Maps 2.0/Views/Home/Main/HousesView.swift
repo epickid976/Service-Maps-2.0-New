@@ -150,13 +150,15 @@ struct HousesView: View {
                         .animation(.easeInOut(duration: 0.25), value: viewModel.houseData == nil || viewModel.houseData != nil)
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddHouse(viewModel: viewModel, address: address){
-                                    let toast = ToastValue(
-                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
-                                        message: "House Added"
-                                    )
-                                    presentToast(toast)
-                                }.present()
+                                Task {
+                                    await CenterPopup_AddHouse(viewModel: viewModel, address: address){
+                                        let toast = ToastValue(
+                                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                            message: "House Added"
+                                        )
+                                        presentToast(toast)
+                                    }.present()
+                                }
                             }
                         }
                         .navigationBarTitle(address.address, displayMode: .automatic)
@@ -166,7 +168,9 @@ struct HousesView: View {
                                 HStack {
                                     Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            dismissAllPopups()
+                                            Task {
+                                                await dismissAllPopups()
+                                            }
                                             presentationMode.wrappedValue.dismiss()
                                         }
                                     })
@@ -181,7 +185,9 @@ struct HousesView: View {
                                     Menu {
                                         Button {
                                             HapticManager.shared.trigger(.lightImpact)
-                                            CentrePopup_FilterInfo().present()
+                                            Task {
+                                                await  CenterPopup_FilterInfo().present()
+                                            }
                                         } label: {
                                             Label {
                                                 Text("Info")
@@ -333,13 +339,18 @@ struct HousesView: View {
                                             self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
                                             //self.showAlert = true
                                             if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-                                                CentrePopup_DeleteHouse(viewModel: viewModel) {
-                                                    let toast = ToastValue(
-                                                        icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                        message: NSLocalizedString("House Deleted", comment: "")
-                                                    )
-                                                    presentToast(toast)
-                                                }.present()
+                                                Task {
+                                                    await CenterPopup_DeleteHouse(viewModel: viewModel) {
+                                                        Task {
+                                                            await dismissLastPopup()
+                                                        }
+                                                        let toast = ToastValue(
+                                                            icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                            message: NSLocalizedString("House Deleted", comment: "")
+                                                        )
+                                                        presentToast(toast)
+                                                    }.present()
+                                                }
                                             }
                                         }
                                     } label: {
@@ -364,14 +375,16 @@ struct HousesView: View {
                 HapticManager.shared.trigger(.lightImpact)
                 DispatchQueue.main.async {
                     context.state.wrappedValue = .closed
-                    CentrePopup_AddVisit(viewModel: VisitsViewModel(house: houseData.house), house: houseData.house
-                    ) {
-                           let toast = ToastValue(
-                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
-                               message: "Visit Added"
-                           )
-                        presentToast(toast)
-                    }.present()
+                    Task {
+                        await CenterPopup_AddVisit(viewModel: VisitsViewModel(house: houseData.house), house: houseData.house
+                        ) {
+                            let toast = ToastValue(
+                                icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                message: "Visit Added"
+                            )
+                            presentToast(toast)
+                        }.present()
+                    }
                 }
             }
             .allowSwipeToTrigger()
@@ -389,13 +402,18 @@ struct HousesView: View {
                         self.viewModel.houseToDelete = (houseData.house.id, houseData.house.number)
                         //self.showAlert = true
                         if viewModel.houseToDelete.0 != nil && viewModel.houseToDelete.1 != nil {
-                            CentrePopup_DeleteHouse(viewModel: viewModel){
-                                let toast = ToastValue(
-                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                    message: NSLocalizedString("House Deleted", comment: "")
-                                )
-                                presentToast(toast)
-                            }.present()
+                            Task {
+                                await CenterPopup_DeleteHouse(viewModel: viewModel){
+                                    Task {
+                                        await dismissLastPopup()
+                                    }
+                                    let toast = ToastValue(
+                                        icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                        message: NSLocalizedString("House Deleted", comment: "")
+                                    )
+                                    presentToast(toast)
+                                }.present()
+                            }
                         }
                     }
                 }
@@ -415,148 +433,143 @@ struct HousesView: View {
 
 //MARK: - Delete House Popup
 
-struct CentrePopup_DeleteHouse: CentrePopup {
+struct CenterPopup_DeleteHouse: CenterPopup {
     @ObservedObject var viewModel: HousesViewModel
     var onDone: () -> Void
-    
+
     init(viewModel: HousesViewModel, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         viewModel.loading = false
         self.onDone = onDone
     }
-    
+
     var body: some View {
-        ZStack {
-            VStack {
-                Text("Delete House \(viewModel.houseToDelete.1 ?? "0")")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                Text("Are you sure you want to delete the selected house?")
-                    .font(.headline)
+        createContent()
+    }
+
+    func createContent() -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "house.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            Text("Delete House \(viewModel.houseToDelete.1 ?? "0")")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.center)
+
+            Text("Are you sure you want to delete the selected house?")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            if viewModel.ifFailed {
+                Text("Error deleting house, please try again later")
+                    .font(.footnote)
                     .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                if viewModel.ifFailed {
-                    Text("Error deleting house, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            HapticManager.shared.trigger(.lightImpact)
-                            withAnimation {
-                                dismissLastPopup()
-                                self.viewModel.houseToDelete = (nil,nil)
-                            }
-                        }
-                    }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+            }
+
+            HStack(spacing: 12) {
+                if !viewModel.loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
-                            self.viewModel.loading = true
+                            viewModel.houseToDelete = (nil, nil)
                         }
-                        Task {
-                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
-                            if self.viewModel.houseToDelete.0 != nil && self.viewModel.houseToDelete.1 != nil {
-                                switch await self.viewModel.deleteHouse(house: self.viewModel.houseToDelete.0 ?? "") {
-                                case .success(_):
-                                    HapticManager.shared.trigger(.success)
-                                    withAnimation {
-                                        dismissLastPopup()
-                                        self.viewModel.ifFailed = false
-                                        self.viewModel.houseToDelete = (nil,nil)
-                                        onDone()
-                                    }
-                                case .failure(_):
-                                    HapticManager.shared.trigger(.error)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                        self.viewModel.ifFailed = true
-                                    }
-                                }
+                        Task { await dismissLastPopup() }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+
+                CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { viewModel.loading = true }
+
+                    Task {
+                        if let id = viewModel.houseToDelete.0 {
+                            switch await viewModel.deleteHouse(house: id) {
+                            case .success:
+                                HapticManager.shared.trigger(.success)
+                                viewModel.ifFailed = false
+                                viewModel.houseToDelete = (nil, nil)
+                                onDone()
+                                await dismissLastPopup()
+                            case .failure:
+                                HapticManager.shared.trigger(.error)
+                                viewModel.loading = false
+                                viewModel.ifFailed = true
                             }
                         }
-                        
                     }
                 }
-                .padding([.horizontal, .bottom])
+                .frame(maxWidth: .infinity)
             }
-            .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
     }
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-        
-        
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 
 //MARK: - Add House Popup
 
-struct CentrePopup_AddHouse: CentrePopup {
+struct CenterPopup_AddHouse: CenterPopup {
     @ObservedObject var viewModel: HousesViewModel
     @State var address: TerritoryAddress
     var onDone: () -> Void
-    
+
     init(viewModel: HousesViewModel, address: TerritoryAddress, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         self.address = address
         self.onDone = onDone
     }
-    
+
     var body: some View {
-        AddHouseView(house: viewModel.currentHouse, address: address, onDone: {
+        AddHouseView(
+            house: viewModel.currentHouse,
+            address: address,
+            onDone: {
                 viewModel.presentSheet = false
                 onDone()
-            
-            dismissLastPopup()
-        }, onDismiss: {
-            viewModel.presentSheet = false
-            dismissLastPopup()
-        })
-        .padding(.top, 10)
-        .padding(.bottom, 10)
-        .padding(.horizontal, 10)
-        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+                Task { await dismissLastPopup() }
+            },
+            onDismiss: {
+                viewModel.presentSheet = false
+                Task { await dismissLastPopup() }
+            }
+        )
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
+        .ignoresSafeArea(.keyboard)
         .simultaneousGesture(
-            // Hide the keyboard on scroll
             DragGesture().onChanged { _ in
-                UIApplication.shared.sendAction(
-                    #selector(UIResponder.resignFirstResponder),
-                    to: nil,
-                    from: nil,
-                    for: nil
-                )
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         )
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-        
-        
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 
 // MARK: - Filter Info Popup
 
-struct CentrePopup_FilterInfo: CentrePopup {
+struct CenterPopup_FilterInfo: CenterPopup {
     @State var loading = false
     
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
         config.popupHorizontalPadding(24)
     }
     
@@ -566,8 +579,8 @@ struct CentrePopup_FilterInfo: CentrePopup {
                 .font(.title2.bold())
             
             Group {
-                Text("• **Sort by Order** – Sorts houses in increasing or decreasing order based on address number.")
-                Text("• **Sort by Grouping** – Displays houses in normal order or groups them (e.g., odd numbers first, even numbers second).")
+                Text("• Sort by Order – Sorts houses in increasing or decreasing order based on address number.")
+                Text("• Sort by Grouping – Displays houses in normal order or groups them (e.g., odd numbers first, even numbers second).")
             }
             .font(.body)
             .fixedSize(horizontal: false, vertical: true)
@@ -609,8 +622,8 @@ struct CentrePopup_FilterInfo: CentrePopup {
                     color: .blue
                 ) {
                     HapticManager.shared.trigger(.lightImpact)
-                    withAnimation {
-                        dismissLastPopup()
+                    Task {
+                        await dismissLastPopup()
                     }
                 }
             }

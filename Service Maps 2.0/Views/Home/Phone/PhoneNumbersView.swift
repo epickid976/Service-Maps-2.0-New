@@ -148,13 +148,15 @@ struct PhoneNumbersView: View {
                         }
                         .onChange(of: viewModel.presentSheet) { value in
                             if value {
-                                CentrePopup_AddNumber(viewModel: viewModel, territory: territory){
-                                    let toast = ToastValue(
-                                        icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
-                                        message: "Number Added"
-                                    )
-                                    presentToast(toast)
-                                }.present()
+                                Task {
+                                    await CenterPopup_AddNumber(viewModel: viewModel, territory: territory){
+                                        let toast = ToastValue(
+                                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                            message: "Number Added"
+                                        )
+                                        presentToast(toast)
+                                    }.present()
+                                }
                             }
                         }
                         .animation(.easeInOut(duration: 0.25), value: viewModel.phoneNumbersData == nil || viewModel.phoneNumbersData != nil)
@@ -206,7 +208,9 @@ struct PhoneNumbersView: View {
                     HStack {
                         Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                dismissAllPopups()
+                                Task {
+                                    await dismissAllPopups()
+                                }
                                 presentationMode.wrappedValue.dismiss()
                             }
                         })//.keyboardShortcut(.delete, modifiers: .command)
@@ -243,13 +247,15 @@ struct PhoneNumbersView: View {
                                         DispatchQueue.main.async {
                                             self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
                                             
-                                            CentrePopup_DeletePhoneNumber(viewModel: viewModel){
-                                                let toast = ToastValue(
-                                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                                    message: NSLocalizedString("Number Deleted", comment: "")
-                                                )
-                                                presentToast(toast)
-                                            }.present()
+                                            Task {
+                                                await CenterPopup_DeletePhoneNumber(viewModel: viewModel){
+                                                    let toast = ToastValue(
+                                                        icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                        message: NSLocalizedString("Number Deleted", comment: "")
+                                                    )
+                                                    presentToast(toast)
+                                                }.present()
+                                            }
                                         }
                                     } label: {
                                         HStack {
@@ -296,14 +302,16 @@ struct PhoneNumbersView: View {
                 HapticManager.shared.trigger(.lightImpact)
                 DispatchQueue.main.async {
                     context.state.wrappedValue = .closed
-                    CentrePopup_AddCall(
-                        viewModel: CallsViewModel(phoneNumber: numbersData.phoneNumber), phoneNumber: numbersData.phoneNumber){
-                            let toast = ToastValue(
-                                icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
-                                message: "Call Added"
-                            )
-                            presentToast(toast)
-                        }.present()
+                    Task {
+                        await CenterPopup_AddCall(
+                            viewModel: CallsViewModel(phoneNumber: numbersData.phoneNumber), phoneNumber: numbersData.phoneNumber){
+                                let toast = ToastValue(
+                                    icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                    message: "Call Added"
+                                )
+                                presentToast(toast)
+                            }.present()
+                    }
                 }
             }
             .allowSwipeToTrigger()
@@ -320,13 +328,15 @@ struct PhoneNumbersView: View {
                     DispatchQueue.main.async {
                         self.viewModel.numberToDelete = (numbersData.phoneNumber.id, String(numbersData.phoneNumber.number))
                         
-                        CentrePopup_DeletePhoneNumber(viewModel: viewModel){
-                            let toast = ToastValue(
-                                icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
-                                message: NSLocalizedString("Number Deleted", comment: "")
-                            )
-                            presentToast(toast)
-                        }.present()
+                        Task {
+                            await CenterPopup_DeletePhoneNumber(viewModel: viewModel){
+                                let toast = ToastValue(
+                                    icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                    message: NSLocalizedString("Number Deleted", comment: "")
+                                )
+                                presentToast(toast)
+                            }.present()
+                        }
                     }
                 }
                 .font(.title.weight(.semibold))
@@ -566,9 +576,9 @@ extension NumbersViewModel {
     }
 }
 
-//MARK: - Delete Number Popup
+//MARK: - Delete Phone Number Popup
 
-struct CentrePopup_DeletePhoneNumber: CentrePopup {
+struct CenterPopup_DeletePhoneNumber: CenterPopup {
     @ObservedObject var viewModel: NumbersViewModel
     var onDone: () -> Void
     
@@ -576,146 +586,153 @@ struct CentrePopup_DeletePhoneNumber: CentrePopup {
         self.viewModel = viewModel
         self.onDone = onDone
     }
-    
+
     var body: some View {
         createContent()
     }
-    
+
     func createContent() -> some View {
-        ZStack {
-            VStack {
-                Text("Delete Number: \(viewModel.numberToDelete.1 ?? "0")")
-                    .font(.title3)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                Text("Are you sure you want to delete the selected number?")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                    .padding(.leading)
-                if viewModel.ifFailed {
-                    Text("Error deleting number, please try again later")
-                        .fontWeight(.bold)
-                        .foregroundColor(.red)
-                }
-                //.vSpacing(.bottom)
-                
-                HStack {
-                    if !viewModel.loading {
-                        CustomBackButton() {
-                            HapticManager.shared.trigger(.lightImpact)
-                            withAnimation {
-                                dismissLastPopup()
-                                self.viewModel.ifFailed = false
-                                self.viewModel.numberToDelete = (nil,nil)
-                            }
-                        }
-                    }
-                    //.padding([.top])
-                    
-                    CustomButton(loading: viewModel.loading, title: NSLocalizedString("Delete", comment: ""), color: .red) {
+        VStack(spacing: 16) {
+            // Icon
+            Image(systemName: "phone.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            // Title
+            Text("Delete Number: \(viewModel.numberToDelete.1 ?? "0")")
+                .font(.title3)
+                .fontWeight(.heavy)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.primary)
+
+            // Subtitle
+            Text("Are you sure you want to delete the selected number?")
+                .font(.headline)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.primary)
+
+            // Error
+            if viewModel.ifFailed {
+                Text("Error deleting number, please try again later")
+                    .font(.footnote)
+                    .foregroundColor(.red)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.center)
+            }
+
+            // Actions
+            HStack(spacing: 12) {
+                if !viewModel.loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
                         HapticManager.shared.trigger(.lightImpact)
                         withAnimation {
-                            self.viewModel.loading = true
+                            viewModel.ifFailed = false
+                            viewModel.numberToDelete = (nil, nil)
                         }
                         Task {
-                            if self.viewModel.numberToDelete.0 != nil && self.viewModel.numberToDelete.1 != nil {
-                                switch await self.viewModel.deleteNumber(number: self.viewModel.numberToDelete.0 ?? "") {
-                                case .success(_):
-                                    HapticManager.shared.trigger(.success)
-                                    withAnimation {
-                                        //self.viewModel.synchronizationManager.startupProcess(synchronizing: true)
-                                        //self.viewModel.getNumbers()
-                                        self.viewModel.loading = false
-                                        dismissLastPopup()
-                                        self.viewModel.ifFailed = false
-                                        self.viewModel.numberToDelete = (nil,nil)
-                                        onDone()
-                                    }
-                                case .failure(_):
-                                    HapticManager.shared.trigger(.error)
-                                    withAnimation {
-                                        self.viewModel.loading = false
-                                    }
-                                    self.viewModel.ifFailed = true
+                            await dismissLastPopup()
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+
+                CustomButton(
+                    loading: viewModel.loading,
+                    title: NSLocalizedString("Delete", comment: ""),
+                    color: .red
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation {
+                        viewModel.loading = true
+                    }
+
+                    Task {
+                        if let id = viewModel.numberToDelete.0 {
+                            switch await viewModel.deleteNumber(number: id) {
+                            case .success:
+                                HapticManager.shared.trigger(.success)
+                                withAnimation {
+                                    viewModel.loading = false
+                                    viewModel.ifFailed = false
+                                    viewModel.numberToDelete = (nil, nil)
+                                    onDone()
+                                }
+                                await dismissLastPopup()
+                            case .failure:
+                                HapticManager.shared.trigger(.error)
+                                withAnimation {
+                                    viewModel.loading = false
+                                    viewModel.ifFailed = true
                                 }
                             }
                         }
-                        
                     }
                 }
-                .padding([.horizontal, .bottom])
-                //.vSpacing(.bottom)
-                
+                .frame(maxWidth: .infinity)
             }
-            .ignoresSafeArea(.keyboard)
-            
-        }.ignoresSafeArea(.keyboard)
-            .padding(.top, 10)
-            .padding(.bottom, 10)
-            .padding(.horizontal, 10)
-            .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-        
-        
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 
 //MARK: - Add Number Popup
 
-struct CentrePopup_AddNumber: CentrePopup {
+struct CenterPopup_AddNumber: CenterPopup {
     @ObservedObject var viewModel: NumbersViewModel
     @State var territory: PhoneTerritory
     var onDone: () -> Void
-    
+
     init(viewModel: NumbersViewModel, territory: PhoneTerritory, onDone: @escaping () -> Void) {
         self.viewModel = viewModel
         self.territory = territory
         self.onDone = onDone
     }
-    
+
     var body: some View {
         createContent()
     }
-    
+
     func createContent() -> some View {
-        AddPhoneNumberScreen(territory: territory, number: viewModel.currentNumber, onDone: {
-            DispatchQueue.main.async {
+        AddPhoneNumberScreen(
+            territory: territory,
+            number: viewModel.currentNumber,
+            onDone: {
                 viewModel.presentSheet = false
-                dismissLastPopup()
+                Task {
+                    await dismissLastPopup()
+                }
                 onDone()
+            },
+            onDismiss: {
+                viewModel.presentSheet = false
+                Task {
+                    await dismissLastPopup()
+                }
             }
-        }, onDismiss: {
-            viewModel.presentSheet = false
-            dismissLastPopup()
-        })
-        .padding(.top, 10)
-        .padding(.bottom, 10)
-        .padding(.horizontal, 10)
-        .background(Material.thin).cornerRadius(15, corners: .allCorners)
+        )
+        .background(Material.thin)
+        .cornerRadius(20)
         .simultaneousGesture(
-            // Hide the keyboard on scroll
             DragGesture().onChanged { _ in
                 UIApplication.shared.sendAction(
                     #selector(UIResponder.resignFirstResponder),
-                    to: nil,
-                    from: nil,
-                    for: nil
+                    to: nil, from: nil, for: nil
                 )
             }
         )
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-        
-        
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 

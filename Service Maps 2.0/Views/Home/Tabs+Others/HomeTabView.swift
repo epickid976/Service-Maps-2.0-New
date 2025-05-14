@@ -187,8 +187,8 @@ struct HomeTabView: View {
                          try isUpdateAvailable(completion: { (update, error) in
                             if let update {
                                 if update {
-                                    DispatchQueue.main.async {
-                                        CentrePopup_Update().present()
+                                    Task {
+                                        await CenterPopup_Update().present()
                                     }
                                 }
                             }
@@ -209,55 +209,74 @@ struct HomeTabView: View {
 
 // MARK: - Update Check Popup
 
-struct CentrePopup_Update: CentrePopup {
+struct CenterPopup_Update: CenterPopup {
     @State var loading = false
-    
+
     var body: some View {
-        VStack {
-            Text("A new update for the app is available!")
-                .font(.title3)
+        VStack(spacing: 16) {
+            // MARK: - Icon
+            Image(systemName: "arrow.down.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 40, height: 40)
+                .foregroundColor(.blue)
+
+            // MARK: - Title
+            Text("Update Available")
+                .font(.title2)
                 .fontWeight(.heavy)
-                .hSpacing(.leading)
-                .padding(.leading)
-                .padding(.bottom, 3)
-            Text("Please update the app as soon as possible to access the latest features and improvements. \nWould you like to update now?")
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.center)
+
+            // MARK: - Description
+            Text("""
+A new update for the app is available! Please update the app as soon as possible to access the latest features and improvements.
+
+Would you like to update now?
+""")
                 .font(.subheadline)
-                .fontWeight(.heavy)
-                .hSpacing(.leading)
-                .padding(.leading)
-            
-            HStack {
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.leading)
+                .lineSpacing(5)
+
+            // MARK: - Buttons
+            HStack(spacing: 12) {
                 if !loading {
-                    CustomBackButton(text: "Later") {
-                        withAnimation {
-                            //self.viewModel.showAlert = false
-                            dismissLastPopup()
+                    CustomBackButton(showImage: true, text: "Later") {
+                        Task {
+                            await dismissLastPopup()
                         }
                     }
+                    .frame(maxWidth: .infinity)
                 }
-                //.padding([.top])
-                
-                CustomButton(loading: loading, title: "Update Now") {
-                    withAnimation {
-                        loading = true
-                    }
+
+                CustomButton(
+                    loading: loading,
+                    title: "Update Now",
+                    active: true
+                ) {
+                    withAnimation { loading = true }
+
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103")!)
                     }
+
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        dismissLastPopup()
+                        Task {
+                            await dismissLastPopup()
+                        }
                     }
-                    
                 }
+                .frame(maxWidth: .infinity)
             }
-            .padding([.horizontal, .bottom])
-        }.padding()
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
     }
-    
-    func configurePopup(config: CentrePopupConfig) -> CentrePopupConfig {
-        config
-            .popupHorizontalPadding(24)
-            
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 

@@ -99,8 +99,10 @@ struct AddCallView: View {
                         if viewModel.checkInfo() {
                             if call != nil {
                                 Task {
-                                    withAnimation {
-                                        viewModel.loading = true
+                                    await MainActor.run {
+                                        withAnimation {
+                                            viewModel.loading = true
+                                        }
                                     }
                                     let result = await viewModel.editCall(call: call!)
                                     switch result {
@@ -117,8 +119,10 @@ struct AddCallView: View {
                                 }
                             } else {
                                 Task {
-                                    withAnimation {
-                                        viewModel.loading = true
+                                    await MainActor.run {
+                                        withAnimation {
+                                            viewModel.loading = true
+                                        }
                                     }
                                     let result = await viewModel.addCall()
                                     switch result {

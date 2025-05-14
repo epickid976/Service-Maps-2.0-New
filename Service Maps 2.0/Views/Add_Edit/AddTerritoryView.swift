@@ -48,176 +48,184 @@ struct AddTerritoryView: View {
     //MARK: - Body
     
     var body: some View {
-            ZStack {
-                NavigationStack {
-                    VStack {
-                        VStack {
-                            Text("Number")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .hSpacing(.leading)
-                                .padding(.leading)
-                            HStack {
-                                CustomField(text: viewModel.binding, isFocused: $numberFocus, textfield: true, keyboardType: .numberPad, textAlignment: .center, placeholder: "#")
-                                    .frame(maxWidth: UIScreen.screenWidth * 0.3)
-                                    .disabled(title == "Edit")
-                                if title != "Edit" {
-                                    Stepper("", onIncrement: {
-                                        HapticManager.shared.trigger(.lightImpact)
-                                        if viewModel.number != nil {
-                                            viewModel.number! += 1
-                                        } else {
-                                            viewModel.number = 0
-                                        }
-                                        
-                                    }, onDecrement: {
-                                        HapticManager.shared.trigger(.softError)
-                                        if viewModel.number != nil {
-                                            if viewModel.number != 0 {
-                                                viewModel.number! -= 1
-                                            }
-                                        }
-                                    })
-                                    .scaleEffect(CGSize(width: 1.5, height: 1.5))
-                                    .labelsHidden()
-                                    .frame(maxWidth: UIScreen.screenWidth * 0.3)
-                                } else {
-                                    Text("Number Uneditable")
-                                        .font(.headline)
-                                        .fontWeight(.semibold)
-                                        .hSpacing(.leading)
-                                        .foregroundColor(.red)
-                                }
-                            }
-                            .hSpacing(.leading)
-                        }
-                        .padding(.vertical)
-                        
-                        Text("Description")
+        ZStack {
+            NavigationStack {
+                VStack {
+                    // MARK: - Territory Number
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Number", systemImage: "number.circle.fill")
                             .font(.headline)
-                            .fontWeight(.semibold)
-                        // .frame(alignment: .center)
-                            .hSpacing(.leading)
+                            .foregroundColor(.blue)
                             .padding(.leading)
-                        CustomField(text: $viewModel.description, isFocused: $descriptionFocus, textfield: true, keyboardContentType: .oneTimeCode, textfieldAxis: .vertical, placeholder: NSLocalizedString("Description", comment: ""))
-                            .animation(.spring(), value: viewModel.description)
-                            .transition(.asymmetric(
-                                insertion: .scale.combined(with: .opacity).animation(.spring()),
-                                removal: .opacity.animation(.easeInOut)
-                            ))
-                            .padding(.bottom)
                         
-                        Text("Image")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .hSpacing(.center)
-                        VStack {
-                            ImagePickerView(title: NSLocalizedString("Drag & Drop", comment: ""), subTitle: NSLocalizedString("Tap to add an image", comment: ""), systemImage: "person.crop.square.badge.camera", tint: .blue, previewImage: $viewModel.previewImage) { image in
-                                viewModel.imageToSend = image
+                        HStack(spacing: 16) {
+                            CustomField(
+                                text: viewModel.binding,
+                                isFocused: $numberFocus,
+                                textfield: true,
+                                keyboardType: .numberPad,
+                                textAlignment: .center,
+                                placeholder: "#"
+                            )
+                            .frame(width: UIScreen.screenWidth * 0.3)
+
+                            if title != "Edit" {
+                                Stepper("", onIncrement: {
+                                    HapticManager.shared.trigger(.lightImpact)
+                                    viewModel.number = (viewModel.number ?? 0) + 1
+                                }, onDecrement: {
+                                    HapticManager.shared.trigger(.softError)
+                                    if (viewModel.number ?? 0) > 0 {
+                                        viewModel.number! -= 1
+                                    }
+                                })
+                                .labelsHidden()
+                                .scaleEffect(CGSize(width: 1.3, height: 1.3))
+                            } else {
+                                Text("Uneditable in Edit Mode")
+                                    .font(.footnote)
+                                    .foregroundColor(.secondary)
                             }
-                            .optionalViewModifier { content in
-                                content
-                                    .overlay(
-                                        Button {
-                                            HapticManager.shared.trigger(.lightImpact)
-                                            DispatchQueue.main.async {
-                                                viewModel.imageToSend = nil
-                                                viewModel.previewImage = nil
-                                                content.previewImage = nil
-                                            }
-                                        } label: {
-                                            if viewModel.imageToSend != nil {
-                                                Image(systemName: "xmark")
-                                                    .foregroundColor(.red)
-                                                    .padding(8)
-                                                    .background(Color.white)
-                                                    .clipShape(Circle())
-                                            }
-                                        }
-                                            .offset(x: 10, y: -10),
-                                        alignment: .topTrailing
-                                    )
-                            }
-                            
+
+                            Spacer() // ← Fills the rest of the row for visual balance
                         }
-                        .frame(minWidth: 250, maxWidth: 300, minHeight: 10, maxHeight: 300)
-                        
-                        Text(viewModel.error)
-                            .fontWeight(.bold)
-                            .foregroundColor(.red)
-                            .vSpacing(.bottom)
-                        
-                        HStack {
-                            if !viewModel.loading {
-                                CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
-                            }
-                            //.padding([.top])
-                            
-                            CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
-                                HapticManager.shared.trigger(.lightImpact)
-                                if viewModel.checkInfo() {
-                                    withAnimation { viewModel.loading = true }
-                                    if territory != nil {
-                                        Task {
-                                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
-                                            let result = await viewModel.editTerritory(territory: territory!)
-                                            switch result {
-                                            case .success:
-                                                HapticManager.shared.trigger(.success)
-                                                dismiss()
-                                                onDone()
-                                            case .failure(_):
-                                                HapticManager.shared.trigger(.error)
-                                                viewModel.error = NSLocalizedString("Error updating territory.", comment: "")
-                                                viewModel.loading = false
-                                            }
+                        .frame(maxWidth: .infinity) // Makes sure the HStack expands
+                        .padding(.horizontal, 6)
+                    }
+                    .padding(.vertical)
+                    
+                    // MARK: - Description
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Description", systemImage: "text.alignleft")
+                            .font(.headline)
+                            .foregroundColor(.blue)
+                            .padding(.leading)
+
+                        CustomField(
+                            text: $viewModel.description,
+                            isFocused: $descriptionFocus,
+                            textfield: true,
+                            textfieldAxis: .vertical,
+                            placeholder: NSLocalizedString("Description", comment: "")
+                        )
+                        .transition(.scale.combined(with: .opacity))
+                    }
+                    
+                    Text("Image")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .hSpacing(.center)
+                    VStack {
+                        ImagePickerView(title: NSLocalizedString("Drag & Drop", comment: ""), subTitle: NSLocalizedString("Tap to add an image", comment: ""), systemImage: "person.crop.square.badge.camera", tint: .blue, previewImage: $viewModel.previewImage) { image in
+                            viewModel.imageToSend = image
+                        }
+                        .optionalViewModifier { content in
+                            content
+                                .overlay(
+                                    Button {
+                                        HapticManager.shared.trigger(.lightImpact)
+                                        DispatchQueue.main.async {
+                                            viewModel.imageToSend = nil
+                                            viewModel.previewImage = nil
+                                            content.previewImage = nil
                                         }
-                                    } else {
-                                        Task {
-                                            try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
-                                            let result = await viewModel.addTerritory()
-                                            switch result {
-                                            case .success:
-                                                HapticManager.shared.trigger(.success)
-                                                dismiss()
-                                                onDone()
-                                            case .failure(_):
-                                                HapticManager.shared.trigger(.error)
-                                                viewModel.error = NSLocalizedString("Error adding territory.", comment: "")
-                                                viewModel.loading = false
-                                            }
+                                    } label: {
+                                        if viewModel.imageToSend != nil {
+                                            Image(systemName: "xmark")
+                                                .foregroundColor(.red)
+                                                .padding(8)
+                                                .background(Color.white)
+                                                .clipShape(Circle())
+                                        }
+                                    }
+                                        .offset(x: 10, y: -10),
+                                    alignment: .topTrailing
+                                )
+                        }
+                        
+                    }
+                    .frame(minWidth: 250, maxWidth: 300, minHeight: 10, maxHeight: 300)
+                    
+                    Text(viewModel.error)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                        .vSpacing(.bottom)
+                    
+                    HStack {
+                        if !viewModel.loading {
+                            CustomBackButton() { dismiss(); HapticManager.shared.trigger(.lightImpact) }//.keyboardShortcut("\r", modifiers: [.command, .shift])
+                        }
+                        //.padding([.top])
+                        
+                        CustomButton(loading: viewModel.loading, title: NSLocalizedString("Save", comment: "")) {
+                            HapticManager.shared.trigger(.lightImpact)
+                            if viewModel.checkInfo() {
+                                Task {
+                                    await MainActor.run {
+                                        withAnimation { viewModel.loading = true }
+                                    }
+                                }
+                                if territory != nil {
+                                    Task {
+                                        //try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
+                                        let result = await viewModel.editTerritory(territory: territory!)
+                                        switch result {
+                                        case .success:
+                                            HapticManager.shared.trigger(.success)
+                                            dismiss()
+                                            onDone()
+                                        case .failure(_):
+                                            HapticManager.shared.trigger(.error)
+                                            viewModel.error = NSLocalizedString("Error updating territory.", comment: "")
+                                            viewModel.loading = false
+                                        }
+                                    }
+                                } else {
+                                    Task {
+                                        //try? await Task.sleep(nanoseconds: 300_000_000) // 150ms delay — tweak as needed
+                                        let result = await viewModel.addTerritory()
+                                        switch result {
+                                        case .success:
+                                            HapticManager.shared.trigger(.success)
+                                            dismiss()
+                                            onDone()
+                                        case .failure(_):
+                                            HapticManager.shared.trigger(.error)
+                                            viewModel.error = NSLocalizedString("Error adding territory.", comment: "")
+                                            viewModel.loading = false
                                         }
                                     }
                                 }
-                            }//.keyboardShortcut("\r", modifiers: .command)
-                        }
-                        .padding([.horizontal, .bottom])
-                        .vSpacing(.bottom)
-                        
+                            }
+                        }//.keyboardShortcut("\r", modifiers: .command)
                     }
+                    .padding([.horizontal, .bottom])
+                    .vSpacing(.bottom)
                     
-                    .ignoresSafeArea(.keyboard)
-                    .navigationBarTitle("\(title) Territory", displayMode: .large)
-                    .navigationBarBackButtonHidden()
                 }
-                .navigationTransition(
-                    .zoom.combined(with: .fade(.out))
-                )
                 
-            }//.ignoresSafeArea(.keyboard)
-            .onAppear {
-                if territory != nil {
-                    withAnimation {
-                        title = NSLocalizedString("Edit", comment: "")
-                        
-                    }
-                    self.viewModel.description = territory!.description
-                    self.viewModel.number = Int(territory!.number)
-                } else {
-                    withAnimation {
-                        title = NSLocalizedString("Add", comment: "")
-                    }
+                .ignoresSafeArea(.keyboard)
+                .navigationBarTitle("\(title) Territory", displayMode: .large)
+                .navigationBarBackButtonHidden()
+            }
+            .navigationTransition(
+                .zoom.combined(with: .fade(.out))
+            )
+            
+        }//.ignoresSafeArea(.keyboard)
+        .onAppear {
+            if territory != nil {
+                withAnimation {
+                    title = NSLocalizedString("Edit", comment: "")
+                    
+                }
+                self.viewModel.description = territory!.description
+                self.viewModel.number = Int(territory!.number)
+            } else {
+                withAnimation {
+                    title = NSLocalizedString("Add", comment: "")
                 }
             }
+        }
     }
 }

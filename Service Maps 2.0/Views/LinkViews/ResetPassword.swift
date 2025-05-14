@@ -83,7 +83,7 @@ struct ResetPassword: View {
                     
                     HStack {
                         if !loading {
-                            CustomBackButton(showImage: true, text: "Cancel") {
+                            CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
                                 HapticManager.shared.trigger(.lightImpact)
                                 withAnimation {
                                     universalLinksManager.resetLink()

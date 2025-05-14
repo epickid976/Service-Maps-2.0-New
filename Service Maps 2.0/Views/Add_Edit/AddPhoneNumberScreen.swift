@@ -142,6 +142,7 @@ struct AddPhoneNumberScreen: View {
                     //}
                 }
             }
+            .padding()
     }
 }
 
