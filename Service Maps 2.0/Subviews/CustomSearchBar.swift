@@ -16,26 +16,45 @@ struct SearchBar: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
+                .foregroundColor(.primary)
+
             TextField("Search...", text: $searchText)
                 .focused(isFocused)
+                .textInputAutocapitalization(.none)
+                .disableAutocorrection(true)
+                .foregroundColor(.primary)
                 .overlay(alignment: .trailing) {
-                    if !searchText.isEmpty { // Show clear button only when text exists
+                    if !searchText.isEmpty {
                         Button(action: {
-                            searchText = "" // Clear text when button is tapped
+                            searchText = ""
                         }) {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.gray) // Optional styling
+                                .foregroundColor(.gray)
                         }
-                        .padding(.trailing, 8) // Add padding to the button
+                        .padding(.trailing, 4)
                     }
                 }
         }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Material.ultraThin)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white.opacity(0.05))
+                        .blur(radius: 0.5)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .onAppear {
             isFocused.wrappedValue = true
         }
-        .padding(8)
-        .background(Color.secondaryLabel.opacity(0.2))
-        .cornerRadius(10)
     }
 }
 

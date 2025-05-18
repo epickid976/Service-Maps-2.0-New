@@ -58,6 +58,15 @@ struct SettingsView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 Spacer().frame(height: 25)
+               
+                Text("Authentication")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundColor(.secondary)
+                    .padding(.bottom, 8)
+                    .padding(.leading, 5)
+                    .hSpacing(.leading)
+                
                 if !AuthorizationLevelManager().existsAdminCredentials() {
                     viewModel.phoneLoginInfoCell(mainWindowSize: mainWindowSize, showBack: showBackButton) {
                         presentationMode.wrappedValue.dismiss()
@@ -187,20 +196,27 @@ struct SettingsView: View {
                         .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         .disabled(self.viewModel.showEditNamePopup || self.viewModel.presentPolicy || self.viewModel.showDeletionConfirmationAlert || self.viewModel.showDeletionAlert || self.viewModel.showSharePopup || self.viewModel.presentSheet || self.viewModel.showAlert)
                     
-                    Button {
+                    Button("", action: {
                         HapticManager.shared.trigger(.lightImpact)
                         self.viewModel.showEditNamePopup = true
-                    } label: {
-                        Circle()
-                            .fill(Material.ultraThin)
-                            .overlay(Image(systemName: "pencil")
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.primary)
-                                .padding(12)
-                            )
-                            .frame(width: 40, height: 40)
-                    }.disabled(self.viewModel.showEditNamePopup || self.viewModel.presentPolicy || self.viewModel.showDeletionConfirmationAlert || self.viewModel.showDeletionAlert || self.viewModel.showSharePopup || self.viewModel.presentSheet || self.viewModel.showAlert)
+                    })
+                    .buttonStyle(
+                        CircleButtonStyle(
+                            imageName: "pencil",
+                            progress: .constant(0),
+                            animation: .constant(false)
+                        )
+                    )
+                    .frame(width: 40, height: 40)
+                    .disabled(
+                        self.viewModel.showEditNamePopup ||
+                        self.viewModel.presentPolicy ||
+                        self.viewModel.showDeletionConfirmationAlert ||
+                        self.viewModel.showDeletionAlert ||
+                        self.viewModel.showSharePopup ||
+                        self.viewModel.presentSheet ||
+                        self.viewModel.showAlert
+                    )
                 }
             }
         }
@@ -214,231 +230,186 @@ struct SettingsView: View {
         }
     }
     
-    //MARK: - Preferences View
-    
+    // MARK: - Preferences View
+
     @ViewBuilder
     func preferencesView(mainWindowSize: CGSize) -> some View {
-        VStack(spacing: 16) {
-            // MARK: Language
-            Button {
-                HapticManager.shared.trigger(.lightImpact)
-                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-            } label: {
-                HStack {
-                    // Icon container with consistent width
-                    HStack(spacing: 0) {
-                        Image(systemName: "globe")
-                            .imageScale(.large)
-                            .foregroundColor(.blue)
-                            .frame(width: 30)
-                    }
-                    
-                    // Title container
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Language")
-                            .font(.title3)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                    }
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Preferences")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.secondary)
+                .padding(.leading, 5)
+                .padding(.bottom, 8)
 
-                    Spacer()
-
-                    // Action indicator (consistent width)
-                    Image(systemName: "arrowshape.right.circle.fill")
-                        .imageScale(.large)
-                        .foregroundColor(.primary)
-                        .frame(width: 44)
-                }
-                .padding(.horizontal)
-            }
-            .frame(minHeight: 50)
-
-            // MARK: iPad Column View (Only for iPad)
-            if UIDevice().userInterfaceIdiom == .pad {
-                Button(action: {}) {
-                    HStack {
-                        // Icon container with consistent width
-                        HStack(spacing: 0) {
-                            Image(systemName: "text.word.spacing")
-                                .imageScale(.large)
-                                .foregroundColor(.blue)
-                                .frame(width: 30)
-                        }
-                        
-                        // Title container
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("iPad Column View")
-                                .font(.title3)
-                                .fontWeight(.heavy)
-                                .foregroundColor(.primary)
-                        }
-
-                        Spacer()
-
-                        // Toggle with fixed width
-                        Toggle("", isOn: $preferencesViewModel.isColumnViewEnabled)
-                            .labelsHidden()
-                            .toggleStyle(CheckmarkToggleStyle(color: .blue))
-                            .frame(width: 44)
-                    }
-                    .padding(.horizontal)
-                }
-                .frame(minHeight: 50)
-            }
-
-            // MARK: Haptics (Only for iPhone)
-            if UIDevice().userInterfaceIdiom != .pad {
-                Button(action: {}) {
-                    HStack {
-                        // Icon container with consistent width
-                        HStack(spacing: 0) {
-                            Image(systemName: "iphone.radiowaves.left.and.right")
-                                .imageScale(.large)
-                                .foregroundColor(.blue)
-                                .frame(width: 30)
-                        }
-                        
-                        // Title container
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Haptics")
-                                .font(.title3)
-                                .fontWeight(.heavy)
-                                .foregroundColor(.primary)
-                        }
-
-                        Spacer()
-
-                        // Toggle with fixed width
-                        Toggle("", isOn: $preferencesViewModel.hapticFeedback)
-                            .labelsHidden()
-                            .toggleStyle(CheckmarkToggleStyle(color: .blue))
-                            .frame(width: 44)
-                    }
-                    .padding(.horizontal)
-                }
-                .frame(minHeight: 50)
-            }
-
-            // MARK: Disclosure Groups
-            VStack(spacing: 12) {
-                HStack(spacing: 10) {
-                    // Icon container with consistent width
-                    HStack(spacing: 0) {
-                        Image(systemName: "rectangle.stack.fill.badge.plus")
-                            .imageScale(.large)
-                            .foregroundColor(.blue)
-                            .frame(width: 30)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Disclosure Groups")
-                            .font(.title3)
-                            .fontWeight(.heavy)
-                            .foregroundColor(.primary)
-
-                        Text("Expand or collapse all territory sections")
-                            .font(.footnote)
+            VStack(spacing: 1) {
+                preferenceRow(
+                    icon: "globe",
+                    title: "Language",
+                    action: {
+                        HapticManager.shared.trigger(.lightImpact)
+                        UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                    },
+                    trailing: {
+                        Image(systemName: "chevron.right")
                             .foregroundColor(.secondary)
                     }
+                )
 
-                    Spacer()
+                if UIDevice().userInterfaceIdiom == .pad {
+                    preferenceRow(
+                        icon: "text.word.spacing",
+                        title: "iPad Column View",
+                        trailing: {
+                            Toggle("", isOn: $preferencesViewModel.isColumnViewEnabled)
+                                .labelsHidden()
+                                .toggleStyle(CheckmarkToggleStyle(color: .blue))
+                        }
+                    )
                 }
-                .padding(.horizontal)
 
-                HStack(spacing: 12) {
-                    // Expand Button
-                    Button {
-                        HapticManager.shared.trigger(.lightImpact)
-                        viewModel.selectedAction = .expandAll
-                        expandAllDisclosureGroups()
-                        withAnimation(.easeInOut(duration: 0.1)) {
-                            isExpanding = true
+                if UIDevice().userInterfaceIdiom != .pad {
+                    preferenceRow(
+                        icon: "iphone.gen2.radiowaves.left.and.right.circle",
+                        title: "Haptics",
+                        trailing: {
+                            Toggle("", isOn: $preferencesViewModel.hapticFeedback)
+                                .labelsHidden()
+                                .toggleStyle(CheckmarkToggleStyle(color: .blue))
                         }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation(.easeInOut(duration: 0.1)) {
-                                isExpanding = false
-                            }
-                        }
-                    } label: {
-                        Text("Expand")
-                            .fontWeight(.bold)
-                            .foregroundColor(.blue)
-                            .padding(.vertical, 10)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .stroke(Color.blue, lineWidth: 2)
-                            )
-                            .opacity(isExpanding ? 0.5 : 1)
-                            .scaleEffect(isExpanding ? 0.97 : 1)
-                    }
-
-                    // Collapse Button
-                    Button {
-                        HapticManager.shared.trigger(.lightImpact)
-                        viewModel.selectedAction = .collapseAll
-                        collapseAllDisclosureGroups()
-                        withAnimation(.easeInOut(duration: 0.1)) {
-                            isCollapsing = true
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation(.easeInOut(duration: 0.1)) {
-                                isCollapsing = false
-                            }
-                        }
-                    } label: {
-                        Text("Collapse")
-                            .fontWeight(.bold)
-                            .foregroundColor(.blue)
-                            .padding(.vertical, 10)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .stroke(Color.blue, lineWidth: 2)
-                            )
-                            .opacity(isCollapsing ? 0.5 : 1)
-                            .scaleEffect(isCollapsing ? 0.97 : 1)
-                    }
+                    )
                 }
-                .padding(.horizontal)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    preferenceRow(
+                        icon: "checkmark.rectangle.stack.fill",
+                        title: "Disclosure Groups",
+                        subtitle: "Expand or collapse all territory sections"
+                    )
+
+                    HStack(spacing: 12) {
+                        Button(action: {
+                            HapticManager.shared.trigger(.lightImpact)
+                            viewModel.selectedAction = .expandAll
+                            expandAllDisclosureGroups()
+                            animate($isExpanding)
+                        }) {
+                            Text("Expand")
+                                .fontWeight(.bold)
+                                .foregroundColor(.blue)
+                                .padding(.vertical, 10)
+                                .frame(maxWidth: .infinity)
+                                .background(RoundedRectangle(cornerRadius: 10).stroke(Color.blue, lineWidth: 2))
+                                .opacity(isExpanding ? 0.5 : 1)
+                                .scaleEffect(isExpanding ? 0.97 : 1)
+                        }
+
+                        Button(action: {
+                            HapticManager.shared.trigger(.lightImpact)
+                            viewModel.selectedAction = .collapseAll
+                            collapseAllDisclosureGroups()
+                            animate($isCollapsing)
+                        }) {
+                            Text("Collapse")
+                                .fontWeight(.bold)
+                                .foregroundColor(.blue)
+                                .padding(.vertical, 10)
+                                .frame(maxWidth: .infinity)
+                                .background(RoundedRectangle(cornerRadius: 10).stroke(Color.blue, lineWidth: 2))
+                                .opacity(isCollapsing ? 0.5 : 1)
+                                .scaleEffect(isCollapsing ? 0.97 : 1)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.bottom, 10)
             }
+            .padding(10)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-        .padding(10)
         .frame(minWidth: mainWindowSize.width * 0.95)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        
+    }
+    
+    @ViewBuilder
+    func preferenceRow(
+        icon: String,
+        title: String,
+        subtitle: String? = nil,
+        action: (() -> Void)? = nil,
+        @ViewBuilder trailing: () -> some View = { EmptyView() }
+    ) -> some View {
+        Button(action: {
+            HapticManager.shared.trigger(.lightImpact)
+            action?()
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .settingsIconStyle()
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.body)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                Spacer()
+                trailing()
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     //MARK: - Backup View
     
     @ViewBuilder
     func backupView(mainWindowSize: CGSize) -> some View {
-        VStack(spacing: 16) {
-            Button {
-                HapticManager.shared.trigger(.lightImpact)
-                Task {
-                    await CenterPopup_Backup(viewModel: viewModel, backingUp: $backingUp).present()
-                }
-            } label: {
-                HStack {
-                    HStack {
-                        Image(systemName: "folder.fill")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                        Text("Backup")
-                            .font(.title3)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Backup")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 8)
+                .padding(.leading, 5)
+            
+            VStack(spacing: 16) {
+                
+                Button {
+                    HapticManager.shared.trigger(.lightImpact)
+                    Task {
+                        await CenterPopup_Backup(viewModel: viewModel, backingUp: $backingUp).present()
                     }
-                    .hSpacing(.leading)
-                }
-            }//.keyboardShortcut("j", modifiers: .command)
-            .frame(minHeight: 50)
+                } label: {
+                    HStack {
+                        HStack {
+                            Image(systemName: "folder.fill")
+                                .imageScale(.large)
+                                .padding(.horizontal)
+                            Text("Backup")
+                                .font(.body)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                        }
+                        .hSpacing(.leading)
+                    }
+                }//.keyboardShortcut("j", modifiers: .command)
+                .frame(minHeight: 50)
+            }
+            .padding(10)
+            .frame(minWidth: mainWindowSize.width * 0.95)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-        .padding(10)
         .frame(minWidth: mainWindowSize.width * 0.95)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
     
@@ -481,6 +452,17 @@ struct SettingsView: View {
             collapseAllDisclosureGroups()
         case .none:
             break // No action for the "none" case
+        }
+    }
+    
+    func animate(_ flag: Binding<Bool>, duration: Double = 0.1) {
+        withAnimation(.easeInOut(duration: duration)) {
+            flag.wrappedValue = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + (duration * 2)) {
+            withAnimation(.easeInOut(duration: duration)) {
+                flag.wrappedValue = false
+            }
         }
     }
 }
@@ -1181,4 +1163,13 @@ private extension BottomPopup_Document {
 
 #Preview {
     SettingsView()
+}
+
+extension Image {
+    func settingsIconStyle() -> some View {
+        self.resizable()
+            .scaledToFit()
+            .frame(width: 24, height: 24)
+            .foregroundColor(.blue)
+    }
 }

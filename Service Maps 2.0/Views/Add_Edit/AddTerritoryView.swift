@@ -70,17 +70,10 @@ struct AddTerritoryView: View {
                             .frame(width: UIScreen.screenWidth * 0.3)
 
                             if title != "Edit" {
-                                Stepper("", onIncrement: {
-                                    HapticManager.shared.trigger(.lightImpact)
-                                    viewModel.number = (viewModel.number ?? 0) + 1
-                                }, onDecrement: {
-                                    HapticManager.shared.trigger(.softError)
-                                    if (viewModel.number ?? 0) > 0 {
-                                        viewModel.number! -= 1
-                                    }
-                                })
-                                .labelsHidden()
-                                .scaleEffect(CGSize(width: 1.3, height: 1.3))
+                                GlassStepper(value: Binding(
+                                    get: { viewModel.number ?? 0 },
+                                    set: { viewModel.number = $0 }
+                                ))
                             } else {
                                 Text("Uneditable in Edit Mode")
                                     .font(.footnote)

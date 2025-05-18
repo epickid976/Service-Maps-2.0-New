@@ -63,7 +63,7 @@ enum Symbols: String, CaseIterable, Identifiable {
     var legend: String {
         switch self {
         case .none:
-            return NSLocalizedString("", comment: "")
+            return NSLocalizedString("-", comment: "")
         case .NC:
             return NSLocalizedString("No en casa", comment: "")
         case .NT:

@@ -745,102 +745,103 @@ struct PhoneNumberCell: View {
     @State private var cancellable: AnyCancellable?
     
     init(numbersData: PhoneNumbersData, mainWindowSize: CGSize) {
-        self._callViewModel = StateObject(wrappedValue: CallsViewModel(phoneNumber: numbersData.phoneNumber))
+        self._callViewModel = StateObject(
+            wrappedValue: CallsViewModel(phoneNumber: numbersData.phoneNumber)
+        )
         self.numbersData = numbersData
         self.mainWindowSize = mainWindowSize
     }
     
-    var isIpad: Bool {
-        return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
+    private var isIpad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
     
     var body: some View {
         HStack(spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("\(numbersData.phoneNumber.number.formatPhoneNumber())")
-                    .font(.headline)
-                    .fontWeight(.heavy)
+            VStack(alignment: .leading, spacing: 8) {
+                // — Phone number & house
+                Text(numbersData.phoneNumber.number.formatPhoneNumber())
+                    .font(.headline).fontWeight(.heavy)
                     .foregroundColor(.primary)
-                    .hSpacing(.leading)
-                    .padding(.leading, 5)
+                
                 Text("House: \(numbersData.phoneNumber.house ?? "N/A")")
-                    .font(.footnote)
-                    .lineLimit(5)
-                    .foregroundColor(.secondaryLabel)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.leading)
-                    .hSpacing(.leading)
-                    .padding(.leading, 5)
-                if let call = numbersData.phoneCall {
-                    VStack {
-                        HStack {
-                            Text("\(formattedDate(date: Date(timeIntervalSince1970: Double(call.date) / 1000)))")
-                                .font(.footnote)
+                    .font(.footnote).fontWeight(.bold)
+                    .foregroundColor(.secondary)
+                
+                // — Call preview or “no notes” box
+                Group {
+                    if let call = numbersData.phoneCall {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(formattedDate(
+                                date: Date(timeIntervalSince1970: Double(call.date)/1_000)
+                            ))
+                            .font(.caption).fontWeight(.semibold)
+                            .foregroundColor(.secondary)
+                            
+                            Text(call.notes)
+                                .font(.body).fontWeight(.medium)
+                                .foregroundColor(.primary)
                                 .lineLimit(2)
-                                .foregroundColor(.secondaryLabel)
-                                .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .hSpacing(.leading)
+                            
+                            HStack {
+                                Spacer()
+                                HStack(spacing: 4) {
+                                    Image(systemName: "person.circle")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Text(call.user)
+                                        .font(.caption).fontWeight(.semibold)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
                         }
-                        HStack {
-                            Text("\(call.notes)")
-                                .font(.body)
-                                .lineLimit(2)
-                                .foregroundColor(.secondaryLabel)
-                                .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .hSpacing(.leading)
+                    } else {
+                        HStack(spacing: 8) {
+                            Image(systemName: "text.bubble")
+                                .foregroundColor(.secondary)
+                            Text("No notes available.")
+                                .font(.body).fontWeight(.semibold)
+                                .foregroundColor(.secondary)
+                            Spacer()
                         }
                     }
-                    .frame(maxWidth: mainWindowSize.width * 0.95, maxHeight: 75)
-                    .hSpacing(.leading).padding(10).background(Color.gray.opacity(0.2)) // Subtle background color
-                    .cornerRadius(16)
-                } else {
-                    HStack {
-                        Image(systemName: "text.word.spacing")
-                            .resizable()
-                            .imageScale(.medium)
-                            .foregroundColor(.secondaryLabel)
-                            .frame(width: 20, height: 20)
-                        Text(NSLocalizedString("No notes available.", comment: ""))
-                            .font(.body)
-                            .lineLimit(2)
-                            .foregroundColor(.secondaryLabel)
-                            .fontWeight(.bold)
-                        
-                    }.hSpacing(.leading).padding(.leading, 5).padding(10).background(Color.gray.opacity(0.2)) // Subtle background color
-                        .cornerRadius(16)
                 }
+                .padding(12)
+                .frame(maxWidth: .infinity)     // ← fills full width
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(.ultraThinMaterial)                            // glass
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                        )
+                        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+                )
             }
-            .frame(maxWidth: mainWindowSize.width * 0.90)
+            .padding(10)
+            .frame(maxWidth: mainWindowSize.width * 0.90, alignment: .leading)
         }
         .onAppear {
             callViewModel.getCalls()
             cancellable = callViewModel.latestCallUpdatePublisher
-                .subscribe(on: DispatchQueue.main)
+                .receive(on: DispatchQueue.main)
                 .sink { newCall in
-                    // Check if the update is for the correct house and if it's a new/different visit
-                    if let newCall = newCall, newCall.phonenumber == self.numbersData.phoneNumber.id, newCall != numbersData.phoneCall {
+                    if let newCall = newCall,
+                       newCall.phonenumber == numbersData.phoneNumber.id,
+                       newCall != numbersData.phoneCall {
                         numbersData.phoneCall = newCall
                     } else if newCall == nil {
                         numbersData.phoneCall = nil
                     }
                 }
         }
-        .onDisappear {
-            cancellable?.cancel()
-        }
-        //.id(territory.id)
-        .padding(10)
+        .onDisappear { cancellable?.cancel() }
         .frame(minWidth: mainWindowSize.width * 0.95)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(.ultraThinMaterial)   // outer glass cell
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .optionalViewModifier { content in
             if isIpad {
-                content
-                    .frame(maxHeight: .infinity)
+                content.frame(maxHeight: .infinity)
             } else {
                 content
             }

@@ -59,18 +59,31 @@ struct CellView: View {
                     .fontWeight(.bold)
                     .multilineTextAlignment(.leading)
                 Text("Doors: \(houseQuantity)")
-                    .font(.body)
-                    .lineLimit(2)
-                    .foregroundColor(.secondaryLabel)
-                    .fontWeight(.bold)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill(Color.secondary.opacity(0.1))
+                    )
             }.padding(10).vSpacing(.top)
                 .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
         }
         .id(territory.id)
         
         .frame(minWidth: isIpad ? (mainWindowSize.width * width ) / 2 : mainWindowSize.width * width)
-        //.frame(minHeight: isIpad ? 100 : 20)
-        .background(.thinMaterial)
+        .background(
+            // GLASSMORPHIC CONTAINER
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+        )
         .clipShape(RoundedRectangle(cornerRadius: 16))
         
         .background(GeometryReader { geometry in
@@ -140,10 +153,15 @@ struct PhoneTerritoryCellView: View {
                     .fontWeight(.bold)
                     .multilineTextAlignment(.leading)
                 Text("Phone Numbers: \(numbers)")
-                    .font(.body)
-                    .lineLimit(2)
-                    .foregroundColor(.secondaryLabel)
-                    .fontWeight(.bold)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill(Color.secondary.opacity(0.1))
+                    )
             }.padding(10)
                 .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
             //Image("testTerritoryImage")
@@ -153,7 +171,16 @@ struct PhoneTerritoryCellView: View {
         //.id(territory.id)
         //.padding(5)
         .frame(minWidth: mainWindowSize.width * width)
-        .background(.thinMaterial)
+        .background(
+            // GLASSMORPHIC CONTAINER
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+        )
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .background(GeometryReader { geometry in
             Color.clear
@@ -375,60 +402,78 @@ struct CenterPopup_RecentFloorsKnocked: CenterPopup {
     }
     
     func createContent() -> some View {
-        ZStack {
-            VStack(alignment: .leading, spacing: 15) {
+        VStack(spacing: 0) {
+            // Header
+            VStack(alignment: .center, spacing: 4) {
+                Image(systemName: "door.left.hand.open")
+                    .font(.system(size: 30, weight: .bold))
+                    .foregroundColor(.blue.opacity(0.6))
+                    .padding(.bottom, 8)
                 
-                // Title
                 Text("Knocking Info")
-                    .font(.title2)
+                    .font(.title3)
                     .fontWeight(.bold)
-                    .padding(.top, 16)
-                    .padding(.leading, 20)  // small left padding for styling
+                    .foregroundColor(.primary)
                 Text("Territory \(viewModel.territory.number)")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                    .fontWeight(.bold)
-                    .padding(.leading, 20)  // small left padding for styling
-                    .padding(.top, -8)
-                
-                // Floors
-                if viewModel.floorDetails.isEmpty {
-                    Text("No recent floors knocked.")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 20)
-                } else {
-                    ScrollView {
-                        VStack(spacing: 12) {
-                            ForEach(viewModel.floorDetails, id: \.address.id) { detail in
-                                FloorCellView(detail: detail)
-                            }
-                        }
-                        .padding(.vertical, 8)
-                    }
-                }
-                
-                // Done Button
-                HStack {
-                    Spacer()
-                    CustomButton(loading: false, title: "Done") {
-                        HapticManager.shared.trigger(.lightImpact)
-                        withAnimation {
-                            onDone()
-                        }
-                        Task {
-                            await dismissLastPopup()
-                        }
-                    }
-                    Spacer()
-                }
-                .padding(.bottom, 16)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
             }
-            .background(Material.thin)
-            .cornerRadius(16)
-            .ignoresSafeArea(.keyboard)
+            .padding(.top, 20)
+            .padding(.horizontal, 20)
+
+            Divider().padding(.top, 10)
+
+            // Scrollable List
+            ScrollView {
+                VStack(spacing: 14) {
+                    if viewModel.floorDetails.isEmpty {
+                        VStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle")
+                                .font(.largeTitle)
+                                .foregroundColor(.gray.opacity(0.6))
+
+                            Text("No recent floors knocked.")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 30)
+                    } else {
+                        ForEach(viewModel.floorDetails, id: \.address.id) { detail in
+                            FloorCellView(detail: detail)
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+            }
+
+            Divider().padding(.top, 10)
+
+            // Footer Button
+            HStack {
+                Spacer()
+                CustomButton(loading: false, title: "Done") {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { onDone() }
+                    Task { await dismissLastPopup() }
+                }
+                Spacer()
+            }
+            .padding()
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-        // Note: NO .padding(.horizontal, ...) here
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .ignoresSafeArea(.keyboard)
     }
     

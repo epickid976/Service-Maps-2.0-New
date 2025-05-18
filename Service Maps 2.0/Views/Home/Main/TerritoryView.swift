@@ -311,7 +311,7 @@ struct TerritoryView: View {
                                                     .animation(.spring(), value: isCircleExpanded)
                                             }
                                         }
-                                    }
+                                    }.animation(.spring(), value: viewModel.territoryData == nil || dataStore.synchronized)
                                 }
                             }
                             .navigationTransition(transition)

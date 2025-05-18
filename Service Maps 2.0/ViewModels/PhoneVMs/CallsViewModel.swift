@@ -139,54 +139,70 @@ struct CallCell: View {
     var call: PhoneCallData
     var ipad: Bool = false
     @Environment(\.mainWindowSize) var mainWindowSize
-    
-    var isIpad: Bool {
-        return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
+
+    private var isIpad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
 
     var body: some View {
         HStack(spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    HStack {
-                        Text(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(call.phoneCall.date / 1000))))
-                        //.frame(maxWidth: .infinity)
-                            .font(.headline)
-                            .lineLimit(3)
-                            .foregroundColor(.secondaryLabel)
-                            .fontWeight(.heavy)
-                            .hSpacing(.leading)
-                    }
-                    
-                }
-                
+            VStack(alignment: .leading, spacing: 6) {
+                // Date row
+                Text(
+                    formattedDate(
+                        date: Date(
+                            timeIntervalSince1970: TimeInterval(call.phoneCall.date / 1_000)
+                        )
+                    )
+                )
+                .font(.headline)
+                .fontWeight(.heavy)
+                .foregroundColor(.secondary)
+                .lineLimit(2)
+
+                // Notes
                 Text(call.phoneCall.notes)
-                    .font(.headline)
-                    .lineLimit(4)
+                    .font(.body)
+                    .fontWeight(.semibold)
                     .foregroundColor(.primary)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
-                Spacer().frame(height: 5)
-                Text(call.phoneCall.user)
-                    .font(.subheadline)
-                    .lineLimit(2)
-                    .foregroundColor(.secondaryLabel)
-                    .fontWeight(.heavy)
-                    .hSpacing(.trailing)
-                
+                    .lineLimit(4)
+
+                // User
+                HStack {
+                    Spacer()
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.circle")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(call.phoneCall.user)
+                            .font(.subheadline)
+                            .fontWeight(.heavy)
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
-            .frame(maxWidth: .infinity)
-            .padding(5)
-            
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(10)
-        .frame(minWidth: ipad ? (mainWindowSize.width / 2) * 0.90 : mainWindowSize.width * 0.90)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .frame(
+            minWidth: ipad
+                ? (mainWindowSize.width / 2) * 0.90
+                : mainWindowSize.width * 0.90
+        )
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .optionalViewModifier { content in
             if isIpad {
-                content
-                    .frame(maxHeight: .infinity)
+                content.frame(maxHeight: .infinity)
             } else {
                 content
             }

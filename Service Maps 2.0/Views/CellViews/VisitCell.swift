@@ -14,58 +14,75 @@ struct VisitCell: View {
     var ipad: Bool = false
     var mainWindowSize: CGSize
     
-    //MARK: - Body
-    
     var body: some View {
         HStack(spacing: 10) {
-            VStack(alignment: .leading, spacing: 3) {
-                Grid(alignment: .leading) {
-                    GridRow {
-                        Text(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(visit.visit.date / 1000))))
-                            .font(.headline)
-                            .lineLimit(3)
-                            .multilineTextAlignment(.leading)
-                            .foregroundColor(.secondaryLabel)
-                            .fontWeight(.heavy)
-                            .hSpacing(.leading)
-                        Text(NSLocalizedString(visit.visit.symbol.localizedUppercase, comment: ""))
-                            .font(.title3)
-                            .lineLimit(1)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                            .hSpacing(.trailing)
-                            .gridColumnAlignment(.trailing)
-                            .frame(maxWidth: 40)
-                    }
-                }.vSpacing(.top)
+            VStack(alignment: .leading, spacing: 8) {
+                // Top Row: Date + Symbol
+                HStack {
+                    Text(formattedDate(date: Date(timeIntervalSince1970: TimeInterval(visit.visit.date / 1000))))
+                        .font(.headline)
+                        .fontWeight(.heavy)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Text(NSLocalizedString(visit.visit.symbol.uppercased(), comment: ""))
+                        .font(.caption)
+                        .fontWeight(.heavy)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(
+                                {
+                                    switch visit.visit.symbol.lowercased() {
+                                    case "nt":
+                                        return Color.red.opacity(0.8)
+                                    case "uk":
+                                        return Color.gray.opacity(0.6)
+                                    default:
+                                        return Color.blue.opacity(0.8)
+                                    }
+                                }()
+                            )
+                        .foregroundColor(.white)
+                        .clipShape(Capsule())
+                }
+
+                // Notes
                 Text(visit.visit.notes)
-                    .font(.headline)
-                    .lineLimit(8)
+                    .font(.body)
+                    .fontWeight(.semibold)
                     .foregroundColor(.primary)
-                    .fontWeight(.heavy)
-                    .hSpacing(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true).vSpacing(.top)
-                Spacer().frame(height: 5)
-                Text(visit.visit.user)
-                    .font(.subheadline)
-                    .lineLimit(2)
-                    .foregroundColor(.secondaryLabel)
-                    .fontWeight(.heavy)
-                    .hSpacing(.trailing).vSpacing(.bottom)
+                    .lineLimit(8)
+
+                // User
+                HStack {
+                    Spacer()
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.circle")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Text(visit.visit.user)
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .fontWeight(.bold)
+                    }
+                }
             }
+            .padding()
         }
-        .padding(10)
         .frame(minWidth: ipad ? (mainWindowSize.width / 2) * 0.90 : mainWindowSize.width * 0.90)
-        .background(.thinMaterial)
-        .optionalViewModifier { content in
-            if ipad {
-                content
-                    .frame(maxHeight: .infinity)
-            } else {
-                content
-            }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+                .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 }

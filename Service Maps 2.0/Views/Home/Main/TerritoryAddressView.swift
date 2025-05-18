@@ -64,11 +64,12 @@ struct TerritoryAddressView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScalingHeaderScrollView {
                         ZStack {
-                            Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
+                            //Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
                             viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size) .onTapGesture { if !imageURL.isEmpty {
                                 HapticManager.shared.trigger(.lightImpact)
                                 viewModel.showImageViewer = true }
                             }
+                            .padding(.bottom, 2)
                                 
                         }
                         
@@ -264,23 +265,29 @@ struct TerritoryAddressView: View {
         LazyVStack {
             SwipeView {
                 NavigationLink(destination: NavigationLazyView(HousesView(address: addressData.address).installToast(position: .bottom))) {
-                    HStack(spacing: 10) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(addressData.address.address)")
+                    HStack {
+                        VStack(alignment: .leading, spacing: 8) {
+                            // Address Title
+                            Text(addressData.address.address)
                                 .font(.headline)
-                                .fontWeight(.heavy)
+                                .fontWeight(.bold)
                                 .foregroundColor(.primary)
                                 .multilineTextAlignment(.leading)
-                                .hSpacing(.leading)
+                            
+                            // House Quantity as Capsule
                             Text("Doors: \(addressData.houseQuantity)")
-                                .font(.body)
-                                .lineLimit(5)
-                                .foregroundColor(.secondaryLabel)
-                                .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
-                                .hSpacing(.leading)
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 4)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.secondary.opacity(0.1))
+                                )
                         }
-                        .frame(maxWidth: mainWindowSize.width * 0.90)
+
+                        Spacer()
                     }
                     .optionalViewModifier { content in
                         if isIpad {
@@ -290,11 +297,18 @@ struct TerritoryAddressView: View {
                             content
                         }
                     }
-                    //.id(territory.id)
-                    .padding(10)
+                    .padding()
                     .frame(minWidth: mainWindowSize.width * 0.95)
-                    .background(.thinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(.ultraThinMaterial)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                            )
+                            .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
                     .optionalViewModifier { content in
                         if AuthorizationLevelManager().existsAdminCredentials() {
                             content

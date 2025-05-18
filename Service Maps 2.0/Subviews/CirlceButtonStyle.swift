@@ -11,7 +11,6 @@ import Combine
 
 //MARK: - Circle Button Style
 struct CircleButtonStyle: ButtonStyle {
-    //MARK: - Properties
     var imageName: String
     var foreground = Color.primary
     var background = Color.white
@@ -19,23 +18,24 @@ struct CircleButtonStyle: ButtonStyle {
     var height: CGFloat = 40
     @Binding var progress: CGFloat
     @Binding var animation: Bool
-    
-    //MARK: - Body
+
     func makeBody(configuration: Configuration) -> some View {
-        
-        Circle()
-            
-            .optionalViewModifier { content in
-                if progress > 0.01 {
-                    content
-                        .fill(Color.clear)
-                } else {
-                    content
-                        .fill(Material.ultraThin)
+        ZStack {
+            Circle()
+                .optionalViewModifier { content in
+                    if progress > 0.01 {
+                        content.fill(Color.clear)
+                    } else {
+                        content.fill(Material.ultraThin)
+                    }
                 }
-            }
-        
-            .overlay(Image(systemName: imageName == "magnifyingglass" && animation == true ? "" : imageName)
+                .overlay(
+                    Circle()
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+
+            Image(systemName: imageName == "magnifyingglass" && animation ? "" : imageName)
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(foreground)
@@ -43,23 +43,20 @@ struct CircleButtonStyle: ButtonStyle {
                 .bold()
                 .optionalViewModifier { content in
                     if #available(iOS 17, *) {
-                        content
-                            .symbolEffect(.bounce, options: .speed(3.0), value: animation)
+                        content.symbolEffect(.bounce, options: .speed(3.0), value: animation)
                     } else {
                         content
                     }
                 }
-            )
-        
-            .frame(width: width, height: height)
-            
+        }
+        .frame(width: width, height: height)
     }
 }
 
 //MARK: - Pill Button Style
 @MainActor
 struct PillButtonStyle: ButtonStyle {
-    //MARK: - Properties
+    // MARK: - Properties
     var imageName: String
     var foreground = Color.primary
     var background = Color.white
@@ -72,68 +69,70 @@ struct PillButtonStyle: ButtonStyle {
     
     @State private var timePassed = getFormattedElapsedTime(from: StorageManager.shared.lastTime)
     
-    //MARK: - Body
+    // MARK: - Body
     func makeBody(configuration: Configuration) -> some View {
-        RoundedRectangle(cornerSize: CGSize(width: 100.0, height: 100.0), style: .continuous)
+        ZStack {
+            RoundedRectangle(cornerRadius: height / 2, style: .continuous)
+                .optionalViewModifier { content in
+                    if progress > 0.01 {
+                        content.fill(Color.clear)
+                    } else {
+                        content.fill(Material.ultraThin)
+                    }
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: height / 2, style: .continuous)
+                        .fill(.ultraThinMaterial)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: height / 2)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+
+            VStack(spacing: 2) {
+                if synced {
+                    displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                    displayText(timePassed, fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
+                } else {
+                    ProgressView()
+                }
+            }
             .optionalViewModifier { content in
-                if progress > 0.01 {
+                if #available(iOS 17, *) {
                     content
-                        .fill(Color.clear)
+                        .contentTransition(.numericText())
+                        .animation(.spring(duration: 0.5), value: timePassed)
+                        .animation(.spring(duration: 0.5), value: synced)
                 } else {
                     content
-                        .fill(Material.ultraThin)
                 }
             }
-            .overlay(
-                VStack {
-                    if synced {
-                        displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
-                        displayText(NSLocalizedString("\(timePassed)", comment: ""), fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
-                    } else {
-                        ProgressView()
-                    }
-                }
-                .optionalViewModifier { content in
-                    if #available(iOS 17, *) {
-                        content
-                            .contentTransition(.numericText())
-                            .animation(.spring(duration: 0.5), value: timePassed)
-                            .animation(.spring(duration: 0.5), value: synced)
-                    } else {
-                        content
-                    }
-                }
-                .animation(.easeInOut, value: synced)
-            )
-            .frame(width: width, height: height, alignment: .trailing)
-            .animation(.spring(), value: synced)
-            .padding(5)
-            .onAppear {
-                // When the view appears, calculate the time passed
-                updateElapsedTime()
-            }
-            .onChange(of: synced) { _ in
-                // Immediately update the time when synced becomes true
-                if synced {
-                    updateElapsedTime(instant: true) // Force an instant update to "Now"
-                }
-            }
-            .onReceive(Timer.publish(every: 5, on: .main, in: .common).autoconnect()) { _ in
-                updateElapsedTime() // Update time passed every 5 seconds
-            }
-    }
-    
-    //MARK: - Functions
-    func updateElapsedTime(instant: Bool = false) {
-        // If it's an instant update (sync just happened), force "Now"
-        if instant {
-            timePassed = NSLocalizedString("Now", comment: "Indicates that something just synced")
-        } else {
-            timePassed = getFormattedElapsedTime(from: lastTime)
         }
+        .frame(width: width, height: height)
+        .padding(5)
+        .onAppear { updateElapsedTime() }
+        .onChange(of: synced) { newValue in
+            if newValue {
+                updateElapsedTime(instant: true)
+            }
+        }
+        .onReceive(Timer.publish(every: 5, on: .main, in: .common).autoconnect()) { _ in updateElapsedTime() }
     }
-    
-    func displayText(_ text: String, fontWeight: Font.Weight = .bold, fontSize: Font = .caption, foregroundColor: Color) -> some View {
+
+    // MARK: - Functions
+    func updateElapsedTime(instant: Bool = false) {
+        timePassed = instant
+            ? NSLocalizedString("Now", comment: "")
+            : getFormattedElapsedTime(from: lastTime)
+    }
+
+    func displayText(
+        _ text: String,
+        fontWeight: Font.Weight = .bold,
+        fontSize: Font = .caption,
+        foregroundColor: Color
+    ) -> some View {
         Text(text)
             .fontWeight(fontWeight)
             .font(fontSize)
@@ -174,4 +173,65 @@ func isMoreThanFiveMinutesOld(date: Date?) async -> Bool {
     let calendar = Calendar.current
     let fiveMinutesAgo = calendar.date(byAdding: .minute, value: -5, to: Date())!
     return date < fiveMinutesAgo
+}
+
+struct GlassStepper: View {
+    @Binding var value: Int
+    var minValue: Int = 0
+    var maxValue: Int = 999
+    var cornerRadius: CGFloat = 16
+    var buttonSize: CGFloat = 36
+
+    var body: some View {
+        HStack(spacing: 16) {
+            Button(action: {
+                HapticManager.shared.trigger(.softError)
+                if value > minValue { value -= 1 }
+            }) {
+                Image(systemName: "minus")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 14, height: 14)
+                    .foregroundColor(.primary)
+                    .padding(10)
+            }
+            .background(Material.ultraThin)
+            .clipShape(Circle())
+            .overlay(Circle().stroke(Color.white.opacity(0.15), lineWidth: 0.6))
+            .shadow(color: .black.opacity(0.06), radius: 2, x: 0, y: 1)
+            
+            Button(action: {
+                HapticManager.shared.trigger(.lightImpact)
+                if value < maxValue { value += 1 }
+            }) {
+                Image(systemName: "plus")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 14, height: 14)
+                    .foregroundColor(.primary)
+                    .padding(10)
+            }
+            .background(Material.ultraThin)
+            .clipShape(Circle())
+            .overlay(Circle().stroke(Color.white.opacity(0.15), lineWidth: 0.6))
+            .shadow(color: .black.opacity(0.06), radius: 2, x: 0, y: 1)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(Material.ultraThin)
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color.white.opacity(0.05))
+                        .blur(radius: 0.5)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+    }
 }

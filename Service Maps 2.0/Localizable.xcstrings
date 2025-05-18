@@ -7,6 +7,9 @@
     " %@" : {
 
     },
+    "-" : {
+
+    },
     "((days) days ago)" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -25,6 +28,7 @@
       }
     },
     "(%d days ago)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -83,16 +87,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
-          }
-        }
-      }
-    },
-    "%@ %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ %2$@"
           }
         }
       }
@@ -691,6 +685,7 @@
       }
     },
     "App Version" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -931,6 +926,9 @@
         }
       }
     },
+    "Authentication" : {
+
+    },
     "Back" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -981,6 +979,7 @@
       }
     },
     "Become Administrator" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1604,6 +1603,7 @@
       }
     },
     "Disclosure Groups" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2539,6 +2539,7 @@
       }
     },
     "Expand or collapse all territory sections" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2708,6 +2709,7 @@
       }
     },
     "Haptics" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2911,6 +2913,7 @@
 
     },
     "iPad Column View" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3023,6 +3026,7 @@
       }
     },
     "Language" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3137,6 +3141,7 @@
       }
     },
     "Log into Phone Book" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -3811,7 +3816,7 @@
       }
     },
     "Now" : {
-      "comment" : "Indicates that no time has been recorded\nIndicates that something happened less than a minute ago\nIndicates that something just synced",
+      "comment" : "Indicates that no time has been recorded\nIndicates that something happened less than a minute ago",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4325,6 +4330,9 @@
         }
       }
     },
+    "Preferences" : {
+
+    },
     "Privacy Policy" : {
       "localizations" : {
         "es" : {
@@ -4553,6 +4561,7 @@
 
     },
     "Review App" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4806,6 +4815,7 @@
       }
     },
     "Share App" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -5058,6 +5068,12 @@
           }
         }
       }
+    },
+    "Tap to become administrator" : {
+
+    },
+    "Tap to log in" : {
+
     },
     "Territories" : {
       "localizations" : {

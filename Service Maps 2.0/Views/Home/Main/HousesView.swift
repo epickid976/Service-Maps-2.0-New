@@ -246,7 +246,7 @@ struct HousesView: View {
                                                         }
                                                         viewModel.getHouses()
                                                     } label: {
-                                                        Label(symbol.localizedString, systemImage: viewModel.selectedSymbols.contains(symbol) ? "checkmark.circle.fill" : "circle")
+                                                        Label(symbol.legend, systemImage: viewModel.selectedSymbols.contains(symbol) ? "checkmark.circle.fill" : "circle")
                                                     }
                                                 }
                                             }

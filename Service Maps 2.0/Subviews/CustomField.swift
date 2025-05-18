@@ -11,9 +11,9 @@ import SwiftUI
 //MARK: - Custom Field
 
 struct CustomField: View {
-    //MARK: - Properties
+    // MARK: - Properties
     @Binding var text: String
-    var isFocused: FocusState<Bool>.Binding // Use FocusState for focus state
+    var isFocused: FocusState<Bool>.Binding
     var textfield: Bool
     var keyboardType: UIKeyboardType?
     var keyboardContentType: UITextContentType?
@@ -25,115 +25,82 @@ struct CustomField: View {
     var expanded: Bool?
     var diableCapitalization: Bool?
     var maxValue: Int? = 255
-    
+
     let placeholder: String
-    
-    @State var isSecure = true
-    
-    //MARK: - Body
+    @State private var isSecure = true
+
+    // MARK: - Body
     var body: some View {
-        //MARK: - TextField
-        if textfield {
-            TextField(placeholder, text: $text, axis: textfieldAxis ?? .horizontal)
-                .disabled(disabled ?? false)
-                .autocorrectionDisabled(disableAutocorrect ?? false)
-                .textInputAutocapitalization(diableCapitalization ?? false ? .never : .sentences)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(16)
-                .padding(.horizontal)
-                .font(.system(size: 16, weight: .regular))
-                .accentColor(.blue)
-                .focused(isFocused) // Use the isFocused binding property of FocusState
-                .gesture(TapGesture().onEnded {
-                    // Handle tap action
-                    isFocused.wrappedValue = true // Use the isFocused binding property of FocusState
-                })
-                .keyboardType(keyboardType ?? .default)
-                .multilineTextAlignment(textAlignment ?? .leading)
-                .frame(minHeight: 60)
-                .optionalViewModifier { content in
-                    if maxValue != nil {
-                        content.onChange(of: text) { newValue in
-                            if newValue.count > maxValue! {
-                                text = String(newValue.prefix(maxValue!))
+        Group {
+            if textfield {
+                TextField(placeholder, text: $text, axis: textfieldAxis ?? .horizontal)
+                    .glassFieldStyle(
+                        isFocused: isFocused,
+                        keyboardType: keyboardType ?? .default,
+                        keyboardContentType: keyboardContentType,
+                        textAlignment: textAlignment ?? .leading,
+                        disableAutocorrect: disableAutocorrect ?? false,
+                        diableCapitalization: diableCapitalization ?? false,
+                        expanded: expanded ?? false,
+                        disabled: disabled ?? false,
+                        maxValue: maxValue
+                    )
+                    .onChange(of: text) { newValue in
+                            if formatAsPhone == true {
+                                text = newValue.formatPhoneNumber()
+                            }
+
+                            if let max = maxValue, text.count > max {
+                                text = String(text.prefix(max))
                             }
                         }
-                    } else {
-                        content
-                    }
-                }
-                .optionalViewModifier { content in
-                    if keyboardContentType != nil {
-                        content
-                            .textContentType(keyboardContentType!)
-                    } else {
-                        content
-                    }
-                }
-                .optionalViewModifier { content in
-                    if formatAsPhone != nil {
-                        if formatAsPhone! {
-                            content
-                                .onChange(of: text) { newValue in
+            } else {
+                HStack(spacing: 8) {
+                    SecureTextField(placeholder: placeholder, text: $text, isSecure: $isSecure)
+                        .glassFieldStyle(
+                            isFocused: isFocused,
+                            keyboardType: keyboardType ?? .default,
+                            keyboardContentType: keyboardContentType,
+                            textAlignment: textAlignment ?? .leading,
+                            disableAutocorrect: disableAutocorrect ?? false,
+                            diableCapitalization: diableCapitalization ?? false,
+                            expanded: expanded ?? false,
+                            disabled: disabled ?? false,
+                            maxValue: maxValue
+                        )
+                        .onChange(of: text) { newValue in
+                                if formatAsPhone == true {
                                     text = newValue.formatPhoneNumber()
                                 }
-                        }
-                    } else {
-                        content
+
+                                if let max = maxValue, text.count > max {
+                                    text = String(text.prefix(max))
+                                }
+                            }
+
+                    Button(action: { isSecure.toggle() }) {
+                        Image(systemName: isSecure ? "eye.slash" : "eye")
+                            .foregroundColor(.primary)
                     }
-                }
-                .optionalViewModifier { content in
-                    if expanded != nil {
-                        if expanded! {
-                            content.lineLimit(5, reservesSpace: true)
-                        } else {
-                            content
-                        }
-                    } else {
-                        content
-                    }
-                }
-                .toolbar {
-                    if isFocused.wrappedValue {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Done") {
-                                HapticManager.shared.trigger(.lightImpact)
-                                isFocused.wrappedValue = false // Dismiss the keyboard
-                                resignFirstResponderManually()
-                            }.tint(.primary).bold()
-                        }
-                    }
-                }
-        } else {
-            //MARK: - Secure Field
-            HStack {
-                SecureTextField(placeholder: placeholder, text: $text, isSecure: $isSecure)
-                    .customFieldModifier(
-                        isFocused: isFocused,
-                        textfieldAxis: textfieldAxis,
-                        keyboardType: keyboardType,
-                        keyboardContentType: keyboardContentType,
-                        textAlignment: textAlignment,
-                        text: $text,
-                        formatAsPhone: formatAsPhone,
-                        expanded: expanded,
-                        disableAutocorrect: disableAutocorrect,
-                        diableCapitalization: diableCapitalization,
-                        disabled: disabled
-                    )
-                Button(action: {
-                    isSecure.toggle()
-                }) {
-                    Image(systemName: "eye")
-                        .foregroundColor(.gray)
                 }
             }
         }
-        
+        .padding(.horizontal)
+        .toolbar {
+            if isFocused.wrappedValue {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        HapticManager.shared.trigger(.lightImpact)
+                        isFocused.wrappedValue = false
+                        resignFirstResponderManually()
+                    }
+                    .tint(.primary)
+                    .bold()
+                }
+            }
+        }
     }
-    
 }
 
 //MARK: - Secure Text Field
@@ -156,32 +123,70 @@ struct SecureTextField: View {
 
 //MARK: - Custom Field Modifier
 extension View {
-    func customFieldModifier(
+    func glassFieldStyle(
         isFocused: FocusState<Bool>.Binding,
-        textfieldAxis: Axis? = nil,
         keyboardType: UIKeyboardType? = nil,
         keyboardContentType: UITextContentType? = nil,
-        textAlignment: TextAlignment? = nil,
-        text: Binding<String>,
-        formatAsPhone: Bool? = nil,
-        expanded: Bool? = nil,
-        disableAutocorrect: Bool? = nil,
-        diableCapitalization: Bool? = nil,
-        disabled: Bool? = nil
+        textAlignment: TextAlignment = .leading,
+        disableAutocorrect: Bool = false,
+        diableCapitalization: Bool = false,
+        expanded: Bool = false,
+        disabled: Bool = false,
+        maxValue: Int? = nil
     ) -> some View {
-        self.modifier(CustomFieldModifier(
-            isFocused: isFocused,
-            textfieldAxis: textfieldAxis,
-            keyboardType: keyboardType,
-            keyboardContentType: keyboardContentType,
-            textAlignment: textAlignment,
-            text: text,
-            formatAsPhone: formatAsPhone,
-            expanded: expanded,
-            disableAutocorrect: disableAutocorrect,
-            diableCapitalization: diableCapitalization,
-            disabled: disabled
-        ))
+        self
+            .disabled(disabled)
+            .autocorrectionDisabled(disableAutocorrect)
+            .textInputAutocapitalization(diableCapitalization ? .never : .sentences)
+            .keyboardType(keyboardType ?? .default)
+            .multilineTextAlignment(textAlignment)
+            .focused(isFocused)
+            .padding()
+            .glassBackground()
+            .font(.system(size: 16, weight: .regular))
+            .frame(minHeight: 60)
+            .optionalViewModifier { content in
+                if expanded {
+                    content.lineLimit(5, reservesSpace: true)
+                } else {
+                    content
+                }
+            }
+            .optionalViewModifier { content in
+                if let type = keyboardContentType {
+                    content.textContentType(type)
+                } else {
+                    content
+                }
+            }
+    }
+}
+
+struct GlassBackground: ViewModifier {
+    var cornerRadius: CGFloat = 16
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(.ultraThinMaterial)
+                    .background(
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(Color.white.opacity(0.05))
+                            .blur(radius: 0.3)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                    )
+                    .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+            )
+    }
+}
+
+extension View {
+    func glassBackground(cornerRadius: CGFloat = 16) -> some View {
+        self.modifier(GlassBackground(cornerRadius: cornerRadius))
     }
 }
 

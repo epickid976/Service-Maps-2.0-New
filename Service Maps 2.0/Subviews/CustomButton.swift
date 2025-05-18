@@ -14,7 +14,7 @@ struct CustomButton: View {
     var loading: Bool
     var alwaysExpanded: Bool = false
     var title: String
-    var color: Color?
+    var color: Color? = nil
     var active: Bool = true
     var action: () -> Void
 
@@ -23,9 +23,8 @@ struct CustomButton: View {
             ZStack {
                 // Text layer
                 Text(title)
-                    .fontWeight(.heavy)
+                    .font(.system(size: 16, weight: .bold))
                     .opacity(loading ? 0 : 1)
-                    .frame(maxWidth: .infinity)
 
                 // Spinner layer
                 if loading {
@@ -35,33 +34,48 @@ struct CustomButton: View {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: spinnerColor))
                                 .scaleEffect(0.8)
-                                .frame(width: 10, height: 10)
                             Spacer()
                         }
-                        .transition(.opacity)
                     } else {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: spinnerColor))
                             .scaleEffect(0.8)
-                            .frame(width: 10, height: 10)
-                            .transition(.opacity)
                     }
                 }
             }
-            // 👇 Add animation here — not when setting `loading`
-            .animation(.spring(), value: loading)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 10)
+            .frame(maxWidth: .infinity)
+            .background(
+                Capsule()
+                    .fill((color ?? .blue).opacity(0.4))
+                    .background(
+                        Capsule().fill(Material.ultraThin)
+                    )
+                    .overlay(
+                        Capsule().stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: (color ?? .blue).opacity(0.4), radius: 6, x: 0, y: 3)
+            )
+            .foregroundColor(textColor)
+            .clipShape(Capsule())
+            .opacity(active ? 1 : 0.6)
         }
-        .buttonStyle(.borderedProminent)
-        .buttonBorderShape(.capsule)
-        .tint(color ?? .accentColor)
-        .controlSize(.large)
+        .buttonStyle(PlainButtonStyle())
         .disabled(!active)
     }
 
     private var spinnerColor: Color {
         if let color = color {
-            return color == .red || color == .blue || color == .accentColor ? .white : .gray
+            return [.red, .blue, .accentColor].contains(color) ? .white : .gray
         }
         return .white
+    }
+
+    private var textColor: Color {
+        if let color = color {
+            return [.red, .blue, .accentColor].contains(color) ? .white : color
+        }
+        return .primary
     }
 }

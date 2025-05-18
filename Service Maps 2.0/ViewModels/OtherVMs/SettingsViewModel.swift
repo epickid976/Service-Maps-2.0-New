@@ -60,16 +60,16 @@ class SettingsViewModel: ObservableObject {
     
     // MARK: - Get Functions
     func getCongregationName() -> String{
-            return dataStore.congregationName ?? ""
-        }
-        
-        func exitAdministrator() {
-            authenticationManager.exitAdministrator()
-        }
-        
-        func exitPhoneLogin() {
-            authenticationManager.exitPhoneLogin()
-        }
+        return dataStore.congregationName ?? ""
+    }
+    
+    func exitAdministrator() {
+        authenticationManager.exitAdministrator()
+    }
+    
+    func exitPhoneLogin() {
+        authenticationManager.exitPhoneLogin()
+    }
     
     // MARK: - Edit User
     func editUserName(name: String) async -> Result<Bool, Error> {
@@ -83,42 +83,49 @@ class SettingsViewModel: ObservableObject {
             return Result.failure(failure)
         }
     }
-
+    
     // MARK: - UI ViewBuilder Functions
     /// Settings View to deload actual view
     
     // MARK: - Profile View
+    
     @ViewBuilder
     func profile(showBack: Bool, onDone: @escaping () -> Void?) -> some View {
-        VStack {
-            HStack {
+        VStack(spacing: 16) {
+            // MARK: - User Icon + Info
+            HStack(spacing: 16) {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable()
+                    .scaledToFit()
                     .frame(width: 75, height: 75)
+                    .foregroundColor(.blue)
+                    .padding(6)
+                    .background(Material.ultraThin)
+                    .clipShape(Circle())
                 
-                VStack {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(dataStore.userName ?? "NO USERNAME")
-                        .font(.headline)
-                        .lineLimit(4)
-                        .foregroundColor(.primary)
+                        .font(.title3)
                         .fontWeight(.heavy)
-                        .hSpacing(.leading)
-                        
+                        .foregroundColor(.primary)
+                        .lineLimit(2)
+                    
                     Text(dataStore.userEmail ?? "NO EMAIL")
                         .font(.subheadline)
-                        .lineLimit(4)
-                        .foregroundColor(.primary)
-                        .fontWeight(.heavy)
-                        .hSpacing(.leading)
+                        .fontWeight(.medium)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             
+            // MARK: - Logout Button
             CustomButton(loading: loading, title: NSLocalizedString("Logout", comment: "")) {
                 HapticManager.shared.trigger(.lightImpact)
                 Task {
                     let result = await self.authenticationManager.logout()
                     switch result {
-                    case .success(_):
+                    case .success:
                         HapticManager.shared.trigger(.success)
                         self.exitAdministrator()
                         if showBack {
@@ -128,340 +135,257 @@ class SettingsViewModel: ObservableObject {
                         
                     case .failure(let error):
                         HapticManager.shared.trigger(.error)
-                        
                         self.errorText = error.asAFError?.localizedDescription ?? ""
                     }
                 }
             }
             
-            if errorText != "" {
+            // MARK: - Error Message
+            if !errorText.isEmpty {
                 Text(errorText)
+                    .font(.footnote)
                     .fontWeight(.bold)
                     .foregroundColor(.red)
-                    .vSpacing(.bottom)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 4)
             }
-        }.padding(.bottom)
-            .frame(maxWidth: .infinity)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Material.thin)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(.horizontal, 5)
     }
     
     // MARK: - Phone Login Cell
     
     @ViewBuilder
     func phoneLoginInfoCell(mainWindowSize: CGSize, showBack: Bool, onDone: @escaping () -> Void?) -> some View {
-        VStack {
-            HStack {
-                if AuthorizationLevelManager().existsPhoneCredentials() {
-                    VStack {
-                        HStack {
-                            VStack {
-                                Text("Phone Book")
-                                    .font(.title3)
-                                    .lineLimit(4)
-                                    .foregroundColor(.primary)
-                                    .fontWeight(.heavy)
-                                    .hSpacing(.leading)
-                                HStack {
-                                    Image(systemName: "house.lodge.fill")
-                                    
-                                    Text("\(dataStore.phoneCongregationName!)")
-                                        .font(.headline)
-                                        .lineLimit(4)
-                                        .foregroundColor(.primary)
-                                        .fontWeight(.heavy)
-                                        .hSpacing(.leading)
-                                    CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
-                                        HapticManager.shared.trigger(.success)
-
-                                        // Immediate log and UI update
-                                        Task {
-                                            await MainActor.run {
-                                                self.exitPhoneLogin() // Immediate UI update
-                                            }
-                                            Task {
-                                                DispatchQueue.main.async {
-                                                    self.synchronizationManager.startupProcess(synchronizing: true)
-                                                }
-                                            }
-                                        }
+        Button {
+            HapticManager.shared.trigger(.lightImpact)
+            self.phoneBookLogin = true
+        } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                // Title with Icon
+                HStack(spacing: 8) {
+                    Image(systemName: AuthorizationLevelManager().existsPhoneCredentials() ? "book.pages.fill" : "book.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.blue)
+                    
+                    Text("Phone Book")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                }
+                
+                // Content below title – either info or tap prompt
+                Group {
+                    if AuthorizationLevelManager().existsPhoneCredentials(),
+                       let name = dataStore.phoneCongregationName {
+                        HStack(spacing: 8) {
+                            Image(systemName: "house.lodge.fill")
+                                .foregroundColor(.secondary)
+                                .imageScale(.small)
+                            
+                            Text(name)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .fontWeight(.semibold)
+                            
+                            Spacer()
+                            
+                            CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
+                                HapticManager.shared.trigger(.success)
+                                Task {
+                                    await MainActor.run { self.exitPhoneLogin() }
+                                    DispatchQueue.main.async {
+                                        self.synchronizationManager.startupProcess(synchronizing: true)
                                     }
-                                    .frame(maxWidth: 120)
-                                    .hSpacing(.trailing)
                                 }
                             }
+                            .frame(maxWidth: 100)
                         }
-                    }
-                } else {
-                    HStack {
-                        HStack {
-                            Image(systemName: "book.pages.fill")
-                                .imageScale(.large)
-                                .padding(.horizontal)
-                            Text("Log into Phone Book")
-                                .font(.title3)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.heavy)
-                        }
-                        .hSpacing(.leading)
-                        Spacer()
-                        Image(systemName: "arrowshape.right.circle.fill")
-                            .imageScale(.large)
-                            .padding(.horizontal)
+                    } else {
+                        Text("Tap to log in")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
                 }
-            }.onTapGesture {
-                HapticManager.shared.trigger(.lightImpact)
-                self.phoneBookLogin = true
+                .frame(maxWidth: .infinity, alignment: .leading) // Consistent width
             }
-            .padding(10)
+            .padding()
             .frame(minWidth: mainWindowSize.width * 0.95, minHeight: 75)
             .background(.thinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-        }.padding(.bottom).frame(maxWidth: .infinity)
+            .animation(.spring(), value: AuthorizationLevelManager().existsPhoneCredentials())
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     // MARK: - Administrator Info Cell
     
     @ViewBuilder
     func administratorInfoCell(mainWindowSize: CGSize, showBack: Bool, onDone: @escaping () -> Void?) -> some View {
-        VStack {
-            HStack {
-                if dataStore.congregationName != nil {
-                    VStack {
-                        HStack {
-                            VStack {
-                                Text("Administrator")
-                                    .font(.title3)
-                                    .lineLimit(2)
-                                    .foregroundColor(.primary)
-                                    .fontWeight(.heavy)
-                                    .hSpacing(.leading)
-                                HStack {
-                                    Image(systemName: "house.lodge.fill")
-                                    
-                                    Text("\(dataStore.congregationName!)")
-                                        .font(.headline)
-                                        .lineLimit(2)
-                                        .foregroundColor(.primary)
-                                        .fontWeight(.heavy)
-                                        .hSpacing(.leading)
-                                    CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
-                                        HapticManager.shared.trigger(.success)
-                                        Task {
-                                            await MainActor.run {
-                                                self.exitAdministrator() // Immediate UI update
-                                            }
-                                            Task {
-                                                DispatchQueue.main.async {
-                                                    self.synchronizationManager.startupProcess(synchronizing: true)
-                                                }
-                                            }
-                                        }
-                                        if showBack {
-                                            onDone()
-                                        }
+        Button {
+            HapticManager.shared.trigger(.lightImpact)
+            self.presentSheet = true
+        } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                // Title with Icon
+                HStack(spacing: 8) {
+                    Image(systemName: dataStore.congregationName != nil ? "shield.lefthalf.filled.badge.checkmark" : "shield.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.blue)
+                    
+                    Text("Administrator")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                }
+                
+                // Content below title – either info or tap prompt
+                Group {
+                    if let name = dataStore.congregationName {
+                        HStack(spacing: 8) {
+                            Image(systemName: "house.lodge.fill")
+                                .foregroundColor(.secondary)
+                                .imageScale(.small)
+                            
+                            Text(name)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .fontWeight(.semibold)
+                            
+                            Spacer()
+                            
+                            CustomBackButton(showImage: false, text: NSLocalizedString("Exit", comment: "")) {
+                                HapticManager.shared.trigger(.success)
+                                Task {
+                                    await MainActor.run {
+                                        self.exitAdministrator()
                                     }
-                                    .frame(maxWidth: 120)
-                                    .hSpacing(.trailing)
+                                    DispatchQueue.main.async {
+                                        self.synchronizationManager.startupProcess(synchronizing: true)
+                                    }
+                                }
+                                if showBack {
+                                    onDone()
                                 }
                             }
-                            
-                            
+                            .frame(maxWidth: 100)
                         }
+                    } else {
+                        Text("Tap to become administrator")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
-                } else {
-                    HStack {
-                        HStack {
-                            Image(systemName: "shield.lefthalf.filled.badge.checkmark")
-                                .imageScale(.large)
-                                .padding(.horizontal)
-                            Text("Become Administrator")
-                                .font(.title3)
-                                .lineLimit(2)
-                                .foregroundColor(.primary)
-                                .fontWeight(.heavy)
-                        }
-                        .hSpacing(.leading)
-                        Spacer()
-                        Image(systemName: "arrowshape.right.circle.fill")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                    }
-                    //.padding(.horizontal)
                 }
-            }.onTapGesture {
-                HapticManager.shared.trigger(.lightImpact)
-                self.presentSheet = true
+                .frame(maxWidth: .infinity, alignment: .leading) // <-- Ensures layout stays stable
             }
-            .padding(10)
+            .padding()
             .frame(minWidth: mainWindowSize.width * 0.95, minHeight: 75)
             .background(.thinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-        }.padding(.bottom).frame(maxWidth: .infinity)
+            .animation(
+                .spring(),
+                value: AuthorizationLevelManager().existsAdminCredentials()
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     // MARK: - Infos View
     
     @ViewBuilder
     func infosView(mainWindowSize: CGSize) -> some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Info")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 8)
+                .padding(.leading, 5)
             
-            Button {
-                HapticManager.shared.trigger(.lightImpact)
-                self.showSharePopup = true
-            } label: {
-                HStack {
-                    HStack {
-                        Image(systemName: "square.and.arrow.up")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                        Text("Share App")
-                            .font(.title3)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                    }
-                    .hSpacing(.leading)
+            VStack(spacing: 0) {
+                infoRow(
+                    icon: "square.and.arrow.up",
+                    title: "Share App"
+                ) {
+                    self.showSharePopup = true
                 }
-            }
-            .frame(minHeight: 50)
-            
-            Button {
-                HapticManager.shared.trigger(.lightImpact)
-                self.presentPolicy = true
-            } label: {
-                HStack {
-                    HStack {
-                        Image(systemName: "hand.raised.circle")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                        Text("Privacy Policy")
-                            .font(.title3)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                    }
-                    .hSpacing(.leading)
-                }
-            }
-            .frame(minHeight: 50)
-            
-            
-            Button {
-                HapticManager.shared.trigger(.lightImpact)
-                self.requestReview = true
-            } label: {
-                HStack {
-                    HStack {
-                        Image(systemName: "star.fill")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                        Text("Review App")
-                            .font(.title3)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                    }
-                    .hSpacing(.leading)
-                }
-            }
-            .frame(minHeight: 50)
-            
-            Button {
-                HapticManager.shared.trigger(.lightImpact)
-                self.showAlert = true
                 
-            } label: {
-                HStack {
-                    HStack {
-                        Image(systemName: "info.circle")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                        Text("About App")
-                            .font(.title3)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                    }
-                    .hSpacing(.leading)
+                infoRow(
+                    icon: "hand.raised.circle",
+                    title: "Privacy Policy"
+                ) {
+                    self.presentPolicy = true
                 }
-            }
-            .frame(minHeight: 50)
-            
-            Button {
-                HapticManager.shared.trigger(.lightImpact)
-                do {
-                    try isUpdateAvailable { [self] (update, error) in
-                        if let update {
-                            if update {
+                
+                infoRow(
+                    icon: "star.fill",
+                    title: "Review App"
+                ) {
+                    self.requestReview = true
+                }
+                
+                infoRow(
+                    icon: "info.circle",
+                    title: "About App"
+                ) {
+                    self.showAlert = true
+                }
+                
+                infoRowWithTrailing(
+                    icon: "app",
+                    title: "App Version",
+                    trailingText: getAppVersion()
+                ) {
+                    do {
+                        try isUpdateAvailable { update, error in
+                            if let update {
                                 DispatchQueue.main.async {
-                                    self.showUpdateToastMessage = NSLocalizedString("Update available. Redirecting to App Store...", comment: "")
+                                    self.showUpdateToastMessage = update
+                                    ? NSLocalizedString("Update available. Redirecting to App Store...", comment: "")
+                                    : NSLocalizedString("App is up to date!", comment: "")
                                     self.showUpdateToast = true
                                 }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103")!)
+                                
+                                if update {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                        UIApplication.shared.open(
+                                            URL(string: "https://apps.apple.com/us/app/service-maps/id1664309103")!
+                                        )
+                                    }
                                 }
-                            } else {
+                            }
+                            
+                            if let error {
+                                let message = error.localizedDescription == NSLocalizedString("The operation couldn’t be completed. (NSURLErrorDomain error -1009.)", comment: "")
+                                ? NSLocalizedString("No internet connection", comment: "")
+                                : error.localizedDescription
+                                
                                 DispatchQueue.main.async {
-                                    self.showUpdateToastMessage = NSLocalizedString("App is up to date!", comment: "")
+                                    self.showUpdateToastMessage = message
                                     self.showUpdateToast = true
                                 }
                             }
                         }
-                       
-                       if let error {
-                           if error.localizedDescription == NSLocalizedString("The operation couldn’t be completed. (NSURLErrorDomain error -1009.)", comment: "") {
-                               DispatchQueue.main.async {
-                                   self.showUpdateToastMessage = NSLocalizedString("No internet connection", comment: "")
-                                   self.showUpdateToast = true
-                               }
-                           } else {
-                               DispatchQueue.main.async {
-                                   self.showUpdateToastMessage = error.localizedDescription
-                                   self.showUpdateToast = true
-                               }
-                           }
-                       }
-                    }
-                } catch {
-                    HapticManager.shared.trigger(.error)
+                    } catch {
                         self.showUpdateToastMessage = error.localizedDescription
                         self.showUpdateToast = true
-                }
-                
-            } label: {
-                HStack {
-                    HStack {
-                        Image(systemName: "app")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                        Text("App Version")
-                            .font(.title3)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
                     }
-                    .hSpacing(.leading)
-                    
-                    
-                    HStack {
-                        Text("\(getAppVersion())")
-                            .font(.headline)
-                            .lineLimit(2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                            .padding(.trailing)
-                    }
-                    .hSpacing(.trailing)
-                    .frame(maxWidth: 70)
                 }
             }
-            .frame(minHeight: 50)
+            .padding(10)
+            .frame(minWidth: mainWindowSize.width * 0.95)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-        .padding(10)
         .frame(minWidth: mainWindowSize.width * 0.95)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
     // MARK: - Delete Cache Menu
@@ -469,29 +393,30 @@ class SettingsViewModel: ObservableObject {
     @ViewBuilder
     func deleteCacheMenu(mainWindowSize: CGSize) -> some View {
         VStack {
-            
-            
             Button {
                 HapticManager.shared.trigger(.success)
                 ImagePipeline.shared.cache.removeAll()
                 DataLoader.sharedUrlCache.removeAllCachedResponses()
                 self.showToast = true
             } label: {
-                HStack {
-                    HStack {
-                        Image(systemName: "trash.circle")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                        Text("Delete Cache")
-                            .font(.title3)
-                            .lineLimit(1)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                    }
-                    .hSpacing(.leading)
+                HStack(spacing: 12) {
+                    Image(systemName: "trash.circle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.red)
+                    
+                    Text("Delete Cache")
+                        .font(.body)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
                 }
+                .padding(.vertical, 12)
+                .padding(.horizontal)
             }
-            .frame(minHeight: 50)
+            .buttonStyle(PlainButtonStyle())
         }
         .padding(10)
         .frame(minWidth: mainWindowSize.width * 0.95)
@@ -508,27 +433,90 @@ class SettingsViewModel: ObservableObject {
                 HapticManager.shared.trigger(.lightImpact)
                 self.showDeletionAlert = true
             } label: {
-                HStack {
-                    HStack {
-                        Image(systemName: "person.crop.circle.badge.xmark")
-                            .imageScale(.large)
-                            .padding(.horizontal)
-                            .foregroundColor(.red)
-                        Text("Delete Account")
-                            .font(.title3)
-                            .lineLimit(1)
-                            .fontWeight(.heavy)
-                            .foregroundColor(.red)
-                    }
-                    .hSpacing(.leading)
+                HStack(spacing: 12) {
+                    Image(systemName: "person.crop.circle.badge.xmark")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.red)
+                    
+                    Text("Delete Account")
+                        .font(.body)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.red)
+                    
+                    Spacer()
                 }
+                .padding(.vertical, 12)
+                .padding(.horizontal)
             }
-            .frame(minHeight: 50)
+            .buttonStyle(PlainButtonStyle())
         }
         .padding(10)
         .frame(minWidth: mainWindowSize.width * 0.95)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+    
+    @ViewBuilder
+    private func infoRow(icon: String, title: String, action: @escaping () -> Void) -> some View {
+        Button {
+            HapticManager.shared.trigger(.lightImpact)
+            action()
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.blue)
+                
+                Text(NSLocalizedString(title, comment: ""))
+                    .font(.body)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
+                    .imageScale(.small)
+            }
+            .padding(.vertical, 15)
+            .padding(.horizontal)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    @ViewBuilder
+    private func infoRowWithTrailing(icon: String, title: String, trailingText: String, action: @escaping () -> Void) -> some View {
+        Button {
+            HapticManager.shared.trigger(.lightImpact)
+            action()
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.blue)
+                
+                Text(NSLocalizedString(title, comment: ""))
+                    .font(.body)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Text(trailingText)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.vertical, 15)
+            .padding(.horizontal)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

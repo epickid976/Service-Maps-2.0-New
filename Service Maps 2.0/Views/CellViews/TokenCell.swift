@@ -11,139 +11,108 @@ import SwiftUI
 
 @MainActor
 struct TokenCell: View {
-    
-    //MARK: - Dependencies
-
     @ObservedObject var dataStore = StorageManager.shared
-    
-    //MARK: - Environment
-   
-    @Environment(\.mainWindowSize) var mainWindowSize
-    
-    //MARK: - Properties
-    
     var keyData: KeyData
     var ipad: Bool = false
-    
+
+    @Environment(\.mainWindowSize) var mainWindowSize
+
     var isIpad: Bool {
-        return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
+        UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
-    
-    //MARK: - Body
-    
+
     var body: some View {
-        HStack(spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text("\(keyData.key.name )")
-                        .font(.title3)
-                        .lineLimit(2)
-                        .foregroundColor(.primary)
+        VStack(alignment: .leading, spacing: 8) {
+            Text(keyData.key.name)
+                .font(.title3)
+                .fontWeight(.heavy)
+                .foregroundColor(.primary)
+
+            Text(keyData.key.user == dataStore.userEmail || keyData.key.moderator ? "Level: Servant" : "Level: Publisher")
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+
+            Text("Territories: \(processData(key: keyData))")
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+
+            HStack {
+                Spacer()
+                HStack(spacing: 4) {
+                    Image(systemName: "person.circle")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(keyData.key.user == dataStore.userEmail ? dataStore.userName ?? "" : keyData.key.user ?? keyData.key.owner)
+                        .font(.subheadline)
                         .fontWeight(.heavy)
-                        .hSpacing(.leading)
+                        .foregroundColor(.secondaryLabel)
                 }
-                
-                if keyData.key.user == dataStore.userEmail || keyData.key.moderator {
-                    Text("Level: Servant")
-                        .font(.headline)
-                        .lineLimit(2)
-                        .foregroundColor(.primary)
-                        .fontWeight(.bold)
-                        .hSpacing(.leading)
-                } else {
-                    Text("Level: Publisher")
-                        .font(.headline)
-                        .lineLimit(2)
-                        .foregroundColor(.primary)
-                        .fontWeight(.bold)
-                        .hSpacing(.leading)
-                }
-                
-                Text("Territories: \(processData(key: keyData))")
-                    .font(.headline)
-                    .lineLimit(2)
-                    .foregroundColor(.primary)
-                    .fontWeight(.bold)
-                    .hSpacing(.leading)
-                
-                Text(keyData.key.user == dataStore.userEmail ? dataStore.userName ?? "" : keyData.key.user ?? keyData.key.owner)
-                    .font(.subheadline)
-                    .lineLimit(2)
-                    .foregroundColor(.secondaryLabel)
-                    .fontWeight(.heavy)
-                    .hSpacing(.trailing).vSpacing(.bottom)
-                
             }
-            .frame(maxWidth: .infinity)
-            
         }
-        .padding(10)
+        .padding()
         .frame(minWidth: ipad ? (mainWindowSize.width / 2) * 0.90 : mainWindowSize.width * 0.90)
-        .background(.thinMaterial)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
+        )
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .optionalViewModifier { content in
             if isIpad {
-                content
-                    .frame(maxHeight: .infinity)
+                content.frame(maxHeight: .infinity)
             } else {
                 content
             }
         }
     }
-    
-    func processData(key: KeyData) -> String {
-        var name = ""
-        if !key.territories.isEmpty {
-            let data = key.territories.sorted { $0.number < $1.number}
-            for territory in data {
-                if name.isEmpty {
-                    name = String(territory.number)
-                } else {
-                    name += ", " + String(territory.number)
-                }
-            }
-            return name
-        }
-        return name
+
+    private func processData(key: KeyData) -> String {
+        key.territories.sorted { $0.number < $1.number }
+            .map { String($0.number) }
+            .joined(separator: ", ")
     }
 }
 
 //MARK: - User Token Cell
 
 struct UserTokenCell: View {
-    
-    //MARK: - Dependencies
     @ObservedObject var dataStore = StorageManager.shared
-    
-    //MARK: - Properties
-    
     var userKeyData: UserToken
-    
-    //MARK: - Environment
-    
+
     @Environment(\.mainWindowSize) var mainWindowSize
-    
+
     var body: some View {
-        HStack(spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .frame(width: 50, height: 50)
-                    Text("\(userKeyData.name )")
-                        .font(.title3)
-                        .lineLimit(2)
-                        .foregroundColor(.primary)
-                        .fontWeight(.heavy)
-                        .hSpacing(.leading)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            
+        HStack(spacing: 12) {
+            Image(systemName: "person.crop.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 48, height: 48)
+                .foregroundColor(.blue)
+
+            Text(userKeyData.name)
+                .font(.title3)
+                .fontWeight(.heavy)
+                .foregroundColor(.primary)
+
+            Spacer()
         }
-        .padding(10)
+        .padding()
         .frame(minWidth: mainWindowSize.width * 0.95)
-        .background(.thinMaterial)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
+        )
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }

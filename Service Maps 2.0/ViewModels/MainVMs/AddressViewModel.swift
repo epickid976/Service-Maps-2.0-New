@@ -71,106 +71,107 @@ class AddressViewModel: ObservableObject {
     //Headers
     @ViewBuilder
     func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View  {
-        VStack {
-            ZStack {
-                VStack {
-                    LazyImage(url: URL(string: territory.getImageURL())) { state in
-                        if let image = state.image {
-                            image.resizable().aspectRatio(contentMode: .fill).frame(width: UIScreen.screenWidth, height: 350)
-                            
-                            //image.opacity(1 - progress)
-                            
-                        } else if state.isLoading  {
-                            ProgressView().progressViewStyle(.circular)
-                            
-                        } else if state.error != nil {
-                            Image(uiImage: UIImage(named: "mapImage")!)
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .padding(.bottom, 125)
-                        } else {
-                            Image(uiImage: UIImage(named: "mapImage")!)
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .padding(.bottom, 125)
-                        }
+        VStack(spacing: 0) {
+            ZStack(alignment: .bottom) {
+                // Image Background
+                LazyImage(url: URL(string: territory.getImageURL())) { state in
+                    if let image = state.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: mainWindowSize.width, height: 350)
+                            .clipped()
+                    } else if state.isLoading {
+                        ProgressView().frame(height: 350)
+                    } else {
+                        Image("mapImage")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: mainWindowSize.width, height: 100)
                     }
-                    .pipeline(ImagePipeline.shared)
-                    .vSpacing(.bottom)
-                    .cornerRadius(10)
                 }
-                .frame(width: mainWindowSize.width, height: 350, alignment: .center)
-                VStack {
+                .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
+                .frame(height: 350)
+
+                // Glassmorphic Header Overlay
+                VStack(spacing: 0) {
                     smallHeader
-                    
-                        .padding(.vertical)
-                        .cornerRadius(16, corners: [.bottomLeft, .bottomRight])
-                    
-                }.frame(height: 85)
-                    .background(
-                        Material.ultraThickMaterial
-                    )
-                    .vSpacing(.bottom)
+                        //.padding(.vertical, 10)
+                        //.padding(.horizontal)
+                }
+//                .frame(height: 85)
+//                .frame(maxWidth: .infinity)
+//                //.background(.ultraThinMaterial)
+////                .overlay(
+////                    RoundedRectangle(cornerRadius: 20)
+////                        .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+////                )
+//                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
             }
-            .frame(width: mainWindowSize.width, height: 350)
         }
-        
-        .animation(.default, value: progress)
-        
+        .frame(width: mainWindowSize.width, height: 350)
+        .animation(.easeInOut, value: progress)
     }
     
     // MARK: - UI Small Header
     @ViewBuilder
     var smallHeader: some View {
-        HStack(spacing: 16) {
-            // Number and Title Section
-            HStack(spacing: 8) {
+        HStack(spacing: 12) {
+            // Number
+            VStack(alignment: .leading, spacing: 2) {
                 Text("№")
                     .font(.title2)
-                    .bold()
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
                 Text("\(territory.number)")
-                    .font(.title)
-                    .bold()
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
             }
-            .foregroundColor(.primary)
 
-            // Divider
-            if !(progress < 0.98) { // Show image only if progress is sufficient
-                Divider()
-                    .frame(height: 40)
-                    .padding(.horizontal, 4)
-
-                // Image Section
-                LazyImage(url: URL(string: territory.getImageURL())) { state in
-                    if let image = state.image {
-                        image.resizable().aspectRatio(contentMode: .fill).frame(maxWidth: 60, maxHeight: 60)
-                    } else if state.error != nil {
-                        Image(uiImage: UIImage(named: "mapImage")!)
-                            .resizable()
-                            .frame(width: 60, height: 60)
-                        //.padding(.bottom, 125)
-                    } else {
-                        ProgressView().progressViewStyle(.circular)
+            // Image
+            if territory.getImageURL() != "" {
+                if !(progress < 0.98) { // Show image only if progress is sufficient
+                    LazyImage(url: URL(string: territory.getImageURL())) { state in
+                        if let image = state.image {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 50, height: 50)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        } else {
+                            Color.gray.opacity(0.2)
+                                .frame(width: 50, height: 50)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
                     }
                 }
-                .cornerRadius(10)
-                .padding(.horizontal, 4)
+            }
+            // Address info
+            VStack(alignment: .leading, spacing: 2) {
+                Text(territory.description)
+                    .font(.body)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .lineLimit(2)
             }
 
-            // Description Section
-            Text(territory.description)
-                .font(.body)
-                .bold()
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-
-           // Spacer() // Push content to edges for a cleaner look
+            Spacer()
         }
-        .padding(.horizontal)
-        .frame(height: 60)
-        .animation(.easeInOut(duration: 0.2), value: progress) // Smooth transition on progress change
-        .hSpacing(.center)
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 0, style: .continuous)
+                .fill(.thickMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke((progress < 0.98) ? Color.white.opacity(0.15) : Color.clear, lineWidth: 0.6)
+                )
+                .shadow(color: .black.opacity(0.1), radius: (progress < 0.98) ? 6 : 0, x: 0, y: 3)
+                .animation(.easeInOut, value: progress)
+                .cornerRadius((progress < 0.98) ? 20 : 0, corners: [.topLeft, .topRight])
+                .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
+        )
+        //.padding(.horizontal)
     }
 }
 
