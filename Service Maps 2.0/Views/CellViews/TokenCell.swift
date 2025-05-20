@@ -14,7 +14,7 @@ struct TokenCell: View {
     @ObservedObject var dataStore = StorageManager.shared
     var keyData: KeyData
     var ipad: Bool = false
-
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.mainWindowSize) var mainWindowSize
 
     var isIpad: Bool {
@@ -55,7 +55,7 @@ struct TokenCell: View {
         .frame(minWidth: ipad ? (mainWindowSize.width / 2) * 0.90 : mainWindowSize.width * 0.90)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : Material.regular) // Adjust fill based on color scheme
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
@@ -84,7 +84,7 @@ struct TokenCell: View {
 struct UserTokenCell: View {
     @ObservedObject var dataStore = StorageManager.shared
     var userKeyData: UserToken
-
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.mainWindowSize) var mainWindowSize
 
     var body: some View {
@@ -106,7 +106,7 @@ struct UserTokenCell: View {
         .frame(minWidth: mainWindowSize.width * 0.95)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : Material.regular) // Adjust fill based on color scheme
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.white.opacity(0.15), lineWidth: 0.6)

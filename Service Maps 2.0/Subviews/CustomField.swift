@@ -10,6 +10,10 @@ import SwiftUI
 
 //MARK: - Custom Field
 
+import SwiftUI
+
+//MARK: - Custom Field
+
 struct CustomField: View {
     // MARK: - Properties
     @Binding var text: String
@@ -46,14 +50,14 @@ struct CustomField: View {
                         maxValue: maxValue
                     )
                     .onChange(of: text) { newValue in
-                            if formatAsPhone == true {
-                                text = newValue.formatPhoneNumber()
-                            }
-
-                            if let max = maxValue, text.count > max {
-                                text = String(text.prefix(max))
-                            }
+                        if formatAsPhone == true {
+                            text = newValue.formatPhoneNumber()
                         }
+
+                        if let max = maxValue, text.count > max {
+                            text = String(text.prefix(max))
+                        }
+                    }
             } else {
                 HStack(spacing: 8) {
                     SecureTextField(placeholder: placeholder, text: $text, isSecure: $isSecure)
@@ -69,14 +73,14 @@ struct CustomField: View {
                             maxValue: maxValue
                         )
                         .onChange(of: text) { newValue in
-                                if formatAsPhone == true {
-                                    text = newValue.formatPhoneNumber()
-                                }
-
-                                if let max = maxValue, text.count > max {
-                                    text = String(text.prefix(max))
-                                }
+                            if formatAsPhone == true {
+                                text = newValue.formatPhoneNumber()
                             }
+
+                            if let max = maxValue, text.count > max {
+                                text = String(text.prefix(max))
+                            }
+                        }
 
                     Button(action: { isSecure.toggle() }) {
                         Image(systemName: isSecure ? "eye.slash" : "eye")
@@ -113,7 +117,7 @@ struct SecureTextField: View {
         Group {
             if isSecure {
                 SecureField(placeholder, text: $text).textContentType(.oneTimeCode)
-                
+
             } else {
                 TextField(placeholder, text: $text)
             }
@@ -142,7 +146,7 @@ extension View {
             .multilineTextAlignment(textAlignment)
             .focused(isFocused)
             .padding()
-            .glassBackground()
+            .glassBackground() // Using the updated glassBackground modifier
             .font(.system(size: 16, weight: .regular))
             .frame(minHeight: 60)
             .optionalViewModifier { content in
@@ -164,20 +168,24 @@ extension View {
 
 struct GlassBackground: ViewModifier {
     var cornerRadius: CGFloat = 16
+    @Environment(\.colorScheme) var colorScheme // Get the color scheme
 
     func body(content: Content) -> some View {
         content
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(.ultraThinMaterial)
+                    .fill(colorScheme == .dark ? .ultraThinMaterial : Material.regular) // Conditional fill
                     .background(
                         RoundedRectangle(cornerRadius: cornerRadius)
-                            .fill(Color.white.opacity(0.05))
+                            .fill(Color.white.opacity(colorScheme == .dark ? 0.05 : 0.1)) // Adjust inner opacity
                             .blur(radius: 0.3)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: cornerRadius)
-                            .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                            .stroke(
+                                colorScheme == .dark ? Color.white.opacity(0.15) : Color.black.opacity(0.05), // Darker stroke for light mode
+                                lineWidth: 0.6
+                            )
                     )
                     .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
             )
@@ -202,6 +210,7 @@ struct CustomFieldModifier: ViewModifier {
     var disableAutocorrect: Bool?
     var diableCapitalization: Bool?
     var disabled: Bool?
+    @Environment(\.colorScheme) var colorScheme // You might need this here too, depending on usage
 
     func body(content: Content) -> some View {
         content
@@ -209,7 +218,7 @@ struct CustomFieldModifier: ViewModifier {
             .autocorrectionDisabled(disableAutocorrect ?? false)
             .textInputAutocapitalization(diableCapitalization ?? false ? .never : .sentences)
             .padding()
-            .background(Color.gray.opacity(0.2))
+            .background(colorScheme == .dark ? Color.gray.opacity(0.2) : Color.gray.opacity(0.1)) // Example adjustment - consider using Material
             .cornerRadius(16)
             .padding(.horizontal)
             .font(.system(size: 16, weight: .regular))

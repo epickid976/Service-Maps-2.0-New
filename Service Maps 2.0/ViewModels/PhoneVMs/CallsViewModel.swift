@@ -139,6 +139,7 @@ struct CallCell: View {
     var call: PhoneCallData
     var ipad: Bool = false
     @Environment(\.mainWindowSize) var mainWindowSize
+    @Environment(\.colorScheme) private var colorScheme
 
     private var isIpad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
@@ -184,7 +185,7 @@ struct CallCell: View {
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(10)
+        .padding(5)
         .frame(
             minWidth: ipad
                 ? (mainWindowSize.width / 2) * 0.90
@@ -192,12 +193,24 @@ struct CallCell: View {
         )
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.ultraThinMaterial)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                        .stroke(
+                            colorScheme == .dark ?
+                                Color.white.opacity(0.15) :
+                                Color.black.opacity(0.05),
+                            lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                        )
                 )
-                .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+                .shadow(
+                    color: colorScheme == .dark ?
+                        .black.opacity(0.05) :
+                        .black.opacity(0.04),
+                    radius: colorScheme == .dark ? 4 : 3,
+                    x: 0,
+                    y: colorScheme == .dark ? 2 : 1.5
+                )
         )
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .optionalViewModifier { content in

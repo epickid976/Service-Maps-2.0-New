@@ -477,11 +477,12 @@ struct ScheduleRecallPopup: CenterPopup {
     }
     @State private var isLoading = false
     @State private var showError = false
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         createContent()
     }
-    
+
     func createContent() -> some View {
         VStack(spacing: 16) {
             Text("Schedule Reminder")
@@ -492,14 +493,14 @@ struct ScheduleRecallPopup: CenterPopup {
                 .datePickerStyle(.graphical)
             DatePicker("Time", selection: $selectedDate, displayedComponents: [.hourAndMinute])
                 .datePickerStyle(.compact).padding(.horizontal)
-            
-            
+
+
             Text(
                 "You will be reminded to revisit \(recall?.house.number ?? "-") at \(selectedDate.formatted(date: .long, time: .shortened))"
             )
-                .font(.headline)
-                .foregroundColor(.secondary)
-            
+            .font(.headline)
+            .foregroundColor(.secondary)
+
             if showError {
                 Text("Please choose a future time.")
                     .foregroundColor(.red)
@@ -524,7 +525,7 @@ struct ScheduleRecallPopup: CenterPopup {
                     withAnimation {
                         isLoading = true
                     }
-                    
+
                     Task {
                         try? await Task
                             .sleep(nanoseconds: 400_000_000) // Simulate delay
@@ -552,7 +553,7 @@ struct ScheduleRecallPopup: CenterPopup {
             }
         }
         .padding()
-        .background(Material.ultraThick)
+        .background(Material.thick) // Using .thick for better visibility in light mode
         .cornerRadius(20)
     }
 
@@ -565,6 +566,7 @@ struct ScheduleRecallPopup: CenterPopup {
 struct CenterPopup_NotificationList: CenterPopup {
     @Binding var isPresented: Bool
     @State private var notifications: [NotificationData] = []
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         createContent()
@@ -576,7 +578,7 @@ struct CenterPopup_NotificationList: CenterPopup {
                 Text("Reminders")
                     .font(.title3.bold())
                     .foregroundColor(.primary)
-                
+
                 Spacer()
 
                 Button(action: {
@@ -590,13 +592,13 @@ struct CenterPopup_NotificationList: CenterPopup {
                         .font(.subheadline.bold())
                         .padding(.vertical, 6)
                         .padding(.horizontal, 12)
-                        .background(.ultraThinMaterial)
+                        .background(Material.ultraThin) // Keep ultraThin for the button
                         .clipShape(Capsule())
                         .foregroundColor(.secondary)
                 }
             }
             .padding()
-            .background(.ultraThinMaterial)
+            .background(colorScheme == .dark ? Material.ultraThin : Material.regular) // Conditional background for the header
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
 
@@ -640,7 +642,7 @@ struct CenterPopup_NotificationList: CenterPopup {
             }
         }
         .padding()
-        .background(Material.ultraThick, in: RoundedRectangle(cornerRadius: 25, style: .continuous))
+        .background(Material.thick, in: RoundedRectangle(cornerRadius: 25, style: .continuous)) // Keep the main popup background
     }
 
     func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
@@ -671,6 +673,7 @@ struct NotificationCell: View {
     let notification: NotificationData
     var onDelete: () -> Void
     var onEdit: () -> Void // 👈 Add this
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -702,7 +705,7 @@ struct NotificationCell: View {
                     Image(systemName: "trash")
                         .foregroundColor(.red)
                         .padding(6)
-                        .background(.thinMaterial, in: Circle())
+                        .background(Material.thin, in: Circle()) // Using .thin
                 }
 
                 Button(action: {
@@ -720,13 +723,13 @@ struct NotificationCell: View {
                     Image(systemName: "pencil")
                         .foregroundColor(.blue)
                         .padding(6)
-                        .background(.thinMaterial, in: Circle())
+                        .background(Material.thin, in: Circle()) // Using .thin
                 }
             }
             .frame(width: 40)
         }
         .padding()
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(Material.ultraThin, in: RoundedRectangle(cornerRadius: 20, style: .continuous)) // Keeping ultraThin for the cell background
     }
 }
 

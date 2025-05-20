@@ -17,15 +17,15 @@ struct CellView: View {
     var width: Double = 0.95
     let isIpad = UIDevice.current.userInterfaceIdiom == .pad
     var mainWindowSize: CGSize
-    //@Binding var territoryModel: Territory
     
     @State private var cellHeight: CGFloat = 0
+    @Environment(\.colorScheme) private var colorScheme
     
     var ipad: Bool {
         return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
     }
     
-    //MARK: - Body
+    // MARK: - Body
     
     var body: some View {
         HStack(spacing: 10) {
@@ -37,14 +37,13 @@ struct CellView: View {
                                 gradient: Gradient(colors: [.blue, .teal]),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
-                            ).opacity(0.6)
+                            ).opacity(colorScheme == .dark ? 0.6 : 0.8)
                         )
                     
                     VStack {
                         Text("\(territory.number)")
-                            .font(.system(size:  25, weight: .heavy))
+                            .font(.system(size: 25, weight: .heavy))
                             .foregroundColor(.white)
-                        
                     }
                     .frame(minWidth: mainWindowSize.width * 0.20)
                 }
@@ -52,7 +51,7 @@ struct CellView: View {
                 .frame(width: mainWindowSize.width * 0.20, height: cellHeight, alignment: .center)
             }
             VStack(alignment: .leading, spacing: 2) {
-                Text(territory.description )
+                Text(territory.description)
                     .font(.headline)
                     .lineLimit(5)
                     .foregroundColor(.primary)
@@ -66,26 +65,42 @@ struct CellView: View {
                     .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(Color.secondary.opacity(0.1))
+                            .fill(Color.secondary.opacity(colorScheme == .dark ? 0.1 : 0.15))
                     )
-            }.padding(10).vSpacing(.top)
-                .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
+            }
+            .padding(10)
+            .vSpacing(.top)
+            .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
         }
         .id(territory.id)
-        
-        .frame(minWidth: isIpad ? (mainWindowSize.width * width ) / 2 : mainWindowSize.width * width)
+        .frame(minWidth: isIpad ? (mainWindowSize.width * width) / 2 : mainWindowSize.width * width)
         .background(
-            // GLASSMORPHIC CONTAINER
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
-                .overlay(
+            // GLASSMORPHIC CONTAINER - IMPROVED FOR BOTH MODES
+            ZStack {
+                if colorScheme == .dark {
+                    // Dark mode glassmorphism
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
-                )
-                .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                        )
+                } else {
+                    // Light mode glassmorphism
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Material.regularMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.black.opacity(0.05), lineWidth: 0.8)
+                        )
+                }
+            }
+            .shadow(color: colorScheme == .dark ? .black.opacity(0.08) : .black.opacity(0.06),
+                    radius: colorScheme == .dark ? 8 : 6,
+                    x: 0,
+                    y: colorScheme == .dark ? 4 : 3)
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        
         .background(GeometryReader { geometry in
             Color.clear
                 .onAppear {
@@ -101,7 +116,6 @@ struct CellView: View {
             }
         }
     }
-    
 }
 
 //MARK: - Phone Territory Cell
@@ -110,10 +124,9 @@ struct PhoneTerritoryCellView: View {
     var territory: PhoneTerritory
     var numbers: Int
     var width: Double = 0.95
-    
     var mainWindowSize: CGSize
-    
     @State private var cellHeight: CGFloat = 0
+    @Environment(\.colorScheme) private var colorScheme
     
     var isIpad: Bool {
         return UIDevice.current.userInterfaceIdiom == .pad && mainWindowSize.width > 400
@@ -131,12 +144,12 @@ struct PhoneTerritoryCellView: View {
                                 gradient: Gradient(colors: [.blue, .teal]),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
-                            ).opacity(0.6)
+                            ).opacity(colorScheme == .dark ? 0.6 : 0.8)
                         )
                     
                     VStack {
                         Text("\(territory.number)")
-                            .font(.system(size:  25, weight: .heavy))
+                            .font(.system(size: 25, weight: .heavy))
                             .foregroundColor(.white)
                         
                     }
@@ -146,7 +159,7 @@ struct PhoneTerritoryCellView: View {
                 .frame(width: mainWindowSize.width * 0.20, height: cellHeight, alignment: .center)
             }
             VStack(alignment: .leading, spacing: 2) {
-                Text(territory.description )
+                Text(territory.description)
                     .font(.headline)
                     .lineLimit(5)
                     .foregroundColor(.primary)
@@ -160,33 +173,41 @@ struct PhoneTerritoryCellView: View {
                     .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(Color.secondary.opacity(0.1))
+                            .fill(Color.secondary.opacity(colorScheme == .dark ? 0.1 : 0.15))
                     )
             }.padding(10)
                 .frame(maxWidth: mainWindowSize.width * 0.8, alignment: .leading)
-            //Image("testTerritoryImage")
                 .vSpacing(.top)
             
         }
-        //.id(territory.id)
-        //.padding(5)
         .frame(minWidth: mainWindowSize.width * width)
         .background(
             // GLASSMORPHIC CONTAINER
             RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                        .stroke(
+                            colorScheme == .dark ?
+                                Color.white.opacity(0.15) :
+                                Color.black.opacity(0.05),
+                            lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                        )
                 )
-                .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+                .shadow(
+                    color: colorScheme == .dark ?
+                        .black.opacity(0.08) :
+                        .black.opacity(0.06),
+                    radius: colorScheme == .dark ? 8 : 6,
+                    x: 0,
+                    y: colorScheme == .dark ? 4 : 3
+                )
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .background(GeometryReader { geometry in
             Color.clear
                 .onAppear {
                     self.cellHeight = geometry.size.height
-                    print("Cell height: \(self.cellHeight)")
                 }
         })
         .optionalViewModifier { content in
@@ -198,7 +219,6 @@ struct PhoneTerritoryCellView: View {
             }
         }
     }
-    
 }
 
 //MARK: - Territory Recent Cell

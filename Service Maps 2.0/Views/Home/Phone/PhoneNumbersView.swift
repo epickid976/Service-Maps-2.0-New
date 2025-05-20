@@ -743,6 +743,7 @@ struct PhoneNumberCell: View {
     @State var numbersData: PhoneNumbersData
     var mainWindowSize: CGSize
     @State private var cancellable: AnyCancellable?
+    @Environment(\.colorScheme) private var colorScheme
     
     init(numbersData: PhoneNumbersData, mainWindowSize: CGSize) {
         self._callViewModel = StateObject(
@@ -768,7 +769,7 @@ struct PhoneNumberCell: View {
                     .font(.footnote).fontWeight(.bold)
                     .foregroundColor(.secondary)
                 
-                // — Call preview or “no notes” box
+                // — Call preview or "no notes" box
                 Group {
                     if let call = numbersData.phoneCall {
                         VStack(alignment: .leading, spacing: 6) {
@@ -810,12 +811,26 @@ struct PhoneNumberCell: View {
                 .frame(maxWidth: .infinity)     // ← fills full width
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(.ultraThinMaterial)                            // glass
+                        .fill(colorScheme == .dark ?
+                              .ultraThinMaterial :
+                              .regularMaterial)
                         .overlay(
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                                .stroke(
+                                    colorScheme == .dark ?
+                                        Color.white.opacity(0.15) :
+                                        Color.black.opacity(0.05),
+                                    lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                                )
                         )
-                        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+                        .shadow(
+                            color: colorScheme == .dark ?
+                                .black.opacity(0.05) :
+                                .black.opacity(0.04),
+                            radius: colorScheme == .dark ? 4 : 3,
+                            x: 0,
+                            y: colorScheme == .dark ? 2 : 1.5
+                        )
                 )
             }
             .padding(10)
@@ -837,7 +852,28 @@ struct PhoneNumberCell: View {
         }
         .onDisappear { cancellable?.cancel() }
         .frame(minWidth: mainWindowSize.width * 0.95)
-        .background(.ultraThinMaterial)   // outer glass cell
+        .background(
+            colorScheme == .dark ?
+                .ultraThinMaterial :
+                .regularMaterial
+        )   // outer glass cell
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(
+                    colorScheme == .dark ?
+                        Color.white.opacity(0.15) :
+                        Color.black.opacity(0.05),
+                    lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                )
+        )
+        .shadow(
+            color: colorScheme == .dark ?
+                .black.opacity(0.08) :
+                .black.opacity(0.06),
+            radius: colorScheme == .dark ? 6 : 5,
+            x: 0,
+            y: colorScheme == .dark ? 3 : 2
+        )
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .optionalViewModifier { content in
             if isIpad {

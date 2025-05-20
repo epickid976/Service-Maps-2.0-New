@@ -33,12 +33,17 @@ struct CustomBackButton: View {
             .padding(.horizontal, 10)
             .background(
                 Capsule()
-                    .fill(Material.ultraThin)
-                    .background(Capsule().fill(Color.white.opacity(0.05)))
-                    .overlay(Capsule().stroke(Color.white.opacity(0.2), lineWidth: 1))
+                    .fill(colorScheme == .dark ? Material.ultraThin : Material.regular) // Conditional material
+                    .background(Capsule().fill(Color.white.opacity(colorScheme == .dark ? 0.05 : 0.1))) // Adjust inner opacity
+                    .overlay(
+                        Capsule().stroke(
+                            colorScheme == .dark ? Color.white.opacity(0.2) : Color.black.opacity(0.1), // Darker stroke for light mode
+                            lineWidth: 1
+                        )
+                    )
                     .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
             )
-            .foregroundColor(colorScheme == .dark ? .white : .black)
+            .foregroundColor(colorScheme == .dark ? .white : .primary) // Use primary for better light mode visibility
         }
         .buttonStyle(PlainButtonStyle())
         .frame(maxWidth: .infinity)

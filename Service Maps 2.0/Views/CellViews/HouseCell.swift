@@ -16,6 +16,7 @@ struct HouseCell: View {
     @StateObject private var visitViewModel: VisitsViewModel
     @State private var house: HouseData
     @State private var cancellable: AnyCancellable?
+    @Environment(\.colorScheme) private var colorScheme
 
     var mainWindowSize: CGSize
 
@@ -50,11 +51,11 @@ struct HouseCell: View {
                             {
                                 switch house.visit?.symbol.lowercased() {
                                 case "nt":
-                                    return Color.red.opacity(0.8)
+                                    return Color.red.opacity(colorScheme == .dark ? 0.8 : 0.9)
                                 case "uk":
-                                    return Color.gray.opacity(0.6)
+                                    return Color.gray.opacity(colorScheme == .dark ? 0.6 : 0.7)
                                 default:
-                                    return Color.blue.opacity(0.8)
+                                    return Color.blue.opacity(colorScheme == .dark ? 0.8 : 0.9)
                                 }
                             }()
                         )
@@ -73,12 +74,24 @@ struct HouseCell: View {
         .frame(minWidth: mainWindowSize.width * 0.95)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(.ultraThinMaterial)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        .stroke(
+                            colorScheme == .dark ?
+                                Color.white.opacity(0.2) :
+                                Color.black.opacity(0.07),
+                            lineWidth: colorScheme == .dark ? 1 : 0.8
+                        )
                 )
-                .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 4)
+                .shadow(
+                    color: colorScheme == .dark ?
+                        .black.opacity(0.1) :
+                        .black.opacity(0.07),
+                    radius: colorScheme == .dark ? 10 : 8,
+                    x: 0,
+                    y: colorScheme == .dark ? 4 : 3
+                )
         )
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .onAppear(perform: onAppear)
@@ -123,7 +136,7 @@ struct HouseCell: View {
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color.gray.opacity(0.1))
+                .fill(Color.gray.opacity(colorScheme == .dark ? 0.1 : 0.15))
         )
         .clipShape(RoundedRectangle(cornerRadius: 14))
     }
@@ -145,7 +158,7 @@ struct HouseCell: View {
         .frame(maxWidth: .infinity) // Forces the width to fill parent
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color.gray.opacity(0.1))
+                .fill(Color.gray.opacity(colorScheme == .dark ? 0.1 : 0.15))
         )
         .clipShape(RoundedRectangle(cornerRadius: 14))
     }

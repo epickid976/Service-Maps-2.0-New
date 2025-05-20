@@ -18,7 +18,8 @@ struct CircleButtonStyle: ButtonStyle {
     var height: CGFloat = 40
     @Binding var progress: CGFloat
     @Binding var animation: Bool
-
+    @Environment(\.colorScheme) private var colorScheme
+    
     func makeBody(configuration: Configuration) -> some View {
         ZStack {
             Circle()
@@ -26,15 +27,31 @@ struct CircleButtonStyle: ButtonStyle {
                     if progress > 0.01 {
                         content.fill(Color.clear)
                     } else {
-                        content.fill(Material.ultraThin)
+                        if colorScheme == .dark {
+                            content.fill(Material.ultraThin)
+                        } else {
+                            content.fill(Material.thin)
+                        }
                     }
                 }
                 .overlay(
                     Circle()
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                        .stroke(
+                            colorScheme == .dark ?
+                                Color.white.opacity(0.15) :
+                                Color.black.opacity(0.05),
+                            lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                        )
                 )
-                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
-
+                .shadow(
+                    color: colorScheme == .dark ?
+                        .black.opacity(0.06) :
+                        .black.opacity(0.04),
+                    radius: colorScheme == .dark ? 4 : 3,
+                    x: 0,
+                    y: colorScheme == .dark ? 2 : 1
+                )
+            
             Image(systemName: imageName == "magnifyingglass" && animation ? "" : imageName)
                 .resizable()
                 .scaledToFit()
@@ -66,6 +83,7 @@ struct PillButtonStyle: ButtonStyle {
     @Binding var animation: Bool
     @Binding var synced: Bool
     @Binding var lastTime: Date?
+    @Environment(\.colorScheme) private var colorScheme
     
     @State private var timePassed = getFormattedElapsedTime(from: StorageManager.shared.lastTime)
     
@@ -77,18 +95,37 @@ struct PillButtonStyle: ButtonStyle {
                     if progress > 0.01 {
                         content.fill(Color.clear)
                     } else {
-                        content.fill(Material.ultraThin)
+                        if colorScheme == .dark {
+                            content.fill(Material.ultraThin)
+                        } else {
+                            content.fill(Material.thin)
+                        }
                     }
                 }
                 .background(
                     RoundedRectangle(cornerRadius: height / 2, style: .continuous)
-                        .fill(.ultraThinMaterial)
+                        .fill(colorScheme == .dark ?
+                            .ultraThinMaterial :
+                            .regularMaterial
+                        )
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: height / 2)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                        .stroke(
+                            colorScheme == .dark ?
+                                Color.white.opacity(0.15) :
+                                Color.black.opacity(0.05),
+                            lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                        )
                 )
-                .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+                .shadow(
+                    color: colorScheme == .dark ?
+                        .black.opacity(0.06) :
+                        .black.opacity(0.04),
+                    radius: colorScheme == .dark ? 4 : 3,
+                    x: 0,
+                    y: colorScheme == .dark ? 2 : 1
+                )
 
             VStack(spacing: 2) {
                 if synced {
@@ -181,6 +218,7 @@ struct GlassStepper: View {
     var maxValue: Int = 999
     var cornerRadius: CGFloat = 16
     var buttonSize: CGFloat = 36
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         HStack(spacing: 16) {
@@ -197,9 +235,14 @@ struct GlassStepper: View {
             }
             .background(Material.ultraThin)
             .clipShape(Circle())
-            .overlay(Circle().stroke(Color.white.opacity(0.15), lineWidth: 0.6))
+            .overlay(
+                Circle().stroke(
+                    colorScheme == .dark ? Color.white.opacity(0.15) : Color.gray.opacity(0.1),
+                    lineWidth: 0.6
+                )
+            )
             .shadow(color: .black.opacity(0.06), radius: 2, x: 0, y: 1)
-            
+
             Button(action: {
                 HapticManager.shared.trigger(.lightImpact)
                 if value < maxValue { value += 1 }
@@ -213,22 +256,30 @@ struct GlassStepper: View {
             }
             .background(Material.ultraThin)
             .clipShape(Circle())
-            .overlay(Circle().stroke(Color.white.opacity(0.15), lineWidth: 0.6))
+            .overlay(
+                Circle().stroke(
+                    colorScheme == .dark ? Color.white.opacity(0.15) : Color.gray.opacity(0.1),
+                    lineWidth: 0.6
+                )
+            )
             .shadow(color: .black.opacity(0.06), radius: 2, x: 0, y: 1)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(Material.ultraThin)
+                .fill(colorScheme == .dark ? Material.ultraThin : Material.regular)
                 .background(
                     RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(Color.white.opacity(0.05))
+                        .fill(Color.white.opacity(colorScheme == .dark ? 0.05 : 0.1))
                         .blur(radius: 0.5)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: cornerRadius)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                        .stroke(
+                            colorScheme == .dark ? Color.white.opacity(0.15) : Color.gray.opacity(0.1),
+                            lineWidth: 0.6
+                        )
                 )
                 .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
         )

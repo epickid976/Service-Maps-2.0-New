@@ -12,6 +12,7 @@ import SwiftUI
 struct SearchBar: View {
     @Binding var searchText: String
     var isFocused: FocusState<Bool>.Binding
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         HStack(spacing: 8) {
@@ -39,15 +40,18 @@ struct SearchBar: View {
         .padding(.horizontal, 12)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Material.ultraThin)
+                .fill(colorScheme == .dark ? Material.ultraThin : Material.regular) // Conditional fill
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white.opacity(0.05))
+                        .fill(Color.white.opacity(colorScheme == .dark ? 0.05 : 0.1)) // Conditional inner opacity
                         .blur(radius: 0.5)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.6)
+                        .stroke(
+                            colorScheme == .dark ? Color.white.opacity(0.15) : Color.gray.opacity(0.1), // Conditional stroke color
+                            lineWidth: 0.6
+                        )
                 )
                 .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
         )

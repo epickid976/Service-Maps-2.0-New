@@ -36,6 +36,7 @@ struct TerritoryAddressView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
     @Environment(\.mainWindowSize) var mainWindowSize
+    @Environment(\.colorScheme) var colorScheme
     
     //MARK: - Dependencies
     
@@ -65,12 +66,12 @@ struct TerritoryAddressView: View {
                     ScalingHeaderScrollView {
                         ZStack {
                             //Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
-                            viewModel.largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size) .onTapGesture { if !imageURL.isEmpty {
+                           largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size) .onTapGesture { if !imageURL.isEmpty {
                                 HapticManager.shared.trigger(.lightImpact)
                                 viewModel.showImageViewer = true }
                             }
                             .padding(.bottom, 2)
-                                
+                            
                         }
                         
                     } content: {
@@ -246,7 +247,7 @@ struct TerritoryAddressView: View {
                         HStack {
                             Button("", action: { viewModel.syncAnimation = true;
                                 viewModel.synchronizationManager.startupProcess(synchronizing: true)  }) //.ke yboardShortcut("s", modifiers: .command)
-                                .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                            .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
                         }
                     }
                 }
@@ -283,10 +284,10 @@ struct TerritoryAddressView: View {
                                 .padding(.vertical, 4)
                                 .background(
                                     Capsule()
-                                        .fill(Color.secondary.opacity(0.1))
+                                        .fill(Color.secondary.opacity(colorScheme == .dark ? 0.1 : 0.15))
                                 )
                         }
-
+                        
                         Spacer()
                     }
                     .optionalViewModifier { content in
@@ -301,12 +302,24 @@ struct TerritoryAddressView: View {
                     .frame(minWidth: mainWindowSize.width * 0.95)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(.ultraThinMaterial)
+                            .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                    .stroke(
+                                        colorScheme == .dark ?
+                                        Color.white.opacity(0.2) :
+                                            Color.black.opacity(0.07),
+                                        lineWidth: colorScheme == .dark ? 1 : 0.8
+                                    )
                             )
-                            .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+                            .shadow(
+                                color: colorScheme == .dark ?
+                                    .black.opacity(0.05) :
+                                        .black.opacity(0.04),
+                                radius: colorScheme == .dark ? 8 : 6,
+                                x: 0,
+                                y: colorScheme == .dark ? 2 : 1.5
+                            )
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .optionalViewModifier { content in
@@ -363,12 +376,11 @@ struct TerritoryAddressView: View {
                             content
                         }
                     }
-                    
                 }.onTapHaptic(.lightImpact)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16) // Same shape as the cell
-                        .fill(highlightedTerritoryAddressId == addressData.address.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedTerritoryAddressId == addressData.address.id) // Fill with transparent gray if highlighted
-                )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16) // Same shape as the cell
+                            .fill(highlightedTerritoryAddressId == addressData.address.id ? Color.gray.opacity(0.5) : Color.clear).animation(.default, value: highlightedTerritoryAddressId == addressData.address.id) // Fill with transparent gray if highlighted
+                    )
             } trailingActions: { context in
                 if addressData.accessLevel == .Admin {
                     SwipeAction(
@@ -383,7 +395,7 @@ struct TerritoryAddressView: View {
                             if viewModel.addressToDelete.0 != nil && viewModel.addressToDelete.1 != nil {
                                 Task {
                                     await CenterPopup_DeleteTerritoryAddress(viewModel: viewModel){
-                                       
+                                        
                                         let toast = ToastValue(
                                             icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
                                             message: NSLocalizedString("Address Deleted", comment: "")
@@ -421,7 +433,108 @@ struct TerritoryAddressView: View {
             .swipeMinimumDistance(addressData.accessLevel != .User ? 50:1000)
         }
     }
-}
+    
+    func smallHeader(_ info: TerritoryHeaderInfo, progress: CGFloat) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("№")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                Text("\(info.number)")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+            }
+            
+            if info.imageURL != "", !(progress < 0.98) {
+                LazyImage(url: URL(string: info.imageURL)) { state in
+                    if let image = state.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    } else {
+                        Color.gray.opacity(0.2)
+                            .frame(width: 50, height: 50)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                }
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(info.description)
+                    .font(.body)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .lineLimit(2)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 0)
+                .fill(AnyShapeStyle(.ultraThickMaterial))
+                .background(
+                    (progress < 0.98 && colorScheme == .light) ?
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.white.opacity(0.05))
+                        .blur(radius: 0.5)
+                    : nil
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(
+                            progress < 0.98
+                            ? (colorScheme == .dark ? Color.white.opacity(0.15) : Color.black.opacity(0.05))
+                            : Color.clear,
+                            lineWidth: 0.6
+                        )
+                )
+                .shadow(
+                    color: .black.opacity(progress < 0.98 ? (colorScheme == .dark ? 0.1 : 0.06) : 0),
+                    radius: progress < 0.98 ? 6 : 0,
+                    x: 0,
+                    y: progress < 0.98 ? 3 : 0
+                )
+                .cornerRadius((progress < 0.98) ? 20 : 0, corners: [.topLeft, .topRight])
+                .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
+        )
+        .animation(.easeInOut(duration: 0.2), value: progress)
+    }
+        
+        func largeHeader(progress: CGFloat, mainWindowSize: CGSize) -> some View {
+            VStack(spacing: 0) {
+                ZStack(alignment: .bottom) {
+                    LazyImage(url: URL(string: territory.getImageURL())) { state in
+                        if let image = state.image {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: mainWindowSize.width, height: 350)
+                                .clipped()
+                        } else if state.isLoading {
+                            ProgressView().frame(height: 350)
+                        } else {
+                            Image("mapImage")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: mainWindowSize.width, height: 100)
+                        }
+                    }
+                    .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
+                    .frame(height: 350)
+                    
+                    // Inject the header view
+                    smallHeader(viewModel.headerInfo, progress: progress)
+                }
+            }
+            .frame(width: mainWindowSize.width, height: 350)
+            .animation(.easeInOut, value: progress)
+        }
+    }
 
 //MARK: - Delete Address Popup
 

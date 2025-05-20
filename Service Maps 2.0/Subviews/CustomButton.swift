@@ -17,7 +17,8 @@ struct CustomButton: View {
     var color: Color? = nil
     var active: Bool = true
     var action: () -> Void
-
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
         Button(action: action) {
             ZStack {
@@ -25,7 +26,7 @@ struct CustomButton: View {
                 Text(title)
                     .font(.system(size: 16, weight: .bold))
                     .opacity(loading ? 0 : 1)
-
+                
                 // Spinner layer
                 if loading {
                     if alwaysExpanded {
@@ -48,30 +49,32 @@ struct CustomButton: View {
             .frame(maxWidth: .infinity)
             .background(
                 Capsule()
-                    .fill((color ?? .blue).opacity(0.4))
+                    .fill((color ?? .blue).opacity(colorScheme == .dark ? 0.4 : 0.7)) // Increased opacity for light mode
                     .background(
-                        Capsule().fill(Material.ultraThin)
+                        Capsule().fill(colorScheme == .dark ? Material.ultraThin : Material.regular)
                     )
                     .overlay(
-                        Capsule().stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        Capsule().stroke(Color.white.opacity(colorScheme == .dark ? 0.2 : 0.1), lineWidth: 1)
                     )
                     .shadow(color: (color ?? .blue).opacity(0.4), radius: 6, x: 0, y: 3)
             )
             .foregroundColor(textColor)
             .clipShape(Capsule())
             .opacity(active ? 1 : 0.6)
+            .buttonStyle(PlainButtonStyle())
+            .disabled(!active)
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(!active)
     }
-
+    
     private var spinnerColor: Color {
         if let color = color {
             return [.red, .blue, .accentColor].contains(color) ? .white : .gray
         }
         return .white
     }
-
+    
     private var textColor: Color {
         if let color = color {
             return [.red, .blue, .accentColor].contains(color) ? .white : color

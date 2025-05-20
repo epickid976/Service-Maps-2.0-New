@@ -186,6 +186,8 @@ struct MySearchResultItem: View {
     var mainWindowSize: CGSize
     @State var index = 0
     
+    @Environment(\.colorScheme) var colorScheme
+    
     init(data: MySearchResult, mainWindowSize: CGSize) {
         self.data = data
         self.mainWindowSize = mainWindowSize
@@ -245,12 +247,24 @@ struct MySearchResultItem: View {
                     .frame(minWidth: mainWindowSize.width * 0.95)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(.ultraThinMaterial)
+                            .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                    .stroke(
+                                        colorScheme == .dark ?
+                                        Color.white.opacity(0.2) :
+                                            Color.black.opacity(0.07),
+                                        lineWidth: colorScheme == .dark ? 1 : 0.8
+                                    )
                             )
-                            .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+                            .shadow(
+                                color: colorScheme == .dark ?
+                                    .black.opacity(0.05) :
+                                        .black.opacity(0.04),
+                                radius: colorScheme == .dark ? 8 : 6,
+                                x: 0,
+                                y: colorScheme == .dark ? 2 : 1.5
+                            )
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 }.onTapHaptic(.lightImpact)
