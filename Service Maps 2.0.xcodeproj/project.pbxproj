@@ -34,6 +34,7 @@
 		821C12782A7811CD0050D106 /* AdminService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C12772A7811CD0050D106 /* AdminService.swift */; };
 		821DE74D2BD9EA46001D092D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74C2BD9EA46001D092D /* AppDelegate.swift */; };
 		821DE74F2BD9EB66001D092D /* apple-app-site-association in Sources */ = {isa = PBXBuildFile; fileRef = 821DE74E2BD9EB66001D092D /* apple-app-site-association */; };
+		8224BC4A2DE15E7E00831AE1 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 8224BC492DE15E7E00831AE1 /* SwiftSoup */; };
 		8225A6722DB58FF0003F3920 /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 8225A6712DB58FF0003F3920 /* Shimmer */; };
 		8226D9642CE7FC140090CD64 /* Papyrus in Frameworks */ = {isa = PBXBuildFile; productRef = 8226D9632CE7FC140090CD64 /* Papyrus */; };
 		8226D9662CE7FC140090CD64 /* PapyrusAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 8226D9652CE7FC140090CD64 /* PapyrusAlamofire */; };
@@ -338,6 +339,7 @@
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
 				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
 				82BED49F2CC567F400183E19 /* MijickPopups in Frameworks */,
+				8224BC4A2DE15E7E00831AE1 /* SwiftSoup in Frameworks */,
 				822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */,
 				822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */,
 				828C4CD82C3A31CC00E147C3 /* ImageViewerRemote in Frameworks */,
@@ -817,6 +819,7 @@
 				82608AB12CE9992F00BCC7D7 /* Toasts */,
 				82E9DAA82DAEA30E0096C024 /* SwiftTextRank */,
 				8225A6712DB58FF0003F3920 /* Shimmer */,
+				8224BC492DE15E7E00831AE1 /* SwiftSoup */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -867,6 +870,7 @@
 				82608AB02CE9992F00BCC7D7 /* XCRemoteSwiftPackageReference "swiftui-toasts" */,
 				82E9DAA72DAEA30E0096C024 /* XCRemoteSwiftPackageReference "SwiftTextRank" */,
 				8225A6702DB58FF0003F3920 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
+				8224BC482DE15E7E00831AE1 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1269,6 +1273,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8224BC482DE15E7E00831AE1 /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.7;
+			};
+		};
 		8225A6702DB58FF0003F3920 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
@@ -1416,6 +1428,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8224BC492DE15E7E00831AE1 /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8224BC482DE15E7E00831AE1 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
 		8225A6712DB58FF0003F3920 /* Shimmer */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8225A6702DB58FF0003F3920 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;

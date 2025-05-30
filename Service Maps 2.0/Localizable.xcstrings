@@ -1254,6 +1254,9 @@
         }
       }
     },
+    "Daily Reflection" : {
+
+    },
     "Date" : {
       "localizations" : {
         "es" : {
@@ -4429,6 +4432,9 @@
         }
       }
     },
+    "Reflection" : {
+
+    },
     "Registering Key" : {
       "localizations" : {
         "es" : {
@@ -5073,6 +5079,9 @@
 
     },
     "Tap to log in" : {
+
+    },
+    "Tap to read more" : {
 
     },
     "Territories" : {
