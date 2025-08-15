@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 @preconcurrency import Papyrus
 
 // MARK: - API Provider
@@ -72,13 +73,24 @@ class APIProvider {
     }
     
     private static func makeProvider() -> Provider {
+        // Create proper User-Agent to avoid server blocking
+        let bundleId = Bundle.main.bundleIdentifier ?? "com.servicemaps.app"
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let systemVersion = ProcessInfo.processInfo.operatingSystemVersionString
+        let userAgent = "ServiceMaps/\(version) iOS/\(systemVersion) (\(bundleId))"
+        
         return Provider(baseURL: "https://servicemaps.ejvapps.online/api/")
             .modifyRequests { (req: inout RequestBuilder) in
                 // Set base headers
-                req.headers = [
-                    HeaderKeys.contentType: "application/json",
-                    HeaderKeys.xRequestedWith: "XMLHttpRequest"
-                ]
+                req.headers[HeaderKeys.contentType] = "application/json"
+                req.headers[HeaderKeys.xRequestedWith] = "XMLHttpRequest"
+                
+                // Add browser-like headers to avoid server blocking
+                req.headers["User-Agent"] = userAgent
+                req.headers["Accept"] = "application/json"
+                req.headers["Accept-Language"] = Locale.current.languageCode ?? "en"
+                req.headers["Accept-Encoding"] = "gzip, deflate, br"
+                req.headers["Connection"] = "keep-alive"
             }
             .intercept { [self] request, next in
                 
@@ -122,9 +134,66 @@ class APIProvider {
                 
                 if let error = response.error {
                     print("❌ Error: \(error)")
+                    
+                    // Log specific TLS/SSL errors
+                    if let nsError = error as NSError? {
+                        switch nsError.code {
+                        case NSURLErrorServerCertificateUntrusted:
+                            print("🔒 TLS Error: Server certificate untrusted")
+                        case NSURLErrorSecureConnectionFailed:
+                            print("🔒 TLS Error: Secure connection failed")
+                        case NSURLErrorCannotConnectToHost:
+                            print("🔒 TLS Error: Cannot connect to host")
+                        case NSURLErrorTimedOut:
+                            print("⏰ TLS Error: Connection timed out")
+                        case NSURLErrorCancelled:
+                            print("❌ Request was cancelled")
+                        case NSURLErrorNotConnectedToInternet:
+                            print("🌐 Network Error: Not connected to internet")
+                        default:
+                            print("🔍 Error details - Domain: \(nsError.domain), Code: \(nsError.code)")
+                            if let userInfo = nsError.userInfo as? [String: Any] {
+                                print("🔍 User Info: \(userInfo)")
+                            }
+                        }
+                    }
                 }
                 print("Complete response \(response)")
                 #endif
+                
+                // Check for CAPTCHA/HTML responses - only for error responses or suspicious content
+                if let statusCode = response.statusCode,
+                   statusCode != 200,  // Don't check successful responses
+                   let body = response.body,
+                   let bodyString = String(data: body, encoding: .utf8) {
+                    
+                    // Check content type headers safely
+                    var isHtmlResponse = false
+                    if let contentTypeHeaders = response.headers?["Content-Type"] {
+                        // Convert headers to string representation and check for HTML
+                        let contentTypeString = "\(contentTypeHeaders)"
+                        isHtmlResponse = contentTypeString.lowercased().contains("text/html")
+                    }
+                    
+                    // Also check body content for HTML indicators
+                    let bodyLower = bodyString.lowercased()
+                    if isHtmlResponse || bodyLower.contains("<html") || bodyLower.contains("<!doctype html") {
+                        if bodyString.contains("Bot Verification") || bodyString.contains("recaptcha") {
+                            print("🚨 CAPTCHA detected in API response - Server requires verification")
+                            throw CustomErrors.CaptchaRequired
+                        } else {
+                            print("🚨 HTML response detected instead of JSON - Server blocked request")
+                            throw CustomErrors.ServerBlocked
+                        }
+                    }
+                } else if let body = response.body,
+                          let bodyString = String(data: body, encoding: .utf8) {
+                    // For successful responses, only check for obvious blocking patterns
+                    if bodyString.contains("Bot Verification") || bodyString.contains("recaptcha") {
+                        print("🚨 CAPTCHA detected in successful response - Server requires verification")
+                        throw CustomErrors.CaptchaRequired
+                    }
+                }
                 
                 return response
             }

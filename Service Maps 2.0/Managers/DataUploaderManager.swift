@@ -60,7 +60,7 @@ class DataUploaderManager: ObservableObject {
 
         // Proceed with deletion if territory was found
         let apiResult = await adminApi.deleteTerritory(territory: unwrappedTerritory)
-        return await performApiAndDbUpdate(apiResult) {
+        return await performGracefulDeleteUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedTerritory).get() // Ignore result but handle errors
         }
     }
@@ -83,7 +83,7 @@ class DataUploaderManager: ObservableObject {
         }
         
         let apiResult = await adminApi.deleteTerritoryAddress(territoryAddress: unwrappedTerritoryAddress)
-        return await performApiAndDbUpdate(apiResult) {
+        return await performGracefulDeleteUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedTerritoryAddress).get() // Ignore result but handle errors
         }
     }
@@ -114,7 +114,7 @@ class DataUploaderManager: ObservableObject {
         }
 
         let apiResult = await adminApi.deleteHouse(house: unwrappedHouse)
-        return await performApiAndDbUpdate(apiResult) {
+        return await performGracefulDeleteUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedHouse).get() // Ignore result but handle errors
         }
     }
@@ -157,7 +157,7 @@ class DataUploaderManager: ObservableObject {
         }
 
         let apiResult = await adminApi.deleteVisit(visit: unwrappedVisit)
-        return await performApiAndDbUpdate(apiResult) {
+        return await performGracefulDeleteUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedVisit).get() // Ignore result but handle errors
         }
     }
@@ -267,7 +267,7 @@ class DataUploaderManager: ObservableObject {
         }
 
         let apiResult = await adminApi.deletePhoneCall(phoneCall: unwrappedPhoneCall)
-        return await performApiAndDbUpdate(apiResult) {
+        return await performGracefulDeleteUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedPhoneCall).get() // Ignore result but handle errors
         }
     }
@@ -333,7 +333,7 @@ class DataUploaderManager: ObservableObject {
         }
 
         let apiResult = await TokenService().deleteToken(token: unwrappedToken.id)
-        return await performApiAndDbUpdate(apiResult) {
+        return await performGracefulDeleteUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedToken).get() // Ignore result but handle errors
         }
     }
@@ -351,7 +351,7 @@ class DataUploaderManager: ObservableObject {
     @BackgroundActor
     func deleteRecall(recall: Recalls) async -> Result<Void, Error> {
         let apiResult = await userApi.removeRecall(recall: recall)
-        return await performApiAndDbUpdate(apiResult) {
+        return await performGracefulDeleteUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(recall).get() // Ignore result but handle errors
         }
     }
@@ -376,7 +376,7 @@ class DataUploaderManager: ObservableObject {
         }
 
         let apiResult = await TokenService().removeUserFromToken(token: unwrappedUserToken.token, userId: unwrappedUserToken.userId)
-        return await performApiAndDbUpdate(apiResult) {
+        return await performGracefulDeleteUpdate(apiResult) {
             _ = try await grdbManager.deleteAsync(unwrappedUserToken).get() // Ignore result but handle errors
         }
     }
@@ -417,6 +417,98 @@ class DataUploaderManager: ObservableObject {
         } catch {
             print("🚨 Database Error in performApiAndDbUpdate: \(error.localizedDescription)")
             return .failure(error)
+        }
+    }
+    
+    // Helper specifically for delete operations - treats "already deleted" as success
+    @BackgroundActor
+    private func performGracefulDeleteUpdate(_ apiResult: Result<Void, Error>, dbAction: () async throws -> Void) async -> Result<Void, Error> {
+        // Check if the API failed due to item already being deleted
+        let shouldProceedWithLocalDelete: Bool
+        
+        print("🔍 performGracefulDeleteUpdate called")
+        switch apiResult {
+        case .success:
+            shouldProceedWithLocalDelete = true
+            print("✅ API delete succeeded")
+        case .failure(let apiError):
+            print("🚨 API delete failed: \(apiError.localizedDescription)")
+            print("🔍 Error type: \(type(of: apiError))")
+            
+            // Check if this is a "graceful failure" (item already deleted)
+            var isGracefulFailure = false
+            
+            // Check for our custom errors first (from HTML detection)
+            if let customError = apiError as? CustomErrors {
+                switch customError {
+                case .ServerBlocked:
+                    print("📝 ServerBlocked error - Item likely already deleted, proceeding with local deletion")
+                    isGracefulFailure = true
+                case .CaptchaRequired:
+                    print("📝 CaptchaRequired error - Item likely already deleted, proceeding with local deletion")
+                    isGracefulFailure = true
+                case .NotFound:
+                    print("📝 NotFound error - Item already deleted, proceeding with local deletion")
+                    isGracefulFailure = true
+                default:
+                    break
+                }
+            }
+            
+            if let afError = apiError.asAFError {
+                // HTTP 404 (Not Found) or 500 (Server Error) often mean "already deleted"
+                if let responseCode = afError.responseCode {
+                    switch responseCode {
+                    case 404:
+                        print("📝 404 Not Found - Item likely already deleted, proceeding with local deletion")
+                        isGracefulFailure = true
+                    case 500:
+                        print("📝 500 Server Error - Item likely already deleted, proceeding with local deletion")
+                        isGracefulFailure = true
+                    default:
+                        break
+                    }
+                }
+            }
+            
+            // Also check for specific error messages that indicate item not found
+            let errorMessage = apiError.localizedDescription.lowercased()
+            print("🔍 Analyzing error message: '\(errorMessage)'")
+            
+            if errorMessage.contains("server error ocurred") || 
+               errorMessage.contains("server error occurred") ||
+               errorMessage.contains("not found") ||
+               errorMessage.contains("doesn't exist") ||
+               errorMessage.contains("no se ha podido completar") ||
+               errorMessage.contains("operación cancelada") {
+                print("📝 Error message suggests item already deleted, proceeding with local deletion")
+                isGracefulFailure = true
+            }
+            
+            shouldProceedWithLocalDelete = isGracefulFailure
+            
+            print("🔍 Final graceful failure decision: \(isGracefulFailure)")
+            
+            if !isGracefulFailure {
+                print("❌ API delete failed with non-graceful error, not deleting locally")
+                return .failure(apiError)
+            } else {
+                print("✅ Treating as graceful failure, will proceed with local deletion")
+            }
+        }
+        
+        // Attempt the database action if we should proceed
+        if shouldProceedWithLocalDelete {
+            do {
+                try await dbAction()
+                print("✅ Local deletion completed successfully")
+                return .success(())
+            } catch {
+                print("🚨 Database Error in performGracefulDeleteUpdate: \(error.localizedDescription)")
+                return .failure(error)
+            }
+        } else {
+            return .failure(NSError(domain: "DeleteError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to delete item"]))
         }
     }
 

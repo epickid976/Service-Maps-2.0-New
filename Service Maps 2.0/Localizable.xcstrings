@@ -1119,6 +1119,9 @@
         }
       }
     },
+    "Cannot connect to server. Please check your internet connection." : {
+
+    },
     "Clear Symbols" : {
       "localizations" : {
         "es" : {
@@ -1230,6 +1233,12 @@
           }
         }
       }
+    },
+    "Connection error. Please check your internet and try again." : {
+
+    },
+    "Connection timed out. Please try again." : {
+
     },
     "Copy Address" : {
       "localizations" : {
@@ -3557,6 +3566,9 @@
     "No internet connection. Please check your network and try again." : {
 
     },
+    "No internet connection. Please check your network." : {
+
+    },
     "No Internet Connection. Please try again later." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4557,6 +4569,9 @@
         }
       }
     },
+    "Request was cancelled. Please try again." : {
+
+    },
     "Required data not found." : {
 
     },
@@ -4757,6 +4772,12 @@
         }
       }
     },
+    "Secure connection failed. Please try again." : {
+
+    },
+    "Security certificate error. Please check your internet connection." : {
+
+    },
     "Select Symbol" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4791,6 +4812,12 @@
       }
     },
     "Server error. Please try again later." : {
+
+    },
+    "Server is temporarily blocking requests. Please try again later or contact support." : {
+
+    },
+    "Server requires verification. Please try again later or contact support." : {
 
     },
     "Service Maps" : {

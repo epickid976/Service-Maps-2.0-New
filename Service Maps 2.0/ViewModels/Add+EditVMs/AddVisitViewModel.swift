@@ -108,6 +108,10 @@ class AddVisitViewModel: ObservableObject {
                 return NSLocalizedString("Required data not found.", comment: "")
             case .ErrorUploading:
                 return NSLocalizedString("Failed to upload visit data.", comment: "")
+            case .ServerBlocked:
+                return NSLocalizedString("Server is temporarily blocking requests. Please try again later or contact support.", comment: "")
+            case .CaptchaRequired:
+                return NSLocalizedString("Server requires verification. Please try again later or contact support.", comment: "")
             default:
                 return NSLocalizedString("An unexpected error occurred.", comment: "")
             }
@@ -123,6 +127,24 @@ class AddVisitViewModel: ObservableObject {
                 return NSLocalizedString("Server error. Please try again later.", comment: "")
             default:
                 return NSLocalizedString("Network error. Please check your connection.", comment: "")
+            }
+        } else if let nsError = error as NSError? {
+            // Handle specific network/TLS errors
+            switch nsError.code {
+            case NSURLErrorServerCertificateUntrusted:
+                return NSLocalizedString("Security certificate error. Please check your internet connection.", comment: "")
+            case NSURLErrorSecureConnectionFailed:
+                return NSLocalizedString("Secure connection failed. Please try again.", comment: "")
+            case NSURLErrorCannotConnectToHost:
+                return NSLocalizedString("Cannot connect to server. Please check your internet connection.", comment: "")
+            case NSURLErrorTimedOut:
+                return NSLocalizedString("Connection timed out. Please try again.", comment: "")
+            case NSURLErrorCancelled:
+                return NSLocalizedString("Request was cancelled. Please try again.", comment: "")
+            case NSURLErrorNotConnectedToInternet:
+                return NSLocalizedString("No internet connection. Please check your network.", comment: "")
+            default:
+                return NSLocalizedString("Connection error. Please check your internet and try again.", comment: "")
             }
         } else {
             return NSLocalizedString("Failed to save visit. Please try again.", comment: "")

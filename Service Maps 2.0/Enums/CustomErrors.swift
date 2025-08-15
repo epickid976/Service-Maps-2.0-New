@@ -18,6 +18,8 @@ enum CustomErrors: Error {
     case GenericError
     case Duplicate
     case FailedToFetchData
+    case ServerBlocked
+    case CaptchaRequired
     
     var localizedDescription: String {
         switch self {
@@ -39,6 +41,10 @@ enum CustomErrors: Error {
             return "Duplicate"
         case .FailedToFetchData:
             return "Failed to fetch data"
+        case .ServerBlocked:
+            return "Server is blocking requests"
+        case .CaptchaRequired:
+            return "Server requires verification"
         }
     }
 }
