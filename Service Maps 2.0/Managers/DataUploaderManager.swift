@@ -403,6 +403,10 @@ class DataUploaderManager: ObservableObject {
     private func performApiAndDbUpdate(_ apiResult: Result<Void, Error>, dbAction: () async throws -> Void) async -> Result<Void, Error> {
         // Handle the API result
         if case .failure(let apiError) = apiResult {
+            print("🚨 API Error in performApiAndDbUpdate: \(apiError.localizedDescription)")
+            if let afError = apiError.asAFError {
+                print("🌐 Alamofire Error Details: \(afError)")
+            }
             return .failure(apiError)
         }
         
@@ -411,6 +415,7 @@ class DataUploaderManager: ObservableObject {
             try await dbAction()
             return .success(())
         } catch {
+            print("🚨 Database Error in performApiAndDbUpdate: \(error.localizedDescription)")
             return .failure(error)
         }
     }

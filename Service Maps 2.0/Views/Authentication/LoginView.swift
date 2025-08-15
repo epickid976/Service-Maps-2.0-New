@@ -308,7 +308,7 @@ struct LoginView: View {
                                     presentationMode.wrappedValue.dismiss()
                                     viewModel.username = ""
                                     viewModel.password = ""
-                                }//.keyboardShortcut("\r", modifiers: [.command, .shift])
+                                }
                             }
                         }
                         CustomButton(loading: loading, title: "Login") {
@@ -341,7 +341,7 @@ struct LoginView: View {
                                     loading = false
                                 }
                             }
-                        }//.keyboardShortcut("\r", modifiers: .command)
+                        }
                     }
                     .padding()
                     

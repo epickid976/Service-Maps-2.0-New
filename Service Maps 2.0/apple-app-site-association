@@ -1,7 +1,7 @@
 {
     "applinks": {
         "details": [{
-            "appIDs": ["6FLCXFF4D9.com.Jose.Blanco.Territorios", "GB8LSX9HB5.com.Jose.Blanco.Territorios"],
+            "appIDs": ["6FLCXFF4D9.com.Jose.Blanco.BibleReadingTrackerIOS", "GB8LSX9HB5.com.Jose.Blanco.BibleReadingTrackerIOS", "6FLCXFF4D9.com.Jose.Blanco.Territorios", "GB8LSX9HB5.com.Jose.Blanco.Territorios"],
             "components": [
             {
              "#": "no_universal_links",
@@ -31,11 +31,12 @@
         }]
     },
     "webcredentials": {
-      "apps": [ "6FLCXFF4D9.com.example.app", "GB8LSX9HB5.com.Jose.Blanco.Territorios"]
+      "apps": [ "6FLCXFF4D9.com.Jose.Blanco.BibleReadingTrackerIOS", "GB8LSX9HB5.com.Jose.Blanco.BibleReadingTrackerIOS", "6FLCXFF4D9.com.Jose.Blanco.Territorios", "GB8LSX9HB5.com.Jose.Blanco.Territorios"
+      ]
     },
     "appclips": {
         "apps": [
-            "6FLCXFF4D9.com.Jose.Blanco.Territorios", "GB8LSX9HB5.com.Jose.Blanco.Territorios"
+           "6FLCXFF4D9.com.Jose.Blanco.BibleReadingTrackerIOS", "GB8LSX9HB5.com.Jose.Blanco.BibleReadingTrackerIOS", "6FLCXFF4D9.com.Jose.Blanco.Territorios", "GB8LSX9HB5.com.Jose.Blanco.Territorios"
         ]
     }
 }

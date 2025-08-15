@@ -646,6 +646,9 @@
         }
       }
     },
+    "An unexpected error occurred." : {
+
+    },
     "An unexpected error occurred. Please try again." : {
       "localizations" : {
         "es" : {
@@ -927,6 +930,12 @@
       }
     },
     "Authentication" : {
+
+    },
+    "Authentication expired. Please log in again." : {
+
+    },
+    "Authentication required. Please log in again." : {
 
     },
     "Back" : {
@@ -2042,6 +2051,7 @@
       }
     },
     "Error adding Visit." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2478,6 +2488,7 @@
       }
     },
     "Error updating Visit." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -2557,6 +2568,12 @@
           }
         }
       }
+    },
+    "Failed to save visit. Please try again." : {
+
+    },
+    "Failed to upload visit data." : {
+
     },
     "Fields cannot be empty" : {
       "localizations" : {
@@ -2911,6 +2928,9 @@
           }
         }
       }
+    },
+    "Invalid visit data. Please check your information." : {
+
     },
     "iOS" : {
 
@@ -3399,6 +3419,9 @@
         }
       }
     },
+    "Network error. Please check your connection." : {
+
+    },
     "New Username" : {
 
     },
@@ -3530,6 +3553,9 @@
           }
         }
       }
+    },
+    "No internet connection. Please check your network and try again." : {
+
     },
     "No Internet Connection. Please try again later." : {
       "extractionState" : "stale",
@@ -4531,6 +4557,9 @@
         }
       }
     },
+    "Required data not found." : {
+
+    },
     "Resend Verification" : {
       "localizations" : {
         "es" : {
@@ -4760,6 +4789,9 @@
           }
         }
       }
+    },
+    "Server error. Please try again later." : {
+
     },
     "Service Maps" : {
       "localizations" : {
@@ -5277,6 +5309,9 @@
         }
       }
     },
+    "This visit already exists." : {
+
+    },
     "Time" : {
       "localizations" : {
         "es" : {
@@ -5691,6 +5726,9 @@
           }
         }
       }
+    },
+    "You don't have permission to add visits." : {
+
     },
     "You have no scheduled reminders." : {
       "localizations" : {

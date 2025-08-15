@@ -115,16 +115,16 @@ struct AddVisitView: View {
                                         viewModel.loading = true
                                     }
                                     let result = await viewModel.editVisit(visit: visit!)
-                                    switch result {
-                                    case .success(_):
-                                        HapticManager.shared.trigger(.success)
-                                        DispatchQueue.main.async {
+                                    await MainActor.run {
+                                        switch result {
+                                        case .success(_):
+                                            HapticManager.shared.trigger(.success)
                                             onDone()
+                                        case .failure(let error):
+                                            HapticManager.shared.trigger(.error)
+                                            viewModel.error = viewModel.getErrorMessage(for: error)
+                                            viewModel.loading = false
                                         }
-                                    case .failure(_):
-                                        HapticManager.shared.trigger(.error)
-                                        viewModel.error = NSLocalizedString("Error updating Visit.", comment: "")
-                                        viewModel.loading = false
                                     }
                                 }
                             } else {
@@ -133,16 +133,16 @@ struct AddVisitView: View {
                                         viewModel.loading = true
                                     }
                                     let result = await viewModel.addVisit()
-                                    switch result {
-                                    case .success(_):
-                                        HapticManager.shared.trigger(.success)
-                                        DispatchQueue.main.async {
+                                    await MainActor.run {
+                                        switch result {
+                                        case .success(_):
+                                            HapticManager.shared.trigger(.success)
                                             onDone()
+                                        case .failure(let error):
+                                            HapticManager.shared.trigger(.error)
+                                            viewModel.error = viewModel.getErrorMessage(for: error)
+                                            viewModel.loading = false
                                         }
-                                    case .failure(_):
-                                        HapticManager.shared.trigger(.error)
-                                        viewModel.error = NSLocalizedString("Error adding Visit.", comment: "")
-                                        viewModel.loading = false
                                     }
                                 }
                             }

@@ -5,8 +5,10 @@
 //  Created by Jose Blanco on 8/25/23.
 //
 
+
 import Foundation
 import SwiftUI
+import Alamofire
 
 // MARK: - AddVisitViewModel
 @MainActor
@@ -83,6 +85,48 @@ class AddVisitViewModel: ObservableObject {
     // Placeholder for actual implementation
     private func fetchLastVisit() async -> Visit? {
         // Fetch your last visit from your data source
-        return GRDBManager.shared.getLastVisitForHouse(house)
+        let result = await GRDBManager.shared.fetchAllAsync(Visit.self)
+        switch result {
+        case .success(let visits):
+            return visits.filter { $0.house == house.id }.max(by: { $0.date < $1.date })
+        case .failure:
+            return nil
+        }
     }
+
+    // MARK: - Error Handling
+    func getErrorMessage(for error: Error) -> String {
+        if let customError = error as? CustomErrors {
+            switch customError {
+            case .WrongCredentials:
+                return NSLocalizedString("Authentication required. Please log in again.", comment: "")
+            case .NoInternet:
+                return NSLocalizedString("No internet connection. Please check your network and try again.", comment: "")
+            case .Duplicate:
+                return NSLocalizedString("This visit already exists.", comment: "")
+            case .NotFound:
+                return NSLocalizedString("Required data not found.", comment: "")
+            case .ErrorUploading:
+                return NSLocalizedString("Failed to upload visit data.", comment: "")
+            default:
+                return NSLocalizedString("An unexpected error occurred.", comment: "")
+            }
+        } else if let afError = error.asAFError {
+            switch afError.responseCode {
+            case .some(401):
+                return NSLocalizedString("Authentication expired. Please log in again.", comment: "")
+            case .some(403):
+                return NSLocalizedString("You don't have permission to add visits.", comment: "")
+            case .some(422):
+                return NSLocalizedString("Invalid visit data. Please check your information.", comment: "")
+            case .some(500...599):
+                return NSLocalizedString("Server error. Please try again later.", comment: "")
+            default:
+                return NSLocalizedString("Network error. Please check your connection.", comment: "")
+            }
+        } else {
+            return NSLocalizedString("Failed to save visit. Please try again.", comment: "")
+        }
+    }
+    
 }
