@@ -193,7 +193,7 @@ struct PhoneNumbersView: View {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
                     }
-                    .offset(y: hideFloatingButton ? 100 : -25)
+                    .offset(y: hideFloatingButton ? 100 : -75)
                     .animation(.spring(), value: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
