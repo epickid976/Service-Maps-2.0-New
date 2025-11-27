@@ -165,23 +165,51 @@ struct HousesView: View {
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarLeading) {
-                                HStack {
-                                    Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                                if #available(iOS 26.0, *) {
+                                    Button(action: {
+                                        withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) }
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             Task {
                                                 await dismissAllPopups()
                                             }
                                             presentationMode.wrappedValue.dismiss()
                                         }
-                                    })
-                                    .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    }) {
+                                        Image(systemName: "arrow.backward")
+                                    }
+                                } else {
+                                    HStack {
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                Task {
+                                                    await dismissAllPopups()
+                                                }
+                                                presentationMode.wrappedValue.dismiss()
+                                            }
+                                        })
+                                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    }
                                 }
                             }
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                HStack {
-                                    Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $dataStore.synchronized, lastTime: $dataStore.lastTime))
-                                    
+                            // MARK: - Trailing – iOS 26+ broken into 2 groups
+                            if #available(iOS 26.0, *) {
+                                
+                                // LEFT PART of trailing: Sync pill
+                                ToolbarItemGroup(placement: .primaryAction) {
+                                    SyncPillButton(
+                                        synced: dataStore.synchronized,
+                                        lastTime: dataStore.lastTime
+                                    ) {
+                                        HapticManager.shared.trigger(.lightImpact)
+                                        synchronizationManager.startupProcess(synchronizing: true)
+                                    }
+                                }
+                                
+                                // SPACE between pill and filter menu
+                                ToolbarSpacer(.flexible, placement: .primaryAction)
+                                
+                                // RIGHT PART of trailing: Filter Menu
+                                ToolbarItemGroup(placement: .primaryAction) {
                                     Menu {
                                         Button {
                                             HapticManager.shared.trigger(.lightImpact)
@@ -257,21 +285,106 @@ struct HousesView: View {
                                             viewModel.getHouses()
                                         }
                                     } label: {
-                                        Button("", action: {
-                                            viewModel.optionsAnimation.toggle()
-                                            HapticManager.shared.trigger(.lightImpact)
-                                            viewModel.presentSheet.toggle()
-                                        })
-                                        .buttonStyle(CircleButtonStyle(
-                                            imageName: "line.3.horizontal.decrease",
-                                            background: .white.opacity(0),
-                                            width: 40,
-                                            height: 40,
-                                            progress: $viewModel.progress,
-                                            animation: $viewModel.optionsAnimation
-                                        ))
+                                        Image(systemName: "line.3.horizontal.decrease")
                                     }
-                                    
+                                }
+                            } else {
+                                // iOS 25 and below: Single ToolbarItemGroup with HStack
+                                ToolbarItemGroup(placement: .topBarTrailing) {
+                                    HStack {
+                                        Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })
+                                            .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $dataStore.synchronized, lastTime: $dataStore.lastTime))
+                                        
+                                        Menu {
+                                            Button {
+                                                HapticManager.shared.trigger(.lightImpact)
+                                                Task {
+                                                    await  CenterPopup_FilterInfo().present()
+                                                }
+                                            } label: {
+                                                Label {
+                                                    Text("Info")
+                                                } icon: {
+                                                    Image(systemName: "questionmark.circle")
+                                                }
+                                            }
+                                            
+                                            Picker(selection: $viewModel.sortPredicate) {
+                                                ForEach(HouseSortPredicate.allCases, id: \.self) { option in
+                                                    Text(option.localized)
+                                                }
+                                            } label: {
+                                                Label {
+                                                    Text("Sort by Order")
+                                                } icon: {
+                                                    Image(systemName: "arrow.up.arrow.down.circle")
+                                                }
+                                            }
+                                            .pickerStyle(.menu)
+
+                                            Picker(selection: $viewModel.filterPredicate) {
+                                                ForEach(HouseFilterPredicate.allCases, id: \.self) { option in
+                                                    Text(option.localized)
+                                                }
+                                            } label: {
+                                                Label {
+                                                    Text("Sort by Grouping")
+                                                } icon: {
+                                                    Image(systemName: "rectangle.3.group.bubble.left")
+                                                }
+                                            }
+                                            .pickerStyle(.menu)
+                                            
+                                            Divider()
+                                            
+                                            Text("Filter by Symbol").font(.headline)
+                                            
+                                            let orderedSymbols: [Symbols] = [
+                                                .NC, .NT, .V,
+                                                .H, .M, .N,
+                                                .OV, .MV, .HV,
+                                                .none
+                                            ]
+
+                                            let symbolGroups = orderedSymbols.chunked(into: 3)
+
+                                            ForEach(symbolGroups, id: \.self) { group in
+                                                ControlGroup {
+                                                    ForEach(group) { symbol in
+                                                        Button {
+                                                            if viewModel.selectedSymbols.contains(symbol) {
+                                                                viewModel.selectedSymbols.remove(symbol)
+                                                            } else {
+                                                                viewModel.selectedSymbols.insert(symbol)
+                                                            }
+                                                            viewModel.getHouses()
+                                                        } label: {
+                                                            Label(symbol.legend, systemImage: viewModel.selectedSymbols.contains(symbol) ? "checkmark.circle.fill" : "circle")
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
+                                            Button("Clear Symbols") {
+                                                viewModel.selectedSymbols.removeAll()
+                                                viewModel.getHouses()
+                                            }
+                                        } label: {
+                                            Button("", action: {
+                                                viewModel.optionsAnimation.toggle()
+                                                HapticManager.shared.trigger(.lightImpact)
+                                                viewModel.presentSheet.toggle()
+                                            })
+                                            .buttonStyle(CircleButtonStyle(
+                                                imageName: "line.3.horizontal.decrease",
+                                                background: .white.opacity(0),
+                                                width: 40,
+                                                height: 40,
+                                                progress: $viewModel.progress,
+                                                animation: $viewModel.optionsAnimation
+                                            ))
+                                        }
+                                    }
                                 }
                             }
                         }

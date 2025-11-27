@@ -39,42 +39,44 @@ struct Service_Maps_2_0App: App {
             
             let destination: DestinationEnum = instantiateDestination()
             
-            
-            NavigationStack {
+            // Remove outer NavigationStack - HomeTabView manages its own navigation
+            VStack {
                 switch destination {
                 case .SplashScreen:
                     SplashScreenView()
                 case .HomeScreen:
                     HomeTabView().installToast(position: .bottom)
                 case .WelcomeScreen:
-                    WelcomeView() { Task { SynchronizationManager.shared.startupProcess(synchronizing: true) } }
+                    NavigationStack { WelcomeView() { Task { SynchronizationManager.shared.startupProcess(synchronizing: true) } } }
                 case .LoginScreen:
-                    LoginView() {
-                        Task {
-                            synchronizationManager.startupProcess(synchronizing: true)
-                            SynchronizationManager.shared.startupProcess(synchronizing: false)
+                    NavigationStack {
+                        LoginView() {
+                            Task {
+                                synchronizationManager.startupProcess(synchronizing: true)
+                                SynchronizationManager.shared.startupProcess(synchronizing: false)
+                            }
                         }
                     }
                 case .AdministratorLoginScreen:
-                    AdminLoginView() { Task { synchronizationManager.startupProcess(synchronizing: true) } }
+                    NavigationStack { AdminLoginView() { Task { synchronizationManager.startupProcess(synchronizing: true) } } }
                 case .PhoneLoginScreen:
-                    PhoneLoginScreen() { Task { synchronizationManager.startupProcess(synchronizing: true) } }
+                    NavigationStack { PhoneLoginScreen() { Task { synchronizationManager.startupProcess(synchronizing: true) } } }
                 case .ValidationScreen:
-                    VerificationView() { Task { synchronizationManager.startupProcess(synchronizing: true) } }
+                    NavigationStack { VerificationView() { Task { synchronizationManager.startupProcess(synchronizing: true) } } }
                 case .LoadingScreen:
                     LoadingView()
                 case .NoDataScreen:
                     NoDataView()
                 case .ActivateEmail:
-                    ValidationView()
+                    NavigationStack { ValidationView() }
                 case .RegisterKeyView:
-                    RegisterKeyView()
+                    NavigationStack { RegisterKeyView() }
                 case .ResetPasswordView:
-                    ResetPassword()
+                    NavigationStack { ResetPassword() }
                 case .PrivacyPolicyView:
-                    PrivacyPolicy()
+                    NavigationStack { PrivacyPolicy() }
                 case .loginWithEmailView:
-                    LoginWithEmailView()
+                    NavigationStack { LoginWithEmailView() }
                 }
             }.environment(\.font, Font.system(.body, design: .rounded))
                 .onOpenURL { url in

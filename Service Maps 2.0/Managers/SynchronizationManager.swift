@@ -12,7 +12,7 @@ import GRDB
 //MARK: - Global Actor
 
 @globalActor actor SyncActor: GlobalActor {
-    static var shared = SyncActor()
+    nonisolated(unsafe) static var shared = SyncActor()
 }
 
 //MARK: - Synchronization Manager

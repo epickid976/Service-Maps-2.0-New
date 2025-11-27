@@ -436,6 +436,9 @@
         }
       }
     },
+    "Access" : {
+
+    },
     "Activating Account" : {
       "localizations" : {
         "es" : {
@@ -3857,7 +3860,7 @@
       }
     },
     "Now" : {
-      "comment" : "Indicates that no time has been recorded\nIndicates that something happened less than a minute ago",
+      "comment" : "Indicates that no time has been recorded\nIndicates that something happened less than a minute ago\nIndicates that something just synced",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -4208,6 +4211,9 @@
           }
         }
       }
+    },
+    "Phone" : {
+
     },
     "Phone Book" : {
       "localizations" : {

@@ -61,7 +61,8 @@ struct PhoneTerritoriesScreen: View {
             transition = AnyNavigationTransition.slide.combined(with: .fade(.in))
         }
         
-        return GeometryReader { proxy in
+        return NavigationStack {
+        GeometryReader { proxy in
             ZStack {
                 ScrollViewReader { scrollViewProxy in
                     ScrollView {
@@ -205,30 +206,59 @@ struct PhoneTerritoriesScreen: View {
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarLeading) {
-                                HStack {
+                                if #available(iOS 26.0, *) {
                                     if viewModel.phoneTerritoryToScrollTo != nil {
-                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                                        Button(action: {
+                                            withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) }
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                 Task {
                                                     await dismissAllPopups()
                                                 }
                                                 presentationMode.wrappedValue.dismiss()
                                             }
-                                        })//.keyboardShortcut(.delete, modifiers: .command)
-                                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                        }) {
+                                            Image(systemName: "arrow.backward")
+                                        }
+                                    }
+                                } else {
+                                    HStack {
+                                        if viewModel.phoneTerritoryToScrollTo != nil {
+                                            Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                    Task {
+                                                        await dismissAllPopups()
+                                                    }
+                                                    presentationMode.wrappedValue.dismiss()
+                                                }
+                                            })
+                                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                        }
                                     }
                                 }
                             }
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                HStack {
-                                    
-                                    Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime)).padding(.leading, viewModel.phoneData == nil || dataStore.synchronized ? 0 : 50)
+                            // MARK: - Trailing – iOS 26+ broken into 2 groups
+                            if #available(iOS 26.0, *) {
+                                
+                                // LEFT PART of trailing: Sync pill
+                                ToolbarItemGroup(placement: .primaryAction) {
+                                    SyncPillButton(
+                                        synced: viewModel.dataStore.synchronized,
+                                        lastTime: viewModel.dataStore.lastTime
+                                    ) {
+                                        HapticManager.shared.trigger(.lightImpact)
+                                        synchronizationManager.startupProcess(synchronizing: true)
+                                    }
+                                }
+                                
+                                // SPACE between pill and search
+                                ToolbarSpacer(.flexible, placement: .primaryAction)
+                                
+                                // RIGHT PART of trailing: Search
+                                ToolbarItemGroup(placement: .primaryAction) {
                                     if viewModel.phoneData == nil || dataStore.synchronized {
                                         if viewModel.phoneTerritoryToScrollTo == nil {
-                                            Button("", action: { HapticManager.shared.trigger(.lightImpact) ;
-                                                //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                
+                                            Button(action: {
+                                                HapticManager.shared.trigger(.lightImpact)
                                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                                                     withAnimation(.spring()) {
                                                         isCircleExpanded = true
@@ -237,15 +267,37 @@ struct PhoneTerritoriesScreen: View {
                                                             searchViewDestination = true
                                                         }
                                                     }
-                                                    
                                                 }
-                                                //}
-                                                
-                                            }).scaleEffect(viewModel.phoneData == nil || dataStore.synchronized ? 1 : 0)
-                                                .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: !isCircleExpanded ? 40 : proxy.size.width * 4, height: !isCircleExpanded ? 40 : proxy.size.height * 4, progress: $viewModel.progress, animation: $viewModel.backAnimation)).transition(.scale).padding(.top, isCircleExpanded ? 1000 : 0).animation(.spring(), value: isCircleExpanded)
+                                            }) {
+                                                Image(systemName: "magnifyingglass")
+                                            }
                                         }
                                     }
-                                }.animation(.spring(), value: viewModel.phoneData == nil || viewModel.dataStore.synchronized)
+                                }
+                            } else {
+                                // iOS 25 and below: Single ToolbarItemGroup with HStack
+                                ToolbarItemGroup(placement: .topBarTrailing) {
+                                    HStack {
+                                        Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })
+                                            .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime)).padding(.leading, viewModel.phoneData == nil || dataStore.synchronized ? 0 : 50)
+                                        if viewModel.phoneData == nil || dataStore.synchronized {
+                                            if viewModel.phoneTerritoryToScrollTo == nil {
+                                                Button("", action: { HapticManager.shared.trigger(.lightImpact) ;
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                                        withAnimation(.spring()) {
+                                                            isCircleExpanded = true
+                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                                viewModel.backAnimation.toggle()
+                                                                searchViewDestination = true
+                                                            }
+                                                        }
+                                                    }
+                                                }).scaleEffect(viewModel.phoneData == nil || dataStore.synchronized ? 1 : 0)
+                                                    .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: !isCircleExpanded ? 40 : proxy.size.width * 4, height: !isCircleExpanded ? 40 : proxy.size.height * 4, progress: $viewModel.progress, animation: $viewModel.backAnimation)).transition(.scale).padding(.top, isCircleExpanded ? 1000 : 0).animation(.spring(), value: isCircleExpanded)
+                                            }
+                                        }
+                                    }.animation(.spring(), value: viewModel.phoneData == nil || viewModel.dataStore.synchronized)
+                                }
                             }
                         }
                         .navigationTransition(transition)
@@ -295,6 +347,7 @@ struct PhoneTerritoriesScreen: View {
                 }
             }
         }
+        } // NavigationStack
     }
     
     //MARK: - Territory Cell

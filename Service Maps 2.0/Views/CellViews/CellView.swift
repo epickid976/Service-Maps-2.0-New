@@ -34,10 +34,10 @@ struct CellView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(
                             LinearGradient(
-                                gradient: Gradient(colors: [.blue, .teal]),
+                                gradient: Gradient(colors: colorScheme == .dark ? [Color(hex: "#3B82F6"), Color(hex: "#06B6D4")] : [.blue, .teal]),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
-                            ).opacity(colorScheme == .dark ? 0.6 : 0.8)
+                            ).opacity(colorScheme == .dark ? 0.85 : 0.8)
                         )
                     
                     VStack {
@@ -141,10 +141,10 @@ struct PhoneTerritoryCellView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(
                             LinearGradient(
-                                gradient: Gradient(colors: [.blue, .teal]),
+                                gradient: Gradient(colors: colorScheme == .dark ? [Color(hex: "#3B82F6"), Color(hex: "#06B6D4")] : [.blue, .teal]),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
-                            ).opacity(colorScheme == .dark ? 0.6 : 0.8)
+                            ).opacity(colorScheme == .dark ? 0.85 : 0.8)
                         )
                     
                     VStack {
@@ -227,6 +227,7 @@ struct recentCell: View {
     var territoryData: RecentTerritoryData
     
     var mainWindowSize: CGSize
+    @Environment(\.colorScheme) private var colorScheme
     
     //MARK: - Body
     
@@ -236,10 +237,10 @@ struct recentCell: View {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(
                         LinearGradient(
-                            gradient: Gradient(colors: [.blue, .teal]),
+                            gradient: Gradient(colors: colorScheme == .dark ? [Color(hex: "#3B82F6"), Color(hex: "#06B6D4")] : [.blue, .teal]),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
-                        ).opacity(0.6)
+                        ).opacity(colorScheme == .dark ? 0.85 : 0.7)
                     )
                 VStack {
                     Text("\(territoryData.territory.number)")
@@ -372,6 +373,7 @@ struct recentPhoneCell: View {
     var territoryData: RecentPhoneData
     
     var mainWindowSize: CGSize
+    @Environment(\.colorScheme) private var colorScheme
     
     //MARK: - Body
     
@@ -381,10 +383,10 @@ struct recentPhoneCell: View {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(
                         LinearGradient(
-                            gradient: Gradient(colors: [.blue, .teal]),
+                            gradient: Gradient(colors: colorScheme == .dark ? [Color(hex: "#3B82F6"), Color(hex: "#06B6D4")] : [.blue, .teal]),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
-                        ).opacity(0.6)
+                        ).opacity(colorScheme == .dark ? 0.85 : 0.7)
                     )
                 VStack {
                     Text("\(territoryData.territory.number)")

@@ -21,52 +21,72 @@ struct CircleButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     
     func makeBody(configuration: Configuration) -> some View {
-        ZStack {
-            Circle()
-                .optionalViewModifier { content in
-                    if progress > 0.01 {
-                        content.fill(Color.clear)
-                    } else {
-                        if colorScheme == .dark {
-                            content.fill(Material.ultraThin)
-                        } else {
-                            content.fill(Material.thin)
-                        }
-                    }
-                }
-                .overlay(
+        Group {
+            if #available(iOS 26.0, *) {
+                // iOS 26: Use glassEffect directly without fill
+                Circle()
+                    .fill(.clear)
+                    .overlay(
+                        Image(systemName: imageName == "magnifyingglass" && animation ? "" : imageName)
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(foreground)
+                            .padding(12)
+                            .bold()
+                            .symbolEffect(.bounce, options: .speed(3.0), value: animation)
+                    )
+                    .frame(width: width, height: height)
+                    .glassEffect(.regular.interactive())
+            } else {
+                // iOS 25 and below: Use Material
+                ZStack {
                     Circle()
-                        .stroke(
-                            colorScheme == .dark ?
-                                Color.white.opacity(0.15) :
-                                Color.black.opacity(0.05),
-                            lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                        .optionalViewModifier { content in
+                            if progress > 0.01 {
+                                content.fill(Color.clear)
+                            } else {
+                                if colorScheme == .dark {
+                                    content.fill(Material.ultraThin)
+                                } else {
+                                    content.fill(Material.thin)
+                                }
+                            }
+                        }
+                        .overlay(
+                            Circle()
+                                .stroke(
+                                    colorScheme == .dark ?
+                                        Color.white.opacity(0.15) :
+                                        Color.black.opacity(0.05),
+                                    lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                                )
                         )
-                )
-                .shadow(
-                    color: colorScheme == .dark ?
-                        .black.opacity(0.06) :
-                        .black.opacity(0.04),
-                    radius: colorScheme == .dark ? 4 : 3,
-                    x: 0,
-                    y: colorScheme == .dark ? 2 : 1
-                )
-            
-            Image(systemName: imageName == "magnifyingglass" && animation ? "" : imageName)
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(foreground)
-                .padding(12)
-                .bold()
-                .optionalViewModifier { content in
-                    if #available(iOS 17, *) {
-                        content.symbolEffect(.bounce, options: .speed(3.0), value: animation)
-                    } else {
-                        content
-                    }
+                        .shadow(
+                            color: colorScheme == .dark ?
+                                .black.opacity(0.06) :
+                                .black.opacity(0.04),
+                            radius: colorScheme == .dark ? 4 : 3,
+                            x: 0,
+                            y: colorScheme == .dark ? 2 : 1
+                        )
+                    
+                    Image(systemName: imageName == "magnifyingglass" && animation ? "" : imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(foreground)
+                        .padding(12)
+                        .bold()
+                        .optionalViewModifier { content in
+                            if #available(iOS 17, *) {
+                                content.symbolEffect(.bounce, options: .speed(3.0), value: animation)
+                            } else {
+                                content
+                            }
+                        }
                 }
+                .frame(width: width, height: height)
+            }
         }
-        .frame(width: width, height: height)
     }
 }
 
@@ -89,65 +109,92 @@ struct PillButtonStyle: ButtonStyle {
     
     // MARK: - Body
     func makeBody(configuration: Configuration) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: height / 2, style: .continuous)
-                .optionalViewModifier { content in
-                    if progress > 0.01 {
-                        content.fill(Color.clear)
-                    } else {
-                        if colorScheme == .dark {
-                            content.fill(Material.ultraThin)
-                        } else {
-                            content.fill(Material.thin)
+        Group {
+            if #available(iOS 26.0, *) {
+                // iOS 26: Use glassEffect directly without fill
+                RoundedRectangle(cornerSize: CGSize(width: 100, height: 100), style: .continuous)
+                    .fill(.clear)
+                    .overlay(
+                        VStack {
+                            if synced {
+                                displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                                displayText(NSLocalizedString("\(timePassed)", comment: ""), fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
+                            } else {
+                                ProgressView()
+                            }
                         }
-                    }
-                }
-                .background(
-                    RoundedRectangle(cornerRadius: height / 2, style: .continuous)
-                        .fill(colorScheme == .dark ?
-                            .ultraThinMaterial :
-                            .regularMaterial
-                        )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: height / 2)
-                        .stroke(
-                            colorScheme == .dark ?
-                                Color.white.opacity(0.15) :
-                                Color.black.opacity(0.05),
-                            lineWidth: colorScheme == .dark ? 0.6 : 0.8
-                        )
-                )
-                .shadow(
-                    color: colorScheme == .dark ?
-                        .black.opacity(0.06) :
-                        .black.opacity(0.04),
-                    radius: colorScheme == .dark ? 4 : 3,
-                    x: 0,
-                    y: colorScheme == .dark ? 2 : 1
-                )
-
-            VStack(spacing: 2) {
-                if synced {
-                    displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
-                    displayText(timePassed, fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
-                } else {
-                    ProgressView()
-                }
-            }
-            .optionalViewModifier { content in
-                if #available(iOS 17, *) {
-                    content
                         .contentTransition(.numericText())
                         .animation(.spring(duration: 0.5), value: timePassed)
                         .animation(.spring(duration: 0.5), value: synced)
-                } else {
-                    content
+                        .animation(.easeInOut, value: synced)
+                    )
+                    .frame(width: width, height: height, alignment: .trailing)
+                    .glassEffect(.regular.interactive())
+                    .animation(.spring(), value: synced)
+                    .padding(5)
+            } else {
+                // iOS 25 and below: Use Material
+                ZStack {
+                    RoundedRectangle(cornerRadius: height / 2, style: .continuous)
+                        .optionalViewModifier { content in
+                            if progress > 0.01 {
+                                content.fill(Color.clear)
+                            } else {
+                                if colorScheme == .dark {
+                                    content.fill(Material.ultraThin)
+                                } else {
+                                    content.fill(Material.thin)
+                                }
+                            }
+                        }
+                        .background(
+                            RoundedRectangle(cornerRadius: height / 2, style: .continuous)
+                                .fill(colorScheme == .dark ?
+                                    .ultraThinMaterial :
+                                    .regularMaterial
+                                )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: height / 2)
+                                .stroke(
+                                    colorScheme == .dark ?
+                                        Color.white.opacity(0.15) :
+                                        Color.black.opacity(0.05),
+                                    lineWidth: colorScheme == .dark ? 0.6 : 0.8
+                                )
+                        )
+                        .shadow(
+                            color: colorScheme == .dark ?
+                                .black.opacity(0.06) :
+                                .black.opacity(0.04),
+                            radius: colorScheme == .dark ? 4 : 3,
+                            x: 0,
+                            y: colorScheme == .dark ? 2 : 1
+                        )
+
+                    VStack(spacing: 2) {
+                        if synced {
+                            displayText(NSLocalizedString("Last Synced", comment: ""), fontWeight: .bold, fontSize: .caption, foregroundColor: foreground)
+                            displayText(timePassed, fontWeight: .bold, fontSize: .caption2, foregroundColor: foreground)
+                        } else {
+                            ProgressView()
+                        }
+                    }
+                    .optionalViewModifier { content in
+                        if #available(iOS 17, *) {
+                            content
+                                .contentTransition(.numericText())
+                                .animation(.spring(duration: 0.5), value: timePassed)
+                                .animation(.spring(duration: 0.5), value: synced)
+                        } else {
+                            content
+                        }
+                    }
                 }
+                .frame(width: width, height: height)
+                .padding(5)
             }
         }
-        .frame(width: width, height: height)
-        .padding(5)
         .onAppear { updateElapsedTime() }
         .onChange(of: synced) { newValue in
             if newValue {
@@ -175,6 +222,60 @@ struct PillButtonStyle: ButtonStyle {
             .font(fontSize)
             .foregroundColor(foregroundColor)
             .multilineTextAlignment(.center)
+    }
+}
+
+// MARK: - Sync Pill Button (iOS 26+)
+
+/// A standalone sync pill button for iOS 26 that uses the system's liquid glass effect
+@available(iOS 26.0, *)
+struct SyncPillButton: View {
+    var synced: Bool
+    var lastTime: Date?
+    var action: () -> Void
+    
+    @State private var timePassed = getFormattedElapsedTime(from: StorageManager.shared.lastTime)
+    
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                // Text content - shown when synced
+                VStack(spacing: 2) {
+                    Text(NSLocalizedString("Last Synced", comment: ""))
+                        .font(.caption)
+                        .fontWeight(.bold)
+                    Text(timePassed)
+                        .font(.caption2)
+                        .fontWeight(.bold)
+                }
+                .opacity(synced ? 1 : 0)
+                .scaleEffect(synced ? 1 : 0.8)
+                
+                // Progress view - shown when not synced
+                ProgressView()
+                    .opacity(synced ? 0 : 1)
+                    .scaleEffect(synced ? 0.8 : 1)
+            }
+            .frame(minWidth: 80, minHeight: 35)
+            .animation(.smooth(duration: 0.3), value: synced)
+        }
+        .onAppear {
+            updateElapsedTime()
+        }
+        .onChange(of: synced) { _ in
+            if synced {
+                updateElapsedTime(instant: true)
+            }
+        }
+        .onReceive(Timer.publish(every: 5, on: .main, in: .common).autoconnect()) { _ in
+            updateElapsedTime()
+        }
+    }
+    
+    private func updateElapsedTime(instant: Bool = false) {
+        withAnimation(.smooth(duration: 0.3)) {
+            timePassed = instant ? NSLocalizedString("Now", comment: "Indicates that something just synced") : getFormattedElapsedTime(from: lastTime)
+        }
     }
 }
 

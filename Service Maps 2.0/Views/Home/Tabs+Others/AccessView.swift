@@ -56,160 +56,170 @@ struct AccessView: View {
     // MARK: - Body
     
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                ScrollView {
-                    VStack {
-                        if viewModel.keyData == nil && viewModel.dataStore.synchronized == false {
-                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .frame(width: 250, height: 250)
-                            } else {
-                                LottieView(animation: .named("loadsimple"))
-                                    .playing(loopMode: .loop)
-                                    .resizable()
-                                    .frame(width: 350, height: 350)
-                            }
-                        } else {
-                            if let data = viewModel.keyData {
-                                if data.isEmpty {
-                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 250, height: 250)
-                                    } else {
-                                        LottieView(animation: .named("nodatapreview"))
-                                            .playing()
-                                            .resizable()
-                                            .frame(width: 350, height: 350)
-                                    }
+        NavigationStack {
+            GeometryReader { proxy in
+                ZStack {
+                    ScrollView {
+                        VStack {
+                            if viewModel.keyData == nil && viewModel.dataStore.synchronized == false {
+                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .frame(width: 250, height: 250)
                                 } else {
-                                    SwipeViewGroup {
-                                        if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
-                                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                ForEach(viewModel.keyData!, id: \.key.id) { keyData in
-                                                    if viewModel.isAdmin {
-                                                        NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
+                                    LottieView(animation: .named("loadsimple"))
+                                        .playing(loopMode: .loop)
+                                        .resizable()
+                                        .frame(width: 350, height: 350)
+                                }
+                            } else {
+                                if let data = viewModel.keyData {
+                                    if data.isEmpty {
+                                        if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 250, height: 250)
+                                        } else {
+                                            LottieView(animation: .named("nodatapreview"))
+                                                .playing()
+                                                .resizable()
+                                                .frame(width: 350, height: 350)
+                                        }
+                                    } else {
+                                        SwipeViewGroup {
+                                            if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                    ForEach(viewModel.keyData!, id: \.key.id) { keyData in
+                                                        if viewModel.isAdmin {
+                                                            NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
+                                                                keyCell(keyData: keyData).id(keyData.id)
+                                                                    .transition(.customBackInsertion)
+                                                            }.onTapHaptic(.lightImpact)
+                                                        } else {
                                                             keyCell(keyData: keyData).id(keyData.id)
-                                                                .transition(.customBackInsertion)
-                                                        }.onTapHaptic(.lightImpact)
-                                                    } else {
-                                                        keyCell(keyData: keyData).id(keyData.id)
-                                                    }
-                                                }.modifier(ScrollTransitionModifier())
+                                                        }
+                                                    }.modifier(ScrollTransitionModifier())
+                                                }
+                                            } else {
+                                                LazyVGrid(columns: [GridItem(.flexible())]) {
+                                                    ForEach(viewModel.keyData!, id: \.key.id) { keyData in
+                                                        if viewModel.isAdmin {
+                                                            NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
+                                                                keyCell(keyData: keyData).id(keyData.id)
+                                                                    .transition(.customBackInsertion)
+                                                            }.onTapHaptic(.lightImpact)
+                                                        } else {
+                                                            keyCell(keyData: keyData).id(keyData.id)
+                                                        }
+                                                    }.modifier(ScrollTransitionModifier())
+                                                }
+                                            }
+                                        }
+                                        .animation(.spring(), value: viewModel.keyData)
+                                        .padding()
+                                        
+                                        
+                                    }
+                                }
+                            }
+                        }
+                        .hSpacing(.center)
+                            .background(GeometryReader {
+                                Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                            }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
+                                Task { @MainActor in
+                                    let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
+                                    if ( abs(offsetDifference) > minimumOffset) {
+                                        if offsetDifference > 0 {
+                                            DispatchQueue.main.async {
+                                                hideFloatingButton = false
                                             }
                                         } else {
-                                            LazyVGrid(columns: [GridItem(.flexible())]) {
-                                                ForEach(viewModel.keyData!, id: \.key.id) { keyData in
-                                                    if viewModel.isAdmin {
-                                                        NavigationLink(destination: NavigationLazyView(AccessViewUsersView(viewModel: viewModel, currentKey: keyData.key).installToast(position: .bottom))) {
-                                                            keyCell(keyData: keyData).id(keyData.id)
-                                                                .transition(.customBackInsertion)
-                                                        }.onTapHaptic(.lightImpact)
-                                                    } else {
-                                                        keyCell(keyData: keyData).id(keyData.id)
-                                                    }
-                                                }.modifier(ScrollTransitionModifier())
-                                            }
+                                            hideFloatingButton = true
                                         }
+                                        self.previousViewOffset = currentOffset
                                     }
-                                    .animation(.spring(), value: viewModel.keyData)
-                                    .padding()
-                                    
-                                    
                                 }
                             }
-                        }
-                    }
-                    .hSpacing(.center)
-                        .background(GeometryReader {
-                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                        }).onPreferenceChange(ViewOffsetKey.self) { currentOffset in
-                            Task { @MainActor in
-                                let offsetDifference: CGFloat = self.previousViewOffset - currentOffset
-                                if ( abs(offsetDifference) > minimumOffset) {
-                                    if offsetDifference > 0 {
-                                        DispatchQueue.main.async {
-                                            hideFloatingButton = false
+                            .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
+                            
+                            .navigationDestination(isPresented: $viewModel.presentSheet) {
+                                AddKeyView(keyData: keydataToEdit) {
+                                    //synchronizationManager.startupProcess(synchronizing: true)
+                                   // viewModel.getKeys()
+                                    keydataToEdit = nil
+                                    DispatchQueue.main.async {
+                                        viewModel.showAddedToast = true
+                                    }
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                        viewModel.showAddedToast = false
+                                    }
+                                }.environment(\.mainWindowSize, mainWindowSize)
+                                    .simultaneousGesture(
+                                        // Hide the keyboard on scroll
+                                        DragGesture().onChanged { _ in
+                                            UIApplication.shared.sendAction(
+                                                #selector(UIResponder.resignFirstResponder),
+                                                to: nil,
+                                                from: nil,
+                                                for: nil
+                                            )
+                                        }
+                                    )
+                            }
+                            .navigationBarTitle("Keys", displayMode: .automatic)
+                            .navigationBarBackButtonHidden(true)
+                            .toolbar {
+                                ToolbarItemGroup(placement: .topBarTrailing) {
+                                    if #available(iOS 26.0, *) {
+                                        SyncPillButton(
+                                            synced: dataStore.synchronized,
+                                            lastTime: dataStore.lastTime
+                                        ) {
+                                            HapticManager.shared.trigger(.lightImpact)
+                                            synchronizationManager.startupProcess(synchronizing: true)
                                         }
                                     } else {
-                                        hideFloatingButton = true
+                                        Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })
+                                            .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $dataStore.synchronized, lastTime: $dataStore.lastTime))
                                     }
-                                    self.previousViewOffset = currentOffset
                                 }
                             }
-                        }
-                        .animation(.easeInOut(duration: 0.25), value: viewModel.keyData == nil || viewModel.keyData != nil)
-                        
-                        .navigationDestination(isPresented: $viewModel.presentSheet) {
-                            AddKeyView(keyData: keydataToEdit) {
-                                //synchronizationManager.startupProcess(synchronizing: true)
-                               // viewModel.getKeys()
-                                keydataToEdit = nil
-                                DispatchQueue.main.async {
-                                    viewModel.showAddedToast = true
-                                }
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    viewModel.showAddedToast = false
-                                }
-                            }.environment(\.mainWindowSize, mainWindowSize)
-                                .simultaneousGesture(
-                                    // Hide the keyboard on scroll
-                                    DragGesture().onChanged { _ in
-                                        UIApplication.shared.sendAction(
-                                            #selector(UIResponder.resignFirstResponder),
-                                            to: nil,
-                                            from: nil,
-                                            for: nil
-                                        )
-                                    }
-                                )
-                        }
-                        .navigationBarTitle("Keys", displayMode: .automatic)
-                        .navigationBarBackButtonHidden(true)
-                        .toolbar {
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                HStack {
-                                    Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $dataStore.synchronized, lastTime: $dataStore.lastTime))
-                                }
-                            }
-                        }
-                        .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-                        .navigationViewStyle(StackNavigationViewStyle())
-                }
-                
-                .coordinateSpace(name: "scroll")
-                .scrollIndicators(.never)
-                .refreshable {
-                    synchronizationManager.startupProcess(synchronizing: true)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        hideFloatingButton = false
+                            .navigationTransition(viewModel.presentSheet ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+                            .navigationViewStyle(StackNavigationViewStyle())
                     }
-                }
-                .onChange(of: viewModel.dataStore.synchronized) { value in
-                    if value {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            viewModel.getKeys()
-                            viewModel.getKeyUsers()
-                        }
-                    }
-                }
-                if viewModel.isAdmin {
                     
-                    MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
-                        keydataToEdit = nil
-                        self.viewModel.presentSheet = true
+                    .coordinateSpace(name: "scroll")
+                    .scrollIndicators(.never)
+                    .refreshable {
+                        synchronizationManager.startupProcess(synchronizing: true)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            hideFloatingButton = false
+                        }
                     }
-                    .offset(y: hideFloatingButton ? 150 : 0)
-                    .animation(.spring(), value: hideFloatingButton)
-                    .vSpacing(.bottom).hSpacing(.trailing)
-                    .padding()
-                    //.keyboardShortcut("+", modifiers: .command)
+                    .onChange(of: viewModel.dataStore.synchronized) { value in
+                        if value {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                viewModel.getKeys()
+                                viewModel.getKeyUsers()
+                            }
+                        }
+                    }
+                    if viewModel.isAdmin {
+                        
+                        MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
+                            keydataToEdit = nil
+                            self.viewModel.presentSheet = true
+                        }
+                        .offset(y: hideFloatingButton ? 150 : 0)
+                        .animation(.spring(), value: hideFloatingButton)
+                        .vSpacing(.bottom).hSpacing(.trailing)
+                        .padding()
+                        //.keyboardShortcut("+", modifiers: .command)
+                    }
                 }
             }
         }
@@ -679,16 +689,30 @@ struct AccessViewUsersView: View {
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarLeading) {
-                                HStack {
-                                    Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                if #available(iOS 26.0, *) {
+                                    Button(action: {
+                                        withAnimation { viewModel.backAnimation.toggle() }
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             Task {
                                                 await dismissAllPopups()
                                             }
                                             presentationMode.wrappedValue.dismiss()
                                         }
-                                    })//.keyboardShortcut(.delete, modifiers: .command)
+                                    }) {
+                                        Image(systemName: "arrow.backward")
+                                    }
+                                } else {
+                                    HStack {
+                                        Button("", action: {withAnimation { viewModel.backAnimation.toggle() };
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                Task {
+                                                    await dismissAllPopups()
+                                                }
+                                                presentationMode.wrappedValue.dismiss()
+                                            }
+                                        })
                                         .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    }
                                 }
                             }
                         }

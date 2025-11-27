@@ -205,22 +205,46 @@ struct PhoneNumbersView: View {
             .navigationBarTitle("Numbers", displayMode: .inline)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
-                    HStack {
-                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                    if #available(iOS 26.0, *) {
+                        Button(action: {
+                            withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 Task {
                                     await dismissAllPopups()
                                 }
                                 presentationMode.wrappedValue.dismiss()
                             }
-                        })//.keyboardShortcut(.delete, modifiers: .command)
-                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                        }) {
+                            Image(systemName: "arrow.backward")
+                        }
+                    } else {
+                        HStack {
+                            Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    Task {
+                                        await dismissAllPopups()
+                                    }
+                                    presentationMode.wrappedValue.dismiss()
+                                }
+                            })
+                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                        }
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    HStack {
-                        Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                            .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                    if #available(iOS 26.0, *) {
+                        SyncPillButton(
+                            synced: viewModel.dataStore.synchronized,
+                            lastTime: viewModel.dataStore.lastTime
+                        ) {
+                            HapticManager.shared.trigger(.lightImpact)
+                            synchronizationManager.startupProcess(synchronizing: true)
+                        }
+                    } else {
+                        HStack {
+                            Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })
+                                .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                        }
                     }
                 }
             }

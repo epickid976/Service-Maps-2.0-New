@@ -40,87 +40,122 @@ struct RecallsView: View {
     // MARK: - Body
     
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                ScrollViewReader { scrollViewProxy in
-                    ScrollView {
-                        LazyVStack {
-                            if viewModel.recalls == nil && viewModel.dataStore.synchronized == false {
-                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                    LottieView(animation: .named("loadsimple"))
-                                        .playing(loopMode: .loop)
-                                        .resizable()
-                                        .frame(width: 250, height: 250)
-                                } else {
-                                    LottieView(animation: .named("loadsimple"))
-                                        .playing(loopMode: .loop)
-                                        .resizable()
-                                        .frame(width: 350, height: 350)
-                                }
-                            } else {
-                                if let data = viewModel.recalls {
-                                    if data.isEmpty {
-                                        VStack {
-                                            if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
-                                                LottieView(animation: .named("nodatapreview"))
-                                                    .playing()
-                                                    .resizable()
-                                                    .frame(width: 250, height: 250)
-                                            } else {
-                                                LottieView(animation: .named("nodatapreview"))
-                                                    .playing()
-                                                    .resizable()
-                                                    .frame(width: 350, height: 350)
-                                            }
-                                        }
-                                        
+        NavigationStack {
+            GeometryReader { proxy in
+                ZStack {
+                    ScrollViewReader { scrollViewProxy in
+                        ScrollView {
+                            LazyVStack {
+                                if viewModel.recalls == nil && viewModel.dataStore.synchronized == false {
+                                    if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                        LottieView(animation: .named("loadsimple"))
+                                            .playing(loopMode: .loop)
+                                            .resizable()
+                                            .frame(width: 250, height: 250)
                                     } else {
-                                        SwipeViewGroup {
-                                            if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
-                                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                                    ForEach(viewModel.recalls!, id: \.recall.id) { recall in
-                                                        RecallRow(viewModel: viewModel, recall: recall, mainWindowSize: mainWindowSize).installToast(position: .bottom)
-                                                            .id(recall.recall.id)
-                                                    }
-                                                }
-                                            } else {
-                                                LazyVGrid(columns: [GridItem(.flexible())], spacing: 16) {
-                                                    ForEach(viewModel.recalls!, id: \.recall.id) { recall in
-                                                        RecallRow(viewModel: viewModel, recall: recall, mainWindowSize: mainWindowSize).installToast(position: .bottom)
-                                                            .id(recall.recall.id)
-                                                    }
+                                        LottieView(animation: .named("loadsimple"))
+                                            .playing(loopMode: .loop)
+                                            .resizable()
+                                            .frame(width: 350, height: 350)
+                                    }
+                                } else {
+                                    if let data = viewModel.recalls {
+                                        if data.isEmpty {
+                                            VStack {
+                                                if UIDevice.modelName == "iPhone 8" || UIDevice.modelName == "iPhone SE (2nd generation)" || UIDevice.modelName == "iPhone SE (3rd generation)" {
+                                                    LottieView(animation: .named("nodatapreview"))
+                                                        .playing()
+                                                        .resizable()
+                                                        .frame(width: 250, height: 250)
+                                                } else {
+                                                    LottieView(animation: .named("nodatapreview"))
+                                                        .playing()
+                                                        .resizable()
+                                                        .frame(width: 350, height: 350)
                                                 }
                                             }
-                                        }.animation(.spring(), value: viewModel.recalls!)
-                                            .padding()
+                                            
+                                        } else {
+                                            SwipeViewGroup {
+                                                if UIDevice().userInterfaceIdiom == .pad && proxy.size.width > 400 && preferencesViewModel.isColumnViewEnabled {
+                                                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                                        ForEach(viewModel.recalls!, id: \.recall.id) { recall in
+                                                            RecallRow(viewModel: viewModel, recall: recall, mainWindowSize: mainWindowSize).installToast(position: .bottom)
+                                                                .id(recall.recall.id)
+                                                        }
+                                                    }
+                                                } else {
+                                                    LazyVGrid(columns: [GridItem(.flexible())], spacing: 16) {
+                                                        ForEach(viewModel.recalls!, id: \.recall.id) { recall in
+                                                            RecallRow(viewModel: viewModel, recall: recall, mainWindowSize: mainWindowSize).installToast(position: .bottom)
+                                                                .id(recall.recall.id)
+                                                        }
+                                                    }
+                                                }
+                                            }.animation(.spring(), value: viewModel.recalls!)
+                                                .padding()
+                                        }
                                     }
                                 }
                             }
-                        }
-                        .animation(.easeInOut(duration: 0.25), value: viewModel.recalls == nil || viewModel.recalls != nil)
-                            .navigationBarTitle("Recalls", displayMode: .automatic)
-                            .toolbar {
-                                ToolbarItemGroup(placement: .topBarTrailing) {
-                                    Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
-                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                                    
-                                    Button("", action: {
-                                        HapticManager.shared.trigger(.lightImpact)
-                                        Task {
-                                            await CenterPopup_NotificationList(isPresented: $showNotificationCenter).present()
+                            .animation(.easeInOut(duration: 0.25), value: viewModel.recalls == nil || viewModel.recalls != nil)
+                                .navigationBarTitle("Recalls", displayMode: .automatic)
+                                .toolbar {
+                                    // MARK: - Trailing – iOS 26+ broken into 2 groups
+                                    if #available(iOS 26.0, *) {
+                                        
+                                        // LEFT PART of trailing: Sync pill
+                                        ToolbarItemGroup(placement: .primaryAction) {
+                                            SyncPillButton(
+                                                synced: viewModel.dataStore.synchronized,
+                                                lastTime: viewModel.dataStore.lastTime
+                                            ) {
+                                                HapticManager.shared.trigger(.lightImpact)
+                                                synchronizationManager.startupProcess(synchronizing: true)
+                                            }
                                         }
-                                    })
-                                    .buttonStyle(CircleButtonStyle(imageName: "bell.badge", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                                        
+                                        // SPACE between pill and bell button
+                                        ToolbarSpacer(.flexible, placement: .primaryAction)
+                                        
+                                        // RIGHT PART of trailing: Bell Button
+                                        ToolbarItemGroup(placement: .primaryAction) {
+                                            Button(action: {
+                                                HapticManager.shared.trigger(.lightImpact)
+                                                Task {
+                                                    await CenterPopup_NotificationList(isPresented: $showNotificationCenter).present()
+                                                }
+                                            }) {
+                                                Image(systemName: "bell.badge")
+                                            }
+                                        }
+                                    } else {
+                                        // iOS 25 and below: Single ToolbarItemGroup with HStack
+                                        ToolbarItemGroup(placement: .topBarTrailing) {
+                                            HStack {
+                                                Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })
+                                                    .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                                
+                                                Button("", action: {
+                                                    HapticManager.shared.trigger(.lightImpact)
+                                                    Task {
+                                                        await CenterPopup_NotificationList(isPresented: $showNotificationCenter).present()
+                                                    }
+                                                })
+                                                .buttonStyle(CircleButtonStyle(imageName: "bell.badge", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.optionsAnimation))
+                                            }
+                                        }
+                                    }
                                 }
-                            }
-                            .navigationTransition(.slide.combined(with: .fade(.in)))
-                            .navigationViewStyle(StackNavigationViewStyle())
+                                .navigationTransition(.slide.combined(with: .fade(.in)))
+                                .navigationViewStyle(StackNavigationViewStyle())
+                            
+                        }.refreshable {
+                            viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                        }
                         
-                    }.refreshable {
-                        viewModel.synchronizationManager.startupProcess(synchronizing: true)
+                        
                     }
-                    
-                    
                 }
             }
         }

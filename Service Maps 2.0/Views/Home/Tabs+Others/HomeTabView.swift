@@ -29,6 +29,67 @@ struct HomeTabView: View {
     // MARK: - Body
     
     var body: some View {
+        Group {
+            if #available(iOS 26.0, *) {
+                // iOS 26: Use native TabView with liquid glass
+                nativeTabView
+            } else {
+                // iOS 25 and below: Custom tab bar
+                customTabView
+            }
+        }
+        .navigationTransition(
+            .slide.combined(with: .fade(.in))
+        )
+    }
+    
+    // MARK: - iOS 26+ Native TabView
+    @available(iOS 26.0, *)
+    private var nativeTabView: some View {
+        TabView(selection: $selectedTab) {
+            Tab("Territories", systemImage: "map", value: 0) {
+                TerritoryView()
+                    .installToast(position: .bottom)
+            }
+            
+            if authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials() {
+                Tab("Phone", systemImage: "phone.connection", value: 1) {
+                    PhoneTerritoriesScreen()
+                        .installToast(position: .bottom)
+                }
+            }
+            
+            Tab("Recalls", systemImage: "person.2", value: 2) {
+                RecallsView()
+                    .installToast(position: .bottom)
+            }
+            
+            Tab("Access", systemImage: "key.horizontal", value: 3) {
+                AccessView()
+                    .installToast(position: .bottom)
+            }
+            
+            Tab("Settings", systemImage: "gearshape", value: 4) {
+                SettingsView()
+                    .installToast(position: .bottom)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openRecallsTab)) { _ in
+            withAnimation {
+                if authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials() {
+                    selectedTab = 2
+                } else {
+                    selectedTab = 1
+                }
+            }
+        }
+        .onAppear {
+            checkForUpdates()
+        }
+    }
+    
+    // MARK: - iOS 25 and below Custom TabView
+    private var customTabView: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 if selectedTab == 0 {
@@ -79,9 +140,8 @@ struct HomeTabView: View {
                         Image(systemName: selectedTab == 0 ? "map.fill" : "map")
                             .imageScale(.large)
                             .foregroundColor(selectedTab == 0 ? .blue : .gray)
-                            .scaleEffect(selectedTab == 0 ? 1.2 : 1.0) // Add scale effect
+                            .scaleEffect(selectedTab == 0 ? 1.2 : 1.0)
                     }
-                   // //.keyboardShortcut("1", modifiers: .command)
                     .frame(maxWidth: .infinity)
                     .hoverEffect()
                     
@@ -95,17 +155,15 @@ struct HomeTabView: View {
                             Image(systemName: selectedTab == 1 ? "phone.connection.fill" : "phone.connection")
                                 .imageScale(.large)
                                 .foregroundColor(selectedTab == 1 ? .blue : .gray)
-                                .scaleEffect(selectedTab == 1 ? 1.2 : 1.0) // Add scale effect
+                                .scaleEffect(selectedTab == 1 ? 1.2 : 1.0)
                         }
                         .frame(maxWidth: .infinity)
                         .optionalViewModifier { content in
                             if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
                                 content
-                                   // //.keyboardShortcut("2", modifiers: .command)
                             }
                         }
                         .hoverEffect()
-                        
                     }
                     
                     Button(action: {
@@ -117,31 +175,29 @@ struct HomeTabView: View {
                         Image(systemName: selectedTab == 2 ? "person.2.fill" : "person.2")
                             .imageScale(.large)
                             .foregroundColor(selectedTab == 2 ? .blue : .gray)
-                            .scaleEffect(selectedTab == 2 ? 1.2 : 1.0) // Add scale effect
+                            .scaleEffect(selectedTab == 2 ? 1.2 : 1.0)
                     }.frame(maxWidth: .infinity).hoverEffect()
                    
-                        Button(action: {
-                            withAnimation(.default) {
-                                selectedTab = 3
-                                HapticManager.shared.trigger(.lightImpact)
-                            }
-                        }) {
-                            Image(systemName: selectedTab == 3 ? "key.horizontal.fill" : "key.horizontal")
-                                .imageScale(.large)
-                                .foregroundColor(selectedTab == 3 ? .blue : .gray)
-                                .scaleEffect(selectedTab == 3 ? 1.2 : 1.0) // Add scale effect
+                    Button(action: {
+                        withAnimation(.default) {
+                            selectedTab = 3
+                            HapticManager.shared.trigger(.lightImpact)
                         }
-                        .frame(maxWidth: .infinity)
-                        .optionalViewModifier { content in
-                            if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
-                                content
-                                   // //.keyboardShortcut("3", modifiers: .command)
-                            } else {
-                                content
-                                   // //.keyboardShortcut("2", modifiers: .command)
-                            }
+                    }) {
+                        Image(systemName: selectedTab == 3 ? "key.horizontal.fill" : "key.horizontal")
+                            .imageScale(.large)
+                            .foregroundColor(selectedTab == 3 ? .blue : .gray)
+                            .scaleEffect(selectedTab == 3 ? 1.2 : 1.0)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .optionalViewModifier { content in
+                        if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
+                            content
+                        } else {
+                            content
                         }
-                        .hoverEffect()
+                    }
+                    .hoverEffect()
                     
                     Button(action: {
                         withAnimation(.default) {
@@ -151,29 +207,24 @@ struct HomeTabView: View {
                     }) {
                         Image(systemName: selectedTab == 4 ? "gearshape.fill" : "gearshape")
                             .imageScale(.large)
-                            .scaleEffect(selectedTab == 4 ? 1.2 : 1.0) // Add scale effect
+                            .scaleEffect(selectedTab == 4 ? 1.2 : 1.0)
                             .foregroundColor(selectedTab == 4 ? .blue : .gray)
                     }
                     .frame(maxWidth: .infinity)
                     .optionalViewModifier { content in
                         if (authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials()) {
                             content
-                                //.keyboardShortcut("4", modifiers: .command)
                         } else {
                             content
-                              //  //.keyboardShortcut("3", modifiers: .command)
                         }
                     }
                     .hoverEffect()
-                    
                 }
                 .padding(.vertical, 8)
                 .background(colorScheme == .dark ? .black : .white)
             }
             .onReceive(NotificationCenter.default.publisher(for: .openRecallsTab)) { _ in
                 withAnimation {
-                    // If admin/phone tab is present, Recalls is index 2
-                    // Otherwise, it's index 1
                     if authorizationLevelManager.existsPhoneCredentials() || authorizationLevelManager.existsAdminCredentials() {
                         selectedTab = 2
                     } else {
@@ -182,28 +233,29 @@ struct HomeTabView: View {
                 }
             }
             .ignoresSafeArea(.keyboard)
-                .onAppear {
-                    do {
-                         try isUpdateAvailable(completion: { (update, error) in
-                            if let update {
-                                if update {
-                                    Task {
-                                        await CenterPopup_Update().present()
-                                    }
-                                }
-                            }
-                        })
-                    } catch {
-                        print("Error checking for updates: \(error)")
-                    }
-                }
+            .onAppear {
+                checkForUpdates()
+            }
             .navigationBarBackButtonHidden(true)
             .navigationViewStyle(StackNavigationViewStyle())
-            
         }
-        .navigationTransition(
-            .slide.combined(with: .fade(.in))
-        )
+    }
+    
+    // MARK: - Helper Methods
+    private func checkForUpdates() {
+        do {
+            try isUpdateAvailable(completion: { (update, error) in
+                if let update {
+                    if update {
+                        Task {
+                            await CenterPopup_Update().present()
+                        }
+                    }
+                }
+            })
+        } catch {
+            print("Error checking for updates: \(error)")
+        }
     }
 }
 

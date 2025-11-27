@@ -8,11 +8,11 @@
 import GRDB
 import Foundation
 import Combine
-import SwiftUICore
+import SwiftUI
 
 // MARK: - Global Actor
 @globalActor actor BackgroundActor: GlobalActor {
-    static var shared = BackgroundActor()
+    nonisolated(unsafe) static var shared = BackgroundActor()
 }
 
 extension BackgroundActor {

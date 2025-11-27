@@ -52,6 +52,7 @@ struct SettingsView: View {
     
     var body: some View {
         let alertUpdate = AlertAppleMusic17View(title: viewModel.showUpdateToastMessage, subtitle: nil, icon: .custom(UIImage(systemName: "arrow.triangle.2.circlepath.circle")!))
+        NavigationStack {
         ScrollView {
             VStack {
                 viewModel.profile(showBack: showBackButton) {
@@ -173,41 +174,60 @@ struct SettingsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarLeading) {
                 if showBackButton {
-                    HStack {
-                        Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                    if #available(iOS 26.0, *) {
+                        Button(action: {
+                            withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 Task {
                                     await dismissAllPopups()
                                 }
                                 presentationMode.wrappedValue.dismiss()
                             }
-                        })
-                        //.keyboardShortcut(.delete, modifiers: .command)
-                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
-                        
+                        }) {
+                            Image(systemName: "arrow.backward")
+                        }
+                    } else {
+                        HStack {
+                            Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    Task {
+                                        await dismissAllPopups()
+                                    }
+                                    presentationMode.wrappedValue.dismiss()
+                                }
+                            })
+                            .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                        }
                     }
                 }
-                
             }
             
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                HStack {
-                    Button("", action: { viewModel.syncAnimation = true;  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })//.keyboardShortcut("s", modifiers: .command)
-                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                        .disabled(self.viewModel.showEditNamePopup || self.viewModel.presentPolicy || self.viewModel.showDeletionConfirmationAlert || self.viewModel.showDeletionAlert || self.viewModel.showSharePopup || self.viewModel.presentSheet || self.viewModel.showAlert)
-                    
-                    Button("", action: {
+            // MARK: - Trailing – iOS 26+ broken into 2 groups
+            if #available(iOS 26.0, *) {
+                
+                // LEFT PART of trailing: Sync pill
+                ToolbarItemGroup(placement: .primaryAction) {
+                    SyncPillButton(
+                        synced: viewModel.dataStore.synchronized,
+                        lastTime: viewModel.dataStore.lastTime
+                    ) {
+                        HapticManager.shared.trigger(.lightImpact)
+                        synchronizationManager.startupProcess(synchronizing: true)
+                    }
+                    .disabled(self.viewModel.showEditNamePopup || self.viewModel.presentPolicy || self.viewModel.showDeletionConfirmationAlert || self.viewModel.showDeletionAlert || self.viewModel.showSharePopup || self.viewModel.presentSheet || self.viewModel.showAlert)
+                }
+                
+                // SPACE between pill and pencil button
+                ToolbarSpacer(.flexible, placement: .primaryAction)
+                
+                // RIGHT PART of trailing: Pencil Button
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button(action: {
                         HapticManager.shared.trigger(.lightImpact)
                         self.viewModel.showEditNamePopup = true
-                    })
-                    .buttonStyle(
-                        CircleButtonStyle(
-                            imageName: "pencil",
-                            progress: .constant(0),
-                            animation: .constant(false)
-                        )
-                    )
-                    .frame(width: 40, height: 40)
+                    }) {
+                        Image(systemName: "pencil")
+                    }
                     .disabled(
                         self.viewModel.showEditNamePopup ||
                         self.viewModel.presentPolicy ||
@@ -217,6 +237,37 @@ struct SettingsView: View {
                         self.viewModel.presentSheet ||
                         self.viewModel.showAlert
                     )
+                }
+            } else {
+                // iOS 25 and below: Single ToolbarItemGroup with HStack
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    HStack {
+                        Button("", action: { viewModel.syncAnimation = true;  print("Syncing") ; synchronizationManager.startupProcess(synchronizing: true) })
+                            .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                            .disabled(self.viewModel.showEditNamePopup || self.viewModel.presentPolicy || self.viewModel.showDeletionConfirmationAlert || self.viewModel.showDeletionAlert || self.viewModel.showSharePopup || self.viewModel.presentSheet || self.viewModel.showAlert)
+                        
+                        Button("", action: {
+                            HapticManager.shared.trigger(.lightImpact)
+                            self.viewModel.showEditNamePopup = true
+                        })
+                        .buttonStyle(
+                            CircleButtonStyle(
+                                imageName: "pencil",
+                                progress: .constant(0),
+                                animation: .constant(false)
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+                        .disabled(
+                            self.viewModel.showEditNamePopup ||
+                            self.viewModel.presentPolicy ||
+                            self.viewModel.showDeletionConfirmationAlert ||
+                            self.viewModel.showDeletionAlert ||
+                            self.viewModel.showSharePopup ||
+                            self.viewModel.presentSheet ||
+                            self.viewModel.showAlert
+                        )
+                    }
                 }
             }
         }
@@ -228,6 +279,7 @@ struct SettingsView: View {
                 self.viewModel.requestReview = false
             }
         }
+        } // NavigationStack
     }
     
     // MARK: - Preferences View

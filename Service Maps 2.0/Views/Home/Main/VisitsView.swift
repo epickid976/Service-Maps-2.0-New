@@ -168,24 +168,52 @@ struct VisitsView: View {
                         .navigationBarBackButtonHidden(true)
                         .toolbar {
                             ToolbarItemGroup(placement: .topBarLeading) {
-                                HStack {
-                                    Button("", action: { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) ;
+                                if #available(iOS 26.0, *) {
+                                    Button(action: {
+                                        viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact)
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             Task {
                                                 await dismissAllPopups()
                                             }
                                             presentationMode.wrappedValue.dismiss()
                                         }
-                                    })//.keyboardShortcut(.delete, modifiers: .command)
-                                    .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    }) {
+                                        Image(systemName: "arrow.backward")
+                                    }
+                                } else {
+                                    HStack {
+                                        Button("", action: { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) ;
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                Task {
+                                                    await dismissAllPopups()
+                                                }
+                                                presentationMode.wrappedValue.dismiss()
+                                            }
+                                        })
+                                        .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
+                                    }
                                 }
                             }
-                            ToolbarItemGroup(placement: .topBarTrailing) {
-                                HStack {
-                                    Button("", action: { viewModel.syncAnimation = true;
-                                        synchronizationManager.startupProcess(synchronizing: true) })//.ke yboardShortcut("s", modifiers: .command)
-                                    .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
-                                    Button("", action: {
+                            // MARK: - Trailing – iOS 26+ broken into 2 groups
+                            if #available(iOS 26.0, *) {
+                                
+                                // LEFT PART of trailing: Sync pill
+                                ToolbarItemGroup(placement: .primaryAction) {
+                                    SyncPillButton(
+                                        synced: viewModel.dataStore.synchronized,
+                                        lastTime: viewModel.dataStore.lastTime
+                                    ) {
+                                        HapticManager.shared.trigger(.lightImpact)
+                                        synchronizationManager.startupProcess(synchronizing: true)
+                                    }
+                                }
+                                
+                                // SPACE between pill and recall button
+                                ToolbarSpacer(.flexible, placement: .primaryAction)
+                                
+                                // RIGHT PART of trailing: Recall Button
+                                ToolbarItemGroup(placement: .primaryAction) {
+                                    Button(action: {
                                         viewModel.revisitAnimation.toggle()
                                         if viewModel.recallAdded {
                                             Task {
@@ -208,8 +236,44 @@ struct VisitsView: View {
                                                 }.present()
                                             }
                                         }
-                                    })
-                                    .buttonStyle(CircleButtonStyle(imageName: viewModel.recallAdded ? "person.fill.checkmark"  : "person.badge.plus.fill", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.revisitAnimationprogress, animation: $viewModel.revisitAnimation))
+                                    }) {
+                                        Image(systemName: viewModel.recallAdded ? "person.fill.checkmark" : "person.badge.plus.fill")
+                                    }
+                                }
+                            } else {
+                                // iOS 25 and below: Single ToolbarItemGroup with HStack
+                                ToolbarItemGroup(placement: .topBarTrailing) {
+                                    HStack {
+                                        Button("", action: { viewModel.syncAnimation = true;
+                                            synchronizationManager.startupProcess(synchronizing: true) })
+                                        .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                        
+                                        Button("", action: {
+                                            viewModel.revisitAnimation.toggle()
+                                            if viewModel.recallAdded {
+                                                Task {
+                                                    await CenterPopup_DeleteRecall(viewModel: viewModel, house: house.id) {
+                                                        let toast = ToastValue(
+                                                            icon: Image(systemName: "trash.circle.fill").foregroundStyle(.red),
+                                                            message: NSLocalizedString("Recall Deleted", comment: "")
+                                                        )
+                                                        presentToast(toast)
+                                                    }.present()
+                                                }
+                                            } else {
+                                                Task {
+                                                    await CenterPopup_AddRecall(viewModel: viewModel, house: house.id) {
+                                                        let toast = ToastValue(
+                                                            icon: Image(systemName: "checkmark.circle.fill").foregroundStyle(.green),
+                                                            message: "Recall Added"
+                                                        )
+                                                        presentToast(toast)
+                                                    }.present()
+                                                }
+                                            }
+                                        })
+                                        .buttonStyle(CircleButtonStyle(imageName: viewModel.recallAdded ? "person.fill.checkmark"  : "person.badge.plus.fill", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.revisitAnimationprogress, animation: $viewModel.revisitAnimation))
+                                    }
                                 }
                             }
                         }

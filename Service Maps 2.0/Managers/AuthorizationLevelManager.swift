@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 import GRDB
-import SwiftUICore
+import SwiftUI
 
 //MARK: - Authorization Level Manager
 

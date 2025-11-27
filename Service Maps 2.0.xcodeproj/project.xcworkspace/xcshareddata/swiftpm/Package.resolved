@@ -1,5 +1,5 @@
 {
-  "originHash" : "1dc7139edad8d05b62351cb737ff0d1941c0f41b70dd88e98619829e39054360",
+  "originHash" : "2f90ae68385fff953ac33b524979e2c6cec918c6ce615c2a34b45d57d8bf7d79",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Mijick/PopupView.git",
       "state" : {
-        "revision" : "62457a91042e8ef68615fd8d2d27eb8240d2cd5b",
-        "version" : "4.0.1"
+        "revision" : "3aa55233eda7bbcbd98b52a6f63d5a7e1955189a",
+        "version" : "4.0.5"
       }
     },
     {
