@@ -1,5 +1,5 @@
 {
-  "originHash" : "2f90ae68385fff953ac33b524979e2c6cec918c6ce615c2a34b45d57d8bf7d79",
+  "originHash" : "f2057bf5a85fb3af4d41ea054a91ccddd1a577560f01ca74fe268690a9dfefa7",
   "pins" : [
     {
       "identity" : "ably-cocoa",
@@ -130,7 +130,7 @@
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-syntax.git",
+      "location" : "https://github.com/apple/swift-syntax",
       "state" : {
         "revision" : "64889f0c732f210a935a0ad7cda38f77f876262d",
         "version" : "509.1.1"

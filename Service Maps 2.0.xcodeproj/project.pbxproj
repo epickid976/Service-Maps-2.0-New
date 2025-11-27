@@ -54,7 +54,6 @@
 		822FA0832AA6B6320008FA61 /* NukeVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0822AA6B6320008FA61 /* NukeVideo */; };
 		822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0852AA6B6440008FA61 /* ActivityIndicatorView */; };
 		822FA0972AA6B6650008FA61 /* SwipeActions in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA0962AA6B6650008FA61 /* SwipeActions */; };
-		822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */ = {isa = PBXBuildFile; productRef = 822FA09F2AA6B7800008FA61 /* NavigationTransitions */; };
 		822FA0A52AA7798A0008FA61 /* HousesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A42AA7798A0008FA61 /* HousesViewModel.swift */; };
 		822FA0A72AA77A200008FA61 /* CirlceButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A62AA77A200008FA61 /* CirlceButtonStyle.swift */; };
 		822FA0AA2AA77C8F0008FA61 /* HouseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822FA0A92AA77C8F0008FA61 /* HouseCell.swift */; };
@@ -118,6 +117,7 @@
 		82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4692BD820BB00F52F2F /* AddKeyView.swift */; };
 		82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */; };
 		82B5FD6C2ED8113D007FE9C3 /* AddressHeaderCarousel 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B5FD6B2ED8113D007FE9C3 /* AddressHeaderCarousel 2.swift */; };
+		82B5FD772ED89A88007FE9C3 /* NavigationTransitions in Frameworks */ = {isa = PBXBuildFile; productRef = 82B5FD762ED89A88007FE9C3 /* NavigationTransitions */; };
 		82B97F902CC845E600A0BC13 /* AuthenticationRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F8F2CC845E600A0BC13 /* AuthenticationRoutes.swift */; };
 		82B97F922CC852BA00A0BC13 /* CongregationRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F912CC852B100A0BC13 /* CongregationRoutes.swift */; };
 		82B97F942CC8577D00A0BC13 /* PasswordResetRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F932CC8577300A0BC13 /* PasswordResetRoutes.swift */; };
@@ -341,7 +341,6 @@
 				828C4CD62C3A31CC00E147C3 /* ImageViewer in Frameworks */,
 				8226D9682CE7FC140090CD64 /* PapyrusCore in Frameworks */,
 				822FA0772AA6B6230008FA61 /* Alamofire in Frameworks */,
-				822FA0A02AA6B7800008FA61 /* NavigationTransitions in Frameworks */,
 				82BED49F2CC567F400183E19 /* MijickPopups in Frameworks */,
 				8224BC4A2DE15E7E00831AE1 /* SwiftSoup in Frameworks */,
 				822FA0862AA6B6440008FA61 /* ActivityIndicatorView in Frameworks */,
@@ -354,6 +353,7 @@
 				8225A6722DB58FF0003F3920 /* Shimmer in Frameworks */,
 				82CAFE162CC34E2200B3796D /* GRDB in Frameworks */,
 				82608AB22CE9992F00BCC7D7 /* Toasts in Frameworks */,
+				82B5FD772ED89A88007FE9C3 /* NavigationTransitions in Frameworks */,
 				8228B6142C29C148002B7886 /* ModifiedCopyClient in Frameworks */,
 				822FA07A2AA6B62B0008FA61 /* ScalingHeaderScrollView in Frameworks */,
 				822FA0812AA6B6320008FA61 /* NukeUI in Frameworks */,
@@ -801,7 +801,6 @@
 				822FA0822AA6B6320008FA61 /* NukeVideo */,
 				822FA0852AA6B6440008FA61 /* ActivityIndicatorView */,
 				822FA0962AA6B6650008FA61 /* SwipeActions */,
-				822FA09F2AA6B7800008FA61 /* NavigationTransitions */,
 				82A5B45F2BD482EB00F52F2F /* AlertKit */,
 				82F768FF2BE92FA2001FA3CF /* FloatingButton */,
 				8228B6072C29BB68002B7886 /* Ably */,
@@ -818,6 +817,7 @@
 				82E9DAA82DAEA30E0096C024 /* SwiftTextRank */,
 				8225A6712DB58FF0003F3920 /* Shimmer */,
 				8224BC492DE15E7E00831AE1 /* SwiftSoup */,
+				82B5FD762ED89A88007FE9C3 /* NavigationTransitions */,
 			);
 			productName = "Service Maps 2.0";
 			productReference = 826B766A2A729FDE000A4BAA /* Service Maps 2.0.app */;
@@ -856,7 +856,6 @@
 				822FA07B2AA6B6320008FA61 /* XCRemoteSwiftPackageReference "Nuke" */,
 				822FA0842AA6B6440008FA61 /* XCRemoteSwiftPackageReference "ActivityIndicatorView" */,
 				822FA0952AA6B6650008FA61 /* XCRemoteSwiftPackageReference "SwipeActions" */,
-				822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
 				82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */,
 				82F768FE2BE92FA2001FA3CF /* XCRemoteSwiftPackageReference "FloatingButton" */,
 				8228B6062C29BB68002B7886 /* XCRemoteSwiftPackageReference "ably-cocoa" */,
@@ -869,6 +868,7 @@
 				82E9DAA72DAEA30E0096C024 /* XCRemoteSwiftPackageReference "SwiftTextRank" */,
 				8225A6702DB58FF0003F3920 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 				8224BC482DE15E7E00831AE1 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				82B5FD752ED89A88007FE9C3 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */,
 			);
 			productRefGroup = 826B766B2A729FDE000A4BAA /* Products */;
 			projectDirPath = "";
@@ -1361,14 +1361,6 @@
 				minimumVersion = 1.1.0;
 			};
 		};
-		822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/davdroman/swiftui-navigation-transitions";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.13.4;
-			};
-		};
 		82608AB02CE9992F00BCC7D7 /* XCRemoteSwiftPackageReference "swiftui-toasts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sunghyun-k/swiftui-toasts";
@@ -1399,6 +1391,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.1.9;
+			};
+		};
+		82B5FD752ED89A88007FE9C3 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/davdroman/swiftui-navigation-transitions";
+			requirement = {
+				kind = exactVersion;
+				version = 0.13.4;
 			};
 		};
 		82CAFE142CC34E2200B3796D /* XCRemoteSwiftPackageReference "GRDB" */ = {
@@ -1513,11 +1513,6 @@
 			package = 822FA0952AA6B6650008FA61 /* XCRemoteSwiftPackageReference "SwipeActions" */;
 			productName = SwipeActions;
 		};
-		822FA09F2AA6B7800008FA61 /* NavigationTransitions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 822FA09E2AA6B7800008FA61 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
-			productName = NavigationTransitions;
-		};
 		82608AB12CE9992F00BCC7D7 /* Toasts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 82608AB02CE9992F00BCC7D7 /* XCRemoteSwiftPackageReference "swiftui-toasts" */;
@@ -1537,6 +1532,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82A5B45E2BD482EB00F52F2F /* XCRemoteSwiftPackageReference "AlertKit" */;
 			productName = AlertKit;
+		};
+		82B5FD762ED89A88007FE9C3 /* NavigationTransitions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82B5FD752ED89A88007FE9C3 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
+			productName = NavigationTransitions;
 		};
 		82BED49E2CC567F400183E19 /* MijickPopups */ = {
 			isa = XCSwiftPackageProductDependency;

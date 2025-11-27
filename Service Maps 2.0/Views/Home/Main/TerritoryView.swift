@@ -53,6 +53,9 @@ struct TerritoryView: View {
     
     @State var isCircleExpanded = false
     
+    // iOS 26+ zoom transition namespace
+    @Namespace private var searchZoomNamespace
+    
     //MARK: -  Initializers
     
     init(territoryIdToScrollTo: String? = nil) {
@@ -70,7 +73,14 @@ struct TerritoryView: View {
         if viewModel.presentSheet || viewModel.territoryIdToScrollTo != nil {
             transition = AnyNavigationTransition.zoom.combined(with: .fade(.in))
         } else if searchViewDestination {
-            transition = AnyNavigationTransition.fade(.cross)
+            // On iOS 26+, use native zoom transition (handled by matchedTransitionSource)
+            // On older iOS, use custom fade transition
+            if #available(iOS 26.0, *) {
+                // Use default slide - native zoom will override this
+                transition = AnyNavigationTransition.slide
+            } else {
+                transition = AnyNavigationTransition.fade(.cross)
+            }
         } else {
             transition = AnyNavigationTransition.slide.combined(with: .fade(.in))
         }
@@ -264,13 +274,15 @@ struct TerritoryView: View {
                                 }
                             }
                             .navigationDestination(isPresented: $searchViewDestination) {
-                                
-                                NavigationLazyView(SearchView(searchMode: .Territories) { DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                                    withAnimation(.spring()) {
-                                        isCircleExpanded = false
-                                        viewModel.backAnimation.toggle()
+                                // Used by older iOS versions only (iOS 26 uses NavigationLink in toolbar)
+                                NavigationLazyView(SearchView(searchMode: .Territories) { 
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                        withAnimation(.spring()) {
+                                            isCircleExpanded = false
+                                            viewModel.backAnimation.toggle()
+                                        }
                                     }
-                                }})
+                                })
                             }
                             .navigationBarTitle("Territories", displayMode: .automatic)
                             .navigationBarBackButtonHidden(true)
@@ -314,20 +326,16 @@ struct TerritoryView: View {
                                     ToolbarItemGroup(placement: .primaryAction) {
                                         if (viewModel.territoryData == nil || dataStore.synchronized),
                                            viewModel.territoryIdToScrollTo == nil {
-                                            Button(action: {
-                                                HapticManager.shared.trigger(.lightImpact)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                                                    withAnimation(.spring()) {
-                                                        isCircleExpanded = true
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                            viewModel.backAnimation.toggle()
-                                                            searchViewDestination = true
-                                                        }
-                                                    }
-                                                }
-                                            }) {
+                                            NavigationLink {
+                                                SearchView(searchMode: .Territories) {}
+                                                    .navigationTransition(.zoom(sourceID: "searchButton", in: searchZoomNamespace))
+                                            } label: {
                                                 Image(systemName: "magnifyingglass")
                                             }
+                                            .matchedTransitionSource(id: "searchButton", in: searchZoomNamespace)
+                                            .simultaneousGesture(TapGesture().onEnded {
+                                                HapticManager.shared.trigger(.lightImpact)
+                                            })
                                         }
                                     }
 
