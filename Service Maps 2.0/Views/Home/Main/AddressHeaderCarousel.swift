@@ -7,22 +7,7 @@
 
 import SwiftUI
 import NukeUI
-
-// MARK: - Header Card Type
-
-enum AddressHeaderCardType: Int, CaseIterable, Identifiable {
-    case image = 0
-    case map = 1
-    
-    var id: Int { rawValue }
-    
-    var icon: String {
-        switch self {
-        case .image: return "photo"
-        case .map: return "map"
-        }
-    }
-}
+import MapKit
 
 // MARK: - Address Header Carousel
 
@@ -31,44 +16,35 @@ struct AddressHeaderCarousel: View {
     let addresses: [AddressData]
     let progress: CGFloat
     let mainWindowSize: CGSize
-    let headerInfo: TerritoryHeaderInfo
     var onImageTap: () -> Void
-    var onSelectAddress: ((TerritoryAddress, House?) -> Void)?
+    var onSelectAddress: ((TerritoryAddress) -> Void)?
     
-    @State private var currentPage: AddressHeaderCardType = .image
+    @State private var currentPage: Int = 0
     @State private var hasFullAddresses: Bool = false
-    
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .bottom) {
-                // Carousel content
+                // Horizontal paging carousel
                 TabView(selection: $currentPage) {
-                    // Image Card
+                    // Page 1: Territory Image
                     imageCard
-                        .tag(AddressHeaderCardType.image)
+                        .tag(0)
                     
-                    // Map Card (only if we have full addresses)
+                    // Page 2: Map View (only if there are geocodable addresses)
                     if hasFullAddresses {
                         mapCard
-                            .tag(AddressHeaderCardType.map)
+                            .tag(1)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: 350)
-                .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
                 
-                // Bottom overlay with header info and page indicator
-                VStack(spacing: 0) {
-                    // Page indicator (only show if map is available)
-                    if hasFullAddresses {
-                        pageIndicator
-                            .padding(.bottom, 8)
-                    }
-                    
-                    // Small header info
-                    smallHeader(headerInfo, progress: progress)
+                // Custom page indicator
+                if hasFullAddresses {
+                    pageIndicator
+                        .padding(.bottom, 90)
                 }
             }
         }
@@ -85,172 +61,196 @@ struct AddressHeaderCarousel: View {
     // MARK: - Image Card
     
     private var imageCard: some View {
-        LazyImage(url: URL(string: territory.getImageURL())) { state in
-            if let image = state.image {
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: mainWindowSize.width, height: 350)
-                    .clipped()
-                    .onTapGesture {
-                        if !territory.getImageURL().isEmpty {
-                            HapticManager.shared.trigger(.lightImpact)
-                            onImageTap()
-                        }
-                    }
-            } else if state.isLoading {
-                ZStack {
-                    Color(UIColor.secondarySystemBackground)
-                    ProgressView()
-                }
-                .frame(height: 350)
-            } else {
-                ZStack {
-                    Color(UIColor.secondarySystemBackground)
-                    Image("mapImage")
+        ZStack(alignment: .bottom) {
+            LazyImage(url: URL(string: territory.getImageURL())) { state in
+                if let image = state.image {
+                    image
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: mainWindowSize.width, height: 100)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: mainWindowSize.width, height: 350)
+                        .clipped()
+                } else if state.isLoading {
+                    ZStack {
+                        Color(UIColor.secondarySystemBackground)
+                        ProgressView()
+                    }
+                    .frame(height: 350)
+                } else {
+                    ZStack {
+                        Color(UIColor.secondarySystemBackground)
+                        Image("mapImage")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 100, height: 100)
+                    }
+                    .frame(height: 350)
                 }
-                .frame(height: 350)
             }
+            .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
+            .frame(height: 350)
+            .onTapGesture {
+                onImageTap()
+            }
+            
+            // Territory info overlay at bottom
+            territoryInfoOverlay
         }
     }
     
     // MARK: - Map Card
     
     private var mapCard: some View {
-        AddressMapView(
-            territory: territory,
-            addresses: addresses,
-            onSelectAddress: onSelectAddress
+        ZStack(alignment: .bottom) {
+            AddressMapView(
+                territory: territory,
+                addresses: addresses,
+                onSelectAddress: { address, house in
+                    onSelectAddress?(address)
+                }
+            )
+            .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
+            .frame(height: 350)
+            
+            // Map info overlay at bottom
+            mapInfoOverlay
+        }
+    }
+    
+    // MARK: - Territory Info Overlay
+    
+    private var territoryInfoOverlay: some View {
+        HStack(spacing: 16) {
+            // Territory number badge
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [.blue, .teal]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 50, height: 50)
+                
+                Text("№\(territory.number)")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(territory.description)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .lineLimit(2)
+                
+                Text("\(addresses.count) address\(addresses.count == 1 ? "" : "es")")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // Swipe hint for map
+            if hasFullAddresses {
+                HStack(spacing: 4) {
+                    Text("Map")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
         )
-        .frame(height: 350)
-        .allowsHitTesting(true)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
+    }
+    
+    // MARK: - Map Info Overlay
+    
+    private var mapInfoOverlay: some View {
+        HStack(spacing: 16) {
+            // Map icon
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [.blue, .teal]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 50, height: 50)
+                
+                Image(systemName: "map.fill")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Territory Map")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                
+                Text("Tap a pin for options")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // Swipe hint for image
+            HStack(spacing: 4) {
+                Image(systemName: "chevron.left")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                Text("Photo")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
+        )
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
     }
     
     // MARK: - Page Indicator
     
     private var pageIndicator: some View {
         HStack(spacing: 8) {
-            ForEach(AddressHeaderCardType.allCases) { type in
-                if type == .map && !hasFullAddresses {
-                    EmptyView()
-                } else {
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            currentPage = type
-                        }
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: type.icon)
-                                .font(.caption2)
-                            if currentPage == type {
-                                Text(type == .image ? "Photo" : "Map")
-                                    .font(.caption2)
-                                    .fontWeight(.semibold)
-                            }
-                        }
-                        .foregroundColor(currentPage == type ? .white : .white.opacity(0.7))
-                        .padding(.horizontal, currentPage == type ? 12 : 8)
-                        .padding(.vertical, 6)
-                        .background(
-                            Capsule()
-                                .fill(currentPage == type 
-                                      ? LinearGradient(gradient: Gradient(colors: [.blue, .teal]), startPoint: .leading, endPoint: .trailing)
-                                      : LinearGradient(gradient: Gradient(colors: [.white.opacity(0.2), .white.opacity(0.2)]), startPoint: .leading, endPoint: .trailing)
-                                )
-                        )
-                    }
-                }
+            ForEach(0..<(hasFullAddresses ? 2 : 1), id: \.self) { index in
+                Circle()
+                    .fill(currentPage == index ? Color.white : Color.white.opacity(0.5))
+                    .frame(width: 8, height: 8)
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
         .background(
             Capsule()
-                .fill(.ultraThinMaterial)
+                .fill(Color.black.opacity(0.3))
         )
     }
     
-    // MARK: - Small Header
-    
-    private func smallHeader(_ info: TerritoryHeaderInfo, progress: CGFloat) -> some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("№")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
-                Text("\(info.number)")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-            }
-            
-            if info.imageURL != "", !(progress < 0.98) {
-                LazyImage(url: URL(string: info.imageURL)) { state in
-                    if let image = state.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 50, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    } else {
-                        Color.gray.opacity(0.2)
-                            .frame(width: 50, height: 50)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(info.description)
-                    .font(.body)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                    .lineLimit(2)
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 0)
-                .fill(AnyShapeStyle(.ultraThickMaterial))
-                .background(
-                    (progress < 0.98 && colorScheme == .light) ?
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.white.opacity(0.05))
-                        .blur(radius: 0.5)
-                    : nil
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(
-                            progress < 0.98
-                            ? (colorScheme == .dark ? Color.white.opacity(0.15) : Color.black.opacity(0.05))
-                            : Color.clear,
-                            lineWidth: 0.6
-                        )
-                )
-                .shadow(
-                    color: .black.opacity(progress < 0.98 ? (colorScheme == .dark ? 0.1 : 0.06) : 0),
-                    radius: progress < 0.98 ? 6 : 0,
-                    x: 0,
-                    y: progress < 0.98 ? 3 : 0
-                )
-                .cornerRadius((progress < 0.98) ? 20 : 0, corners: [.topLeft, .topRight])
-                .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
-        )
-        .animation(.easeInOut(duration: 0.2), value: progress)
-    }
-    
-    // MARK: - Check for Full Addresses
+    // MARK: - Helpers
     
     private func checkForFullAddresses() {
-        let geocodingService = GeocodingService.shared
-        hasFullAddresses = addresses.contains { geocodingService.isFullAddress($0.address.address) }
+        // Check if any address looks like a full address (not just a house number)
+        hasFullAddresses = addresses.contains { addressData in
+            GeocodingService.shared.isFullAddress(addressData.address.address)
+        }
     }
 }
 
@@ -260,9 +260,8 @@ struct AddressHeaderCarousel: View {
     AddressHeaderCarousel(
         territory: Territory(id: "1", congregation: "1", number: 1, description: "Test Territory", image: ""),
         addresses: [],
-        progress: 0.5,
-        mainWindowSize: CGSize(width: 390, height: 844),
-        headerInfo: TerritoryHeaderInfo(number: 1, description: "Test", imageURL: ""),
+        progress: 0,
+        mainWindowSize: CGSize(width: 393, height: 852),
         onImageTap: {}
     )
 }

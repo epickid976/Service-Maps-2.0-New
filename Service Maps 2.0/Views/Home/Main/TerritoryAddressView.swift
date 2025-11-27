@@ -70,14 +70,13 @@ struct TerritoryAddressView: View {
                                 addresses: viewModel.addressData ?? [],
                                 progress: viewModel.progress,
                                 mainWindowSize: proxy.size,
-                                headerInfo: viewModel.headerInfo,
                                 onImageTap: {
                                     if !imageURL.isEmpty {
                                         HapticManager.shared.trigger(.lightImpact)
                                         viewModel.showImageViewer = true
                                     }
                                 },
-                                onSelectAddress: { address, house in
+                                onSelectAddress: { address in
                                     // Navigate to the houses view for this address
                                     viewModel.selectedAddressForNavigation = address
                                 }
@@ -188,9 +187,6 @@ struct TerritoryAddressView: View {
                                 }
                             }
                         }
-                        .navigationDestination(item: $viewModel.selectedAddressForNavigation) { address in
-                            NavigationLazyView(HousesView(address: address).installToast(position: .bottom))
-                        }
                     }
                     .height(min: 180, max: 350.0)
                     
@@ -291,6 +287,9 @@ struct TerritoryAddressView: View {
                 }
             }
             .navigationTransition(viewModel.presentSheet || viewModel.territoryAddressIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
+            .navigationDestination(item: $viewModel.selectedAddressForNavigation) { address in
+                NavigationLazyView(HousesView(address: address).installToast(position: .bottom))
+            }
         }.overlay(ImageViewerRemote(imageURL: $imageURL, viewerShown: $viewModel.showImageViewer))
     }
     
