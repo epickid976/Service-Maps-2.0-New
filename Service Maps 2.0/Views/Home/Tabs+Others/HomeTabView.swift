@@ -24,28 +24,13 @@ extension EnvironmentValues {
     }
 }
 
-// MARK: - Zoom Transition Modifier (iOS 26+)
-struct ZoomTransitionModifier: ViewModifier {
-    let sourceID: String
-    let namespace: Namespace.ID
-    
-    func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content
-                .navigationTransition(.zoom(sourceID: sourceID, in: namespace))
-        } else {
-            content
-        }
-    }
-}
-
-// MARK: - Matched Transition Source Modifier (iOS 26+)
+// MARK: - Matched Transition Source Modifier (iOS 18+)
 struct MatchedTransitionSourceModifier: ViewModifier {
     let id: String
     let namespace: Namespace.ID?
     
     func body(content: Content) -> some View {
-        if #available(iOS 26.0, *), let namespace = namespace {
+        if #available(iOS 18.0, *), let namespace = namespace {
             content
                 .matchedTransitionSource(id: id, in: namespace)
         } else {
@@ -75,22 +60,47 @@ struct HomeTabView: View {
     // MARK: - Body
     
     var body: some View {
-        Group {
-            if #available(iOS 26.0, *) {
-                nativeTabView
-            } else {
-                customTabView
-            }
-        }
-        .environment(\.searchZoomNamespace, searchZoomNamespace)
-        .fullScreenCover(isPresented: $tabBarSearchManager.isSearchActive) {
-            NavigationStack {
-                SearchView(searchMode: tabBarSearchManager.searchMode) {
-                    tabBarSearchManager.deactivateSearch()
+        ZStack {
+            Group {
+                if #available(iOS 26.0, *) {
+                    nativeTabView
+                } else {
+                    customTabView
                 }
             }
-            .modifier(ZoomTransitionModifier(sourceID: "searchButton", namespace: searchZoomNamespace))
+            .environment(\.searchZoomNamespace, searchZoomNamespace)
+            
+            // iOS 18+: Use fullScreenCover with native zoom transition
+            // iOS 17 and below: Use ZStack overlay with custom animation
+            if #available(iOS 18.0, *) {
+                Color.clear
+                    .fullScreenCover(isPresented: $tabBarSearchManager.isSearchActive) {
+                        NavigationStack {
+                            SearchView(searchMode: tabBarSearchManager.searchMode) {
+                                tabBarSearchManager.deactivateSearch()
+                            }
+                        }
+                        .navigationTransition(.zoom(sourceID: "searchButton", in: searchZoomNamespace))
+                    }
+            } else {
+                // Custom zoom-like animation for iOS 17 and below
+                if tabBarSearchManager.isSearchActive {
+                    NavigationStack {
+                        SearchView(searchMode: tabBarSearchManager.searchMode) {
+                            tabBarSearchManager.deactivateSearch()
+                        }
+                    }
+                    .transition(
+                        .asymmetric(
+                            insertion: .scale(scale: 0.5).combined(with: .opacity).animation(.spring(response: 0.4, dampingFraction: 0.75)),
+                            removal: .scale(scale: 0.5).combined(with: .opacity).animation(.spring(response: 0.3, dampingFraction: 0.8))
+                        )
+                    )
+                    .zIndex(1)
+                }
+            }
         }
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: tabBarSearchManager.isSearchActive)
         .navigationTransition(
             .slide.combined(with: .fade(.in))
         )
