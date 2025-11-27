@@ -26,6 +26,7 @@ struct PhoneTerritoriesScreen: View {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var preferencesViewModel = ColumnViewModel()
     @StateObject var dataStore = StorageManager.shared
+    @ObservedObject var tabBarSearchManager = TabBarSearchManager.shared
     
     //MARK: - Properties
     
@@ -33,6 +34,7 @@ struct PhoneTerritoriesScreen: View {
     @State var animationProgressTime: AnimationProgressTime = 0
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
+    @Environment(\.searchZoomNamespace) var searchZoomNamespace
     @State private var hideFloatingButton = false
     @State var previousViewOffset: CGFloat = 0
     
@@ -258,19 +260,11 @@ struct PhoneTerritoriesScreen: View {
                                     if viewModel.phoneData == nil || dataStore.synchronized {
                                         if viewModel.phoneTerritoryToScrollTo == nil {
                                             Button(action: {
-                                                HapticManager.shared.trigger(.lightImpact)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                                                    withAnimation(.spring()) {
-                                                        isCircleExpanded = true
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                            viewModel.backAnimation.toggle()
-                                                            searchViewDestination = true
-                                                        }
-                                                    }
-                                                }
+                                                tabBarSearchManager.activateSearch(mode: .PhoneTerritories)
                                             }) {
                                                 Image(systemName: "magnifyingglass")
                                             }
+                                            .modifier(MatchedTransitionSourceModifier(id: "searchButton", namespace: searchZoomNamespace))
                                         }
                                     }
                                 }
@@ -282,18 +276,11 @@ struct PhoneTerritoriesScreen: View {
                                             .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime)).padding(.leading, viewModel.phoneData == nil || dataStore.synchronized ? 0 : 50)
                                         if viewModel.phoneData == nil || dataStore.synchronized {
                                             if viewModel.phoneTerritoryToScrollTo == nil {
-                                                Button("", action: { HapticManager.shared.trigger(.lightImpact) ;
-                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                                                        withAnimation(.spring()) {
-                                                            isCircleExpanded = true
-                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                                viewModel.backAnimation.toggle()
-                                                                searchViewDestination = true
-                                                            }
-                                                        }
-                                                    }
+                                                Button("", action: {
+                                                    tabBarSearchManager.activateSearch(mode: .PhoneTerritories)
                                                 }).scaleEffect(viewModel.phoneData == nil || dataStore.synchronized ? 1 : 0)
                                                     .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: !isCircleExpanded ? 40 : proxy.size.width * 4, height: !isCircleExpanded ? 40 : proxy.size.height * 4, progress: $viewModel.progress, animation: $viewModel.backAnimation)).transition(.scale).padding(.top, isCircleExpanded ? 1000 : 0).animation(.spring(), value: isCircleExpanded)
+                                                    .modifier(MatchedTransitionSourceModifier(id: "searchButton", namespace: searchZoomNamespace))
                                             }
                                         }
                                     }.animation(.spring(), value: viewModel.phoneData == nil || viewModel.dataStore.synchronized)

@@ -118,6 +118,7 @@
 		82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */; };
 		82B5FD6C2ED8113D007FE9C3 /* AddressHeaderCarousel 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B5FD6B2ED8113D007FE9C3 /* AddressHeaderCarousel 2.swift */; };
 		82B5FD772ED89A88007FE9C3 /* NavigationTransitions in Frameworks */ = {isa = PBXBuildFile; productRef = 82B5FD762ED89A88007FE9C3 /* NavigationTransitions */; };
+		82B5FD832ED8B39E007FE9C3 /* TabBarSearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B5FD822ED8B39E007FE9C3 /* TabBarSearchManager.swift */; };
 		82B97F902CC845E600A0BC13 /* AuthenticationRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F8F2CC845E600A0BC13 /* AuthenticationRoutes.swift */; };
 		82B97F922CC852BA00A0BC13 /* CongregationRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F912CC852B100A0BC13 /* CongregationRoutes.swift */; };
 		82B97F942CC8577D00A0BC13 /* PasswordResetRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F932CC8577300A0BC13 /* PasswordResetRoutes.swift */; };
@@ -270,6 +271,7 @@
 		82A5B4692BD820BB00F52F2F /* AddKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddKeyView.swift; sourceTree = "<group>"; };
 		82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		82B5FD6B2ED8113D007FE9C3 /* AddressHeaderCarousel 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddressHeaderCarousel 2.swift"; sourceTree = "<group>"; };
+		82B5FD822ED8B39E007FE9C3 /* TabBarSearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarSearchManager.swift; sourceTree = "<group>"; };
 		82B97F8F2CC845E600A0BC13 /* AuthenticationRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationRoutes.swift; sourceTree = "<group>"; };
 		82B97F912CC852B100A0BC13 /* CongregationRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationRoutes.swift; sourceTree = "<group>"; };
 		82B97F932CC8577300A0BC13 /* PasswordResetRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordResetRoutes.swift; sourceTree = "<group>"; };
@@ -533,6 +535,7 @@
 		824213672A82C4A300626DD5 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				82B5FD822ED8B39E007FE9C3 /* TabBarSearchManager.swift */,
 				82E9DAAA2DAECC340096C024 /* VisitSummarizationEngineManager.swift */,
 				825BBE7E2DAD50E1000E0F1E /* NotificationManager.swift */,
 				820933FA2A794D0C00AF3FF1 /* SynchronizationManager.swift */,
@@ -1010,6 +1013,7 @@
 				82F7812C2ED804F300BC41AC /* MapFeature.swift in Sources */,
 				8228B6052C2901A7002B7886 /* RealtimeManager.swift in Sources */,
 				820933ED2A785A9400AF3FF1 /* UserService.swift in Sources */,
+				82B5FD832ED8B39E007FE9C3 /* TabBarSearchManager.swift in Sources */,
 				82F75C3A2BE2D1BA002CCAB0 /* CallsViewModel.swift in Sources */,
 				826B766E2A729FDE000A4BAA /* Service_Maps_2_0App.swift in Sources */,
 				82F288872A86C21100930849 /* VerificationViewModel.swift in Sources */,

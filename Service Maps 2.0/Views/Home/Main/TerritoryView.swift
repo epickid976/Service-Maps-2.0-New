@@ -27,6 +27,7 @@ struct TerritoryView: View {
     @Environment(\.dismissSearch) private var dismissSearch
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.presentToast) var presentToast
+    @Environment(\.searchZoomNamespace) var searchZoomNamespace
     
     //MARK: - Dependencies
     
@@ -34,6 +35,7 @@ struct TerritoryView: View {
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var dataStore = StorageManager.shared
     @ObservedObject var preferencesViewModel = ColumnViewModel()
+    @ObservedObject var tabBarSearchManager = TabBarSearchManager.shared
     
     //MARK: - Properties
     
@@ -52,9 +54,6 @@ struct TerritoryView: View {
     @State private var highlightedTerritoryId: String?
     
     @State var isCircleExpanded = false
-    
-    // iOS 26+ zoom transition namespace
-    @Namespace private var searchZoomNamespace
     
     //MARK: -  Initializers
     
@@ -326,16 +325,12 @@ struct TerritoryView: View {
                                     ToolbarItemGroup(placement: .primaryAction) {
                                         if (viewModel.territoryData == nil || dataStore.synchronized),
                                            viewModel.territoryIdToScrollTo == nil {
-                                            NavigationLink {
-                                                SearchView(searchMode: .Territories) {}
-                                                    .navigationTransition(.zoom(sourceID: "searchButton", in: searchZoomNamespace))
+                                            Button {
+                                                tabBarSearchManager.activateSearch(mode: .Territories)
                                             } label: {
                                                 Image(systemName: "magnifyingglass")
                                             }
-                                            .matchedTransitionSource(id: "searchButton", in: searchZoomNamespace)
-                                            .simultaneousGesture(TapGesture().onEnded {
-                                                HapticManager.shared.trigger(.lightImpact)
-                                            })
+                                            .modifier(MatchedTransitionSourceModifier(id: "searchButton", namespace: searchZoomNamespace))
                                         }
                                     }
 
@@ -366,16 +361,7 @@ struct TerritoryView: View {
                                            viewModel.territoryIdToScrollTo == nil {
 
                                             Button("", action: {
-                                                HapticManager.shared.trigger(.lightImpact)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                                                    withAnimation(.spring()) {
-                                                        isCircleExpanded = true
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                            viewModel.backAnimation.toggle()
-                                                            searchViewDestination = true
-                                                        }
-                                                    }
-                                                }
+                                                tabBarSearchManager.activateSearch(mode: .Territories)
                                             })
                                             .buttonStyle(
                                                 CircleButtonStyle(
@@ -387,6 +373,7 @@ struct TerritoryView: View {
                                                     animation: $viewModel.backAnimation
                                                 )
                                             )
+                                            .modifier(MatchedTransitionSourceModifier(id: "searchButton", namespace: searchZoomNamespace))
                                         }
                                     }
                                 }

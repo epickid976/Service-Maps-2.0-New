@@ -12,6 +12,48 @@ import NavigationTransitions
 import MijickPopups
 import Toasts
 
+// MARK: - Search Zoom Namespace Environment Key
+struct SearchZoomNamespaceKey: EnvironmentKey {
+    static let defaultValue: Namespace.ID? = nil
+}
+
+extension EnvironmentValues {
+    var searchZoomNamespace: Namespace.ID? {
+        get { self[SearchZoomNamespaceKey.self] }
+        set { self[SearchZoomNamespaceKey.self] = newValue }
+    }
+}
+
+// MARK: - Zoom Transition Modifier (iOS 26+)
+struct ZoomTransitionModifier: ViewModifier {
+    let sourceID: String
+    let namespace: Namespace.ID
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .navigationTransition(.zoom(sourceID: sourceID, in: namespace))
+        } else {
+            content
+        }
+    }
+}
+
+// MARK: - Matched Transition Source Modifier (iOS 26+)
+struct MatchedTransitionSourceModifier: ViewModifier {
+    let id: String
+    let namespace: Namespace.ID?
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *), let namespace = namespace {
+            content
+                .matchedTransitionSource(id: id, in: namespace)
+        } else {
+            content
+        }
+    }
+}
+
 // MARK: - Home Tab View
 struct HomeTabView: View {
     
@@ -25,18 +67,29 @@ struct HomeTabView: View {
     
     @ObservedObject var synchronizationManager = SynchronizationManager.shared
     @ObservedObject var authorizationLevelManager = AuthorizationLevelManager()
+    @ObservedObject var tabBarSearchManager = TabBarSearchManager.shared
+    
+    // MARK: - Namespace for zoom transition
+    @Namespace private var searchZoomNamespace
     
     // MARK: - Body
     
     var body: some View {
         Group {
             if #available(iOS 26.0, *) {
-                // iOS 26: Use native TabView with liquid glass
                 nativeTabView
             } else {
-                // iOS 25 and below: Custom tab bar
                 customTabView
             }
+        }
+        .environment(\.searchZoomNamespace, searchZoomNamespace)
+        .fullScreenCover(isPresented: $tabBarSearchManager.isSearchActive) {
+            NavigationStack {
+                SearchView(searchMode: tabBarSearchManager.searchMode) {
+                    tabBarSearchManager.deactivateSearch()
+                }
+            }
+            .modifier(ZoomTransitionModifier(sourceID: "searchButton", namespace: searchZoomNamespace))
         }
         .navigationTransition(
             .slide.combined(with: .fade(.in))
@@ -130,6 +183,7 @@ struct HomeTabView: View {
                 }
                 
                 Spacer()
+                
                 HStack(alignment: .center) {
                     Button(action: {
                         withAnimation(.spring) {

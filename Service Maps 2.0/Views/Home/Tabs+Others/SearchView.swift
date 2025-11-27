@@ -170,12 +170,9 @@ struct SearchView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarLeading) {
                     HStack {
-                        Button("", action: {withAnimation { backAnimation.toggle() };
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                
-                                presentationMode.wrappedValue.dismiss()
-                                onDone()
-                            }
+                        Button("", action: {
+                            withAnimation { backAnimation.toggle() }
+                            onDone()
                         })
                         .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $progress, animation: $backAnimation))
                         
@@ -292,14 +289,12 @@ struct iOS26SearchView: View {
             text: $searchViewModel.searchQuery,
             prompt: searchViewModel.searchMode == .Territories ? "Territory, Address, House, Visit" : "Phone Territory, Number, Call"
         )
+        
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button(action: {
                     withAnimation { backAnimation.toggle() }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        presentationMode.wrappedValue.dismiss()
-                        onDone()
-                    }
+                    onDone()
                 }) {
                     Image(systemName: "arrow.backward")
                 }
@@ -308,7 +303,7 @@ struct iOS26SearchView: View {
             // Bottom bar with search field
             DefaultToolbarItem(kind: .search, placement: .bottomBar)
         }
-        .toolbarVisibility(.hidden, for: .tabBar)
+       
     }
 }
 
