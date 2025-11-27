@@ -52,6 +52,7 @@ class AddressViewModel: ObservableObject {
     @Published var territoryAddressIdToScrollTo: String? = nil
     @Published var isShowingSearch = false
     @Published var showImageViewer = false
+    @Published var selectedAddressForNavigation: TerritoryAddress? = nil
     
      // MARK: - Initializers
     

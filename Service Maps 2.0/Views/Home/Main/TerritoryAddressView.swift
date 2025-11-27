@@ -65,13 +65,24 @@ struct TerritoryAddressView: View {
                 ScrollViewReader { scrollViewProxy in
                     ScalingHeaderScrollView {
                         ZStack {
-                            //Color(UIColor.secondarySystemBackground).ignoresSafeArea(.all)
-                           largeHeader(progress: viewModel.progress, mainWindowSize: proxy.size) .onTapGesture { if !imageURL.isEmpty {
-                                HapticManager.shared.trigger(.lightImpact)
-                                viewModel.showImageViewer = true }
-                            }
+                            AddressHeaderCarousel(
+                                territory: territory,
+                                addresses: viewModel.addressData ?? [],
+                                progress: viewModel.progress,
+                                mainWindowSize: proxy.size,
+                                headerInfo: viewModel.headerInfo,
+                                onImageTap: {
+                                    if !imageURL.isEmpty {
+                                        HapticManager.shared.trigger(.lightImpact)
+                                        viewModel.showImageViewer = true
+                                    }
+                                },
+                                onSelectAddress: { address, house in
+                                    // Navigate to the houses view for this address
+                                    viewModel.selectedAddressForNavigation = address
+                                }
+                            )
                             .padding(.bottom, 2)
-                            
                         }
                         
                     } content: {
@@ -176,6 +187,9 @@ struct TerritoryAddressView: View {
                                     }.present()
                                 }
                             }
+                        }
+                        .navigationDestination(item: $viewModel.selectedAddressForNavigation) { address in
+                            NavigationLazyView(HousesView(address: address).installToast(position: .bottom))
                         }
                     }
                     .height(min: 180, max: 350.0)
