@@ -330,41 +330,44 @@ struct AddressHeaderCarousel: View {
                 
                 Spacer()
                 
-                // Swipe hint for image
-                HStack(spacing: 4) {
-                    Image(systemName: "chevron.left")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                    Text("Photo")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                VStack {
+                    // Swipe hint for image
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        Text("Photo")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    // Fullscreen button
+                    Button {
+                        fullscreenAddressLocations = addressLocations
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            isFullscreenMap = true
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                .font(.caption)
+                            Text("Full Screen")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 5)
+                        .background(
+                            colorScheme == .dark
+                                ? Color.white.opacity(0.15)
+                                : Color.black.opacity(0.08)
+                        )
+                        .cornerRadius(10)
+                    }
                 }
             }
             
-            // Fullscreen button
-            Button {
-                fullscreenAddressLocations = addressLocations
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                    isFullscreenMap = true
-                }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "arrow.up.left.and.arrow.down.right")
-                        .font(.caption)
-                    Text("Full Screen")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                }
-                .foregroundColor(.primary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
-                .background(
-                    colorScheme == .dark
-                        ? Color.white.opacity(0.15)
-                        : Color.black.opacity(0.08)
-                )
-                .cornerRadius(10)
-            }
+            
         }
     }
     

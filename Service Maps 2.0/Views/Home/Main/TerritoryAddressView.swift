@@ -56,6 +56,8 @@ struct TerritoryAddressView: View {
     
     @State var highlightedTerritoryAddressId: String?
     @State var imageURL = String()
+    @State private var isFullscreenMap = false
+    @State private var addressLocationsForFullscreen: [AddressLocation] = []
     
     //MARK: - Body
     
@@ -80,7 +82,9 @@ struct TerritoryAddressView: View {
                                     // Navigate to the houses view for this address with house highlighting
                                     viewModel.selectedAddressForNavigation = address
                                     viewModel.selectedHouseIdForNavigation = houseId
-                                }
+                                },
+                                isFullscreenMap: $isFullscreenMap,
+                                fullscreenAddressLocations: $addressLocationsForFullscreen
                             )
                             .padding(.bottom, 2)
                         }
@@ -239,7 +243,7 @@ struct TerritoryAddressView: View {
             .navigationBarBackButtonHidden()
             .navigationBarTitle("Addresses", displayMode: .inline)
             .toolbar {
-                if !viewModel.showImageViewer {
+                if !viewModel.showImageViewer && !isFullscreenMap {
                     ToolbarItemGroup(placement: .topBarLeading) {
                         if #available(iOS 26.0, *) {
                             Button(action: {
@@ -306,7 +310,19 @@ struct TerritoryAddressView: View {
                     )
                 }
             }
-        }.overlay(ImageViewerRemote(imageURL: $imageURL, viewerShown: $viewModel.showImageViewer))
+        }
+        .overlay(ImageViewerRemote(imageURL: $imageURL, viewerShown: $viewModel.showImageViewer))
+        .fullScreenCover(isPresented: $isFullscreenMap) {
+            FullscreenMapView(
+                territory: territory,
+                addressLocations: addressLocationsForFullscreen,
+                isPresented: $isFullscreenMap,
+                onSelectAddress: { address, houseId in
+                    viewModel.selectedAddressForNavigation = address
+                    viewModel.selectedHouseIdForNavigation = houseId
+                }
+            )
+        }
     }
     
     //MARK: - Address Cell

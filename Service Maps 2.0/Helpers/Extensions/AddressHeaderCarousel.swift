@@ -18,6 +18,8 @@ struct AddressHeaderCarousel: View {
     let mainWindowSize: CGSize
     var onImageTap: () -> Void
     var onSelectAddress: ((TerritoryAddress, String?) -> Void)?  // address, houseIdToScrollTo
+    @Binding var isFullscreenMap: Bool
+    @Binding var fullscreenAddressLocations: [AddressLocation]
     
     @State private var currentPage: Int = 0
     @State private var hasFullAddresses: Bool = false
@@ -26,6 +28,26 @@ struct AddressHeaderCarousel: View {
     @State private var isLoadingMap: Bool = true
     @ObservedObject private var dataStore = StorageManager.shared
     @Environment(\.colorScheme) private var colorScheme
+    
+    init(
+        territory: Territory,
+        addresses: [AddressData],
+        progress: CGFloat,
+        mainWindowSize: CGSize,
+        onImageTap: @escaping () -> Void,
+        onSelectAddress: ((TerritoryAddress, String?) -> Void)? = nil,
+        isFullscreenMap: Binding<Bool> = .constant(false),
+        fullscreenAddressLocations: Binding<[AddressLocation]> = .constant([])
+    ) {
+        self.territory = territory
+        self.addresses = addresses
+        self.progress = progress
+        self.mainWindowSize = mainWindowSize
+        self.onImageTap = onImageTap
+        self.onSelectAddress = onSelectAddress
+        self._isFullscreenMap = isFullscreenMap
+        self._fullscreenAddressLocations = fullscreenAddressLocations
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -106,7 +128,8 @@ struct AddressHeaderCarousel: View {
     // MARK: - Map Card
     
     private var mapCard: some View {
-        ZStack(alignment: .bottom) {
+        ZStack {
+            // Map view
             AddressMapView(
                 territory: territory,
                 addressLocations: addressLocations,
@@ -116,10 +139,39 @@ struct AddressHeaderCarousel: View {
             .cornerRadius(20, corners: [.bottomLeft, .bottomRight])
             .frame(height: 350)
             
+            // Fullscreen button - top right
+            VStack {
+                HStack {
+                    Spacer()
+                    Button {
+                        fullscreenAddressLocations = addressLocations
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            isFullscreenMap = true
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.left.and.arrow.down.right")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.primary)
+                            .padding(10)
+                            .background(
+                                Circle()
+                                    .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
+                            )
+                            .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                    }
+                    .padding(.top, 12)
+                    .padding(.trailing, 12)
+                }
+                Spacer()
+            }
+            
             // Overlay at bottom - shows selected pin info or default map info
-            mapOverlay
-                .transition(.opacity.combined(with: .move(edge: .bottom)))
-                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedLocation != nil)
+            VStack {
+                Spacer()
+                mapOverlay
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedLocation != nil)
+            }
         }
     }
     
@@ -407,6 +459,229 @@ struct AddressHeaderCarousel: View {
             addressLocations = locations
             isLoadingMap = false
         }
+    }
+    
+    private func formattedDate(_ timestamp: Int64) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: date, relativeTo: Date())
+    }
+    
+    private func openDirections(to location: AddressLocation) {
+        let destination = MKMapItem(placemark: MKPlacemark(coordinate: location.coordinate))
+        destination.name = location.title
+        destination.openInMaps(launchOptions: [
+            MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving
+        ])
+    }
+}
+
+// MARK: - Fullscreen Map View
+
+struct FullscreenMapView: View {
+    let territory: Territory
+    let addressLocations: [AddressLocation]
+    @Binding var isPresented: Bool
+    var onSelectAddress: ((TerritoryAddress, String?) -> Void)?
+    
+    @State private var selectedLocation: AddressLocation?
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        ZStack {
+            // Full screen map
+            AddressMapView(
+                territory: territory,
+                addressLocations: addressLocations,
+                isLoading: false,
+                selectedLocation: $selectedLocation
+            )
+            .ignoresSafeArea()
+            
+            // Top bar with close button
+            VStack {
+                HStack {
+                    // Close button
+                    Button {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            isPresented = false
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.primary)
+                            .padding(12)
+                            .background(
+                                Circle()
+                                    .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
+                            )
+                            .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                    }
+                    
+                    Spacer()
+                    
+                    // Title
+                    Text("Territory \(territory.number)")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            Capsule()
+                                .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
+                        )
+                        .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                    
+                    Spacer()
+                    
+                    // Placeholder for symmetry
+                    Color.clear
+                        .frame(width: 40, height: 40)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                
+                Spacer()
+                
+                // Bottom overlay when pin selected
+                if let selected = selectedLocation {
+                    fullscreenSelectedOverlay(selected)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedLocation != nil)
+                }
+            }
+        }
+        .statusBarHidden(true)
+    }
+    
+    @ViewBuilder
+    private func fullscreenSelectedOverlay(_ location: AddressLocation) -> some View {
+        VStack(spacing: 12) {
+            // Header with address info
+            HStack(spacing: 12) {
+                // Pin badge
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [.blue, .teal]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 50, height: 50)
+                    
+                    if let firstHouse = location.houses.first {
+                        Text(firstHouse.number)
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.5)
+                    } else {
+                        Image(systemName: "mappin.circle.fill")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(location.title)
+                        .font(.subheadline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                        .lineLimit(2)
+                    
+                    if !location.houses.isEmpty {
+                        Text("Doors: \(location.houseNumbers)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    if let lastVisit = location.lastVisit {
+                        HStack(spacing: 4) {
+                            Text(lastVisit.symbol)
+                                .font(.caption)
+                            Text(formattedDate(lastVisit.date))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                
+                Spacer()
+                
+                // Dismiss button
+                Button {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        selectedLocation = nil
+                    }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            // Action buttons
+            HStack(spacing: 10) {
+                Button {
+                    let houseId = location.houses.first?.id
+                    isPresented = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        onSelectAddress?(location.address, houseId)
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.right.circle.fill")
+                            .font(.subheadline)
+                        Text("View House")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [.blue, .teal]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(12)
+                }
+                
+                Button {
+                    openDirections(to: location)
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "car.fill")
+                            .font(.subheadline)
+                        Text("Directions")
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(
+                        colorScheme == .dark
+                            ? Color.white.opacity(0.15)
+                            : Color.black.opacity(0.08)
+                    )
+                    .cornerRadius(12)
+                }
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
+                .shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: -5)
+        )
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
     }
     
     private func formattedDate(_ timestamp: Int64) -> String {
