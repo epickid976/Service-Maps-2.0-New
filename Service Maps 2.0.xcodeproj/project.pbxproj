@@ -117,6 +117,7 @@
 		82A5B4682BD815A200F52F2F /* AddKeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4672BD815A200F52F2F /* AddKeyViewModel.swift */; };
 		82A5B46A2BD820BB00F52F2F /* AddKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B4692BD820BB00F52F2F /* AddKeyView.swift */; };
 		82A5B46C2BD94BE900F52F2F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */; };
+		82B5FD682ED80F00007FE9C3 /* AddressHeaderCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B5FD672ED80F00007FE9C3 /* AddressHeaderCarousel.swift */; };
 		82B97F902CC845E600A0BC13 /* AuthenticationRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F8F2CC845E600A0BC13 /* AuthenticationRoutes.swift */; };
 		82B97F922CC852BA00A0BC13 /* CongregationRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F912CC852B100A0BC13 /* CongregationRoutes.swift */; };
 		82B97F942CC8577D00A0BC13 /* PasswordResetRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B97F932CC8577300A0BC13 /* PasswordResetRoutes.swift */; };
@@ -170,6 +171,7 @@
 		82F75C3C2BE2D6D7002CCAB0 /* AddCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C3B2BE2D6D7002CCAB0 /* AddCallView.swift */; };
 		82F75C3E2BE2D6E3002CCAB0 /* AddCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F75C3D2BE2D6E3002CCAB0 /* AddCallViewModel.swift */; };
 		82F769002BE92FA2001FA3CF /* FloatingButton in Frameworks */ = {isa = PBXBuildFile; productRef = 82F768FF2BE92FA2001FA3CF /* FloatingButton */; };
+		82F7812C2ED804F300BC41AC /* MapFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F7812B2ED804F000BC41AC /* MapFeature.swift */; };
 		82F913072BDAA01F00644A67 /* UniversalLinksManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */; };
 		82F913092BDAB27F00644A67 /* LinkScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F913082BDAB27F00644A67 /* LinkScreens.swift */; };
 		82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9130B2BDAE7D000644A67 /* ValidationView.swift */; };
@@ -267,6 +269,7 @@
 		82A5B4672BD815A200F52F2F /* AddKeyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddKeyViewModel.swift; sourceTree = "<group>"; };
 		82A5B4692BD820BB00F52F2F /* AddKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddKeyView.swift; sourceTree = "<group>"; };
 		82A5B46B2BD94BE900F52F2F /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		82B5FD672ED80F00007FE9C3 /* AddressHeaderCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressHeaderCarousel.swift; sourceTree = "<group>"; };
 		82B97F8F2CC845E600A0BC13 /* AuthenticationRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationRoutes.swift; sourceTree = "<group>"; };
 		82B97F912CC852B100A0BC13 /* CongregationRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CongregationRoutes.swift; sourceTree = "<group>"; };
 		82B97F932CC8577300A0BC13 /* PasswordResetRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordResetRoutes.swift; sourceTree = "<group>"; };
@@ -317,6 +320,7 @@
 		82F75C392BE2D1BA002CCAB0 /* CallsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsViewModel.swift; sourceTree = "<group>"; };
 		82F75C3B2BE2D6D7002CCAB0 /* AddCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCallView.swift; sourceTree = "<group>"; };
 		82F75C3D2BE2D6E3002CCAB0 /* AddCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCallViewModel.swift; sourceTree = "<group>"; };
+		82F7812B2ED804F000BC41AC /* MapFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapFeature.swift; sourceTree = "<group>"; };
 		82F913052BD9EF8A00644A67 /* Service Maps 2.0.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Service Maps 2.0.entitlements"; sourceTree = "<group>"; };
 		82F913062BDAA01F00644A67 /* UniversalLinksManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalLinksManager.swift; sourceTree = "<group>"; };
 		82F913082BDAB27F00644A67 /* LinkScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkScreens.swift; sourceTree = "<group>"; };
@@ -381,13 +385,6 @@
 			path = Structs;
 			sourceTree = "<group>";
 		};
-		820933F82A78687B00AF3FF1 /* Other */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Other;
-			sourceTree = "<group>";
-		};
 		820933F92A794BAD00AF3FF1 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -415,6 +412,7 @@
 		820934012A7AB9D300AF3FF1 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				82F7812B2ED804F000BC41AC /* MapFeature.swift */,
 				823FD4D32A7D40E30036A1DD /* Authentication */,
 				823FD4D82A81632B0036A1DD /* Home */,
 				82F9130A2BDAE79100644A67 /* LinkViews */,
@@ -455,7 +453,6 @@
 				82B97F8E2CC845D200A0BC13 /* Routes */,
 				821C126F2A780E9F0050D106 /* Controllers */,
 				821C12612A77F0A00050D106 /* APIStructs */,
-				820933F82A78687B00AF3FF1 /* Other */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -623,6 +620,7 @@
 		829A139D2CCF24EE00BDE0B9 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				82B5FD672ED80F00007FE9C3 /* AddressHeaderCarousel.swift */,
 				82EFADC72D8CDB63003A9F39 /* SettingRows.swift */,
 				8209340A2A7AD1A800AF3FF1 /* Color Extensions.swift */,
 				829A139B2CCF21A400BDE0B9 /* ResultExtensions.swift */,
@@ -1003,12 +1001,14 @@
 				82B97F902CC845E600A0BC13 /* AuthenticationRoutes.swift in Sources */,
 				82BC0F232A9C24AC00B255BF /* ChangeType.swift in Sources */,
 				82BC0F1F2A9BF55B00B255BF /* AuthorizationLevelManager.swift in Sources */,
+				82B5FD682ED80F00007FE9C3 /* AddressHeaderCarousel.swift in Sources */,
 				8255F1942C19465200445A82 /* SettingsView.swift in Sources */,
 				821111B62A7315B600F94662 /* AuthenticationService.swift in Sources */,
 				826B76702A729FDE000A4BAA /* HomeTabView.swift in Sources */,
 				821C12782A7811CD0050D106 /* AdminService.swift in Sources */,
 				82F9130C2BDAE7D000644A67 /* ValidationView.swift in Sources */,
 				82B97F962CC85B8400A0BC13 /* AdminRoutes.swift in Sources */,
+				82F7812C2ED804F300BC41AC /* MapFeature.swift in Sources */,
 				8228B6052C2901A7002B7886 /* RealtimeManager.swift in Sources */,
 				820933ED2A785A9400AF3FF1 /* UserService.swift in Sources */,
 				82F75C3A2BE2D1BA002CCAB0 /* CallsViewModel.swift in Sources */,

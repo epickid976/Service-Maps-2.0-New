@@ -53,6 +53,7 @@ class AddressViewModel: ObservableObject {
     @Published var isShowingSearch = false
     @Published var showImageViewer = false
     @Published var selectedAddressForNavigation: TerritoryAddress? = nil
+    @Published var selectedHouseIdForNavigation: String? = nil
     
      // MARK: - Initializers
     

@@ -275,29 +275,39 @@ struct TerritoryView: View {
                             .navigationBarTitle("Territories", displayMode: .automatic)
                             .navigationBarBackButtonHidden(true)
                             .toolbar {
-                                // MARK: - Leading (Back)
                                 ToolbarItemGroup(placement: .topBarLeading) {
-                                    if viewModel.territoryIdToScrollTo != nil {
-                                        Button(action: {
-                                            withAnimation {
-                                                viewModel.backAnimation.toggle()
-                                                HapticManager.shared.trigger(.lightImpact)
+                                    if #available(iOS 26.0, *) {
+                                        if viewModel.territoryIdToScrollTo != nil {
+                                            Button(action: {
+                                                withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) }
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                    Task {
+                                                        await dismissAllPopups()
+                                                    }
+                                                    presentationMode.wrappedValue.dismiss()
+                                                }
+                                            }) {
+                                                Image(systemName: "arrow.backward")
                                             }
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                Task { await dismissAllPopups() }
-                                                presentationMode.wrappedValue.dismiss()
+                                        }
+                                    } else {
+                                        HStack {
+                                            if viewModel.territoryIdToScrollTo != nil {
+                                                Button("", action: {withAnimation { viewModel.backAnimation.toggle(); HapticManager.shared.trigger(.lightImpact) };
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                        Task {
+                                                            await dismissAllPopups()
+                                                        }
+                                                        presentationMode.wrappedValue.dismiss()
+                                                    }
+                                                })
+                                                .buttonStyle(CircleButtonStyle(imageName: "arrow.backward", background: .white.opacity(0), width: 40, height: 40, progress: $viewModel.progress, animation: $viewModel.backAnimation))
                                             }
-                                        }) {
-                                            Image(systemName: "arrow.backward")
                                         }
                                     }
                                 }
-
-                                // MARK: - Trailing – iOS 26+ broken into 2 groups
-                                if #available(iOS 26.0, *) {
-
-                                    // LEFT PART of trailing: Sync pill
-                                    ToolbarItemGroup(placement: .primaryAction) {
+                                ToolbarItemGroup(placement: .topBarTrailing) {
+                                    if #available(iOS 26.0, *) {
                                         SyncPillButton(
                                             synced: viewModel.dataStore.synchronized,
                                             lastTime: viewModel.dataStore.lastTime
@@ -305,80 +315,49 @@ struct TerritoryView: View {
                                             HapticManager.shared.trigger(.lightImpact)
                                             synchronizationManager.startupProcess(synchronizing: true)
                                         }
+                                    } else {
+                                        Button("", action: { viewModel.syncAnimation = true; synchronizationManager.startupProcess(synchronizing: true) })
+                                            .buttonStyle(PillButtonStyle(imageName: "plus", background: .white.opacity(0), width: 100, height: 40, progress: $viewModel.syncAnimationprogress, animation: $viewModel.syncAnimation, synced: $viewModel.dataStore.synchronized, lastTime: $viewModel.dataStore.lastTime))
+                                            .padding(.leading, viewModel.territoryData == nil || dataStore.synchronized ? 0 : 50)
                                     }
-
-                                    // SPACE between pill and search
-                                    ToolbarSpacer(.flexible, placement: .primaryAction)
-
-                                    // RIGHT PART of trailing: Search
-                                    ToolbarItemGroup(placement: .primaryAction) {
-                                        if (viewModel.territoryData == nil || dataStore.synchronized),
-                                           viewModel.territoryIdToScrollTo == nil {
-                                            Button(action: {
-                                                HapticManager.shared.trigger(.lightImpact)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                                                    withAnimation(.spring()) {
-                                                        isCircleExpanded = true
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                            viewModel.backAnimation.toggle()
-                                                            searchViewDestination = true
+                                }
+                                ToolbarItemGroup(placement: .topBarTrailing) {
+                                    if #available(iOS 26.0, *) {
+                                        if viewModel.territoryData == nil || dataStore.synchronized {
+                                            if viewModel.territoryIdToScrollTo == nil {
+                                                Button(action: {
+                                                    HapticManager.shared.trigger(.lightImpact)
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                                        withAnimation(.spring()) {
+                                                            isCircleExpanded = true
+                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                                viewModel.backAnimation.toggle()
+                                                                searchViewDestination = true
+                                                            }
                                                         }
                                                     }
+                                                }) {
+                                                    Image(systemName: "magnifyingglass")
                                                 }
-                                            }) {
-                                                Image(systemName: "magnifyingglass")
                                             }
                                         }
-                                    }
-
-                                } else {
-                                    // MARK: - Trailing – iOS 17–25 fallback (single strip)
-                                    ToolbarItemGroup(placement: .topBarTrailing) {
-
-                                        // Sync pill (old style)
-                                        Button("", action: {
-                                            viewModel.syncAnimation = true
-                                            synchronizationManager.startupProcess(synchronizing: true)
-                                        })
-                                        .buttonStyle(
-                                            PillButtonStyle(
-                                                imageName: "plus",
-                                                background: .white.opacity(0),
-                                                width: 100,
-                                                height: 40,
-                                                progress: $viewModel.syncAnimationprogress,
-                                                animation: $viewModel.syncAnimation,
-                                                synced: $viewModel.dataStore.synchronized,
-                                                lastTime: $viewModel.dataStore.lastTime
-                                            )
-                                        )
-
-                                        // Search (old style) – you can keep your CircleButtonStyle version here
-                                        if (viewModel.territoryData == nil || dataStore.synchronized),
-                                           viewModel.territoryIdToScrollTo == nil {
-
-                                            Button("", action: {
-                                                HapticManager.shared.trigger(.lightImpact)
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                                                    withAnimation(.spring()) {
-                                                        isCircleExpanded = true
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                                            viewModel.backAnimation.toggle()
-                                                            searchViewDestination = true
+                                    } else {
+                                        if viewModel.territoryData == nil || dataStore.synchronized {
+                                            if viewModel.territoryIdToScrollTo == nil {
+                                                Button("", action: { HapticManager.shared.trigger(.lightImpact) ;
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                                        withAnimation(.spring()) {
+                                                            isCircleExpanded = true
+                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                                viewModel.backAnimation.toggle()
+                                                                searchViewDestination = true
+                                                            }
                                                         }
                                                     }
-                                                }
-                                            })
-                                            .buttonStyle(
-                                                CircleButtonStyle(
-                                                    imageName: "magnifyingglass",
-                                                    background: .white.opacity(0),
-                                                    width: !isCircleExpanded ? 40 : proxy.size.width * 4,
-                                                    height: !isCircleExpanded ? 40 : proxy.size.height * 4,
-                                                    progress: $viewModel.progress,
-                                                    animation: $viewModel.backAnimation
-                                                )
-                                            )
+                                                }).scaleEffect(viewModel.territoryData == nil || dataStore.synchronized ? 1 : 0)
+                                                    .buttonStyle(CircleButtonStyle(imageName: "magnifyingglass", background: .white.opacity(0), width: !isCircleExpanded ? 40 : proxy.size.width * 4, height: !isCircleExpanded ? 40 : proxy.size.height * 4, progress: $viewModel.progress, animation: $viewModel.backAnimation)).transition(.scale).padding(.top, isCircleExpanded ? 1000 : 0)
+                                                    .animation(.spring(), value: isCircleExpanded)
+                                            }
                                         }
                                     }
                                 }

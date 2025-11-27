@@ -1,5 +1,5 @@
 //
-//  AddressMapView.swift
+//  MapFeature.swift
 //  Service Maps 2.0
 //
 //  Created by Jose Blanco on 11/27/24.
@@ -16,10 +16,23 @@ struct AddressLocation: Identifiable, Hashable {
     let id: String
     let address: TerritoryAddress
     let coordinate: CLLocationCoordinate2D
+    let houseCount: Int
     let houses: [House]
+    let lastVisit: Visit?
     
     var title: String {
         address.address
+    }
+    
+    var houseNumbers: String {
+        if houses.isEmpty {
+            return "\(houseCount) doors"
+        }
+        let numbers = houses.prefix(5).map { $0.number }.joined(separator: ", ")
+        if houses.count > 5 {
+            return "\(numbers)..."
+        }
+        return numbers
     }
     
     // Hashable conformance
@@ -60,17 +73,21 @@ class GeocodingService: ObservableObject {
         return nil
     }
     
-    func geocodeAddresses(_ addresses: [TerritoryAddress], houses: [String: [House]]) async -> [AddressLocation] {
+    func geocodeAddresses(_ addresses: [AddressData]) async -> [AddressLocation] {
         var locations: [AddressLocation] = []
         
-        for address in addresses {
-            if let coordinate = await geocodeAddress(address.address) {
-                let addressHouses = houses[address.id] ?? []
+        for addressData in addresses {
+            if let coordinate = await geocodeAddress(addressData.address.address) {
+                // Fetch houses and last visit for this address
+                let (houses, lastVisit) = fetchHousesAndLastVisit(for: addressData.address.id)
+                
                 locations.append(AddressLocation(
-                    id: address.id,
-                    address: address,
+                    id: addressData.address.id,
+                    address: addressData.address,
                     coordinate: coordinate,
-                    houses: addressHouses
+                    houseCount: addressData.houseQuantity,
+                    houses: houses,
+                    lastVisit: lastVisit
                 ))
             }
         }
@@ -78,10 +95,35 @@ class GeocodingService: ObservableObject {
         return locations
     }
     
+    private func fetchHousesAndLastVisit(for addressId: String) -> ([House], Visit?) {
+        do {
+            let houses = try GRDBManager.shared.dbPool.read { db in
+                try House.filter(Column("territory_address") == addressId).fetchAll(db)
+            }
+            
+            // Get the most recent visit across all houses
+            var lastVisit: Visit? = nil
+            for house in houses {
+                if let visit = try GRDBManager.shared.dbPool.read({ db in
+                    try Visit.filter(Column("house") == house.id)
+                        .order(Column("date").desc)
+                        .fetchOne(db)
+                }) {
+                    if lastVisit == nil || visit.date > lastVisit!.date {
+                        lastVisit = visit
+                    }
+                }
+            }
+            
+            return (houses, lastVisit)
+        } catch {
+            print("Error fetching houses: \(error)")
+            return ([], nil)
+        }
+    }
+    
     /// Check if an address looks like a full address (not just a house number)
     func isFullAddress(_ address: String) -> Bool {
-        // A full address typically contains street names, numbers, etc.
-        // Simple heuristic: check if it has at least a number and some letters with spaces
         let hasNumber = address.contains(where: { $0.isNumber })
         let hasLetters = address.contains(where: { $0.isLetter })
         let hasSpaces = address.contains(" ")
@@ -91,21 +133,20 @@ class GeocodingService: ObservableObject {
     }
 }
 
-// MARK: - Address Map View
+// MARK: - Address Map View (Simplified - overlay handled by parent)
 
 struct AddressMapView: View {
     let territory: Territory
-    let addresses: [AddressData]
+    let addressLocations: [AddressLocation]
+    let isLoading: Bool
+    @Binding var selectedLocation: AddressLocation?
     var onSelectAddress: ((TerritoryAddress, House?) -> Void)?
     
-    @State private var addressLocations: [AddressLocation] = []
-    @State private var selectedLocation: AddressLocation?
-    @State private var isLoading = true
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     )
-    @State private var showCallout = false
+    @State private var hasSetInitialRegion = false
     
     @Environment(\.colorScheme) private var colorScheme
     
@@ -119,12 +160,16 @@ struct AddressMapView: View {
                 mapContent
             }
         }
-        .task {
-            await loadAddressLocations()
+        .onChange(of: addressLocations) { newLocations in
+            if !newLocations.isEmpty && !hasSetInitialRegion {
+                setInitialRegion(for: newLocations)
+                hasSetInitialRegion = true
+            }
         }
-        .onChange(of: addresses) { _ in
-            Task {
-                await loadAddressLocations()
+        .onAppear {
+            if !addressLocations.isEmpty && !hasSetInitialRegion {
+                setInitialRegion(for: addressLocations)
+                hasSetInitialRegion = true
             }
         }
     }
@@ -166,118 +211,40 @@ struct AddressMapView: View {
     // MARK: - Map Content
     
     private var mapContent: some View {
-        ZStack(alignment: .bottom) {
-            Map(coordinateRegion: $mapRegion, annotationItems: addressLocations) { location in
-                MapAnnotation(coordinate: location.coordinate, anchorPoint: CGPoint(x: 0.5, y: 1.0)) {
-                    AddressMapPin(
-                        isSelected: selectedLocation?.id == location.id,
-                        houseCount: location.houses.count
-                    )
-                    .onTapGesture {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            if selectedLocation?.id == location.id {
-                                selectedLocation = nil
-                            } else {
-                                selectedLocation = location
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Callout overlay
-            if let selected = selectedLocation {
-                AddressCalloutView(
-                    location: selected,
-                    onGoToAddress: {
-                        // Navigate to the first house or the address itself
-                        if let firstHouse = selected.houses.first {
-                            onSelectAddress?(selected.address, firstHouse)
-                        } else {
-                            onSelectAddress?(selected.address, nil)
-                        }
-                    },
-                    onGetDirections: {
-                        openDirections(to: selected)
-                    },
-                    onDismiss: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selectedLocation = nil
-                        }
-                    }
+        Map(coordinateRegion: $mapRegion, annotationItems: addressLocations) { location in
+            MapAnnotation(coordinate: location.coordinate, anchorPoint: CGPoint(x: 0.5, y: 1.0)) {
+                AddressMapPin(
+                    isSelected: selectedLocation?.id == location.id,
+                    location: location
                 )
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-                .padding(.horizontal)
-                .padding(.bottom, 16)
-            }
-        }
-    }
-    
-    // MARK: - Load Address Locations
-    
-    private func loadAddressLocations() async {
-        isLoading = true
-        
-        // Filter addresses that look like full addresses
-        let geocodingService = GeocodingService.shared
-        let fullAddresses = addresses.filter { geocodingService.isFullAddress($0.address.address) }
-        
-        if fullAddresses.isEmpty {
-            await MainActor.run {
-                isLoading = false
-            }
-            return
-        }
-        
-        // Build locations with house counts from AddressData
-        var locations: [AddressLocation] = []
-        
-        for addressData in fullAddresses {
-            if let coordinate = await geocodingService.geocodeAddress(addressData.address.address) {
-                // Fetch houses for this address
-                let houses = await fetchHouses(for: addressData.address.id)
-                locations.append(AddressLocation(
-                    id: addressData.address.id,
-                    address: addressData.address,
-                    coordinate: coordinate,
-                    houses: houses
-                ))
-            }
-        }
-        
-        await MainActor.run {
-            addressLocations = locations
-            isLoading = false
-            
-            // Set initial map region to show all pins
-            if let firstLocation = locations.first {
-                if locations.count == 1 {
-                    mapRegion = MKCoordinateRegion(
-                        center: firstLocation.coordinate,
-                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                    )
-                } else {
-                    // Calculate region that fits all pins
-                    let coordinates = locations.map { $0.coordinate }
-                    mapRegion = regionThatFits(coordinates: coordinates)
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        if selectedLocation?.id == location.id {
+                            selectedLocation = nil
+                        } else {
+                            selectedLocation = location
+                        }
+                    }
                 }
             }
-        }
-    }
-    
-    // Fetch houses for an address
-    private func fetchHouses(for addressId: String) async -> [House] {
-        do {
-            return try GRDBManager.shared.dbPool.read { db in
-                try House.filter(Column("territory_address") == addressId).fetchAll(db)
-            }
-        } catch {
-            print("Error fetching houses: \(error)")
-            return []
         }
     }
     
     // MARK: - Helpers
+    
+    private func setInitialRegion(for locations: [AddressLocation]) {
+        guard let firstLocation = locations.first else { return }
+        
+        if locations.count == 1 {
+            mapRegion = MKCoordinateRegion(
+                center: firstLocation.coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            )
+        } else {
+            let coordinates = locations.map { $0.coordinate }
+            mapRegion = regionThatFits(coordinates: coordinates)
+        }
+    }
     
     private func regionThatFits(coordinates: [CLLocationCoordinate2D]) -> MKCoordinateRegion {
         var minLat = coordinates[0].latitude
@@ -304,21 +271,13 @@ struct AddressMapView: View {
         
         return MKCoordinateRegion(center: center, span: span)
     }
-    
-    private func openDirections(to location: AddressLocation) {
-        let destination = MKMapItem(placemark: MKPlacemark(coordinate: location.coordinate))
-        destination.name = location.title
-        destination.openInMaps(launchOptions: [
-            MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving
-        ])
-    }
 }
 
 // MARK: - Address Map Pin
 
 struct AddressMapPin: View {
     let isSelected: Bool
-    let houseCount: Int
+    let location: AddressLocation
     
     @Environment(\.colorScheme) private var colorScheme
     
@@ -336,9 +295,15 @@ struct AddressMapPin: View {
                 .frame(width: isSelected ? 50 : 40, height: isSelected ? 50 : 40)
                 .shadow(color: .black.opacity(0.3), radius: isSelected ? 8 : 4, x: 0, y: isSelected ? 4 : 2)
             
-            // House icon or count
-            if houseCount > 0 {
-                Text("\(houseCount)")
+            // Show first house number or count
+            if let firstHouse = location.houses.first {
+                Text(firstHouse.number)
+                    .font(.system(size: isSelected ? 16 : 12, weight: .bold))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            } else if location.houseCount > 0 {
+                Text("\(location.houseCount)")
                     .font(.system(size: isSelected ? 18 : 14, weight: .bold))
                     .foregroundColor(.white)
             } else {
@@ -351,104 +316,13 @@ struct AddressMapPin: View {
     }
 }
 
-// MARK: - Address Callout View
-
-struct AddressCalloutView: View {
-    let location: AddressLocation
-    var onGoToAddress: () -> Void
-    var onGetDirections: () -> Void
-    var onDismiss: () -> Void
-    
-    @Environment(\.colorScheme) private var colorScheme
-    
-    var body: some View {
-        VStack(spacing: 12) {
-            // Header with address and dismiss
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(location.title)
-                        .font(.headline)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                        .lineLimit(2)
-                    
-                    if location.houses.count > 0 {
-                        Text("\(location.houses.count) door\(location.houses.count == 1 ? "" : "s")")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                
-                Spacer()
-                
-                Button(action: onDismiss) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(.secondary)
-                }
-            }
-            
-            // Action buttons
-            HStack(spacing: 12) {
-                // Go to Address button
-                Button(action: onGoToAddress) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "arrow.right.circle.fill")
-                            .font(.title3)
-                        Text("View Houses")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [.blue, .teal]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .cornerRadius(12)
-                }
-                
-                // Directions button
-                Button(action: onGetDirections) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "car.fill")
-                            .font(.title3)
-                        Text("Directions")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
-                    .foregroundColor(.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(
-                        colorScheme == .dark
-                            ? Color.white.opacity(0.15)
-                            : Color.black.opacity(0.08)
-                    )
-                    .cornerRadius(12)
-                }
-            }
-        }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? .ultraThinMaterial : .regularMaterial)
-                .shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: 10)
-        )
-    }
-}
-
 // MARK: - Preview
 
 #Preview {
     AddressMapView(
         territory: Territory(id: "1", congregation: "1", number: 1, description: "Test Territory", image: ""),
-        addresses: []
+        addressLocations: [],
+        isLoading: false,
+        selectedLocation: .constant(nil)
     )
 }
-
-

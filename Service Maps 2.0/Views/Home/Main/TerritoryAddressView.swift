@@ -76,9 +76,10 @@ struct TerritoryAddressView: View {
                                         viewModel.showImageViewer = true
                                     }
                                 },
-                                onSelectAddress: { address in
-                                    // Navigate to the houses view for this address
+                                onSelectAddress: { address, houseId in
+                                    // Navigate to the houses view for this address with house highlighting
                                     viewModel.selectedAddressForNavigation = address
+                                    viewModel.selectedHouseIdForNavigation = houseId
                                 }
                             )
                             .padding(.bottom, 2)
@@ -287,8 +288,23 @@ struct TerritoryAddressView: View {
                 }
             }
             .navigationTransition(viewModel.presentSheet || viewModel.territoryAddressIdToScrollTo != nil ? .zoom.combined(with: .fade(.in)) : .slide.combined(with: .fade(.in)))
-            .navigationDestination(item: $viewModel.selectedAddressForNavigation) { address in
-                NavigationLazyView(HousesView(address: address).installToast(position: .bottom))
+            .navigationDestination(isPresented: Binding(
+                get: { viewModel.selectedAddressForNavigation != nil },
+                set: { 
+                    if !$0 { 
+                        viewModel.selectedAddressForNavigation = nil
+                        viewModel.selectedHouseIdForNavigation = nil
+                    } 
+                }
+            )) {
+                if let address = viewModel.selectedAddressForNavigation {
+                    NavigationLazyView(
+                        HousesView(
+                            address: address,
+                            houseIdToScrollTo: viewModel.selectedHouseIdForNavigation
+                        ).installToast(position: .bottom)
+                    )
+                }
             }
         }.overlay(ImageViewerRemote(imageURL: $imageURL, viewerShown: $viewModel.showImageViewer))
     }
