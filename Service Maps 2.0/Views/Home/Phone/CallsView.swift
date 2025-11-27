@@ -237,8 +237,8 @@ struct CallsView: View {
                 MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                     self.viewModel.presentSheet = true
                 }
-                .offset(y: hideFloatingButton ? 100 : -25)
-                .animation(.spring(), value: hideFloatingButton)
+                .offset(y: -25)
+                .fabImplode(isHidden: hideFloatingButton)
                 .vSpacing(.bottom).hSpacing(.trailing)
                 .padding()
             }

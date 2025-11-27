@@ -193,8 +193,8 @@ struct PhoneNumbersView: View {
                     MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                         self.viewModel.presentSheet = true
                     }
-                    .offset(y: hideFloatingButton ? 100 : -75)
-                    .animation(.spring(), value: hideFloatingButton)
+                    .offset(y: -75)
+                    .fabImplode(isHidden: hideFloatingButton)
                     .vSpacing(.bottom).hSpacing(.trailing)
                     .padding()
                     // //.keyboardShortcut("+", modifiers: .command)

@@ -421,8 +421,7 @@ struct TerritoryView: View {
                         MainButton(imageName: "plus", colorHex: "#1e6794", width: 60) {
                             self.viewModel.presentSheet = true
                         }
-                        .offset(y: hideFloatingButton ? 100 : 0)
-                        .animation(.spring(), value: hideFloatingButton)
+                        .fabImplode(isHidden: hideFloatingButton)
                         .vSpacing(.bottom).hSpacing(.trailing)
                         .padding()
                     }

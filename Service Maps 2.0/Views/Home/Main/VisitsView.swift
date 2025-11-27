@@ -331,8 +331,7 @@ struct VisitsView: View {
                         }.present()
                     }
                 }
-                .offset(y: hideFloatingButton ? 200 : 0)
-                .animation(.spring(), value: hideFloatingButton)
+                .fabImplode(isHidden: hideFloatingButton)
                 .vSpacing(.bottom).hSpacing(.trailing)
                 .padding()
             }

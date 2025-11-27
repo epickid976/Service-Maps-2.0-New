@@ -6353,6 +6353,70 @@
           }
         }
       }
+    },
+    "Reset App": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restablecer App"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinitialiser l'application"
+          }
+        }
+      }
+    },
+    "Reset": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restablecer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réinitialiser"
+          }
+        }
+      }
+    },
+    "This will completely reset the app to its initial state, as if you just installed it. All local data, settings, and credentials will be permanently deleted. This action cannot be undone.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esto restablecerá completamente la aplicación a su estado inicial, como si acabara de instalarla. Todos los datos locales, configuraciones y credenciales se eliminarán permanentemente. Esta acción no se puede deshacer."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cela réinitialisera complètement l'application à son état initial, comme si vous veniez de l'installer. Toutes les données locales, paramètres et identifiants seront définitivement supprimés. Cette action est irréversible."
+          }
+        }
+      }
+    },
+    "Error resetting app. Please try again.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error al restablecer la aplicación. Por favor, intente de nuevo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erreur lors de la réinitialisation de l'application. Veuillez réessayer."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

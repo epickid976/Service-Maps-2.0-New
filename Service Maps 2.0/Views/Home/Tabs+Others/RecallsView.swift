@@ -323,6 +323,17 @@ struct RecallRow: View {
                 .font(.title.weight(.semibold))
                 .foregroundColor(.white)
                 
+                SwipeAction(
+                    systemImage: "map.fill",
+                    backgroundColor: .green
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    context.state.wrappedValue = .closed
+                    openInMaps(address: recall.territoryAddress.address)
+                }
+                .font(.title.weight(.semibold))
+                .foregroundColor(.white)
+                
             } trailingActions: { context in
                 SwipeAction(
                     systemImage: "person.fill.xmark",
@@ -380,6 +391,17 @@ struct RecallRow: View {
         }
         
         return finalString
+    }
+    
+    private func openInMaps(address: String) {
+        let encodedAddress = address.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        if let url = URL(string: "maps://?address=\(encodedAddress)") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            } else if let webURL = URL(string: "https://maps.apple.com/?address=\(encodedAddress)") {
+                UIApplication.shared.open(webURL)
+            }
+        }
     }
 }
 

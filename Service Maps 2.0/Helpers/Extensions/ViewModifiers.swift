@@ -159,3 +159,29 @@ extension View {
         }
     }
 }
+
+// MARK: - FAB Implode Animation Modifier
+/// A modifier that creates an "imploding" hide animation for floating action buttons.
+/// The button shrinks into itself with a spring animation instead of sliding off screen.
+struct FABImplodeModifier: ViewModifier {
+    let isHidden: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isHidden ? 0.01 : 1.0)
+            .opacity(isHidden ? 0 : 1)
+            .animation(
+                .spring(response: 0.35, dampingFraction: 0.6, blendDuration: 0.2),
+                value: isHidden
+            )
+    }
+}
+
+extension View {
+    /// Applies an imploding hide/show animation to a view (typically a FAB).
+    /// - Parameter isHidden: When true, the view implodes (shrinks to nothing). When false, it expands back.
+    /// - Returns: The view with the implode animation applied.
+    func fabImplode(isHidden: Bool) -> some View {
+        modifier(FABImplodeModifier(isHidden: isHidden))
+    }
+}

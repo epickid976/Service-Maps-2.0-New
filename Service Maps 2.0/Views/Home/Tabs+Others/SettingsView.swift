@@ -37,6 +37,7 @@ struct SettingsView: View {
     var showBackButton = false
     @State private var isExpanding = false
     @State private var isCollapsing = false
+    @State private var showResetAppPopup = false
     
     //MARK: - Alert Views
     
@@ -87,6 +88,8 @@ struct SettingsView: View {
                 viewModel.deleteCacheMenu(mainWindowSize: mainWindowSize)
                 Spacer().frame(height: 25)
                 viewModel.deleteAccount(mainWindowSize: mainWindowSize)
+                Spacer().frame(height: 25)
+                resetAppView(mainWindowSize: mainWindowSize)
             }
             .padding(.vertical)
             .alert(isPresent: $viewModel.showToast, view: alertViewDeleted)
@@ -166,6 +169,15 @@ struct SettingsView: View {
             }
             .onChange(of: preferencesViewModel.hapticFeedback) { value in
                 HapticManager.shared.trigger(.lightImpact)
+            }
+            .onChange(of: showResetAppPopup) { value in
+                if value {
+                    Task {
+                        await CenterPopup_ResetApp(showResetAppPopup: $showResetAppPopup, showBackButton: showBackButton) {
+                            presentationMode.wrappedValue.dismiss()
+                        }.present()
+                    }
+                }
             }
         }
         .scrollIndicators(.never)
@@ -464,6 +476,47 @@ struct SettingsView: View {
         .frame(minWidth: mainWindowSize.width * 0.95)
     }
     
+    
+    // MARK: - Reset App View
+    
+    @ViewBuilder
+    func resetAppView(mainWindowSize: CGSize) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Reset App")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 8)
+                .padding(.leading, 5)
+            
+            VStack(spacing: 16) {
+                Button {
+                    HapticManager.shared.trigger(.lightImpact)
+                    showResetAppPopup = true
+                } label: {
+                    HStack {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise.circle.fill")
+                                .imageScale(.large)
+                                .foregroundColor(.red)
+                                .padding(.horizontal)
+                            Text("Reset App")
+                                .font(.body)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.red)
+                        }
+                        .hSpacing(.leading)
+                    }
+                }
+                .frame(minHeight: 50)
+            }
+            .padding(10)
+            .frame(minWidth: mainWindowSize.width * 0.95)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+        .frame(minWidth: mainWindowSize.width * 0.95)
+    }
     
     //MARK: - Helper Methods
     
@@ -1208,6 +1261,142 @@ private extension BottomPopup_Document {
         Text(text)
             .font(.interRegular(16))
             .foregroundColor(.onBackgroundPrimary)
+    }
+}
+
+// MARK: - Reset App Popup
+
+struct CenterPopup_ResetApp: CenterPopup {
+    @Binding var showResetAppPopup: Bool
+    var showBackButton: Bool
+    var onDone: () -> Void
+    
+    @State private var loading = false
+    @State private var error = ""
+
+    var body: some View {
+        createContent()
+    }
+
+    func createContent() -> some View {
+        VStack(spacing: 16) {
+            // MARK: - Icon
+            Image(systemName: "exclamationmark.triangle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 36, height: 36)
+                .foregroundColor(.red)
+
+            // MARK: - Title
+            Text("Reset App")
+                .font(.title2)
+                .fontWeight(.heavy)
+                .foregroundColor(.primary)
+
+            // MARK: - Description
+            Text("This will completely reset the app to its initial state, as if you just installed it. All local data, settings, and credentials will be permanently deleted. This action cannot be undone.")
+                .font(.body)
+                .foregroundColor(.primary)
+                .lineSpacing(5)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 6)
+                .frame(maxWidth: 500)
+
+            if !error.isEmpty {
+                Text(error)
+                    .font(.footnote)
+                    .fontWeight(.bold)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+            }
+
+            // MARK: - Buttons
+            HStack(spacing: 12) {
+                if !loading {
+                    CustomBackButton(showImage: true, text: NSLocalizedString("Cancel", comment: "")) {
+                        HapticManager.shared.trigger(.lightImpact)
+                        showResetAppPopup = false
+                        Task {
+                            await dismissLastPopup()
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+
+                CustomButton(
+                    loading: loading,
+                    title: NSLocalizedString("Reset", comment: ""),
+                    color: .red
+                ) {
+                    HapticManager.shared.trigger(.lightImpact)
+                    withAnimation { loading = true }
+
+                    Task {
+                        do {
+                            // Clear GRDB database first
+                            try GRDBManager.shared.clearAllData()
+                            
+                            // Clear all UserDefaults
+                            if let bundleID = Bundle.main.bundleIdentifier {
+                                UserDefaults.standard.removePersistentDomain(forName: bundleID)
+                            }
+                            UserDefaults.standard.synchronize()
+                            
+                            // Clear AuthorizationProvider credentials
+                            await MainActor.run {
+                                AuthorizationProvider.shared.clear()
+                                StorageManager.shared.clear()
+                            }
+                            
+                            // Clear cached files
+                            let fileManager = FileManager.default
+                            if let cachesDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first {
+                                let contents = try? fileManager.contentsOfDirectory(at: cachesDirectory, includingPropertiesForKeys: nil)
+                                for file in contents ?? [] {
+                                    try? fileManager.removeItem(at: file)
+                                }
+                            }
+                            
+                            // Cancel all pending notifications
+                            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                            
+                            await MainActor.run {
+                                loading = false
+                                HapticManager.shared.trigger(.success)
+                                showResetAppPopup = false
+                            }
+                            
+                            await dismissLastPopup()
+                            
+                            // Force restart the app flow
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                if showBackButton {
+                                    onDone()
+                                }
+                                // Trigger app state change - AuthorizationProvider.clear() already cleared the auth token
+                                // which will cause the app to show the login screen
+                                SynchronizationManager.shared.startupProcess(synchronizing: false)
+                            }
+                            
+                        } catch {
+                            await MainActor.run {
+                                self.error = NSLocalizedString("Error resetting app. Please try again.", comment: "")
+                                loading = false
+                                HapticManager.shared.trigger(.error)
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .padding()
+        .background(Material.thin)
+        .cornerRadius(20)
+    }
+
+    func configurePopup(config: CenterPopupConfig) -> CenterPopupConfig {
+        config.popupHorizontalPadding(24)
     }
 }
 

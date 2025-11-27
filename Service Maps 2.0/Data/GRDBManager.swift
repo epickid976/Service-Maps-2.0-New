@@ -437,6 +437,24 @@ final class GRDBManager: ObservableObject, Sendable {
         }
     }
     
+    // MARK: - Clear All Data
+    func clearAllData() throws {
+        try dbPool.write { db in
+            // Delete all data from all tables
+            try db.execute(sql: "DELETE FROM visits")
+            try db.execute(sql: "DELETE FROM houses")
+            try db.execute(sql: "DELETE FROM territory_addresses")
+            try db.execute(sql: "DELETE FROM territories")
+            try db.execute(sql: "DELETE FROM tokens")
+            try db.execute(sql: "DELETE FROM token_territories")
+            try db.execute(sql: "DELETE FROM user_tokens")
+            try db.execute(sql: "DELETE FROM recalls")
+            try db.execute(sql: "DELETE FROM phone_territories")
+            try db.execute(sql: "DELETE FROM phone_numbers")
+            try db.execute(sql: "DELETE FROM phone_calls")
+        }
+    }
+    
     
     @BackgroundActor
     @Sendable func fetchAllAsync<T: FetchableRecord & TableRecord & Sendable>(_ type: T.Type) async -> Result<[T], Error> {

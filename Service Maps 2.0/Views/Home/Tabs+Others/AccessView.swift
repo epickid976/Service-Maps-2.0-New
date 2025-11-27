@@ -214,8 +214,7 @@ struct AccessView: View {
                             keydataToEdit = nil
                             self.viewModel.presentSheet = true
                         }
-                        .offset(y: hideFloatingButton ? 150 : 0)
-                        .animation(.spring(), value: hideFloatingButton)
+                        .fabImplode(isHidden: hideFloatingButton)
                         .vSpacing(.bottom).hSpacing(.trailing)
                         .padding()
                         //.keyboardShortcut("+", modifiers: .command)
