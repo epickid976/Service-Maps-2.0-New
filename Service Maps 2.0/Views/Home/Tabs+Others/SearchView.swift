@@ -50,6 +50,17 @@ struct SearchView: View {
     //MARK: - Body
     
     var body: some View {
+        if #available(iOS 26.0, *) {
+            iOS26SearchView(searchViewModel: searchViewModel, onDone: onDone, backAnimation: $backAnimation)
+        } else {
+            legacySearchView
+        }
+    }
+    
+    // MARK: - Legacy Search View (iOS 25 and below)
+    
+    @ViewBuilder
+    private var legacySearchView: some View {
         GeometryReader { proxy in
             VStack {
                 
@@ -176,6 +187,128 @@ struct SearchView: View {
             }
             .navigationBarBackButtonHidden()
         }
+    }
+}
+
+// MARK: - iOS 26+ Search View with native searchable
+
+@available(iOS 26.0, *)
+struct iOS26SearchView: View {
+    @ObservedObject var searchViewModel: SearchViewModel
+    var onDone: () -> Void
+    @Binding var backAnimation: Bool
+    
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismissSearch) var dismissSearch
+    
+    var body: some View {
+        GeometryReader { proxy in
+            ScrollView {
+                LazyVStack {
+                    switch searchViewModel.searchState {
+                    case .Idle:
+                        VStack {
+                            LottieView(animation: .named("searchquiet"))
+                                .playing(loopMode: .loop)
+                                .resizable()
+                                .frame(width: 350, height: 350)
+                            
+                            if searchViewModel.searchMode == .Territories {
+                                Text("Search for a Territory, Address, House, Visit")
+                                    .font(.title)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.secondaryLabel)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.top, -50)
+                            } else {
+                                Text("Search for a Phone Territory, Number, Call")
+                                    .font(.title)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.secondaryLabel)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.top, -50)
+                            }
+                        }
+                    case .Searching:
+                        LazyVStack {
+                            LottieView(animation: .named("search"))
+                                .playing(loopMode: .loop)
+                                .resizable()
+                                .frame(width: 350, height: 350)
+                            Text("Searching...")
+                                .font(.title)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.secondaryLabel)
+                                .multilineTextAlignment(.center)
+                                .padding(.top, -50)
+                        }
+                    case .Done:
+                        if searchViewModel.searchResults.isEmpty {
+                            LazyVStack {
+                                LottieView(animation: .named("noresults"))
+                                    .playing(loopMode: .loop)
+                                    .resizable()
+                                    .frame(width: 350, height: 350)
+                                Text("No results found")
+                                    .font(.title)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(.secondaryLabel)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.top, -50)
+                            }
+                        } else {
+                            LazyVGrid(columns: [GridItem(.flexible())]) {
+                                ForEach(SearchResultType.allCases, id: \.id) { type in
+                                    if searchViewModel.searchResults.contains(where: { $0.type == type }) {
+                                        Section(header:
+                                                    Text(type.rawValue)
+                                            .font(.title3)
+                                            .fontWeight(.heavy)
+                                            .foregroundStyle(.primary)
+                                            .padding(.top, 20)
+                                            .padding(.bottom, 5)
+                                            .hSpacing(.leading)
+                                        ) {
+                                            ForEach(searchViewModel.searchResults.filter { $0.type == type }, id: \.id) { data in
+                                                MySearchResultItem(data: data, mainWindowSize: proxy.size)
+                                            }
+                                        }
+                                    }
+                                }.modifier(ScrollTransitionModifier())
+                            }.animation(.spring(), value: searchViewModel.searchResults)
+                        }
+                    }
+                }
+                .animation(.easeInOut(duration: 0.5), value: searchViewModel.searchState)
+                .padding()
+            }
+            .scrollIndicators(.never)
+            .id(searchViewModel.scrollViewID)
+        }
+        .navigationTitle(searchViewModel.searchMode == .Territories ? "Search" : "Phone Search")
+        .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden()
+        .searchable(
+            text: $searchViewModel.searchQuery,
+            prompt: searchViewModel.searchMode == .Territories ? "Territory, Address, House, Visit" : "Phone Territory, Number, Call"
+        )
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(action: {
+                    withAnimation { backAnimation.toggle() }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        presentationMode.wrappedValue.dismiss()
+                        onDone()
+                    }
+                }) {
+                    Image(systemName: "arrow.backward")
+                }
+            }
+            
+            // Bottom bar with search field
+            DefaultToolbarItem(kind: .search, placement: .bottomBar)
+        }
+        .toolbarVisibility(.hidden, for: .tabBar)
     }
 }
 
