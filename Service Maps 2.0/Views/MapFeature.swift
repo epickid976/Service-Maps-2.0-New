@@ -8,10 +8,11 @@
 import SwiftUI
 import MapKit
 import CoreLocation
+import GRDB
 
 // MARK: - Address Location Model
 
-struct AddressLocation: Identifiable {
+struct AddressLocation: Identifiable, Hashable {
     let id: String
     let address: TerritoryAddress
     let coordinate: CLLocationCoordinate2D
@@ -19,6 +20,15 @@ struct AddressLocation: Identifiable {
     
     var title: String {
         address.address
+    }
+    
+    // Hashable conformance
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: AddressLocation, rhs: AddressLocation) -> Bool {
+        lhs.id == rhs.id
     }
 }
 
@@ -91,7 +101,10 @@ struct AddressMapView: View {
     @State private var addressLocations: [AddressLocation] = []
     @State private var selectedLocation: AddressLocation?
     @State private var isLoading = true
-    @State private var mapCameraPosition: MapCameraPosition = .automatic
+    @State private var mapRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+    )
     @State private var showCallout = false
     
     @Environment(\.colorScheme) private var colorScheme
@@ -154,30 +167,22 @@ struct AddressMapView: View {
     
     private var mapContent: some View {
         ZStack(alignment: .bottom) {
-            Map(position: $mapCameraPosition, selection: $selectedLocation) {
-                ForEach(addressLocations) { location in
-                    Annotation(location.title, coordinate: location.coordinate, anchor: .bottom) {
-                        AddressMapPin(
-                            isSelected: selectedLocation?.id == location.id,
-                            houseCount: location.houses.count
-                        )
-                        .onTapGesture {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                if selectedLocation?.id == location.id {
-                                    selectedLocation = nil
-                                } else {
-                                    selectedLocation = location
-                                }
+            Map(coordinateRegion: $mapRegion, annotationItems: addressLocations) { location in
+                MapAnnotation(coordinate: location.coordinate, anchorPoint: CGPoint(x: 0.5, y: 1.0)) {
+                    AddressMapPin(
+                        isSelected: selectedLocation?.id == location.id,
+                        houseCount: location.houses.count
+                    )
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            if selectedLocation?.id == location.id {
+                                selectedLocation = nil
+                            } else {
+                                selectedLocation = location
                             }
                         }
                     }
-                    .tag(location)
                 }
-            }
-            .mapStyle(.standard(elevation: .realistic))
-            .mapControls {
-                MapCompass()
-                MapScaleView()
             }
             
             // Callout overlay
@@ -244,18 +249,17 @@ struct AddressMapView: View {
             addressLocations = locations
             isLoading = false
             
-            // Set initial camera position to show all pins
+            // Set initial map region to show all pins
             if let firstLocation = locations.first {
                 if locations.count == 1 {
-                    mapCameraPosition = .region(MKCoordinateRegion(
+                    mapRegion = MKCoordinateRegion(
                         center: firstLocation.coordinate,
                         span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                    ))
+                    )
                 } else {
                     // Calculate region that fits all pins
                     let coordinates = locations.map { $0.coordinate }
-                    let region = regionThatFits(coordinates: coordinates)
-                    mapCameraPosition = .region(region)
+                    mapRegion = regionThatFits(coordinates: coordinates)
                 }
             }
         }
@@ -263,20 +267,13 @@ struct AddressMapView: View {
     
     // Fetch houses for an address
     private func fetchHouses(for addressId: String) async -> [House] {
-        // Use GRDBManager to fetch houses synchronously on background
-        return await withCheckedContinuation { continuation in
-            Task { @MainActor in
-                // Get houses from the database
-                var houses: [House] = []
-                do {
-                    houses = try GRDBManager.shared.dbQueue.read { db in
-                        try House.filter(Column("territory_address") == addressId).fetchAll(db)
-                    }
-                } catch {
-                    print("Error fetching houses: \(error)")
-                }
-                continuation.resume(returning: houses)
+        do {
+            return try GRDBManager.shared.dbPool.read { db in
+                try House.filter(Column("territory_address") == addressId).fetchAll(db)
             }
+        } catch {
+            print("Error fetching houses: \(error)")
+            return []
         }
     }
     
@@ -453,4 +450,5 @@ struct AddressCalloutView: View {
         addresses: []
     )
 }
+
 
